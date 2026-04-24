@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+
+# Local scratch files
+tmp/
+*.log
+
+# Optional future runtime output
+data/runtime/
