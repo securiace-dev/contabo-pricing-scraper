@@ -668,6 +668,40 @@ async function processPlan(url, html, gapReport) {
   return { basePlan, finalOptions, planConfig, url };
 }
 
+// ─── Quick reference builder ──────────────────────────────────────────────────
+
+function buildQuickReference(basePlans, planConfigs, generatedAt) {
+  const plans = basePlans.map((plan) => {
+    const config = Object.values(planConfigs).find((c) => c.slug === plan.product_slug);
+    const pricing = {};
+    for (const p of (plan.periods ?? []).filter((p) => !p.is_hidden_from_ui)) {
+      pricing[`${p.months}m`] = {
+        effective_monthly: p.effective_monthly,
+        setup_fee:         p.setup_fee,
+        total_period:      p.total_period_cost,
+      };
+    }
+    return {
+      plan_slug:            plan.product_slug,
+      plan_rank:            plan.plan_rank,
+      plan_family_rank:     plan.plan_family_rank,
+      family:               plan.family,
+      product_name:         plan.product_name,
+      cpu_count:            plan.specs_parsed?.cpu_count            ?? null,
+      ram_gb:               plan.specs_parsed?.ram_gb               ?? null,
+      storage_primary_gb:   plan.specs_parsed?.storage_primary_gb   ?? null,
+      storage_primary_type: plan.specs_parsed?.storage_primary_type ?? null,
+      port_speed_mbps:      plan.specs_parsed?.port_speed_mbps      ?? null,
+      base_monthly_eur:     plan.base_monthly_price,
+      default_monthly_eur:  config?.default_monthly_by_period?.['1'] ?? plan.base_monthly_price,
+      pricing,
+      url:        plan.product_url,
+      fetched_at: plan.fetched_at,
+    };
+  });
+  return { generated_at: generatedAt, plans };
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -776,6 +810,15 @@ async function main() {
     write('contabo_pricing_dataset.json', dataset);
     write('contabo_gap_report.json', gapReport);
     write('contabo_gap_summary.json', gapSummary);
+    write('contabo_dimension_schema.json', {
+      schema_version: SCHEMA_VERSION,
+      description: 'Selection rules for Contabo plan configurator dimensions. ' +
+        'selection_type "single" = pick exactly one option; ' +
+        '"grouped_single" = dimension contains independent categories, each single-select.',
+      generated_at: dataset.generated_at,
+      dimensions: DIMENSION_META,
+    });
+    write('contabo_quick_reference.json', buildQuickReference(basePlans, planConfigs, dataset.generated_at));
   }
 
   // ─── Write CSV: base plans ────────────────────────────────────────────────
