@@ -10,7 +10,7 @@ use serde_json::{json, Map, Value};
 use tokio::sync::{Mutex, Semaphore};
 use tokio::time::{sleep, Duration};
 
-const VERSION: &str = "2.0.0";
+const VERSION: &str = "2.1.1";
 const SCHEMA_VERSION: &str = "1.1";
 
 // Exit codes

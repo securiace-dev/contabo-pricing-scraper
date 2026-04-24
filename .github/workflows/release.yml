@@ -16,14 +16,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Linux static binaries (musl = no glibc version dependency)
+          # Linux static binaries via zigbuild (zig ships musl headers for all arches)
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
             artifact: contabo-scraper-linux-x86_64
+            use_zigbuild: true
 
           - target: aarch64-unknown-linux-musl
             os: ubuntu-latest
             artifact: contabo-scraper-linux-arm64
+            use_zigbuild: true
 
           # macOS — Intel + Apple Silicon
           - target: x86_64-apple-darwin
@@ -47,19 +49,20 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      # musl cross-compilation toolchains (Linux only)
-      - name: Install musl tools (x86_64)
-        if: matrix.target == 'x86_64-unknown-linux-musl'
-        run: sudo apt-get install -y musl-tools
+      # zigbuild for Linux musl targets — zig includes musl libc headers for all arches,
+      # avoiding the glibc/musl ABI mismatch that breaks aarch64-linux-gnu-gcc linking.
+      - name: Install cargo-zigbuild
+        if: matrix.use_zigbuild == true
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-zigbuild
 
-      - name: Install musl tools (aarch64)
-        if: matrix.target == 'aarch64-unknown-linux-musl'
-        run: |
-          sudo apt-get install -y gcc-aarch64-linux-gnu
-          echo '[target.aarch64-unknown-linux-musl]' >> ~/.cargo/config.toml
-          echo 'linker = "aarch64-linux-gnu-gcc"' >> ~/.cargo/config.toml
+      - name: Build release binary (zigbuild)
+        if: matrix.use_zigbuild == true
+        run: cargo zigbuild --release --target ${{ matrix.target }}
 
       - name: Build release binary
+        if: matrix.use_zigbuild != true
         run: cargo build --release --target ${{ matrix.target }}
 
       # Rename and strip (non-Windows)
