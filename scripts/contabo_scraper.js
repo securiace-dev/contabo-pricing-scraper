@@ -36,6 +36,9 @@ const ALL_PLAN_URLS = [
 
 // ─── Classification tables ────────────────────────────────────────────────────
 
+// ISO 3166-1 alpha-2 codes for Asia sub-regions (string-slicing would produce wrong codes, e.g. "JA" for Japan)
+const ASIA_ISO_CODES = { India: 'IN', Japan: 'JP', Singapore: 'SG', Korea: 'KR', Taiwan: 'TW' };
+
 const REGION_RULES = [
   [/^European Union$/i,           { region_group: 'Europe',    country: 'European Union',   country_code: 'EU' }],
   [/^United Kingdom$/i,           { region_group: 'Europe',    country: 'United Kingdom',   country_code: 'UK' }],
@@ -43,7 +46,7 @@ const REGION_RULES = [
   [/^Canada/i,                    { region_group: 'America',   country: 'Canada',            country_code: 'CA' }],
   [/^United States \(([^)]+)\)$/i, (m) => ({ region_group: 'America', country: `United States (${m[1]})`, country_code: 'US', subregion: m[1] })],
   [/^United States$/i,            { region_group: 'America',   country: 'United States',     country_code: 'US' }],
-  [/^Asia \(([^)]+)\)$/i,        (m) => ({ region_group: 'Asia',    country: m[1], country_code: m[1].slice(0, 2).toUpperCase() })],
+  [/^Asia \(([^)]+)\)$/i,        (m) => ({ region_group: 'Asia', country: m[1], country_code: ASIA_ISO_CODES[m[1]] ?? m[1].slice(0, 2).toUpperCase() })],
   [/^Australia \(([^)]+)\)$/i,    { region_group: 'Australia', country: 'Australia',         country_code: 'AU' }],
   [/^Australia$/i,                { region_group: 'Australia', country: 'Australia',         country_code: 'AU' }],
 ];
@@ -476,6 +479,7 @@ async function processPlan(url, html, gapReport) {
     const priced = monthlyPriceForPeriod(product.price?.EUR ?? 0, period);
     return {
       months: period.length,
+      is_hidden_from_ui: period.length === 3,
       ...priced,
     };
   });
@@ -547,6 +551,15 @@ async function processPlan(url, html, gapReport) {
   const finalOptions = Array.from(dedup.values()).sort((a, b) =>
     [a.dimension, a.category, a.option_label].join('|').localeCompare([b.dimension, b.category, b.option_label].join('|')),
   );
+
+  // VDS storage default guard — checked after all default-marking is complete
+  if (product.type === 'vds') {
+    const ok = finalOptions.some((item) => item.dimension === 'Storage' && item.is_default === true);
+    if (!ok) {
+      process.stderr.write(`  WARN   ${product.slug}: no default Storage option — storageSpec.title may not match any addon label\n`);
+      gapReport.push({ plan_sku: product.slug, gap: 'missing_storage_default' });
+    }
+  }
 
   const byDimension = Object.create(null);
   for (const item of finalOptions) {
