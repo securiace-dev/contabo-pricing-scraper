@@ -51,6 +51,24 @@ const REGION_RULES = [
   [/^Australia$/i,                { region_group: 'Australia', country: 'Australia',         country_code: 'AU' }],
 ];
 
+// Describes selection rules for each configurator dimension. Used to produce
+// dimension_schema.json and to help AI agents build valid plan configurations.
+const DIMENSION_META = {
+  Region:            { selection_type: 'single',         required: true  },
+  'Storage Type':    { selection_type: 'single',         required: true  },
+  Storage:           { selection_type: 'single',         required: true  },
+  'Data Protection': { selection_type: 'single',         required: false },
+  Networking: {
+    selection_type: 'grouped_single', required: true,
+    categories: {
+      Bandwidth:            { selection_type: 'single', required: true },
+      IPv4:                 { selection_type: 'single', required: true },
+      'Private Networking': { selection_type: 'single', required: true },
+    },
+  },
+  Image:             { selection_type: 'single',         required: true  },
+};
+
 const IGNORE_TITLE_PATTERNS = [
   /^cPanel\/WHM \((?!5 accounts\))/i,
   /Object Storage/i,
@@ -288,6 +306,32 @@ function normalizeStorageLabel(label) {
     .trim();
 }
 
+// ─── Spec parsers ─────────────────────────────────────────────────────────────
+
+function parseCpuCount(str) {
+  // Matches: "4 vCPU Cores", "4 Cores", "3 Physical Cores"
+  const m = (str ?? '').match(/^(\d+)\s+(?:vCPU\s+|Physical\s+)?Cores?/i);
+  return m ? Number(m[1]) : null;
+}
+
+function parseRamGb(str) {
+  const m = (str ?? '').match(/^(\d+(?:\.\d+)?)\s*GB/i);
+  return m ? Number(m[1]) : null;
+}
+
+function parsePortSpeedMbps(str) {
+  const mM = (str ?? '').match(/^(\d+(?:\.\d+)?)\s*Mbit\/s/i);
+  if (mM) return Number(mM[1]);
+  const mG = (str ?? '').match(/^(\d+(?:\.\d+)?)\s*Gbit\/s/i);
+  return mG ? Math.round(Number(mG[1]) * 1000) : null;
+}
+
+function parseStorageGb(str) {
+  const m = (str ?? '').match(/^(\d+(?:\.\d+)?)\s*(GB|TB)/i);
+  if (!m) return null;
+  return m[2].toUpperCase() === 'TB' ? Math.round(Number(m[1]) * 1000) : Number(m[1]);
+}
+
 function monthlyPriceForPeriod(baseMonthly, period) {
   if (!period) return null;
   const discountEUR = period.discount?.EUR ?? 0;
@@ -475,6 +519,15 @@ async function processPlan(url, html, gapReport) {
   const family = familyFromProduct(product);
   const storageSpec = (product.specs ?? []).find((s) => s.type === 'storage');
 
+  const plan_rank = ALL_PLAN_URLS.indexOf(url) + 1;
+  const plan_family_rank = ALL_PLAN_URLS
+    .filter((u) => { const s = slugFromUrl(u);
+      if (family === 'Cloud VPS')   return s.startsWith('cloud-vps-');
+      if (family === 'Storage VPS') return s.startsWith('storage-vps-');
+      if (family === 'Cloud VDS')   return s.startsWith('vds-');
+      return false; })
+    .indexOf(url) + 1;
+
   const periods = (product.periods ?? []).map((period) => {
     const priced = monthlyPriceForPeriod(product.price?.EUR ?? 0, period);
     return {
@@ -486,6 +539,8 @@ async function processPlan(url, html, gapReport) {
 
   const basePlan = {
     family,
+    plan_rank,
+    plan_family_rank,
     product_name: product.title,
     product_slug: product.slug,
     product_url: url,
@@ -509,6 +564,13 @@ async function processPlan(url, html, gapReport) {
     port: (product.specs ?? []).find((s) => s.type === 'port')?.title ?? '',
     base_monthly_price: product.price?.EUR ?? 0,
     periods,
+    specs_parsed: {
+      cpu_count:           parseCpuCount((product.specs ?? []).find((s) => s.type === 'cpu')?.title),
+      ram_gb:              parseRamGb((product.specs ?? []).find((s) => s.type === 'ram')?.title),
+      port_speed_mbps:     parsePortSpeedMbps((product.specs ?? []).find((s) => s.type === 'port')?.title),
+      storage_primary_gb:  parseStorageGb(storageSpec?.title),
+      storage_primary_type: /NVMe/i.test(storageSpec?.title ?? '') ? 'NVMe' : 'SSD',
+    },
     password_rules: extractPasswordRules(html),
     source: 'sapper',
   };
@@ -552,6 +614,24 @@ async function processPlan(url, html, gapReport) {
     [a.dimension, a.category, a.option_label].join('|').localeCompare([b.dimension, b.category, b.option_label].join('|')),
   );
 
+  // Compute default config price per period (base monthly after discount + all zero-delta defaults)
+  const defaultOptionsDelta = finalOptions
+    .filter((o) => o.is_default).reduce((s, o) => s + (o.monthly_price_delta ?? 0), 0);
+  const defaultSetupDelta = finalOptions
+    .filter((o) => o.is_default).reduce((s, o) => s + (o.setup_fee_delta ?? 0), 0);
+  const default_monthly_by_period = {};
+  const default_setup_by_period   = {};
+  for (const p of periods) {
+    const raw = (product.periods ?? []).find((pp) => pp.length === p.months);
+    const discEUR  = raw?.discount?.EUR  ?? 0;
+    const setupEUR = raw?.setup?.EUR     ?? 0;
+    const baseMonthly = product.price?.EUR ?? 0;
+    default_monthly_by_period[String(p.months)] =
+      Number((baseMonthly - discEUR / p.months + defaultOptionsDelta).toFixed(2));
+    default_setup_by_period[String(p.months)] =
+      Number((setupEUR + defaultSetupDelta).toFixed(2));
+  }
+
   // VDS storage default guard — checked after all default-marking is complete
   if (product.type === 'vds') {
     const ok = finalOptions.some((item) => item.dimension === 'Storage' && item.is_default === true);
@@ -576,6 +656,8 @@ async function processPlan(url, html, gapReport) {
     contract_periods: periods,
     options: byDimension,
     password_rules: basePlan.password_rules,
+    default_monthly_by_period,
+    default_setup_by_period,
     order_summary_default: {
       monthly: product.price?.EUR ?? 0,
       one_time: product.periods?.[0]?.setup?.EUR ?? 0,
@@ -736,14 +818,14 @@ async function main() {
   const optCsvHeader = [
     'plan_sku', 'dimension', 'category', 'option_label',
     'monthly_price_delta', 'setup_fee_delta',
-    'region_group', 'country', 'subregion', 'is_default', 'currency',
+    'region_group', 'country', 'country_code', 'subregion', 'is_default', 'currency',
   ];
   const optCsvRows = [
     optCsvHeader,
     ...optionCatalog.map((item) => [
       item.plan_sku, item.dimension, item.category, item.option_label,
       item.monthly_price_delta ?? 0, item.setup_fee_delta ?? 0,
-      item.region_group ?? '', item.country ?? '', item.subregion ?? '',
+      item.region_group ?? '', item.country ?? '', item.country_code ?? '', item.subregion ?? '',
       item.is_default ? 'true' : 'false', item.currency,
     ]),
   ];
