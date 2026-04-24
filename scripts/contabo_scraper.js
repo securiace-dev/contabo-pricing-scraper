@@ -71,6 +71,15 @@ const IGNORE_TITLE_PATTERNS = [
 
 // ─── CLI ─────────────────────────────────────────────────────────────────────
 
+function requireArgValue(args, i, flag) {
+  const val = args[i];
+  if (val === undefined || val.startsWith('-')) {
+    process.stderr.write(`Error: ${flag} requires a value\n`);
+    process.exit(EXIT_ERROR);
+  }
+  return val;
+}
+
 function parseArgs(argv) {
   const args = argv.slice(2);
   const opts = {
@@ -92,10 +101,10 @@ function parseArgs(argv) {
       case '--quiet':       case '-q': opts.quiet   = true; break;
       case '--json':        case '-j': opts.json    = true; break;
       case '--dry-run':               opts.dryRun   = true; break;
-      case '--output':      case '-o': opts.output      = path.resolve(args[++i] ?? ''); break;
-      case '--concurrency': case '-c': opts.concurrency = Math.max(1, parseInt(args[++i], 10) || 4); break;
-      case '--retries':     case '-r': opts.retries     = Math.max(0, parseInt(args[++i], 10) || 3); break;
-      case '--plans':       case '-p': opts.plans       = (args[++i] ?? '').split(',').map((s) => s.trim()).filter(Boolean); break;
+      case '--output':      case '-o': opts.output      = path.resolve(requireArgValue(args, ++i, arg)); break;
+      case '--concurrency': case '-c': opts.concurrency = Math.max(1, parseInt(requireArgValue(args, ++i, arg), 10) || 4); break;
+      case '--retries':     case '-r': opts.retries     = Math.max(0, parseInt(requireArgValue(args, ++i, arg), 10) || 3); break;
+      case '--plans':       case '-p': opts.plans       = requireArgValue(args, ++i, arg).split(',').map((s) => s.trim()).filter(Boolean); break;
     }
   }
   return opts;
@@ -280,8 +289,8 @@ function monthlyPriceForPeriod(baseMonthly, period) {
   if (!period) return null;
   const discountEUR = period.discount?.EUR ?? 0;
   const setupEUR   = period.setup?.EUR ?? 0;
-  // Total cost over the period divided by months gives effective monthly rate.
-  // We include the setup amortized, matching Contabo's own "effective monthly" display.
+  // effective_monthly = recurring monthly rate after discount (matches Contabo's UI display).
+  // setup_fee is one-time and shown separately; total_period_cost = months + setup - discount.
   const total = baseMonthly * period.length - discountEUR + setupEUR;
   const effective = (baseMonthly * period.length - discountEUR) / period.length;
   return {
@@ -349,9 +358,10 @@ function classifyAddon(addon, product, html) {
     return { action: 'include', dimension: 'Networking', category: 'Bandwidth', option_label: title, ...delta };
   }
 
-  // IPv4
+  // IPv4 — normalize Contabo's "IP adress" typo in emitted labels
   if (/IP Address|IP adress/i.test(title)) {
-    return { action: 'include', dimension: 'Networking', category: 'IPv4', option_label: title, ...delta };
+    const option_label = title.replace(/\bIP adress\b/gi, 'IP Address');
+    return { action: 'include', dimension: 'Networking', category: 'IPv4', option_label, ...delta };
   }
 
   // OS images
@@ -370,8 +380,9 @@ function classifyAddon(addon, product, html) {
   ];
   if (panelPatterns.some((p) => p.test(title))) {
     let option_label = title;
-    if (/^Plesk Obsidian Web Admin Edition$/i.test(title)) option_label = 'Plesk + Linux';
-    if (/^Webmin$/i.test(title))                           option_label = 'Webmin';
+    const pleskMd = title.match(/^Plesk Obsidian Web (Admin|Pro|Host) Edition$/i);
+    if (pleskMd) option_label = `Plesk ${pleskMd[1]} Edition`;
+    if (/^Webmin$/i.test(title)) option_label = 'Webmin';
     return { action: 'include', dimension: 'Image', category: 'Panels', option_label, ...delta };
   }
 
@@ -414,7 +425,7 @@ function injectDefaults(product, html, classified) {
 
   const storageSpec = (product.specs ?? []).find((s) => s.type === 'storage');
   if (storageSpec) {
-    const primary = normalizeStorageLabel((storageSpec.title ?? '').replace(/ SSD$/, ' SSD'));
+    const primary = normalizeStorageLabel(storageSpec.title ?? '');
     if (primary) {
       add({ ...base,
         dimension: product.type === 'vds' ? 'Storage' : 'Storage Type',
@@ -703,7 +714,7 @@ async function main() {
   if (!opts.dryRun) {
     fs.writeFileSync(
       path.join(opts.output, 'contabo_base_plans.csv'),
-      baseCsvRows.map((row) => row.map(escapeCsv).join(',')).join('\n'),
+      baseCsvRows.map((row) => row.map(escapeCsv).join(',')).join('\n') + '\n',
       'utf8',
     );
   }
@@ -712,21 +723,21 @@ async function main() {
   const optCsvHeader = [
     'plan_sku', 'dimension', 'category', 'option_label',
     'monthly_price_delta', 'setup_fee_delta',
-    'region_group', 'country', 'is_default', 'currency',
+    'region_group', 'country', 'subregion', 'is_default', 'currency',
   ];
   const optCsvRows = [
     optCsvHeader,
     ...optionCatalog.map((item) => [
       item.plan_sku, item.dimension, item.category, item.option_label,
       item.monthly_price_delta ?? 0, item.setup_fee_delta ?? 0,
-      item.region_group ?? '', item.country ?? '',
+      item.region_group ?? '', item.country ?? '', item.subregion ?? '',
       item.is_default ? 'true' : 'false', item.currency,
     ]),
   ];
   if (!opts.dryRun) {
     fs.writeFileSync(
       path.join(opts.output, 'contabo_option_catalog.csv'),
-      optCsvRows.map((row) => row.map(escapeCsv).join(',')).join('\n'),
+      optCsvRows.map((row) => row.map(escapeCsv).join(',')).join('\n') + '\n',
       'utf8',
     );
   }
