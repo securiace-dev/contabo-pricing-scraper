@@ -1,0 +1,145 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux static binaries (musl = no glibc version dependency)
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            artifact: contabo-scraper-linux-x86_64
+
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+            artifact: contabo-scraper-linux-arm64
+
+          # macOS — Intel + Apple Silicon
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            artifact: contabo-scraper-macos-x86_64
+
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            artifact: contabo-scraper-macos-arm64
+
+          # Windows
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            artifact: contabo-scraper-windows-x86_64.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # musl cross-compilation toolchains (Linux only)
+      - name: Install musl tools (x86_64)
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        run: sudo apt-get install -y musl-tools
+
+      - name: Install musl tools (aarch64)
+        if: matrix.target == 'aarch64-unknown-linux-musl'
+        run: |
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+          echo '[target.aarch64-unknown-linux-musl]' >> ~/.cargo/config.toml
+          echo 'linker = "aarch64-linux-gnu-gcc"' >> ~/.cargo/config.toml
+
+      - name: Build release binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      # Rename and strip (non-Windows)
+      - name: Stage artifact (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cp target/${{ matrix.target }}/release/contabo-scraper ${{ matrix.artifact }}
+          chmod +x ${{ matrix.artifact }}
+
+      - name: Stage artifact (Windows)
+        if: runner.os == 'Windows'
+        run: copy target\${{ matrix.target }}\release\contabo-scraper.exe ${{ matrix.artifact }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create checksums
+        run: |
+          cd artifacts
+          sha256sum * > SHA256SUMS.txt
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body: |
+            ## contabo-scraper ${{ github.ref_name }}
+
+            Single-binary release. No runtime dependencies — just download and run.
+
+            ### Install
+
+            **macOS (Apple Silicon)**
+            ```bash
+            curl -L https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/contabo-scraper-macos-arm64 -o contabo-scraper
+            chmod +x contabo-scraper
+            ./contabo-scraper --help
+            ```
+
+            **macOS (Intel)**
+            ```bash
+            curl -L https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/contabo-scraper-macos-x86_64 -o contabo-scraper
+            chmod +x contabo-scraper && ./contabo-scraper --help
+            ```
+
+            **Linux (x86_64)**
+            ```bash
+            curl -L https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/contabo-scraper-linux-x86_64 -o contabo-scraper
+            chmod +x contabo-scraper && ./contabo-scraper --help
+            ```
+
+            **Windows**
+            Download `contabo-scraper-windows-x86_64.exe`, rename to `contabo-scraper.exe`, run from terminal.
+
+            ### Usage
+            ```bash
+            ./contabo-scraper                           # scrape all 16 plans
+            ./contabo-scraper --concurrency 8           # faster
+            ./contabo-scraper --plans cloud-vps-10,vds-s
+            ./contabo-scraper --json --quiet            # AI agent / pipeline mode
+            ```
+
+            Verify with `SHA256SUMS.txt`.
+          files: |
+            artifacts/*
+          draft: false
+          prerelease: false
