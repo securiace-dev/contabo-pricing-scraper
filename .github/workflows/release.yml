@@ -49,8 +49,15 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      # zigbuild for Linux musl targets — zig includes musl libc headers for all arches,
-      # avoiding the glibc/musl ABI mismatch that breaks aarch64-linux-gnu-gcc linking.
+      # zigbuild for Linux musl targets — zig ships built-in musl libc headers for
+      # all arches, avoiding the glibc/musl ABI mismatch that breaks standard
+      # cross-linkers (aarch64-linux-gnu-gcc references __vsnprintf_chk etc.).
+      - name: Install Zig
+        if: matrix.use_zigbuild == true
+        uses: mlugg/setup-zig@v2
+        with:
+          version: latest
+
       - name: Install cargo-zigbuild
         if: matrix.use_zigbuild == true
         uses: taiki-e/install-action@v2
