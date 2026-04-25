@@ -14,11 +14,10 @@ if (!fs.existsSync(QR_PATH)) {
   process.exit(0);
 }
 
-const data    = JSON.parse(fs.readFileSync(QR_PATH, 'utf8'));
-const plans   = data.plans;
-const genAt   = data.generated_at;
+const data  = JSON.parse(fs.readFileSync(QR_PATH, 'utf8'));
+const plans = data.plans;
+const genAt = data.generated_at;
 
-// ── Load option catalog ──────────────────────────────────────────────────────
 let optionCatalog = [];
 if (fs.existsSync(DATASET_PATH)) {
   try {
@@ -27,160 +26,129 @@ if (fs.existsSync(DATASET_PATH)) {
   } catch { /* graceful: no addons if file is malformed */ }
 }
 
-// ── Build family → dimension → deduped options (label-key, price range) ──────
-// Dedup by label only so options with different per-plan pricing collapse to
-// a single row showing the price range (e.g. Windows: +€7.50–€70.00).
-const slugToFamily = {};
-for (const p of plans) slugToFamily[p.plan_slug] = p.family;
+// ── Build per-plan addon map: slug → dimension → sorted options[] ─────────────
+// "No X" default options (pure negation rows) are stripped — they add noise.
+const NEGATION_DEFAULTS = new Set([
+  'No Data Protection', 'No Backup Space', 'No Private Networking',
+]);
 
-// Storage Type omitted: base plan table already shows each plan's storage spec.
-// Storage (VDS only) is kept as it shows real upgrade tiers with pricing.
-const DIM_ORDER = ['Image', 'Region', 'Networking', 'Data Protection', 'Storage'];
-
-const familyAddons = {};
+const planAddons = {};
 for (const opt of optionCatalog) {
-  const family = slugToFamily[opt.plan_sku];
-  if (!family) continue;
-  familyAddons[family] ??= {};
-  familyAddons[family][opt.dimension] ??= new Map();
-  const delta = opt.monthly_price_delta ?? 0;
-  const key   = opt.option_label;                       // label-only key
-  if (!familyAddons[family][opt.dimension].has(key)) {
-    familyAddons[family][opt.dimension].set(key, {
-      label:       opt.option_label,
-      category:    opt.category,
-      deltaMin:    delta,
-      deltaMax:    delta,
-      isDefault:   !!opt.is_default,
-      regionGroup: opt.region_group || null,
-    });
-  } else {
-    const e = familyAddons[family][opt.dimension].get(key);
-    e.deltaMin = Math.min(e.deltaMin, delta);
-    e.deltaMax = Math.max(e.deltaMax, delta);
-    if (opt.is_default) e.isDefault = true;
-  }
+  if (opt.dimension === 'Storage Type') continue;          // redundant with base table
+  if (NEGATION_DEFAULTS.has(opt.option_label)) continue;  // strip "No X" noise
+  const slug = opt.plan_sku;
+  planAddons[slug] ??= {};
+  planAddons[slug][opt.dimension] ??= [];
+  planAddons[slug][opt.dimension].push({
+    label:       opt.option_label,
+    category:    opt.category,
+    delta:       opt.monthly_price_delta ?? 0,
+    isDefault:   !!opt.is_default,
+    regionGroup: opt.region_group || null,
+  });
 }
 
-// Sort each dimension's options: defaults first, then deltaMin asc, then alpha
-for (const family of Object.keys(familyAddons)) {
-  for (const dim of Object.keys(familyAddons[family])) {
-    const arr = [...familyAddons[family][dim].values()];
-    arr.sort((a, b) => {
+// Sort each dimension: defaults first, then delta asc, then alpha
+for (const slug of Object.keys(planAddons)) {
+  for (const dim of Object.keys(planAddons[slug])) {
+    planAddons[slug][dim].sort((a, b) => {
       if (a.isDefault !== b.isDefault) return a.isDefault ? -1 : 1;
-      if (a.deltaMin !== b.deltaMin) return a.deltaMin - b.deltaMin;
+      if (a.delta !== b.delta)         return a.delta - b.delta;
       return a.label.localeCompare(b.label);
     });
-    familyAddons[family][dim] = arr;
   }
 }
 
-// ── Price formatting ──────────────────────────────────────────────────────────
-function fmtDelta(min, max) {
-  if (min === 0 && max === 0) return 'included';
-  if (min === max)            return `+€${min.toFixed(2)}`;
-  if (min === 0)              return `included – +€${max.toFixed(2)}`;
-  return `+€${min.toFixed(2)}–€${max.toFixed(2)}`;
-}
+// ── Formatters ────────────────────────────────────────────────────────────────
+const eur   = (v) => (v != null && v !== '') ? `€${Number(v).toFixed(2)}` : '—';
+const epd   = (pricing, period) => eur(pricing?.[period]?.effective_monthly);
+const delta = (d) => d === 0 ? 'free' : `+€${d.toFixed(2)}`;
+const lbl   = (o) => o.isDefault ? `${o.label} *(default)*` : o.label;
 
-function lbl(o) {
-  return o.isDefault ? `${o.label} *(default)*` : o.label;
-}
-
-// ── Render add-on <details> block for one family ──────────────────────────────
-function renderAddons(family) {
-  const addons = familyAddons[family];
+// ── Render per-plan addon table ───────────────────────────────────────────────
+function renderPlanAddons(slug) {
+  const addons = planAddons[slug];
   if (!addons) return [];
-  if (!DIM_ORDER.some((d) => addons[d]?.length > 0)) return [];
 
-  const out = [''];
-  out.push('<details>');
-  out.push(`<summary>📦 Add-ons — ${family}</summary>`);
-  out.push('');
+  const rows = [];
+  rows.push('| Add-on | +Monthly |');
+  rows.push('|--------|----------|');
 
-  for (const dim of DIM_ORDER) {
-    const opts = addons[dim];
-    if (!opts || opts.length === 0) continue;
-
-    out.push(`### ${dim === 'Image' ? 'Image / Operating System' : dim}`);
-    out.push('');
-
-    if (dim === 'Image') {
-      const CAT_ORDER = ['OS', 'Apps', 'Panels', 'Blockchain'];
-      out.push('| Option | Type | +Monthly |');
-      out.push('|--------|------|----------|');
-      const rendered = new Set();
-      for (const cat of CAT_ORDER) {
-        for (const o of opts.filter((x) => x.category === cat)) {
-          out.push(`| ${lbl(o)} | ${cat} | ${fmtDelta(o.deltaMin, o.deltaMax)} |`);
-          rendered.add(o.label);
-        }
-      }
-      for (const o of opts) {
-        if (!rendered.has(o.label)) {
-          out.push(`| ${lbl(o)} | ${o.category} | ${fmtDelta(o.deltaMin, o.deltaMax)} |`);
-        }
-      }
-
-    } else if (dim === 'Region') {
-      const GRP_ORDER = ['Europe', 'America', 'Asia', 'Australia', 'Other'];
-      const groups = {};
-      for (const o of opts) {
-        const g = o.regionGroup || 'Other';
-        (groups[g] = groups[g] || []).push(o);
-      }
-      out.push('| Region | Group | +Monthly |');
-      out.push('|--------|-------|----------|');
-      for (const grp of GRP_ORDER) {
-        for (const o of (groups[grp] || [])) {
-          out.push(`| ${lbl(o)} | ${grp} | ${fmtDelta(o.deltaMin, o.deltaMax)} |`);
-        }
-      }
-
-    } else if (dim === 'Networking') {
-      const NET_ORDER = ['Bandwidth', 'IPv4', 'Private Networking'];
-      out.push('| Option | Sub-type | +Monthly |');
-      out.push('|--------|----------|----------|');
-      const rendered = new Set();
-      for (const cat of NET_ORDER) {
-        for (const o of opts.filter((x) => x.category === cat)) {
-          out.push(`| ${lbl(o)} | ${cat} | ${fmtDelta(o.deltaMin, o.deltaMax)} |`);
-          rendered.add(o.label);
-        }
-      }
-      for (const o of opts) {
-        if (!rendered.has(o.label)) {
-          out.push(`| ${lbl(o)} | ${o.category} | ${fmtDelta(o.deltaMin, o.deltaMax)} |`);
-        }
-      }
-
-    } else {
-      // Generic: Data Protection, Storage Type, Storage
-      out.push('| Option | +Monthly |');
-      out.push('|--------|----------|');
-      for (const o of opts) {
-        out.push(`| ${lbl(o)} | ${fmtDelta(o.deltaMin, o.deltaMax)} |`);
-      }
+  // Image: OS → Apps → Panels → Blockchain
+  const imgOpts = addons['Image'] || [];
+  if (imgOpts.length > 0) {
+    const CAT_ORDER = [
+      ['OS',         'Operating System'],
+      ['Apps',       'Apps'],
+      ['Panels',     'Control Panels'],
+      ['Blockchain', 'Blockchain'],
+    ];
+    const seen = new Set();
+    for (const [cat, label] of CAT_ORDER) {
+      const items = imgOpts.filter((o) => o.category === cat);
+      if (items.length === 0) continue;
+      rows.push(`| **${label}** | |`);
+      for (const o of items) { rows.push(`| ${lbl(o)} | ${delta(o.delta)} |`); seen.add(o.label); }
     }
-
-    out.push('');
+    // catch-all for any unexpected categories
+    const leftover = imgOpts.filter((o) => !seen.has(o.label));
+    if (leftover.length > 0) {
+      rows.push('| **Other Images** | |');
+      for (const o of leftover) rows.push(`| ${lbl(o)} | ${delta(o.delta)} |`);
+    }
   }
 
-  out.push('</details>');
-  return out;
+  // Region: grouped Europe → America → Asia → Australia
+  const regionOpts = addons['Region'] || [];
+  if (regionOpts.length > 0) {
+    rows.push('| **Region** | |');
+    const GRP_ORDER = ['Europe', 'America', 'Asia', 'Australia', 'Other'];
+    const grouped   = {};
+    for (const o of regionOpts) {
+      const g = o.regionGroup || 'Other';
+      (grouped[g] ??= []).push(o);
+    }
+    for (const grp of GRP_ORDER) {
+      for (const o of (grouped[grp] || [])) rows.push(`| ${lbl(o)} | ${delta(o.delta)} |`);
+    }
+  }
+
+  // Networking: Bandwidth → IPv4 → Private Networking
+  const netOpts = addons['Networking'] || [];
+  if (netOpts.length > 0) {
+    rows.push('| **Networking** | |');
+    const NET_ORDER = ['Bandwidth', 'IPv4', 'Private Networking'];
+    const grouped   = {};
+    for (const o of netOpts) (grouped[o.category || 'Other'] ??= []).push(o);
+    for (const cat of NET_ORDER) {
+      for (const o of (grouped[cat] || [])) rows.push(`| ${lbl(o)} | ${delta(o.delta)} |`);
+    }
+  }
+
+  // Data Protection (only paid rows have real value; defaults already stripped above)
+  const dpOpts = addons['Data Protection'] || [];
+  if (dpOpts.length > 0) {
+    rows.push('| **Backup & Protection** | |');
+    for (const o of dpOpts) rows.push(`| ${lbl(o)} | ${delta(o.delta)} |`);
+  }
+
+  // Storage upgrades (VDS only)
+  const storageOpts = addons['Storage'] || [];
+  if (storageOpts.length > 0) {
+    rows.push('| **Storage Upgrade** | |');
+    for (const o of storageOpts) rows.push(`| ${lbl(o)} | ${delta(o.delta)} |`);
+  }
+
+  // Return nothing if we only have the header rows
+  return rows.length > 2 ? rows : [];
 }
 
 // ── Build families map ────────────────────────────────────────────────────────
 const families = {};
-for (const p of plans) {
-  (families[p.family] = families[p.family] || []).push(p);
-}
+for (const p of plans) (families[p.family] ??= []).push(p);
 
 // ── Render PRICES.md ──────────────────────────────────────────────────────────
-const eur = (pricing, period) => {
-  const v = pricing?.[period]?.effective_monthly;
-  return v != null ? `€${Number(v).toFixed(2)}` : '—';
-};
+const FAMILY_EMOJI = { 'Cloud VPS': '☁️', 'Storage VPS': '💾', 'Cloud VDS': '🖥️' };
 
 const lines = [
   '# Contabo Pricing',
@@ -191,28 +159,72 @@ const lines = [
 ];
 
 for (const [family, fplans] of Object.entries(families)) {
-  lines.push(`## ${family}`, '');
-  lines.push(
-    '| Plan | CPU | RAM | Storage | Port | 1 mo | 6 mo | 12 mo |',
-    '|------|-----|-----|---------|------|------|------|-------|',
-  );
-  for (const p of [...fplans].sort((a, b) => a.plan_family_rank - b.plan_family_rank)) {
+  const emoji  = FAMILY_EMOJI[family] || '';
+  const sorted = [...fplans].sort((a, b) => a.plan_family_rank - b.plan_family_rank);
+
+  lines.push(`## ${emoji} ${family}`, '');
+
+  // ── Overview comparison table ─────────────────────────────────────────────
+  lines.push('| Plan | vCPU | RAM | Storage | Port | 1 mo | 6 mo | 12 mo |');
+  lines.push('|------|------|-----|---------|------|------|------|-------|');
+  for (const p of sorted) {
     lines.push(
-      `| [${p.product_name}](${p.url}) ` +
-      `| ${p.cpu_count ?? '—'} vCPU ` +
-      `| ${p.ram_gb ?? '—'} GB ` +
-      `| ${p.storage_primary_gb ?? '—'} GB ${p.storage_primary_type ?? ''} ` +
-      `| ${p.port_speed_mbps ?? '—'} Mbps ` +
-      `| ${eur(p.pricing, '1m')} | ${eur(p.pricing, '6m')} | ${eur(p.pricing, '12m')} |`,
+      `| [${p.product_name}](${p.url})` +
+      ` | ${p.cpu_count ?? '—'}` +
+      ` | ${p.ram_gb ?? '—'} GB` +
+      ` | ${p.storage_primary_gb ?? '—'} GB ${p.storage_primary_type ?? ''}` +
+      ` | ${p.port_speed_mbps ?? '—'} Mbps` +
+      ` | ${epd(p.pricing, '1m')} | ${epd(p.pricing, '6m')} | ${epd(p.pricing, '12m')} |`,
     );
   }
-  lines.push(...renderAddons(family));
   lines.push('');
+
+  // ── Per-plan detail cards ─────────────────────────────────────────────────
+  for (const p of sorted) {
+    const p1m  = p.pricing?.['1m'];
+    const p6m  = p.pricing?.['6m'];
+    const p12m = p.pricing?.['12m'];
+
+    lines.push(`### [${p.product_name}](${p.url})`);
+    lines.push('');
+    lines.push(
+      `**${p.cpu_count ?? '—'} vCPU · ${p.ram_gb ?? '—'} GB RAM · ` +
+      `${p.storage_primary_gb ?? '—'} GB ${p.storage_primary_type ?? ''} · ` +
+      `${p.port_speed_mbps ?? '—'} Mbps**`,
+    );
+    lines.push('');
+
+    // Pricing table — include setup fee row only when at least one period charges it
+    const hasSetup = [p1m, p6m, p12m].some((x) => x?.setup_fee > 0);
+    lines.push('| | 1 Month | 6 Months | 12 Months |');
+    lines.push('|---|---------|----------|-----------|');
+    lines.push(
+      `| **Monthly** | ${eur(p1m?.effective_monthly)} | ${eur(p6m?.effective_monthly)} | **${eur(p12m?.effective_monthly)}** |`,
+    );
+    if (hasSetup) {
+      const sf = (x) => (x?.setup_fee > 0 ? eur(x.setup_fee) : '—');
+      lines.push(`| Setup fee | ${sf(p1m)} | ${sf(p6m)} | — |`);
+    }
+    lines.push(
+      `| Billed total | ${eur(p1m?.total_period)} | ${eur(p6m?.total_period)} | ${eur(p12m?.total_period)} |`,
+    );
+    lines.push('');
+
+    // Add-ons
+    if (optionCatalog.length > 0) {
+      const addonRows = renderPlanAddons(p.plan_slug);
+      if (addonRows.length > 0) {
+        lines.push(...addonRows);
+        lines.push('');
+      }
+    }
+
+    lines.push('---', '');
+  }
 }
 
 lines.push(
-  '---',
-  '*Prices in EUR, excl. VAT. Base prices include default add-ons (EU region, Ubuntu, 1 IP). Generated by [contabo-pricing-scraper](../../)*',
+  '*Prices in EUR, excl. VAT. Base prices at EU region, Ubuntu OS, 1 IP. Generated by [contabo-pricing-scraper](../../)*',
 );
 
 fs.writeFileSync(OUT_PATH, lines.join('\n') + '\n');
