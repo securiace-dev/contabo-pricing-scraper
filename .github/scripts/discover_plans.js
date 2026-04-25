@@ -101,9 +101,9 @@ async function main() {
     })
   );
 
-  const blocked = listingResults.every((r) => r.status === 'rejected');
-  if (blocked) {
-    console.error('Discovery blocked — all listing pages failed. Keeping existing catalog.');
+  const allFailed = listingResults.every((r) => r.status === 'rejected');
+  if (allFailed) {
+    console.error('Discovery blocked — all listing pages failed (network/WAF). Keeping existing catalog.');
     setOutput('changed', 'false');
     setOutput('added', '0');
     setOutput('removed', '0');
@@ -119,6 +119,35 @@ async function main() {
     if (r.status === 'fulfilled') {
       for (const p of r.value.plans) discovered.set(p.slug, p);
     }
+  }
+
+  // Safety: if we fetched pages but found 0 plan URLs, WAF likely returned a
+  // challenge page (200 with no matching hrefs). Treat as blocked — do not
+  // incorrectly mark all active plans as discontinued.
+  if (discovered.size === 0) {
+    console.error('Discovery yielded 0 plan URLs — listing pages may have returned a WAF challenge. Keeping existing catalog.');
+    setOutput('changed', 'false');
+    setOutput('added', '0');
+    setOutput('removed', '0');
+    setOutput('renamed', '0');
+    setOutput('plan_count', String(active.length));
+    setOutput('discovery_blocked', 'true');
+    return;
+  }
+
+  // Safety: never remove more than half the active catalog in one run.
+  // If the discovered set is suspiciously small, it likely reflects a partial
+  // WAF block rather than real discontinuations — bail out safely.
+  const wouldRemove = active.filter((p) => !discovered.has(p.slug)).length;
+  if (active.length > 0 && wouldRemove > active.length / 2) {
+    console.error(`Discovery would remove ${wouldRemove}/${active.length} active plans — looks like a partial WAF block. Keeping existing catalog.`);
+    setOutput('changed', 'false');
+    setOutput('added', '0');
+    setOutput('removed', '0');
+    setOutput('renamed', '0');
+    setOutput('plan_count', String(active.length));
+    setOutput('discovery_blocked', 'true');
+    return;
   }
 
   // Redirect check for active plans that aren't in discovered set
