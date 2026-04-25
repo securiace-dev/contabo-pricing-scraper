@@ -27,6 +27,8 @@ env:
   SCRAPER_RETRIES:     ${{ vars.SCRAPER_RETRIES     || '3' }}
   BINARY_VERSION:      ${{ vars.BINARY_VERSION       || 'latest' }}
   OUTPUT_DIR:          'data/output'
+  # Set RUNNER_TYPE to "self-hosted" in repo variables if GitHub-hosted IPs are blocked
+  RUNNER_TYPE:         ${{ vars.RUNNER_TYPE || 'ubuntu-latest' }}
 
 permissions:
   contents: write
@@ -34,7 +36,7 @@ permissions:
 jobs:
   scrape:
     name: Scrape & publish
-    runs-on: ubuntu-latest   # 1× minute multiplier (vs 10× macOS, 2× Windows)
+    runs-on: ${{ vars.RUNNER_TYPE || 'ubuntu-latest' }}
 
     steps:
       - uses: actions/checkout@v4

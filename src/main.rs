@@ -231,9 +231,16 @@ fn print_help() {
 async fn fetch_html(client: &reqwest::Client, url: &str) -> Result<String, String> {
     let res = client
         .get(url)
-        .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36")
+        .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+        .header("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
         .header("accept-language", "en-US,en;q=0.9")
-        .header("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+        .header("accept-encoding", "gzip, deflate, br")
+        .header("upgrade-insecure-requests", "1")
+        .header("sec-fetch-dest", "document")
+        .header("sec-fetch-mode", "navigate")
+        .header("sec-fetch-site", "none")
+        .header("sec-fetch-user", "?1")
+        .header("cache-control", "max-age=0")
         .send()
         .await
         .map_err(|e| e.to_string())?;
