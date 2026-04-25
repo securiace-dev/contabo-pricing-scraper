@@ -1,4 +1,533 @@
 {
-  "generated_at": "2026-04-25T07:39:16.630Z",
-  "plans": []
+  "generated_at": "2026-04-25T20:33:15.985Z",
+  "plans": [
+    {
+      "base_monthly_eur": 4.5,
+      "cpu_count": 4,
+      "default_monthly_eur": 4.5,
+      "family": "Cloud VPS",
+      "fetched_at": "2026-04-25T20:33:11.960Z",
+      "plan_family_rank": 1,
+      "plan_rank": 1,
+      "plan_slug": "cloud-vps-10",
+      "port_speed_mbps": 200,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 3.6,
+          "setup_fee": 0,
+          "total_period": 43.2
+        },
+        "1m": {
+          "effective_monthly": 4.5,
+          "setup_fee": 4.5,
+          "total_period": 9
+        },
+        "6m": {
+          "effective_monthly": 4.05,
+          "setup_fee": 2.25,
+          "total_period": 26.55
+        }
+      },
+      "product_name": "Cloud VPS 10",
+      "ram_gb": 8,
+      "storage_primary_gb": 75,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vps/cloud-vps-10/"
+    },
+    {
+      "base_monthly_eur": 7,
+      "cpu_count": 6,
+      "default_monthly_eur": 7,
+      "family": "Cloud VPS",
+      "fetched_at": "2026-04-25T20:33:15.966Z",
+      "plan_family_rank": 2,
+      "plan_rank": 2,
+      "plan_slug": "cloud-vps-20",
+      "port_speed_mbps": 300,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 5.6,
+          "setup_fee": 0,
+          "total_period": 67.2
+        },
+        "1m": {
+          "effective_monthly": 7,
+          "setup_fee": 0,
+          "total_period": 7
+        },
+        "6m": {
+          "effective_monthly": 6.3,
+          "setup_fee": 0,
+          "total_period": 37.8
+        }
+      },
+      "product_name": "Cloud VPS 20",
+      "ram_gb": 12,
+      "storage_primary_gb": 100,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vps/cloud-vps-20/"
+    },
+    {
+      "base_monthly_eur": 14,
+      "cpu_count": 8,
+      "default_monthly_eur": 14,
+      "family": "Cloud VPS",
+      "fetched_at": "2026-04-25T20:33:14.387Z",
+      "plan_family_rank": 3,
+      "plan_rank": 3,
+      "plan_slug": "cloud-vps-30",
+      "port_speed_mbps": 600,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 11.2,
+          "setup_fee": 0,
+          "total_period": 134.4
+        },
+        "1m": {
+          "effective_monthly": 14,
+          "setup_fee": 0,
+          "total_period": 14
+        },
+        "6m": {
+          "effective_monthly": 12.6,
+          "setup_fee": 0,
+          "total_period": 75.6
+        }
+      },
+      "product_name": "Cloud VPS 30",
+      "ram_gb": 24,
+      "storage_primary_gb": 200,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vps/cloud-vps-30/"
+    },
+    {
+      "base_monthly_eur": 25,
+      "cpu_count": 12,
+      "default_monthly_eur": 25,
+      "family": "Cloud VPS",
+      "fetched_at": "2026-04-25T20:33:14.344Z",
+      "plan_family_rank": 4,
+      "plan_rank": 4,
+      "plan_slug": "cloud-vps-40",
+      "port_speed_mbps": 800,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 20,
+          "setup_fee": 0,
+          "total_period": 240
+        },
+        "1m": {
+          "effective_monthly": 25,
+          "setup_fee": 0,
+          "total_period": 25
+        },
+        "6m": {
+          "effective_monthly": 22.5,
+          "setup_fee": 0,
+          "total_period": 135
+        }
+      },
+      "product_name": "Cloud VPS 40",
+      "ram_gb": 48,
+      "storage_primary_gb": 250,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vps/cloud-vps-40/"
+    },
+    {
+      "base_monthly_eur": 37,
+      "cpu_count": 16,
+      "default_monthly_eur": 37,
+      "family": "Cloud VPS",
+      "fetched_at": "2026-04-25T20:33:15.175Z",
+      "plan_family_rank": 5,
+      "plan_rank": 5,
+      "plan_slug": "cloud-vps-50",
+      "port_speed_mbps": 1000,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 29.6,
+          "setup_fee": 0,
+          "total_period": 355.2
+        },
+        "1m": {
+          "effective_monthly": 37,
+          "setup_fee": 0,
+          "total_period": 37
+        },
+        "6m": {
+          "effective_monthly": 33.3,
+          "setup_fee": 0,
+          "total_period": 199.8
+        }
+      },
+      "product_name": "Cloud VPS 50",
+      "ram_gb": 64,
+      "storage_primary_gb": 300,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vps/cloud-vps-50/"
+    },
+    {
+      "base_monthly_eur": 49,
+      "cpu_count": 18,
+      "default_monthly_eur": 49,
+      "family": "Cloud VPS",
+      "fetched_at": "2026-04-25T20:33:11.518Z",
+      "plan_family_rank": 6,
+      "plan_rank": 6,
+      "plan_slug": "cloud-vps-60",
+      "port_speed_mbps": 1000,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 39.2,
+          "setup_fee": 0,
+          "total_period": 470.4
+        },
+        "1m": {
+          "effective_monthly": 49,
+          "setup_fee": 0,
+          "total_period": 49
+        },
+        "6m": {
+          "effective_monthly": 44.1,
+          "setup_fee": 0,
+          "total_period": 264.6
+        }
+      },
+      "product_name": "Cloud VPS 60",
+      "ram_gb": 96,
+      "storage_primary_gb": 350,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vps/cloud-vps-60/"
+    },
+    {
+      "base_monthly_eur": 4.5,
+      "cpu_count": 2,
+      "default_monthly_eur": 4.5,
+      "family": "Storage VPS",
+      "fetched_at": "2026-04-25T20:33:10.924Z",
+      "plan_family_rank": 1,
+      "plan_rank": 7,
+      "plan_slug": "storage-vps-10",
+      "port_speed_mbps": 200,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 3.6,
+          "setup_fee": 0,
+          "total_period": 43.2
+        },
+        "1m": {
+          "effective_monthly": 4.5,
+          "setup_fee": 4.5,
+          "total_period": 9
+        },
+        "6m": {
+          "effective_monthly": 4.05,
+          "setup_fee": 2.25,
+          "total_period": 26.55
+        }
+      },
+      "product_name": "Storage VPS 10",
+      "ram_gb": 4,
+      "storage_primary_gb": 300,
+      "storage_primary_type": "SSD",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-10/"
+    },
+    {
+      "base_monthly_eur": 7,
+      "cpu_count": 3,
+      "default_monthly_eur": 7,
+      "family": "Storage VPS",
+      "fetched_at": "2026-04-25T20:33:11.435Z",
+      "plan_family_rank": 2,
+      "plan_rank": 8,
+      "plan_slug": "storage-vps-20",
+      "port_speed_mbps": 300,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 5.6,
+          "setup_fee": 0,
+          "total_period": 67.2
+        },
+        "1m": {
+          "effective_monthly": 7,
+          "setup_fee": 0,
+          "total_period": 7
+        },
+        "6m": {
+          "effective_monthly": 6.3,
+          "setup_fee": 0,
+          "total_period": 37.8
+        }
+      },
+      "product_name": "Storage VPS 20",
+      "ram_gb": 8,
+      "storage_primary_gb": 400,
+      "storage_primary_type": "SSD",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-20/"
+    },
+    {
+      "base_monthly_eur": 14,
+      "cpu_count": 6,
+      "default_monthly_eur": 14,
+      "family": "Storage VPS",
+      "fetched_at": "2026-04-25T20:33:12.342Z",
+      "plan_family_rank": 3,
+      "plan_rank": 9,
+      "plan_slug": "storage-vps-30",
+      "port_speed_mbps": 600,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 11.2,
+          "setup_fee": 0,
+          "total_period": 134.4
+        },
+        "1m": {
+          "effective_monthly": 14,
+          "setup_fee": 0,
+          "total_period": 14
+        },
+        "6m": {
+          "effective_monthly": 12.6,
+          "setup_fee": 0,
+          "total_period": 75.6
+        }
+      },
+      "product_name": "Storage VPS 30",
+      "ram_gb": 18,
+      "storage_primary_gb": 1000,
+      "storage_primary_type": "SSD",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-30/"
+    },
+    {
+      "base_monthly_eur": 25,
+      "cpu_count": 8,
+      "default_monthly_eur": 25,
+      "family": "Storage VPS",
+      "fetched_at": "2026-04-25T20:33:10.241Z",
+      "plan_family_rank": 4,
+      "plan_rank": 10,
+      "plan_slug": "storage-vps-40",
+      "port_speed_mbps": 800,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 20,
+          "setup_fee": 0,
+          "total_period": 240
+        },
+        "1m": {
+          "effective_monthly": 25,
+          "setup_fee": 0,
+          "total_period": 25
+        },
+        "6m": {
+          "effective_monthly": 22.5,
+          "setup_fee": 0,
+          "total_period": 135
+        }
+      },
+      "product_name": "Storage VPS 40",
+      "ram_gb": 30,
+      "storage_primary_gb": 1200,
+      "storage_primary_type": "SSD",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-40/"
+    },
+    {
+      "base_monthly_eur": 37,
+      "cpu_count": 14,
+      "default_monthly_eur": 37,
+      "family": "Storage VPS",
+      "fetched_at": "2026-04-25T20:33:15.344Z",
+      "plan_family_rank": 5,
+      "plan_rank": 11,
+      "plan_slug": "storage-vps-50",
+      "port_speed_mbps": 1000,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 29.6,
+          "setup_fee": 0,
+          "total_period": 355.2
+        },
+        "1m": {
+          "effective_monthly": 37,
+          "setup_fee": 0,
+          "total_period": 37
+        },
+        "6m": {
+          "effective_monthly": 33.3,
+          "setup_fee": 0,
+          "total_period": 199.8
+        }
+      },
+      "product_name": "Storage VPS 50",
+      "ram_gb": 50,
+      "storage_primary_gb": 1400,
+      "storage_primary_type": "SSD",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-50/"
+    },
+    {
+      "base_monthly_eur": 34.4,
+      "cpu_count": 3,
+      "default_monthly_eur": 34.4,
+      "family": "Cloud VDS",
+      "fetched_at": "2026-04-25T20:33:10.690Z",
+      "plan_family_rank": 1,
+      "plan_rank": 12,
+      "plan_slug": "vds-s",
+      "port_speed_mbps": 250,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 27.52,
+          "setup_fee": 0,
+          "total_period": 330.24
+        },
+        "1m": {
+          "effective_monthly": 34.4,
+          "setup_fee": 0,
+          "total_period": 34.4
+        },
+        "6m": {
+          "effective_monthly": 32.68,
+          "setup_fee": 0,
+          "total_period": 196.08
+        }
+      },
+      "product_name": "Cloud VDS S",
+      "ram_gb": 24,
+      "storage_primary_gb": 180,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vds/vds-s/"
+    },
+    {
+      "base_monthly_eur": 44.8,
+      "cpu_count": 4,
+      "default_monthly_eur": 44.8,
+      "family": "Cloud VDS",
+      "fetched_at": "2026-04-25T20:33:11.567Z",
+      "plan_family_rank": 2,
+      "plan_rank": 13,
+      "plan_slug": "vds-m",
+      "port_speed_mbps": 500,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 35.84,
+          "setup_fee": 0,
+          "total_period": 430.08
+        },
+        "1m": {
+          "effective_monthly": 44.8,
+          "setup_fee": 0,
+          "total_period": 44.8
+        },
+        "6m": {
+          "effective_monthly": 42.56,
+          "setup_fee": 0,
+          "total_period": 255.36
+        }
+      },
+      "product_name": "Cloud VDS M",
+      "ram_gb": 32,
+      "storage_primary_gb": 240,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vds/vds-m/"
+    },
+    {
+      "base_monthly_eur": 64,
+      "cpu_count": 6,
+      "default_monthly_eur": 64,
+      "family": "Cloud VDS",
+      "fetched_at": "2026-04-25T20:33:13.170Z",
+      "plan_family_rank": 3,
+      "plan_rank": 14,
+      "plan_slug": "vds-l",
+      "port_speed_mbps": 750,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 51.2,
+          "setup_fee": 0,
+          "total_period": 614.4
+        },
+        "1m": {
+          "effective_monthly": 64,
+          "setup_fee": 0,
+          "total_period": 64
+        },
+        "6m": {
+          "effective_monthly": 60.8,
+          "setup_fee": 0,
+          "total_period": 364.8
+        }
+      },
+      "product_name": "Cloud VDS L",
+      "ram_gb": 48,
+      "storage_primary_gb": 360,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vds/vds-l/"
+    },
+    {
+      "base_monthly_eur": 82.4,
+      "cpu_count": 8,
+      "default_monthly_eur": 82.4,
+      "family": "Cloud VDS",
+      "fetched_at": "2026-04-25T20:33:13.513Z",
+      "plan_family_rank": 4,
+      "plan_rank": 15,
+      "plan_slug": "vds-xl",
+      "port_speed_mbps": 1000,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 65.92,
+          "setup_fee": 0,
+          "total_period": 791.04
+        },
+        "1m": {
+          "effective_monthly": 82.4,
+          "setup_fee": 0,
+          "total_period": 82.4
+        },
+        "6m": {
+          "effective_monthly": 78.28,
+          "setup_fee": 0,
+          "total_period": 469.68
+        }
+      },
+      "product_name": "Cloud VDS XL",
+      "ram_gb": 64,
+      "storage_primary_gb": 480,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vds/vds-xl/"
+    },
+    {
+      "base_monthly_eur": 119,
+      "cpu_count": 12,
+      "default_monthly_eur": 119,
+      "family": "Cloud VDS",
+      "fetched_at": "2026-04-25T20:33:13.757Z",
+      "plan_family_rank": 5,
+      "plan_rank": 16,
+      "plan_slug": "vds-xxl",
+      "port_speed_mbps": 1000,
+      "pricing": {
+        "12m": {
+          "effective_monthly": 95.2,
+          "setup_fee": 0,
+          "total_period": 1142.4
+        },
+        "1m": {
+          "effective_monthly": 119,
+          "setup_fee": 0,
+          "total_period": 119
+        },
+        "6m": {
+          "effective_monthly": 113.05,
+          "setup_fee": 0,
+          "total_period": 678.3
+        }
+      },
+      "product_name": "Cloud VDS XXL",
+      "ram_gb": 96,
+      "storage_primary_gb": 720,
+      "storage_primary_type": "NVMe",
+      "url": "https://contabo.com/en/vds/vds-xxl/"
+    }
+  ]
 }
