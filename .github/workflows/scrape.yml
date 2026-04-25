@@ -23,6 +23,7 @@ concurrency:
 # Defaults — override without editing YAML via:
 #   GitHub Settings → Secrets and variables → Variables (repo-level)
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   SCRAPER_CONCURRENCY: ${{ vars.SCRAPER_CONCURRENCY || '8' }}
   SCRAPER_RETRIES:     ${{ vars.SCRAPER_RETRIES     || '3' }}
   BINARY_VERSION:      ${{ vars.BINARY_VERSION       || 'latest' }}
