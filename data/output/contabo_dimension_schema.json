@@ -1,0 +1,45 @@
+{
+  "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
+  "dimensions": {
+    "Data Protection": {
+      "required": false,
+      "selection_type": "single"
+    },
+    "Image": {
+      "required": true,
+      "selection_type": "single"
+    },
+    "Networking": {
+      "categories": {
+        "Bandwidth": {
+          "required": true,
+          "selection_type": "single"
+        },
+        "IPv4": {
+          "required": true,
+          "selection_type": "single"
+        },
+        "Private Networking": {
+          "required": true,
+          "selection_type": "single"
+        }
+      },
+      "required": true,
+      "selection_type": "grouped_single"
+    },
+    "Region": {
+      "required": true,
+      "selection_type": "single"
+    },
+    "Storage": {
+      "required": true,
+      "selection_type": "single"
+    },
+    "Storage Type": {
+      "required": true,
+      "selection_type": "single"
+    }
+  },
+  "generated_at": "2026-04-25T07:39:16.630Z",
+  "schema_version": "1.1"
+}

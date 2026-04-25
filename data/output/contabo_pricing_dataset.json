@@ -1,0 +1,13 @@
+{
+  "gap_count": 0,
+  "gap_summary": [],
+  "gaps": [],
+  "generated_at": "2026-04-25T07:39:16.630Z",
+  "option_catalog": [],
+  "option_count": 0,
+  "plan_count": 0,
+  "plans": [],
+  "schema_version": "1.1",
+  "scraper_version": "2.2.0",
+  "source": "Contabo configurator __SAPPER__ payload + SSR HTML defaults"
+}

@@ -1,23 +1,135 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-04-25T00:00:00.000Z",
-  "plans": [
-    { "slug": "cloud-vps-10",    "url": "https://contabo.com/en/vps/cloud-vps-10/",                "family": "Cloud VPS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "cloud-vps-20",    "url": "https://contabo.com/en/vps/cloud-vps-20/",                "family": "Cloud VPS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "cloud-vps-30",    "url": "https://contabo.com/en/vps/cloud-vps-30/",                "family": "Cloud VPS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "cloud-vps-40",    "url": "https://contabo.com/en/vps/cloud-vps-40/",                "family": "Cloud VPS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "cloud-vps-50",    "url": "https://contabo.com/en/vps/cloud-vps-50/",                "family": "Cloud VPS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "cloud-vps-60",    "url": "https://contabo.com/en/vps/cloud-vps-60/",                "family": "Cloud VPS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "storage-vps-10",  "url": "https://contabo.com/en/storage-vps/storage-vps-10/",      "family": "Storage VPS",   "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "storage-vps-20",  "url": "https://contabo.com/en/storage-vps/storage-vps-20/",      "family": "Storage VPS",   "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "storage-vps-30",  "url": "https://contabo.com/en/storage-vps/storage-vps-30/",      "family": "Storage VPS",   "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "storage-vps-40",  "url": "https://contabo.com/en/storage-vps/storage-vps-40/",      "family": "Storage VPS",   "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "storage-vps-50",  "url": "https://contabo.com/en/storage-vps/storage-vps-50/",      "family": "Storage VPS",   "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "vds-s",           "url": "https://contabo.com/en/vds/vds-s/",                       "family": "Cloud VDS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "vds-m",           "url": "https://contabo.com/en/vds/vds-m/",                       "family": "Cloud VDS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "vds-l",           "url": "https://contabo.com/en/vds/vds-l/",                       "family": "Cloud VDS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "vds-xl",          "url": "https://contabo.com/en/vds/vds-xl/",                      "family": "Cloud VDS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null },
-    { "slug": "vds-xxl",         "url": "https://contabo.com/en/vds/vds-xxl/",                     "family": "Cloud VDS",     "status": "active", "discovered_at": "2026-04-25T00:00:00.000Z", "previous_url": null }
-  ],
-  "discontinued": []
+  "updated_at": "2026-04-25T07:39:16.488Z",
+  "plans": [],
+  "discontinued": [
+    {
+      "slug": "cloud-vps-10",
+      "url": "https://contabo.com/en/vps/cloud-vps-10/",
+      "family": "Cloud VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-20",
+      "url": "https://contabo.com/en/vps/cloud-vps-20/",
+      "family": "Cloud VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-30",
+      "url": "https://contabo.com/en/vps/cloud-vps-30/",
+      "family": "Cloud VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-40",
+      "url": "https://contabo.com/en/vps/cloud-vps-40/",
+      "family": "Cloud VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-50",
+      "url": "https://contabo.com/en/vps/cloud-vps-50/",
+      "family": "Cloud VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-60",
+      "url": "https://contabo.com/en/vps/cloud-vps-60/",
+      "family": "Cloud VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "storage-vps-10",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-10/",
+      "family": "Storage VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "storage-vps-20",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-20/",
+      "family": "Storage VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "storage-vps-30",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-30/",
+      "family": "Storage VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "storage-vps-40",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-40/",
+      "family": "Storage VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "storage-vps-50",
+      "url": "https://contabo.com/en/storage-vps/storage-vps-50/",
+      "family": "Storage VPS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "vds-s",
+      "url": "https://contabo.com/en/vds/vds-s/",
+      "family": "Cloud VDS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "vds-m",
+      "url": "https://contabo.com/en/vds/vds-m/",
+      "family": "Cloud VDS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "vds-l",
+      "url": "https://contabo.com/en/vds/vds-l/",
+      "family": "Cloud VDS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "vds-xl",
+      "url": "https://contabo.com/en/vds/vds-xl/",
+      "family": "Cloud VDS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "vds-xxl",
+      "url": "https://contabo.com/en/vds/vds-xxl/",
+      "family": "Cloud VDS",
+      "status": "discontinued",
+      "discovered_at": "2026-04-25T00:00:00.000Z",
+      "previous_url": null
+    }
+  ]
 }
