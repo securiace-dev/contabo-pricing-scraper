@@ -8,8 +8,8 @@ const QR_PATH = path.resolve(__dirname, '../../data/output/contabo_quick_referen
 const OUT_PATH = path.resolve(__dirname, '../../PRICES.md');
 
 if (!fs.existsSync(QR_PATH)) {
-  console.error(`ERROR: ${QR_PATH} not found`);
-  process.exit(1);
+  console.log(`No quick reference data at ${QR_PATH} — skipping PRICES.md generation.`);
+  process.exit(0);
 }
 
 const data    = JSON.parse(fs.readFileSync(QR_PATH, 'utf8'));

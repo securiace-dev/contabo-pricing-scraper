@@ -1103,6 +1103,11 @@ async fn main() {
         }
     }
 
+    if urls.is_empty() {
+        log("No active plans to scrape — catalog is empty or all plans filtered out.");
+        std::process::exit(EXIT_OK);
+    }
+
     log(&format!("contabo-scraper v{VERSION} (Rust)"));
     log(&format!("Scraping {} plan(s) — concurrency={} retries={}{}", urls.len(), opts.concurrency, opts.retries, if opts.dry_run { " [dry-run]" } else { "" }));
     log(&format!("Output → {}", opts.output.display()));
