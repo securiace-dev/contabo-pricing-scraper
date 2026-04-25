@@ -1,0 +1,103 @@
+name: Scrape Contabo Pricing
+
+on:
+  schedule:
+    - cron: '0 6 * * *'    # 06:00 UTC daily
+    - cron: '0 18 * * *'   # 18:00 UTC daily
+  workflow_dispatch:
+    inputs:
+      plans:
+        description: 'Comma-separated plan slugs (blank = all 16)'
+        required: false
+        default: ''
+      concurrency:
+        description: 'Parallel fetches 1-16 (overrides SCRAPER_CONCURRENCY)'
+        required: false
+        default: ''
+
+# Prevent overlapping scheduled + manual runs; cancel in-progress if newer starts
+concurrency:
+  group: scrape
+  cancel-in-progress: true
+
+# Defaults — override without editing YAML via:
+#   GitHub Settings → Secrets and variables → Variables (repo-level)
+env:
+  SCRAPER_CONCURRENCY: ${{ vars.SCRAPER_CONCURRENCY || '8' }}
+  SCRAPER_RETRIES:     ${{ vars.SCRAPER_RETRIES     || '3' }}
+  BINARY_VERSION:      ${{ vars.BINARY_VERSION       || 'latest' }}
+  OUTPUT_DIR:          'data/output'
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    name: Scrape & publish
+    runs-on: ubuntu-latest   # 1× minute multiplier (vs 10× macOS, 2× Windows)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Resolve "latest" → concrete tag so cache key is stable across runs
+      - name: Resolve binary version
+        id: ver
+        run: |
+          if [ "$BINARY_VERSION" = "latest" ]; then
+            TAG=$(gh release view --json tagName -q '.tagName')
+          else
+            TAG="$BINARY_VERSION"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Cache keyed by release tag — re-download only when a new release ships
+      - name: Cache scraper binary
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: bin/contabo-scraper
+          key: binary-${{ steps.ver.outputs.tag }}-linux-x86_64
+
+      - name: Download binary
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p bin
+          gh release download "${{ steps.ver.outputs.tag }}" \
+            --pattern 'contabo-scraper-linux-x86_64' \
+            --output bin/contabo-scraper
+          chmod +x bin/contabo-scraper
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run scraper
+        run: |
+          CONCURRENCY="${{ github.event.inputs.concurrency || env.SCRAPER_CONCURRENCY }}"
+          EXTRA_ARGS=""
+          if [ -n "${{ github.event.inputs.plans }}" ]; then
+            EXTRA_ARGS="--plans ${{ github.event.inputs.plans }}"
+          fi
+          mkdir -p "$OUTPUT_DIR"
+          bin/contabo-scraper \
+            --output      "$OUTPUT_DIR" \
+            --concurrency "$CONCURRENCY" \
+            --retries     "$SCRAPER_RETRIES" \
+            --json \
+            $EXTRA_ARGS
+
+      - name: Generate PRICES.md
+        run: python3 .github/scripts/generate_report.py
+
+      - name: Commit & push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f "$OUTPUT_DIR"   # -f bypasses data/output/ in .gitignore
+          git add PRICES.md
+          if git diff --cached --quiet; then
+            echo "No pricing changes — skipping commit"
+          else
+            git commit -m "data: scrape $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
