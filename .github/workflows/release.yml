@@ -44,6 +44,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Fail immediately if the pushed tag doesn't match Cargo.toml version.
+      # Prevents releasing a binary that reports a stale version string.
+      - name: Verify tag matches Cargo.toml version
+        if: runner.os != 'Windows'
+        run: |
+          CARGO_VER=$(grep '^version' Cargo.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+          TAG_VER="${{ github.ref_name }}"
+          TAG_VER="${TAG_VER#v}"   # strip leading 'v'
+          if [ "$CARGO_VER" != "$TAG_VER" ]; then
+            echo "ERROR: Cargo.toml version ($CARGO_VER) != tag ($TAG_VER)"
+            echo "Run: scripts/bump-version.sh <new-version>"
+            exit 1
+          fi
+          echo "Version check passed: $CARGO_VER"
+
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:

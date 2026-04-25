@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const SCRAPER_VERSION = '2.0.0';
+const SCRAPER_VERSION = require(path.join(__dirname, '..', 'package.json')).version;
 const SCHEMA_VERSION = '1.1';
 
 // Exit codes
