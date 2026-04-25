@@ -100,8 +100,8 @@ impl OptionItem {
         m.insert("dimension".into(), json!(&self.dimension));
         m.insert("category".into(), json!(&self.category));
         m.insert("option_label".into(), json!(&self.option_label));
-        m.insert("monthly_price_delta".into(), json!(self.monthly_price_delta));
-        m.insert("setup_fee_delta".into(), json!(self.setup_fee_delta));
+        m.insert("monthly_price_delta".into(), json_num(self.monthly_price_delta));
+        m.insert("setup_fee_delta".into(),     json_num(self.setup_fee_delta));
         if let Some(v) = &self.region_group  { m.insert("region_group".into(),  json!(v)); }
         if let Some(v) = &self.country       { m.insert("country".into(),        json!(v)); }
         if let Some(v) = &self.country_code  { m.insert("country_code".into(),   json!(v)); }
@@ -384,6 +384,12 @@ fn round2(v: f64) -> f64 {
     (v * 100.0).round() / 100.0
 }
 
+// Serialize f64 as integer JSON when the value is whole (e.g. 8.0 → 8, 0.0 → 0),
+// matching JavaScript's JSON.stringify behaviour for whole-number floats.
+fn json_num(v: f64) -> Value {
+    if v.fract() == 0.0 { json!(v as i64) } else { json!(v) }
+}
+
 // ─── Spec parsers ─────────────────────────────────────────────────────────────
 
 fn parse_cpu_count(s: &str) -> Option<u32> {
@@ -393,9 +399,10 @@ fn parse_cpu_count(s: &str) -> Option<u32> {
     RE.captures(s)?.get(1)?.as_str().parse().ok()
 }
 
-fn parse_ram_gb(s: &str) -> Option<f64> {
+fn parse_ram_gb(s: &str) -> Option<Value> {
     static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)^(\d+(?:\.\d+)?)\s*GB").unwrap());
-    RE.captures(s)?.get(1)?.as_str().parse().ok()
+    let v: f64 = RE.captures(s)?.get(1)?.as_str().parse().ok()?;
+    Some(json_num(v))
 }
 
 fn parse_port_speed_mbps(s: &str) -> Option<u32> {
@@ -785,10 +792,10 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
         Some(json!({
             "months":            months,
             "is_hidden_from_ui": months == 3,
-            "effective_monthly": eff,
-            "setup_fee":         setup,
-            "total_period_cost": total,
-            "discount_total":    disc,
+            "effective_monthly": json_num(eff),
+            "setup_fee":         json_num(setup),
+            "total_period_cost": json_num(total),
+            "discount_total":    json_num(disc),
         }))
     }).collect();
 
@@ -857,8 +864,8 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
         let raw = periods_raw.iter().find(|p| p.get("length").and_then(Value::as_u64) == Some(months as u64));
         let disc_eur  = raw.and_then(|p| p.get("discount")).and_then(|d| d.get("EUR")).and_then(Value::as_f64).unwrap_or(0.0);
         let setup_eur = raw.and_then(|p| p.get("setup"))   .and_then(|s| s.get("EUR")).and_then(Value::as_f64).unwrap_or(0.0);
-        default_monthly_by_period.insert(months.to_string(), json!(round2(base_monthly - disc_eur / months as f64 + default_monthly_delta)));
-        default_setup_by_period  .insert(months.to_string(), json!(round2(setup_eur + default_setup_delta)));
+        default_monthly_by_period.insert(months.to_string(), json_num(round2(base_monthly - disc_eur / months as f64 + default_monthly_delta)));
+        default_setup_by_period  .insert(months.to_string(), json_num(round2(setup_eur + default_setup_delta)));
     }
 
     // VDS storage default guard (runs after all marking is complete)
@@ -901,7 +908,7 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
         "base_storage":       base_storage,
         "snapshots":          snapshot_str,
         "port":               port_str,
-        "base_monthly_price": base_monthly,
+        "base_monthly_price": json_num(base_monthly),
         "periods":            periods,
         "specs_parsed":       specs_parsed,
         "password_rules":     password_rules,
@@ -980,8 +987,8 @@ fn build_quick_reference(base_plans: &[Value], plan_configs: &HashMap<String, Va
 
         let default_monthly = config
             .and_then(|c| c["default_monthly_by_period"].get("1"))
-            .and_then(Value::as_f64)
-            .unwrap_or_else(|| plan["base_monthly_price"].as_f64().unwrap_or(0.0));
+            .cloned()
+            .unwrap_or_else(|| plan["base_monthly_price"].clone());
 
         json!({
             "plan_slug":            plan["product_slug"],
