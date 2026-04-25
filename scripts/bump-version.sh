@@ -42,8 +42,8 @@ echo "  Cargo.toml   $OLD_CARGO → $NEW"
 echo "  package.json $OLD_PKG  → $NEW"
 
 # ── Update Cargo.toml (first version = line only) ─────────────────────────────
-sed -i.bak "0,/^version = \"$OLD_CARGO\"/s/^version = \"$OLD_CARGO\"/version = \"$NEW\"/" "$ROOT/Cargo.toml"
-rm "$ROOT/Cargo.toml.bak"
+# perl is used for cross-platform in-place edit (macOS BSD sed and GNU sed differ)
+perl -i -pe "s{^version = \"$OLD_CARGO\"}{version = \"$NEW\"} if \$. == 1 .. /^version =/" "$ROOT/Cargo.toml"
 
 # ── Update package.json ────────────────────────────────────────────────────────
 node -e "
