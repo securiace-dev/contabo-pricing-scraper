@@ -108,6 +108,7 @@ function parseArgs(argv) {
     concurrency: 4,
     retries: 3,
     plans: null,
+    planUrlsFile: null,
     quiet: false,
     json: false,
     dryRun: false,
@@ -117,15 +118,16 @@ function parseArgs(argv) {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     switch (arg) {
-      case '--help':        case '-h': opts.help    = true; break;
-      case '--version':     case '-v': opts.version = true; break;
-      case '--quiet':       case '-q': opts.quiet   = true; break;
-      case '--json':        case '-j': opts.json    = true; break;
-      case '--dry-run':               opts.dryRun   = true; break;
-      case '--output':      case '-o': opts.output      = path.resolve(requireArgValue(args, ++i, arg)); break;
-      case '--concurrency': case '-c': opts.concurrency = Math.max(1, parseInt(requireArgValue(args, ++i, arg), 10) || 4); break;
-      case '--retries':     case '-r': opts.retries     = Math.max(0, parseInt(requireArgValue(args, ++i, arg), 10) || 3); break;
-      case '--plans':       case '-p': opts.plans       = requireArgValue(args, ++i, arg).split(',').map((s) => s.trim()).filter(Boolean); break;
+      case '--help':           case '-h': opts.help    = true; break;
+      case '--version':        case '-v': opts.version = true; break;
+      case '--quiet':          case '-q': opts.quiet   = true; break;
+      case '--json':           case '-j': opts.json    = true; break;
+      case '--dry-run':                   opts.dryRun   = true; break;
+      case '--output':         case '-o': opts.output      = path.resolve(requireArgValue(args, ++i, arg)); break;
+      case '--concurrency':    case '-c': opts.concurrency = Math.max(1, parseInt(requireArgValue(args, ++i, arg), 10) || 4); break;
+      case '--retries':        case '-r': opts.retries     = Math.max(0, parseInt(requireArgValue(args, ++i, arg), 10) || 3); break;
+      case '--plans':          case '-p': opts.plans       = requireArgValue(args, ++i, arg).split(',').map((s) => s.trim()).filter(Boolean); break;
+      case '--plan-urls-file':            opts.planUrlsFile = requireArgValue(args, ++i, arg); break;
     }
   }
   return opts;
@@ -713,6 +715,10 @@ async function main() {
   const log = opts.quiet ? () => {} : (...args) => process.stderr.write(args.join(' ') + '\n');
 
   let urls = ALL_PLAN_URLS;
+  if (opts.planUrlsFile) {
+    const catalog = JSON.parse(fs.readFileSync(opts.planUrlsFile, 'utf8'));
+    urls = catalog.plans.filter((p) => p.status === 'active').map((p) => p.url);
+  }
   if (opts.plans) {
     urls = urls.filter((u) => opts.plans.includes(slugFromUrl(u)));
     if (urls.length === 0) {

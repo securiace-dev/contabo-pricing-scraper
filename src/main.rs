@@ -45,6 +45,7 @@ struct Opts {
     concurrency: usize,
     retries: u32,
     plans: Option<Vec<String>>,
+    plan_urls_file: Option<PathBuf>,
     quiet: bool,
     json_out: bool,
     dry_run: bool,
@@ -155,6 +156,7 @@ fn parse_args() -> Result<Opts, String> {
         concurrency: 4,
         retries: 3,
         plans: None,
+        plan_urls_file: None,
         quiet: false,
         json_out: false,
         dry_run: false,
@@ -189,6 +191,11 @@ fn parse_args() -> Result<Opts, String> {
                 opts.plans = Some(
                     val.split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect(),
                 );
+            }
+            flag @ "--plan-urls-file" => {
+                i += 1;
+                let val = args.get(i).ok_or_else(|| format!("{flag} requires a value"))?;
+                opts.plan_urls_file = Some(PathBuf::from(val));
             }
             other => return Err(format!("Unknown option: {other}")),
         }
@@ -1063,7 +1070,24 @@ async fn main() {
         Arc::new(|s: &str| eprintln!("{s}"))
     };
 
-    let mut urls: Vec<&str> = ALL_PLAN_URLS.to_vec();
+    let mut urls: Vec<String> = if let Some(ref f) = opts.plan_urls_file {
+        let raw = fs::read_to_string(f).unwrap_or_else(|e| {
+            eprintln!("ERROR: cannot read --plan-urls-file {}: {e}", f.display());
+            std::process::exit(EXIT_ERROR);
+        });
+        let catalog: Value = serde_json::from_str(&raw).unwrap_or_else(|e| {
+            eprintln!("ERROR: invalid JSON in --plan-urls-file: {e}");
+            std::process::exit(EXIT_ERROR);
+        });
+        catalog["plans"].as_array().unwrap_or(&vec![])
+            .iter()
+            .filter(|p| p["status"].as_str() == Some("active"))
+            .filter_map(|p| p["url"].as_str().map(|s| s.to_string()))
+            .filter(|u| !u.is_empty())
+            .collect()
+    } else {
+        ALL_PLAN_URLS.iter().map(|s| s.to_string()).collect()
+    };
     if let Some(ref slugs) = opts.plans {
         urls.retain(|u| slugs.contains(&slug_from_url(u).to_string()));
         if urls.is_empty() {
@@ -1096,7 +1120,7 @@ async fn main() {
 
     let mut handles = Vec::new();
 
-    for &url in &urls {
+    for url in &urls {
         let client     = Arc::clone(&client);
         let semaphore  = Arc::clone(&semaphore);
         let gap_report = Arc::clone(&gap_report);

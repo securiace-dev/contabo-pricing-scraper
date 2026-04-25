@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       plans:
-        description: 'Comma-separated plan slugs (blank = all 16)'
+        description: 'Comma-separated plan slugs (blank = all active)'
         required: false
         default: ''
       concurrency:
@@ -32,6 +32,7 @@ env:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   scrape:
@@ -73,7 +74,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Discover plan URLs
+        id: discover
+        run: node .github/scripts/discover_plans.js
+
       - name: Run scraper
+        id: scrape
+        continue-on-error: true
         run: |
           CONCURRENCY="${{ github.event.inputs.concurrency || env.SCRAPER_CONCURRENCY }}"
           EXTRA_ARGS=""
@@ -82,14 +89,27 @@ jobs:
           fi
           mkdir -p "$OUTPUT_DIR"
           bin/contabo-scraper \
-            --output      "$OUTPUT_DIR" \
-            --concurrency "$CONCURRENCY" \
-            --retries     "$SCRAPER_RETRIES" \
-            --json \
+            --output          "$OUTPUT_DIR" \
+            --concurrency     "$CONCURRENCY" \
+            --retries         "$SCRAPER_RETRIES" \
+            --json            \
+            --plan-urls-file  data/plan_urls.json \
             $EXTRA_ARGS
 
       - name: Generate PRICES.md
-        run: python3 .github/scripts/generate_report.py
+        run: node .github/scripts/generate_report.js
+
+      - name: Audit and alert
+        run: |
+          node .github/scripts/post_scrape_audit.js \
+            --gap-report          "$OUTPUT_DIR/contabo_gap_report.json" \
+            --discovery-changed   "${{ steps.discover.outputs.changed }}" \
+            --discovery-blocked   "${{ steps.discover.outputs.discovery_blocked }}" \
+            --added               "${{ steps.discover.outputs.added }}" \
+            --removed             "${{ steps.discover.outputs.removed }}" \
+            --renamed             "${{ steps.discover.outputs.renamed }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit & push
         run: |
@@ -97,9 +117,14 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -f "$OUTPUT_DIR"   # -f bypasses data/output/ in .gitignore
           git add PRICES.md
+          git add data/plan_urls.json
           if git diff --cached --quiet; then
-            echo "No pricing changes — skipping commit"
+            echo "No changes — skipping commit"
           else
-            git commit -m "data: scrape $(date -u '+%Y-%m-%d %H:%M UTC')"
+            MSG="data: scrape $(date -u '+%Y-%m-%d %H:%M UTC')"
+            if [ "${{ steps.discover.outputs.changed }}" = "true" ]; then
+              MSG="$MSG [catalog: +${{ steps.discover.outputs.added }} -${{ steps.discover.outputs.removed }}]"
+            fi
+            git commit -m "$MSG"
             git push
           fi
