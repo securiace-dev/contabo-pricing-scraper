@@ -1,855 +1,855 @@
-plan_sku,dimension,category,option_label,monthly_price_delta,setup_fee_delta,region_group,country,country_code,subregion,is_default,currency
-cloud-vps-10,Data Protection,Auto Backup,Auto Backup,1.5,0,,,,,false,EUR
-cloud-vps-10,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-cloud-vps-10,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-cloud-vps-10,Image,Apps,Docker,0,0,,,,,false,EUR
-cloud-vps-10,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-cloud-vps-10,Image,Apps,LAMP,0,0,,,,,false,EUR
-cloud-vps-10,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-cloud-vps-10,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-cloud-vps-10,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-cloud-vps-10,Image,Apps,n8n Server,0,0,,,,,false,EUR
-cloud-vps-10,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-cloud-vps-10,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-cloud-vps-10,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Arch Linux,0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Debian 12,0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Debian 13,0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-cloud-vps-10,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,false,EUR
-cloud-vps-10,Image,OS,Windows Server 2025 Datacenter,7.5,0,,,,,false,EUR
-cloud-vps-10,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-cloud-vps-10,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-cloud-vps-10,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-cloud-vps-10,Image,Panels,Webmin,0,0,,,,,false,EUR
-cloud-vps-10,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-cloud-vps-10,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-cloud-vps-10,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-10,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-10,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-cloud-vps-10,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-cloud-vps-10,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-cloud-vps-10,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-cloud-vps-10,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-10,Region,America,United States (Central),0.95,0,America,United States (Central),US,Central,false,EUR
-cloud-vps-10,Region,America,United States (East),1.4,0,America,United States (East),US,East,false,EUR
-cloud-vps-10,Region,America,United States (West),1.15,0,America,United States (West),US,West,false,EUR
-cloud-vps-10,Region,Asia,India,2.15,0,Asia,India,IN,,false,EUR
-cloud-vps-10,Region,Asia,Japan,2.35,0,Asia,Japan,JP,,false,EUR
-cloud-vps-10,Region,Asia,Singapore,2.3,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-10,Region,Australia,Australia,1.95,0,Australia,Australia,AU,,false,EUR
-cloud-vps-10,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-10,Region,Europe,United Kingdom,0.95,0,Europe,United Kingdom,UK,,false,EUR
-cloud-vps-10,Storage Type,NVMe,150 GB NVMe,1.85,0,,,,,false,EUR
-cloud-vps-10,Storage Type,NVMe,75 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-10,Storage Type,SSD,150 GB SSD,0,0,,,,,false,EUR
-cloud-vps-10,Storage Type,SSD,300 GB SSD,1.55,0,,,,,false,EUR
-cloud-vps-20,Data Protection,Auto Backup,Auto Backup,2,0,,,,,false,EUR
-cloud-vps-20,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-cloud-vps-20,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-cloud-vps-20,Image,Apps,Docker,0,0,,,,,false,EUR
-cloud-vps-20,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-cloud-vps-20,Image,Apps,LAMP,0,0,,,,,false,EUR
-cloud-vps-20,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-cloud-vps-20,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-cloud-vps-20,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-cloud-vps-20,Image,Apps,n8n Server,0,0,,,,,false,EUR
-cloud-vps-20,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-cloud-vps-20,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-cloud-vps-20,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Arch Linux,0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Debian 12,0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Debian 13,0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-cloud-vps-20,Image,OS,Windows Server 2016 Datacenter,12.6,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Windows Server 2019 Datacenter,15.5,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Windows Server 2022 Datacenter,15.5,0,,,,,false,EUR
-cloud-vps-20,Image,OS,Windows Server 2025 Datacenter,15.5,0,,,,,false,EUR
-cloud-vps-20,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-cloud-vps-20,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-cloud-vps-20,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-cloud-vps-20,Image,Panels,Webmin,0,0,,,,,false,EUR
-cloud-vps-20,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-cloud-vps-20,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-cloud-vps-20,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-20,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-20,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-cloud-vps-20,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-cloud-vps-20,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-cloud-vps-20,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-cloud-vps-20,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-20,Region,America,United States (Central),0.36,0,America,United States (Central),US,Central,false,EUR
-cloud-vps-20,Region,America,United States (East),2.2,0,America,United States (East),US,East,false,EUR
-cloud-vps-20,Region,America,United States (West),1.85,0,America,United States (West),US,West,false,EUR
-cloud-vps-20,Region,Asia,India,1.67,0,Asia,India,IN,,false,EUR
-cloud-vps-20,Region,Asia,Japan,1.82,0,Asia,Japan,JP,,false,EUR
-cloud-vps-20,Region,Asia,Singapore,1.77,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-20,Region,Australia,Australia,1.5,0,Australia,Australia,AU,,false,EUR
-cloud-vps-20,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-20,Region,Europe,United Kingdom,0.36,0,Europe,United Kingdom,UK,,false,EUR
-cloud-vps-20,Storage Type,NVMe,100 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-20,Storage Type,NVMe,200 GB NVMe,2.55,0,,,,,false,EUR
-cloud-vps-20,Storage Type,SSD,200 GB SSD,0,0,,,,,false,EUR
-cloud-vps-20,Storage Type,SSD,400 GB SSD,1.95,0,,,,,false,EUR
-cloud-vps-30,Data Protection,Auto Backup,Auto Backup,3.5,0,,,,,false,EUR
-cloud-vps-30,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-cloud-vps-30,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-cloud-vps-30,Image,Apps,Docker,0,0,,,,,false,EUR
-cloud-vps-30,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-cloud-vps-30,Image,Apps,LAMP,0,0,,,,,false,EUR
-cloud-vps-30,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-cloud-vps-30,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-cloud-vps-30,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-cloud-vps-30,Image,Apps,n8n Server,0,0,,,,,false,EUR
-cloud-vps-30,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-cloud-vps-30,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-cloud-vps-30,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Arch Linux,0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Debian 12,0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Debian 13,0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-cloud-vps-30,Image,OS,Windows Server 2016 Datacenter,23.1,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Windows Server 2019 Datacenter,26,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Windows Server 2022 Datacenter,26,0,,,,,false,EUR
-cloud-vps-30,Image,OS,Windows Server 2025 Datacenter,26,0,,,,,false,EUR
-cloud-vps-30,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-cloud-vps-30,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-cloud-vps-30,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-cloud-vps-30,Image,Panels,Webmin,0,0,,,,,false,EUR
-cloud-vps-30,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-cloud-vps-30,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-cloud-vps-30,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-30,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-30,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-cloud-vps-30,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-cloud-vps-30,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-cloud-vps-30,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-cloud-vps-30,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-30,Region,America,United States (Central),0.73,0,America,United States (Central),US,Central,false,EUR
-cloud-vps-30,Region,America,United States (East),4.4,0,America,United States (East),US,East,false,EUR
-cloud-vps-30,Region,America,United States (West),3.65,0,America,United States (West),US,West,false,EUR
-cloud-vps-30,Region,Asia,India,3.35,0,Asia,India,IN,,false,EUR
-cloud-vps-30,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,false,EUR
-cloud-vps-30,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-30,Region,Australia,Australia,3.02,0,Australia,Australia,AU,,false,EUR
-cloud-vps-30,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-30,Region,Europe,United Kingdom,0.73,0,Europe,United Kingdom,UK,,false,EUR
-cloud-vps-30,Storage Type,NVMe,200 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-30,Storage Type,NVMe,400 GB NVMe,3.25,0,,,,,false,EUR
-cloud-vps-30,Storage Type,SSD,400 GB SSD,0,0,,,,,false,EUR
-cloud-vps-30,Storage Type,SSD,800 GB SSD,3.85,0,,,,,false,EUR
-cloud-vps-40,Data Protection,Auto Backup,Auto Backup,6,0,,,,,false,EUR
-cloud-vps-40,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-cloud-vps-40,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-cloud-vps-40,Image,Apps,Docker,0,0,,,,,false,EUR
-cloud-vps-40,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-cloud-vps-40,Image,Apps,LAMP,0,0,,,,,false,EUR
-cloud-vps-40,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-cloud-vps-40,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-cloud-vps-40,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-cloud-vps-40,Image,Apps,n8n Server,0,0,,,,,false,EUR
-cloud-vps-40,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-cloud-vps-40,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-cloud-vps-40,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Arch Linux,0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Debian 12,0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Debian 13,0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-cloud-vps-40,Image,OS,Windows Server 2016 Datacenter,45.6,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Windows Server 2019 Datacenter,49,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Windows Server 2022 Datacenter,49,0,,,,,false,EUR
-cloud-vps-40,Image,OS,Windows Server 2025 Datacenter,49,0,,,,,false,EUR
-cloud-vps-40,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-cloud-vps-40,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-cloud-vps-40,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-cloud-vps-40,Image,Panels,Webmin,0,0,,,,,false,EUR
-cloud-vps-40,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-cloud-vps-40,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-cloud-vps-40,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-40,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-40,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-cloud-vps-40,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-cloud-vps-40,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-cloud-vps-40,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-cloud-vps-40,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-40,Region,America,United States (Central),2.1,0,America,United States (Central),US,Central,false,EUR
-cloud-vps-40,Region,America,United States (East),7.85,0,America,United States (East),US,East,false,EUR
-cloud-vps-40,Region,America,United States (West),6.55,0,America,United States (West),US,West,false,EUR
-cloud-vps-40,Region,Asia,India,7.14,0,Asia,India,IN,,false,EUR
-cloud-vps-40,Region,Asia,Japan,7.8,0,Asia,Japan,JP,,false,EUR
-cloud-vps-40,Region,Asia,Singapore,7.62,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-40,Region,Australia,Australia,6.48,0,Australia,Australia,AU,,false,EUR
-cloud-vps-40,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-40,Region,Europe,United Kingdom,2.1,0,Europe,United Kingdom,UK,,false,EUR
-cloud-vps-40,Storage Type,NVMe,250 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-40,Storage Type,NVMe,500 GB NVMe,3.85,0,,,,,false,EUR
-cloud-vps-40,Storage Type,SSD,1 TB SSD,4.95,0,,,,,false,EUR
-cloud-vps-40,Storage Type,SSD,500 GB SSD,0,0,,,,,false,EUR
-cloud-vps-50,Data Protection,Auto Backup,Auto Backup,7.5,0,,,,,false,EUR
-cloud-vps-50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-cloud-vps-50,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-cloud-vps-50,Image,Apps,Docker,0,0,,,,,false,EUR
-cloud-vps-50,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-cloud-vps-50,Image,Apps,LAMP,0,0,,,,,false,EUR
-cloud-vps-50,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-cloud-vps-50,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-cloud-vps-50,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-cloud-vps-50,Image,Apps,n8n Server,0,0,,,,,false,EUR
-cloud-vps-50,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-cloud-vps-50,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-cloud-vps-50,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Arch Linux,0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Debian 12,0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Debian 13,0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-cloud-vps-50,Image,OS,Windows Server 2016 Datacenter,55.7,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Windows Server 2019 Datacenter,58.5,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Windows Server 2022 Datacenter,58.5,0,,,,,false,EUR
-cloud-vps-50,Image,OS,Windows Server 2025 Datacenter,58.5,0,,,,,false,EUR
-cloud-vps-50,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-cloud-vps-50,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-cloud-vps-50,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-cloud-vps-50,Image,Panels,Webmin,0,0,,,,,false,EUR
-cloud-vps-50,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-cloud-vps-50,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-cloud-vps-50,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-50,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-50,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-cloud-vps-50,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-cloud-vps-50,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-cloud-vps-50,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-cloud-vps-50,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-50,Region,America,United States (Central),3.9,0,America,United States (Central),US,Central,false,EUR
-cloud-vps-50,Region,America,United States (East),11.6,0,America,United States (East),US,East,false,EUR
-cloud-vps-50,Region,America,United States (West),9.65,0,America,United States (West),US,West,false,EUR
-cloud-vps-50,Region,Asia,India,12.35,0,Asia,India,IN,,false,EUR
-cloud-vps-50,Region,Asia,Japan,13.47,0,Asia,Japan,JP,,false,EUR
-cloud-vps-50,Region,Asia,Singapore,13.16,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-50,Region,Australia,Australia,11.16,0,Australia,Australia,AU,,false,EUR
-cloud-vps-50,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-50,Region,Europe,United Kingdom,3.9,0,Europe,United Kingdom,UK,,false,EUR
-cloud-vps-50,Storage Type,NVMe,300 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-50,Storage Type,NVMe,600 GB NVMe,4.75,0,,,,,false,EUR
-cloud-vps-50,Storage Type,SSD,1.2 TB SSD,6.15,0,,,,,false,EUR
-cloud-vps-50,Storage Type,SSD,600 GB SSD,0,0,,,,,false,EUR
-cloud-vps-60,Data Protection,Auto Backup,Auto Backup,9.5,0,,,,,false,EUR
-cloud-vps-60,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-cloud-vps-60,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-cloud-vps-60,Image,Apps,Docker,0,0,,,,,false,EUR
-cloud-vps-60,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-cloud-vps-60,Image,Apps,LAMP,0,0,,,,,false,EUR
-cloud-vps-60,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-cloud-vps-60,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-cloud-vps-60,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-cloud-vps-60,Image,Apps,n8n Server,0,0,,,,,false,EUR
-cloud-vps-60,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-cloud-vps-60,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-cloud-vps-60,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Arch Linux,0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Debian 12,0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Debian 13,0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-cloud-vps-60,Image,OS,Windows Server 2016 Datacenter,65,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Windows Server 2019 Datacenter,70,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Windows Server 2022 Datacenter,70,0,,,,,false,EUR
-cloud-vps-60,Image,OS,Windows Server 2025 Datacenter,70,0,,,,,false,EUR
-cloud-vps-60,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-cloud-vps-60,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-cloud-vps-60,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-cloud-vps-60,Image,Panels,Webmin,0,0,,,,,false,EUR
-cloud-vps-60,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-cloud-vps-60,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-cloud-vps-60,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-60,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-60,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-cloud-vps-60,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-cloud-vps-60,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-cloud-vps-60,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-cloud-vps-60,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-60,Region,America,United States (Central),6.18,0,America,United States (Central),US,Central,false,EUR
-cloud-vps-60,Region,America,United States (East),15.35,0,America,United States (East),US,East,false,EUR
-cloud-vps-60,Region,America,United States (West),12.8,0,America,United States (West),US,West,false,EUR
-cloud-vps-60,Region,Asia,India,18.68,0,Asia,India,IN,,false,EUR
-cloud-vps-60,Region,Asia,Japan,20.4,0,Asia,Japan,JP,,false,EUR
-cloud-vps-60,Region,Asia,Singapore,19.92,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-60,Region,Australia,Australia,16.92,0,Australia,Australia,AU,,false,EUR
-cloud-vps-60,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-60,Region,Europe,United Kingdom,6.18,0,Europe,United Kingdom,UK,,false,EUR
-cloud-vps-60,Storage Type,NVMe,350 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-60,Storage Type,NVMe,700 GB NVMe,5.75,0,,,,,false,EUR
-cloud-vps-60,Storage Type,SSD,1.4 TB SSD,6.95,0,,,,,false,EUR
-cloud-vps-60,Storage Type,SSD,700 GB SSD,0,0,,,,,false,EUR
-storage-vps-10,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-storage-vps-10,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-storage-vps-10,Image,Apps,Docker,0,0,,,,,false,EUR
-storage-vps-10,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-storage-vps-10,Image,Apps,LAMP,0,0,,,,,false,EUR
-storage-vps-10,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-storage-vps-10,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-storage-vps-10,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-storage-vps-10,Image,Apps,n8n Server,0,0,,,,,false,EUR
-storage-vps-10,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-storage-vps-10,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-storage-vps-10,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-storage-vps-10,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-storage-vps-10,Image,OS,Arch Linux,0,0,,,,,false,EUR
-storage-vps-10,Image,OS,Debian 12,0,0,,,,,false,EUR
-storage-vps-10,Image,OS,Debian 13,0,0,,,,,false,EUR
-storage-vps-10,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-storage-vps-10,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-storage-vps-10,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-storage-vps-10,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-storage-vps-10,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-storage-vps-10,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-storage-vps-10,Image,OS,Windows Server 2016 Datacenter,4,0,,,,,false,EUR
-storage-vps-10,Image,OS,Windows Server 2022 Datacenter,4.75,0,,,,,false,EUR
-storage-vps-10,Image,OS,Windows Server 2025 Datacenter,4.75,0,,,,,false,EUR
-storage-vps-10,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-storage-vps-10,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-storage-vps-10,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-storage-vps-10,Image,Panels,Webmin,0,0,,,,,false,EUR
-storage-vps-10,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-storage-vps-10,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-storage-vps-10,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-10,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-10,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-storage-vps-10,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-storage-vps-10,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-storage-vps-10,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-storage-vps-10,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-storage-vps-10,Region,America,United States (Central),0.95,0,America,United States (Central),US,Central,false,EUR
-storage-vps-10,Region,America,United States (East),1.4,0,America,United States (East),US,East,false,EUR
-storage-vps-10,Region,America,United States (West),1.15,0,America,United States (West),US,West,false,EUR
-storage-vps-10,Region,Asia,India,2.15,0,Asia,India,IN,,false,EUR
-storage-vps-10,Region,Asia,Japan,2.35,0,Asia,Japan,JP,,false,EUR
-storage-vps-10,Region,Asia,Singapore,2.3,0,Asia,Singapore,SG,,false,EUR
-storage-vps-10,Region,Australia,Australia,1.95,0,Australia,Australia,AU,,false,EUR
-storage-vps-10,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-10,Region,Europe,United Kingdom,0.95,0,Europe,United Kingdom,UK,,false,EUR
-storage-vps-10,Storage Type,SSD,300 GB SSD,0,0,,,,,true,EUR
-storage-vps-20,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-storage-vps-20,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-storage-vps-20,Image,Apps,Docker,0,0,,,,,false,EUR
-storage-vps-20,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-storage-vps-20,Image,Apps,LAMP,0,0,,,,,false,EUR
-storage-vps-20,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-storage-vps-20,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-storage-vps-20,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-storage-vps-20,Image,Apps,n8n Server,0,0,,,,,false,EUR
-storage-vps-20,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-storage-vps-20,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-storage-vps-20,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-storage-vps-20,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-storage-vps-20,Image,OS,Arch Linux,0,0,,,,,false,EUR
-storage-vps-20,Image,OS,Debian 12,0,0,,,,,false,EUR
-storage-vps-20,Image,OS,Debian 13,0,0,,,,,false,EUR
-storage-vps-20,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-storage-vps-20,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-storage-vps-20,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-storage-vps-20,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-storage-vps-20,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-storage-vps-20,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-storage-vps-20,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,false,EUR
-storage-vps-20,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,false,EUR
-storage-vps-20,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,false,EUR
-storage-vps-20,Image,OS,Windows Server 2025 Datacenter,7.5,0,,,,,false,EUR
-storage-vps-20,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-storage-vps-20,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-storage-vps-20,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-storage-vps-20,Image,Panels,Webmin,0,0,,,,,false,EUR
-storage-vps-20,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-storage-vps-20,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-storage-vps-20,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-20,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-20,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-storage-vps-20,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-storage-vps-20,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-storage-vps-20,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-storage-vps-20,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-storage-vps-20,Region,America,United States (Central),0.36,0,America,United States (Central),US,Central,false,EUR
-storage-vps-20,Region,America,United States (East),2.2,0,America,United States (East),US,East,false,EUR
-storage-vps-20,Region,America,United States (West),1.85,0,America,United States (West),US,West,false,EUR
-storage-vps-20,Region,Asia,India,1.67,0,Asia,India,IN,,false,EUR
-storage-vps-20,Region,Asia,Japan,1.82,0,Asia,Japan,JP,,false,EUR
-storage-vps-20,Region,Asia,Singapore,1.77,0,Asia,Singapore,SG,,false,EUR
-storage-vps-20,Region,Australia,Australia,1.5,0,Australia,Australia,AU,,false,EUR
-storage-vps-20,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-20,Region,Europe,United Kingdom,0.36,0,Europe,United Kingdom,UK,,false,EUR
-storage-vps-20,Storage Type,SSD,400 GB SSD,0,0,,,,,true,EUR
-storage-vps-30,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-storage-vps-30,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-storage-vps-30,Image,Apps,Docker,0,0,,,,,false,EUR
-storage-vps-30,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-storage-vps-30,Image,Apps,LAMP,0,0,,,,,false,EUR
-storage-vps-30,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-storage-vps-30,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-storage-vps-30,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-storage-vps-30,Image,Apps,n8n Server,0,0,,,,,false,EUR
-storage-vps-30,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
-storage-vps-30,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
-storage-vps-30,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-storage-vps-30,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-storage-vps-30,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-storage-vps-30,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-storage-vps-30,Image,OS,Arch Linux,0,0,,,,,false,EUR
-storage-vps-30,Image,OS,Debian 12,0,0,,,,,false,EUR
-storage-vps-30,Image,OS,Debian 13,0,0,,,,,false,EUR
-storage-vps-30,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-storage-vps-30,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-storage-vps-30,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-storage-vps-30,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-storage-vps-30,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-storage-vps-30,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-storage-vps-30,Image,OS,Windows Server 2016 Datacenter,12.6,0,,,,,false,EUR
-storage-vps-30,Image,OS,Windows Server 2019 Datacenter,15.5,0,,,,,false,EUR
-storage-vps-30,Image,OS,Windows Server 2022 Datacenter,15.5,0,,,,,false,EUR
-storage-vps-30,Image,OS,Windows Server 2025 Datacenter,15.5,0,,,,,false,EUR
-storage-vps-30,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-storage-vps-30,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-storage-vps-30,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-storage-vps-30,Image,Panels,Webmin,0,0,,,,,false,EUR
-storage-vps-30,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-storage-vps-30,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-storage-vps-30,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-30,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-30,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-storage-vps-30,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-storage-vps-30,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-storage-vps-30,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-storage-vps-30,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-storage-vps-30,Region,America,United States (Central),0.73,0,America,United States (Central),US,Central,false,EUR
-storage-vps-30,Region,America,United States (East),4.4,0,America,United States (East),US,East,false,EUR
-storage-vps-30,Region,America,United States (West),3.65,0,America,United States (West),US,West,false,EUR
-storage-vps-30,Region,Asia,India,3.35,0,Asia,India,IN,,false,EUR
-storage-vps-30,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,false,EUR
-storage-vps-30,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,false,EUR
-storage-vps-30,Region,Australia,Australia,3.02,0,Australia,Australia,AU,,false,EUR
-storage-vps-30,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-30,Region,Europe,United Kingdom,0.73,0,Europe,United Kingdom,UK,,false,EUR
-storage-vps-30,Storage Type,SSD,1 TB SSD,0,0,,,,,true,EUR
-storage-vps-40,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-storage-vps-40,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-storage-vps-40,Image,Apps,Docker,0,0,,,,,false,EUR
-storage-vps-40,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-storage-vps-40,Image,Apps,LAMP,0,0,,,,,false,EUR
-storage-vps-40,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-storage-vps-40,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-storage-vps-40,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-storage-vps-40,Image,Apps,n8n Server,0,0,,,,,false,EUR
-storage-vps-40,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
-storage-vps-40,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
-storage-vps-40,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-storage-vps-40,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-storage-vps-40,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-storage-vps-40,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-storage-vps-40,Image,OS,Arch Linux,0,0,,,,,false,EUR
-storage-vps-40,Image,OS,Debian 12,0,0,,,,,false,EUR
-storage-vps-40,Image,OS,Debian 13,0,0,,,,,false,EUR
-storage-vps-40,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-storage-vps-40,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-storage-vps-40,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-storage-vps-40,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-storage-vps-40,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-storage-vps-40,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-storage-vps-40,Image,OS,Windows Server 2016 Datacenter,23.1,0,,,,,false,EUR
-storage-vps-40,Image,OS,Windows Server 2019 Datacenter,26,0,,,,,false,EUR
-storage-vps-40,Image,OS,Windows Server 2022 Datacenter,26,0,,,,,false,EUR
-storage-vps-40,Image,OS,Windows Server 2025 Datacenter,26,0,,,,,false,EUR
-storage-vps-40,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-storage-vps-40,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-storage-vps-40,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-storage-vps-40,Image,Panels,Webmin,0,0,,,,,false,EUR
-storage-vps-40,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-storage-vps-40,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-storage-vps-40,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-40,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-40,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-storage-vps-40,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-storage-vps-40,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-storage-vps-40,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-storage-vps-40,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-storage-vps-40,Region,America,United States (Central),2.1,0,America,United States (Central),US,Central,false,EUR
-storage-vps-40,Region,America,United States (East),7.85,0,America,United States (East),US,East,false,EUR
-storage-vps-40,Region,America,United States (West),6.55,0,America,United States (West),US,West,false,EUR
-storage-vps-40,Region,Asia,India,7.14,0,Asia,India,IN,,false,EUR
-storage-vps-40,Region,Asia,Japan,7.8,0,Asia,Japan,JP,,false,EUR
-storage-vps-40,Region,Asia,Singapore,7.62,0,Asia,Singapore,SG,,false,EUR
-storage-vps-40,Region,Australia,Australia,6.48,0,Australia,Australia,AU,,false,EUR
-storage-vps-40,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-40,Region,Europe,United Kingdom,2.1,0,Europe,United Kingdom,UK,,false,EUR
-storage-vps-40,Storage Type,SSD,1.2 TB SSD,0,0,,,,,true,EUR
-storage-vps-50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-storage-vps-50,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-storage-vps-50,Image,Apps,Docker,0,0,,,,,false,EUR
-storage-vps-50,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-storage-vps-50,Image,Apps,LAMP,0,0,,,,,false,EUR
-storage-vps-50,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-storage-vps-50,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-storage-vps-50,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-storage-vps-50,Image,Apps,n8n Server,0,0,,,,,false,EUR
-storage-vps-50,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
-storage-vps-50,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
-storage-vps-50,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-storage-vps-50,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-storage-vps-50,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-storage-vps-50,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-storage-vps-50,Image,OS,Arch Linux,0,0,,,,,false,EUR
-storage-vps-50,Image,OS,Debian 12,0,0,,,,,false,EUR
-storage-vps-50,Image,OS,Debian 13,0,0,,,,,false,EUR
-storage-vps-50,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-storage-vps-50,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-storage-vps-50,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-storage-vps-50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-storage-vps-50,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-storage-vps-50,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-storage-vps-50,Image,OS,Windows Server 2016 Datacenter,45.6,0,,,,,false,EUR
-storage-vps-50,Image,OS,Windows Server 2019 Datacenter,49,0,,,,,false,EUR
-storage-vps-50,Image,OS,Windows Server 2022 Datacenter,49,0,,,,,false,EUR
-storage-vps-50,Image,OS,Windows Server 2025 Datacenter,49,0,,,,,false,EUR
-storage-vps-50,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-storage-vps-50,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-storage-vps-50,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-storage-vps-50,Image,Panels,Webmin,0,0,,,,,false,EUR
-storage-vps-50,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-storage-vps-50,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-storage-vps-50,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-50,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-storage-vps-50,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-storage-vps-50,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-storage-vps-50,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-storage-vps-50,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-storage-vps-50,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-storage-vps-50,Region,America,United States (Central),3.9,0,America,United States (Central),US,Central,false,EUR
-storage-vps-50,Region,America,United States (East),11.6,0,America,United States (East),US,East,false,EUR
-storage-vps-50,Region,America,United States (West),9.65,0,America,United States (West),US,West,false,EUR
-storage-vps-50,Region,Asia,India,12.35,0,Asia,India,IN,,false,EUR
-storage-vps-50,Region,Asia,Japan,13.47,0,Asia,Japan,JP,,false,EUR
-storage-vps-50,Region,Asia,Singapore,13.16,0,Asia,Singapore,SG,,false,EUR
-storage-vps-50,Region,Australia,Australia,11.16,0,Australia,Australia,AU,,false,EUR
-storage-vps-50,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-50,Region,Europe,United Kingdom,3.9,0,Europe,United Kingdom,UK,,false,EUR
-storage-vps-50,Storage Type,SSD,1.4 TB SSD,0,0,,,,,true,EUR
-vds-s,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
-vds-s,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-vds-s,Image,Apps,Docker,0,0,,,,,false,EUR
-vds-s,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-vds-s,Image,Apps,LAMP,0,0,,,,,false,EUR
-vds-s,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-vds-s,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-vds-s,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-vds-s,Image,Apps,n8n Server,0,0,,,,,false,EUR
-vds-s,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
-vds-s,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
-vds-s,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-vds-s,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-vds-s,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-vds-s,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-vds-s,Image,OS,Arch Linux,0,0,,,,,false,EUR
-vds-s,Image,OS,Debian 12,0,0,,,,,false,EUR
-vds-s,Image,OS,Debian 13,0,0,,,,,false,EUR
-vds-s,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-vds-s,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-vds-s,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-vds-s,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-vds-s,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-vds-s,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-vds-s,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
-vds-s,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
-vds-s,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
-vds-s,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
-vds-s,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
-vds-s,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-vds-s,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-vds-s,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-vds-s,Image,Panels,Webmin,0,0,,,,,false,EUR
-vds-s,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-vds-s,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-vds-s,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-s,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-s,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-vds-s,Networking,Bandwidth,Unlimited and Unmetered Traffic,86.29,0,,,,,false,EUR
-vds-s,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-s,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-vds-s,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-vds-s,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-s,Region,America,United States (Central),2.02,0,America,United States (Central),US,Central,false,EUR
-vds-s,Region,America,United States (East),10.4,0,America,United States (East),US,East,false,EUR
-vds-s,Region,America,United States (West),9.2,0,America,United States (West),US,West,false,EUR
-vds-s,Region,Asia,India,7.12,0,Asia,India,IN,,false,EUR
-vds-s,Region,Asia,Japan,7.75,0,Asia,Japan,JP,,false,EUR
-vds-s,Region,Asia,Singapore,7.5,0,Asia,Singapore,SG,,false,EUR
-vds-s,Region,Australia,Australia,6.35,0,Australia,Australia,AU,,false,EUR
-vds-s,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-s,Region,Europe,United Kingdom,4.05,0,Europe,United Kingdom,UK,,false,EUR
-vds-s,Storage,NVMe,180 GB NVMe,0,0,,,,,true,EUR
-vds-s,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
-vds-s,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
-vds-s,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
-vds-m,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
-vds-m,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-vds-m,Image,Apps,DeepSeek,0,0,,,,,false,EUR
-vds-m,Image,Apps,Docker,0,0,,,,,false,EUR
-vds-m,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-vds-m,Image,Apps,LAMP,0,0,,,,,false,EUR
-vds-m,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-vds-m,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-vds-m,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-vds-m,Image,Apps,n8n Server,0,0,,,,,false,EUR
-vds-m,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
-vds-m,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
-vds-m,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-vds-m,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-vds-m,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-vds-m,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-vds-m,Image,OS,Arch Linux,0,0,,,,,false,EUR
-vds-m,Image,OS,Debian 12,0,0,,,,,false,EUR
-vds-m,Image,OS,Debian 13,0,0,,,,,false,EUR
-vds-m,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-vds-m,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-vds-m,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-vds-m,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-vds-m,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-vds-m,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-vds-m,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
-vds-m,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
-vds-m,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
-vds-m,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
-vds-m,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
-vds-m,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-vds-m,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-vds-m,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-vds-m,Image,Panels,Webmin,0,0,,,,,false,EUR
-vds-m,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-vds-m,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-vds-m,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-m,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-m,Networking,Bandwidth,80 TB Out + Unlimited In,86.29,0,,,,,false,EUR
-vds-m,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-vds-m,Networking,Bandwidth,Unlimited and Unmetered Traffic,172.49,0,,,,,false,EUR
-vds-m,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-m,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-vds-m,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-vds-m,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-m,Region,America,United States (Central),5.2,0,America,United States (Central),US,Central,false,EUR
-vds-m,Region,America,United States (East),12.7,0,America,United States (East),US,East,false,EUR
-vds-m,Region,America,United States (West),11.5,0,America,United States (West),US,West,false,EUR
-vds-m,Region,Asia,India,11.16,0,Asia,India,IN,,false,EUR
-vds-m,Region,Asia,Japan,12.15,0,Asia,Japan,JP,,false,EUR
-vds-m,Region,Asia,Singapore,11.76,0,Asia,Singapore,SG,,false,EUR
-vds-m,Region,Australia,Australia,10.02,0,Australia,Australia,AU,,false,EUR
-vds-m,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-m,Region,Europe,United Kingdom,6.24,0,Europe,United Kingdom,UK,,false,EUR
-vds-m,Storage,NVMe,240 GB NVMe,0,0,,,,,true,EUR
-vds-m,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
-vds-m,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
-vds-m,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
-vds-l,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
-vds-l,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-vds-l,Image,Apps,DeepSeek,0,0,,,,,false,EUR
-vds-l,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-vds-l,Image,Apps,LAMP,0,0,,,,,false,EUR
-vds-l,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-vds-l,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-vds-l,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-vds-l,Image,Apps,n8n Server,0,0,,,,,false,EUR
-vds-l,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
-vds-l,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
-vds-l,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-vds-l,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-vds-l,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-vds-l,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-vds-l,Image,OS,Arch Linux,0,0,,,,,false,EUR
-vds-l,Image,OS,Debian 12,0,0,,,,,false,EUR
-vds-l,Image,OS,Debian 13,0,0,,,,,false,EUR
-vds-l,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-vds-l,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-vds-l,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-vds-l,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-vds-l,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-vds-l,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-vds-l,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
-vds-l,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
-vds-l,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
-vds-l,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
-vds-l,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
-vds-l,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-vds-l,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-vds-l,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-vds-l,Image,Panels,Webmin,0,0,,,,,false,EUR
-vds-l,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-vds-l,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-vds-l,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-l,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,false,EUR
-vds-l,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-l,Networking,Bandwidth,80 TB Out + Unlimited In,86.29,0,,,,,false,EUR
-vds-l,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-vds-l,Networking,Bandwidth,Unlimited and Unmetered Traffic,258.79,0,,,,,false,EUR
-vds-l,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-l,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-vds-l,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-vds-l,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-l,Region,America,United States (Central),5.2,0,America,United States (Central),US,Central,false,EUR
-vds-l,Region,America,United States (East),12.7,0,America,United States (East),US,East,false,EUR
-vds-l,Region,America,United States (West),11.5,0,America,United States (West),US,West,false,EUR
-vds-l,Region,Asia,India,18.34,0,Asia,India,IN,,false,EUR
-vds-l,Region,Asia,Japan,19.95,0,Asia,Japan,JP,,false,EUR
-vds-l,Region,Asia,Singapore,19.32,0,Asia,Singapore,SG,,false,EUR
-vds-l,Region,Australia,Australia,16.52,0,Australia,Australia,AU,,false,EUR
-vds-l,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-l,Region,Europe,United Kingdom,7.28,0,Europe,United Kingdom,UK,,false,EUR
-vds-l,Storage,NVMe,360 GB NVMe,0,0,,,,,true,EUR
-vds-l,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
-vds-l,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
-vds-l,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
-vds-xl,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
-vds-xl,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-vds-xl,Image,Apps,DeepSeek,0,0,,,,,false,EUR
-vds-xl,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-vds-xl,Image,Apps,LAMP,0,0,,,,,false,EUR
-vds-xl,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-vds-xl,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-vds-xl,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-vds-xl,Image,Apps,n8n Server,0,0,,,,,false,EUR
-vds-xl,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
-vds-xl,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
-vds-xl,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-vds-xl,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-vds-xl,Image,OS,Arch Linux,0,0,,,,,false,EUR
-vds-xl,Image,OS,Debian 12,0,0,,,,,false,EUR
-vds-xl,Image,OS,Debian 13,0,0,,,,,false,EUR
-vds-xl,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-vds-xl,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-vds-xl,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-vds-xl,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-vds-xl,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-vds-xl,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-vds-xl,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
-vds-xl,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
-vds-xl,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
-vds-xl,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
-vds-xl,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
-vds-xl,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-vds-xl,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-vds-xl,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-vds-xl,Image,Panels,Webmin,0,0,,,,,false,EUR
-vds-xl,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-vds-xl,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-xl,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,false,EUR
-vds-xl,Networking,Bandwidth,243 TB Out + Unlimited In,258.79,0,,,,,false,EUR
-vds-xl,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-xl,Networking,Bandwidth,80 TB Out + Unlimited In,86.29,0,,,,,false,EUR
-vds-xl,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-vds-xl,Networking,Bandwidth,Unlimited and Unmetered Traffic,344.99,0,,,,,false,EUR
-vds-xl,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-xl,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-vds-xl,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-vds-xl,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-xl,Region,America,United States (Central),5.2,0,America,United States (Central),US,Central,false,EUR
-vds-xl,Region,America,United States (East),12.7,0,America,United States (East),US,East,false,EUR
-vds-xl,Region,America,United States (West),11.5,0,America,United States (West),US,West,false,EUR
-vds-xl,Region,Asia,India,25.42,0,Asia,India,IN,,false,EUR
-vds-xl,Region,Asia,Japan,27.56,0,Asia,Japan,JP,,false,EUR
-vds-xl,Region,Asia,Singapore,26.77,0,Asia,Singapore,SG,,false,EUR
-vds-xl,Region,Australia,Australia,22.87,0,Australia,Australia,AU,,false,EUR
-vds-xl,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-xl,Region,Europe,United Kingdom,7.8,0,Europe,United Kingdom,UK,,false,EUR
-vds-xl,Storage,NVMe,480 GB NVMe,0,0,,,,,true,EUR
-vds-xl,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
-vds-xl,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
-vds-xl,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
-vds-xxl,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
-vds-xxl,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-vds-xxl,Image,Apps,DeepSeek,0,0,,,,,false,EUR
-vds-xxl,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-vds-xxl,Image,Apps,LAMP,0,0,,,,,false,EUR
-vds-xxl,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-vds-xxl,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-vds-xxl,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-vds-xxl,Image,Apps,n8n Server,0,0,,,,,false,EUR
-vds-xxl,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
-vds-xxl,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
-vds-xxl,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-vds-xxl,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-vds-xxl,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-vds-xxl,Image,OS,Arch Linux,0,0,,,,,false,EUR
-vds-xxl,Image,OS,Debian 12,0,0,,,,,false,EUR
-vds-xxl,Image,OS,Debian 13,0,0,,,,,false,EUR
-vds-xxl,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-vds-xxl,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-vds-xxl,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-vds-xxl,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-vds-xxl,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
-vds-xxl,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-vds-xxl,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
-vds-xxl,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
-vds-xxl,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
-vds-xxl,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
-vds-xxl,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
-vds-xxl,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-vds-xxl,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-vds-xxl,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-vds-xxl,Image,Panels,Webmin,0,0,,,,,false,EUR
-vds-xxl,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-vds-xxl,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-vds-xxl,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-xxl,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,false,EUR
-vds-xxl,Networking,Bandwidth,243 TB Out + Unlimited In,258.79,0,,,,,false,EUR
-vds-xxl,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
-vds-xxl,Networking,Bandwidth,80 TB Out + Unlimited In,86.29,0,,,,,false,EUR
-vds-xxl,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
-vds-xxl,Networking,Bandwidth,Unlimited and Unmetered Traffic,344.99,0,,,,,false,EUR
-vds-xxl,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-xxl,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
-vds-xxl,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-vds-xxl,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-xxl,Region,America,United States (Central),7.62,0,America,United States (Central),US,Central,false,EUR
-vds-xxl,Region,America,United States (East),15,0,America,United States (East),US,East,false,EUR
-vds-xxl,Region,America,United States (West),13.8,0,America,United States (West),US,West,false,EUR
-vds-xxl,Region,Asia,India,40.2,0,Asia,India,IN,,false,EUR
-vds-xxl,Region,Asia,Japan,43.6,0,Asia,Japan,JP,,false,EUR
-vds-xxl,Region,Asia,Singapore,42.32,0,Asia,Singapore,SG,,false,EUR
-vds-xxl,Region,Australia,Australia,36.12,0,Australia,Australia,AU,,false,EUR
-vds-xxl,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-xxl,Region,Europe,United Kingdom,10.16,0,Europe,United Kingdom,UK,,false,EUR
-vds-xxl,Storage,NVMe,720 GB NVMe,0,0,,,,,true,EUR
-vds-xxl,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
-vds-xxl,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
-vds-xxl,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
+plan_sku,plan_slug,plan_family,plan_name,dimension,category,option_label,monthly_price_delta,setup_fee_delta,region_group,country,country_code,subregion,is_default,currency
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Data Protection,Auto Backup,Auto Backup,1.5,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Docker,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,LAMP,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,n8n Server,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Arch Linux,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 12,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 13,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2025 Datacenter,7.5,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Webmin,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (Central),0.95,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (East),1.4,0,America,United States (East),US,East,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (West),1.15,0,America,United States (West),US,West,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,India,2.15,0,Asia,India,IN,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Japan,2.35,0,Asia,Japan,JP,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Singapore,2.3,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Australia,Australia,1.95,0,Australia,Australia,AU,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Europe,United Kingdom,0.95,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,NVMe,150 GB NVMe,1.85,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,NVMe,75 GB NVMe,0,0,,,,,true,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,SSD,150 GB SSD,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,SSD,300 GB SSD,1.55,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Data Protection,Auto Backup,Auto Backup,2,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Docker,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,LAMP,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,n8n Server,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Arch Linux,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Debian 12,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Debian 13,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2016 Datacenter,12.6,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2019 Datacenter,15.5,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2022 Datacenter,15.5,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2025 Datacenter,15.5,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Panels,Webmin,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (Central),0.36,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (East),2.2,0,America,United States (East),US,East,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (West),1.85,0,America,United States (West),US,West,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,India,1.67,0,Asia,India,IN,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Japan,1.82,0,Asia,Japan,JP,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Singapore,1.77,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Australia,Australia,1.5,0,Australia,Australia,AU,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Europe,United Kingdom,0.36,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,NVMe,100 GB NVMe,0,0,,,,,true,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,NVMe,200 GB NVMe,2.55,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,SSD,200 GB SSD,0,0,,,,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,SSD,400 GB SSD,1.95,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Data Protection,Auto Backup,Auto Backup,3.5,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Docker,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,LAMP,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,n8n Server,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Arch Linux,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Debian 12,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Debian 13,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2016 Datacenter,23.1,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2019 Datacenter,26,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2022 Datacenter,26,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2025 Datacenter,26,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Webmin,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (Central),0.73,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (East),4.4,0,America,United States (East),US,East,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (West),3.65,0,America,United States (West),US,West,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,India,3.35,0,Asia,India,IN,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Australia,Australia,3.02,0,Australia,Australia,AU,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Europe,United Kingdom,0.73,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,NVMe,200 GB NVMe,0,0,,,,,true,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,NVMe,400 GB NVMe,3.25,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,SSD,400 GB SSD,0,0,,,,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,SSD,800 GB SSD,3.85,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Data Protection,Auto Backup,Auto Backup,6,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Docker,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,LAMP,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,n8n Server,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Arch Linux,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Debian 12,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Debian 13,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2016 Datacenter,45.6,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2019 Datacenter,49,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2022 Datacenter,49,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2025 Datacenter,49,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Webmin,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (Central),2.1,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (East),7.85,0,America,United States (East),US,East,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (West),6.55,0,America,United States (West),US,West,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,India,7.14,0,Asia,India,IN,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Japan,7.8,0,Asia,Japan,JP,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Singapore,7.62,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Australia,Australia,6.48,0,Australia,Australia,AU,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Europe,United Kingdom,2.1,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,NVMe,250 GB NVMe,0,0,,,,,true,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,NVMe,500 GB NVMe,3.85,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,SSD,1 TB SSD,4.95,0,,,,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,SSD,500 GB SSD,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Data Protection,Auto Backup,Auto Backup,7.5,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Docker,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,LAMP,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,n8n Server,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Arch Linux,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Debian 12,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Debian 13,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2016 Datacenter,55.7,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2019 Datacenter,58.5,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2022 Datacenter,58.5,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2025 Datacenter,58.5,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Webmin,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (Central),3.9,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (East),11.6,0,America,United States (East),US,East,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (West),9.65,0,America,United States (West),US,West,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,India,12.35,0,Asia,India,IN,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Japan,13.47,0,Asia,Japan,JP,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Singapore,13.16,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Australia,Australia,11.16,0,Australia,Australia,AU,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,United Kingdom,3.9,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,NVMe,300 GB NVMe,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,NVMe,600 GB NVMe,4.75,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,SSD,1.2 TB SSD,6.15,0,,,,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,SSD,600 GB SSD,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Data Protection,Auto Backup,Auto Backup,9.5,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Docker,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,LAMP,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,n8n Server,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Arch Linux,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Debian 12,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Debian 13,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2016 Datacenter,65,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2019 Datacenter,70,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2022 Datacenter,70,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2025 Datacenter,70,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Webmin,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (Central),6.18,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (East),15.35,0,America,United States (East),US,East,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (West),12.8,0,America,United States (West),US,West,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,India,18.68,0,Asia,India,IN,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Japan,20.4,0,Asia,Japan,JP,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Singapore,19.92,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Australia,Australia,16.92,0,Australia,Australia,AU,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,United Kingdom,6.18,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,NVMe,350 GB NVMe,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,NVMe,700 GB NVMe,5.75,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,SSD,1.4 TB SSD,6.95,0,,,,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,SSD,700 GB SSD,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Docker,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,LAMP,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,n8n Server,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Arch Linux,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Debian 12,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Debian 13,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2016 Datacenter,4,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2022 Datacenter,4.75,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2025 Datacenter,4.75,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Panels,Webmin,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,America,United States (Central),0.95,0,America,United States (Central),US,Central,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,America,United States (East),1.4,0,America,United States (East),US,East,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,America,United States (West),1.15,0,America,United States (West),US,West,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Asia,India,2.15,0,Asia,India,IN,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Asia,Japan,2.35,0,Asia,Japan,JP,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Asia,Singapore,2.3,0,Asia,Singapore,SG,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Australia,Australia,1.95,0,Australia,Australia,AU,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Europe,United Kingdom,0.95,0,Europe,United Kingdom,UK,,false,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Storage Type,SSD,300 GB SSD,0,0,,,,,true,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Docker,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,LAMP,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,n8n Server,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Arch Linux,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Debian 12,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Debian 13,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2025 Datacenter,7.5,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Panels,Webmin,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (Central),0.36,0,America,United States (Central),US,Central,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (East),2.2,0,America,United States (East),US,East,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (West),1.85,0,America,United States (West),US,West,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,India,1.67,0,Asia,India,IN,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Japan,1.82,0,Asia,Japan,JP,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Singapore,1.77,0,Asia,Singapore,SG,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Australia,Australia,1.5,0,Australia,Australia,AU,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Europe,United Kingdom,0.36,0,Europe,United Kingdom,UK,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Storage Type,SSD,400 GB SSD,0,0,,,,,true,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Docker,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,LAMP,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,n8n Server,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Arch Linux,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Debian 12,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Debian 13,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2016 Datacenter,12.6,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2019 Datacenter,15.5,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2022 Datacenter,15.5,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2025 Datacenter,15.5,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Panels,Webmin,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (Central),0.73,0,America,United States (Central),US,Central,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (East),4.4,0,America,United States (East),US,East,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (West),3.65,0,America,United States (West),US,West,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,India,3.35,0,Asia,India,IN,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Australia,Australia,3.02,0,Australia,Australia,AU,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Europe,United Kingdom,0.73,0,Europe,United Kingdom,UK,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Storage Type,SSD,1 TB SSD,0,0,,,,,true,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Docker,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,LAMP,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,n8n Server,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Arch Linux,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Debian 12,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Debian 13,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2016 Datacenter,23.1,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2019 Datacenter,26,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2022 Datacenter,26,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2025 Datacenter,26,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Panels,Webmin,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (Central),2.1,0,America,United States (Central),US,Central,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (East),7.85,0,America,United States (East),US,East,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (West),6.55,0,America,United States (West),US,West,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,India,7.14,0,Asia,India,IN,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Japan,7.8,0,Asia,Japan,JP,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Singapore,7.62,0,Asia,Singapore,SG,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Australia,Australia,6.48,0,Australia,Australia,AU,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Europe,United Kingdom,2.1,0,Europe,United Kingdom,UK,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Storage Type,SSD,1.2 TB SSD,0,0,,,,,true,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Docker,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,LAMP,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,n8n Server,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Arch Linux,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Debian 12,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Debian 13,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2016 Datacenter,45.6,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2019 Datacenter,49,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2022 Datacenter,49,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2025 Datacenter,49,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Panels,Webmin,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (Central),3.9,0,America,United States (Central),US,Central,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (East),11.6,0,America,United States (East),US,East,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (West),9.65,0,America,United States (West),US,West,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,India,12.35,0,Asia,India,IN,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Japan,13.47,0,Asia,Japan,JP,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Singapore,13.16,0,Asia,Singapore,SG,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Australia,Australia,11.16,0,Australia,Australia,AU,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Europe,United Kingdom,3.9,0,Europe,United Kingdom,UK,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Storage Type,SSD,1.4 TB SSD,0,0,,,,,true,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Docker,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,LAMP,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,n8n Server,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Arch Linux,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Debian 12,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Debian 13,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Webmin,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited and Unmetered Traffic,86.29,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (Central),2.02,0,America,United States (Central),US,Central,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (East),10.4,0,America,United States (East),US,East,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (West),9.2,0,America,United States (West),US,West,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,India,7.12,0,Asia,India,IN,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Japan,7.75,0,Asia,Japan,JP,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Singapore,7.5,0,Asia,Singapore,SG,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Australia,Australia,6.35,0,Australia,Australia,AU,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,United Kingdom,4.05,0,Europe,United Kingdom,UK,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Storage,NVMe,180 GB NVMe,0,0,,,,,true,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,DeepSeek,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Docker,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,LAMP,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,n8n Server,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Arch Linux,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Debian 12,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Debian 13,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Webmin,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Bandwidth,80 TB Out + Unlimited In,86.29,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Bandwidth,Unlimited and Unmetered Traffic,172.49,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (Central),5.2,0,America,United States (Central),US,Central,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (East),12.7,0,America,United States (East),US,East,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (West),11.5,0,America,United States (West),US,West,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,India,11.16,0,Asia,India,IN,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,Japan,12.15,0,Asia,Japan,JP,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,Singapore,11.76,0,Asia,Singapore,SG,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Australia,Australia,10.02,0,Australia,Australia,AU,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Europe,United Kingdom,6.24,0,Europe,United Kingdom,UK,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Storage,NVMe,240 GB NVMe,0,0,,,,,true,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,DeepSeek,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,LAMP,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,n8n Server,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Arch Linux,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Debian 12,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Debian 13,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Webmin,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,80 TB Out + Unlimited In,86.29,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,Unlimited and Unmetered Traffic,258.79,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (Central),5.2,0,America,United States (Central),US,Central,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (East),12.7,0,America,United States (East),US,East,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (West),11.5,0,America,United States (West),US,West,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,India,18.34,0,Asia,India,IN,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,Japan,19.95,0,Asia,Japan,JP,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,Singapore,19.32,0,Asia,Singapore,SG,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Australia,Australia,16.52,0,Australia,Australia,AU,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Europe,United Kingdom,7.28,0,Europe,United Kingdom,UK,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,NVMe,360 GB NVMe,0,0,,,,,true,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,DeepSeek,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,LAMP,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,n8n Server,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Arch Linux,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Debian 12,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Debian 13,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Webmin,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,243 TB Out + Unlimited In,258.79,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,80 TB Out + Unlimited In,86.29,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,Unlimited and Unmetered Traffic,344.99,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (Central),5.2,0,America,United States (Central),US,Central,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (East),12.7,0,America,United States (East),US,East,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (West),11.5,0,America,United States (West),US,West,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,India,25.42,0,Asia,India,IN,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,Japan,27.56,0,Asia,Japan,JP,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,Singapore,26.77,0,Asia,Singapore,SG,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Australia,Australia,22.87,0,Australia,Australia,AU,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Europe,United Kingdom,7.8,0,Europe,United Kingdom,UK,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Storage,NVMe,480 GB NVMe,0,0,,,,,true,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Coolify Server,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,DeepSeek,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,GitLab Server,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,LAMP,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,n8n Server,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Arch Linux,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Debian 12,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Debian 13,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2022 Standard,50,50,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2025 Standard,50,50,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,243 TB Out + Unlimited In,258.79,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,80 TB Out + Unlimited In,86.29,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,Unlimited and Unmetered Traffic,344.99,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (Central),7.62,0,America,United States (Central),US,Central,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (East),15,0,America,United States (East),US,East,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (West),13.8,0,America,United States (West),US,West,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,India,40.2,0,Asia,India,IN,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Japan,43.6,0,Asia,Japan,JP,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Singapore,42.32,0,Asia,Singapore,SG,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Australia,Australia,36.12,0,Australia,Australia,AU,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Europe,United Kingdom,10.16,0,Europe,United Kingdom,UK,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Storage,NVMe,720 GB NVMe,0,0,,,,,true,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR

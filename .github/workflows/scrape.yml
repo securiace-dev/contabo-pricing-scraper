@@ -95,6 +95,9 @@ jobs:
             --plan-urls-file  data/plan_urls.json \
             $EXTRA_ARGS
 
+      - name: Enrich output
+        run: node .github/scripts/enrich_output.js
+
       - name: Generate PRICES.md
         run: node .github/scripts/generate_report.js
 
