@@ -92,15 +92,15 @@ cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,IPv4,1 IP Address,0,
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (Central),0.36,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (Central),1.45,0,America,United States (Central),US,Central,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (East),2.2,0,America,United States (East),US,East,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (West),1.85,0,America,United States (West),US,West,false,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,India,1.67,0,Asia,India,IN,,false,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Japan,1.82,0,Asia,Japan,JP,,false,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Singapore,1.77,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Australia,Australia,1.5,0,Australia,Australia,AU,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,India,3.35,0,Asia,India,IN,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Australia,Australia,3,0,Australia,Australia,AU,,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Europe,United Kingdom,0.36,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Europe,United Kingdom,1.45,0,Europe,United Kingdom,UK,,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,NVMe,100 GB NVMe,0,0,,,,,true,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,NVMe,200 GB NVMe,2.55,0,,,,,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,SSD,200 GB SSD,0,0,,,,,false,EUR
@@ -145,15 +145,15 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,IPv4,1 IP Address,0,
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (Central),0.73,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (Central),2.95,0,America,United States (Central),US,Central,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (East),4.4,0,America,United States (East),US,East,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (West),3.65,0,America,United States (West),US,West,false,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,India,3.35,0,Asia,India,IN,,false,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,false,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Australia,Australia,3.02,0,Australia,Australia,AU,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,India,6.7,0,Asia,India,IN,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Japan,7.3,0,Asia,Japan,JP,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Singapore,7.1,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Australia,Australia,6.05,0,Australia,Australia,AU,,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Europe,United Kingdom,0.73,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Europe,United Kingdom,2.95,0,Europe,United Kingdom,UK,,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,NVMe,200 GB NVMe,0,0,,,,,true,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,NVMe,400 GB NVMe,3.25,0,,,,,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,SSD,400 GB SSD,0,0,,,,,false,EUR
@@ -198,15 +198,15 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,IPv4,1 IP Address,0,
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (Central),2.1,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (Central),5.25,0,America,United States (Central),US,Central,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (East),7.85,0,America,United States (East),US,East,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (West),6.55,0,America,United States (West),US,West,false,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,India,7.14,0,Asia,India,IN,,false,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Japan,7.8,0,Asia,Japan,JP,,false,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Singapore,7.62,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Australia,Australia,6.48,0,Australia,Australia,AU,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,India,11.9,0,Asia,India,IN,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Japan,13,0,Asia,Japan,JP,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Singapore,12.7,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Australia,Australia,10.8,0,Australia,Australia,AU,,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Europe,United Kingdom,2.1,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Europe,United Kingdom,5.25,0,Europe,United Kingdom,UK,,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,NVMe,250 GB NVMe,0,0,,,,,true,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,NVMe,500 GB NVMe,3.85,0,,,,,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,SSD,1 TB SSD,4.95,0,,,,,false,EUR
@@ -251,15 +251,15 @@ cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,IPv4,1 IP Address,0,
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (Central),3.9,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (Central),7.8,0,America,United States (Central),US,Central,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (East),11.6,0,America,United States (East),US,East,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (West),9.65,0,America,United States (West),US,West,false,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,India,12.35,0,Asia,India,IN,,false,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Japan,13.47,0,Asia,Japan,JP,,false,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Singapore,13.16,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Australia,Australia,11.16,0,Australia,Australia,AU,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,India,17.65,0,Asia,India,IN,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Japan,19.25,0,Asia,Japan,JP,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Singapore,18.8,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Australia,Australia,15.95,0,Australia,Australia,AU,,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,United Kingdom,3.9,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,United Kingdom,7.8,0,Europe,United Kingdom,UK,,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,NVMe,300 GB NVMe,0,0,,,,,true,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,NVMe,600 GB NVMe,4.75,0,,,,,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,SSD,1.2 TB SSD,6.15,0,,,,,false,EUR
@@ -304,15 +304,15 @@ cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,IPv4,1 IP Address,0,
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (Central),6.18,0,America,United States (Central),US,Central,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (Central),10.3,0,America,United States (Central),US,Central,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (East),15.35,0,America,United States (East),US,East,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (West),12.8,0,America,United States (West),US,West,false,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,India,18.68,0,Asia,India,IN,,false,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Japan,20.4,0,Asia,Japan,JP,,false,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Singapore,19.92,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Australia,Australia,16.92,0,Australia,Australia,AU,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,India,23.35,0,Asia,India,IN,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Japan,25.5,0,Asia,Japan,JP,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Singapore,24.9,0,Asia,Singapore,SG,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Australia,Australia,21.15,0,Australia,Australia,AU,,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,United Kingdom,6.18,0,Europe,United Kingdom,UK,,false,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,United Kingdom,10.3,0,Europe,United Kingdom,UK,,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,NVMe,350 GB NVMe,0,0,,,,,true,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,NVMe,700 GB NVMe,5.75,0,,,,,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,SSD,1.4 TB SSD,6.95,0,,,,,false,EUR
@@ -404,15 +404,15 @@ storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,IPv4,1 IP Ad
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (Central),0.36,0,America,United States (Central),US,Central,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (Central),1.45,0,America,United States (Central),US,Central,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (East),2.2,0,America,United States (East),US,East,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (West),1.85,0,America,United States (West),US,West,false,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,India,1.67,0,Asia,India,IN,,false,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Japan,1.82,0,Asia,Japan,JP,,false,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Singapore,1.77,0,Asia,Singapore,SG,,false,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Australia,Australia,1.5,0,Australia,Australia,AU,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,India,3.35,0,Asia,India,IN,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Australia,Australia,3,0,Australia,Australia,AU,,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Europe,United Kingdom,0.36,0,Europe,United Kingdom,UK,,false,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Europe,United Kingdom,1.45,0,Europe,United Kingdom,UK,,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Storage Type,SSD,400 GB SSD,0,0,,,,,true,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Coolify Server,0,0,,,,,false,EUR
@@ -455,15 +455,15 @@ storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,IPv4,1 IP Ad
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (Central),0.73,0,America,United States (Central),US,Central,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (Central),2.95,0,America,United States (Central),US,Central,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (East),4.4,0,America,United States (East),US,East,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (West),3.65,0,America,United States (West),US,West,false,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,India,3.35,0,Asia,India,IN,,false,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,false,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,false,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Australia,Australia,3.02,0,Australia,Australia,AU,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,India,6.7,0,Asia,India,IN,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Japan,7.3,0,Asia,Japan,JP,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Singapore,7.1,0,Asia,Singapore,SG,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Australia,Australia,6.05,0,Australia,Australia,AU,,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Europe,United Kingdom,0.73,0,Europe,United Kingdom,UK,,false,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Europe,United Kingdom,2.95,0,Europe,United Kingdom,UK,,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Storage Type,SSD,1 TB SSD,0,0,,,,,true,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Coolify Server,0,0,,,,,false,EUR
@@ -506,15 +506,15 @@ storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,IPv4,1 IP Ad
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (Central),2.1,0,America,United States (Central),US,Central,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (Central),5.25,0,America,United States (Central),US,Central,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (East),7.85,0,America,United States (East),US,East,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (West),6.55,0,America,United States (West),US,West,false,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,India,7.14,0,Asia,India,IN,,false,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Japan,7.8,0,Asia,Japan,JP,,false,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Singapore,7.62,0,Asia,Singapore,SG,,false,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Australia,Australia,6.48,0,Australia,Australia,AU,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,India,11.9,0,Asia,India,IN,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Japan,13,0,Asia,Japan,JP,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Singapore,12.7,0,Asia,Singapore,SG,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Australia,Australia,10.8,0,Australia,Australia,AU,,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Europe,United Kingdom,2.1,0,Europe,United Kingdom,UK,,false,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Europe,United Kingdom,5.25,0,Europe,United Kingdom,UK,,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Storage Type,SSD,1.2 TB SSD,0,0,,,,,true,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Coolify Server,0,0,,,,,false,EUR
@@ -557,15 +557,15 @@ storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,IPv4,1 IP Ad
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (Central),3.9,0,America,United States (Central),US,Central,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (Central),7.8,0,America,United States (Central),US,Central,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (East),11.6,0,America,United States (East),US,East,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (West),9.65,0,America,United States (West),US,West,false,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,India,12.35,0,Asia,India,IN,,false,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Japan,13.47,0,Asia,Japan,JP,,false,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Singapore,13.16,0,Asia,Singapore,SG,,false,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Australia,Australia,11.16,0,Australia,Australia,AU,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,India,17.65,0,Asia,India,IN,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Japan,19.25,0,Asia,Japan,JP,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Singapore,18.8,0,Asia,Singapore,SG,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Australia,Australia,15.95,0,Australia,Australia,AU,,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Europe,United Kingdom,3.9,0,Europe,United Kingdom,UK,,false,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Europe,United Kingdom,7.8,0,Europe,United Kingdom,UK,,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Storage Type,SSD,1.4 TB SSD,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Coolify Server,0,0,,,,,false,EUR
@@ -610,15 +610,15 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (Central),2.02,0,America,United States (Central),US,Central,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (Central),8.1,0,America,United States (Central),US,Central,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (East),10.4,0,America,United States (East),US,East,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (West),9.2,0,America,United States (West),US,West,false,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,India,7.12,0,Asia,India,IN,,false,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Japan,7.75,0,Asia,Japan,JP,,false,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Singapore,7.5,0,Asia,Singapore,SG,,false,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Australia,Australia,6.35,0,Australia,Australia,AU,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,India,14.25,0,Asia,India,IN,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Japan,15.5,0,Asia,Japan,JP,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Singapore,15,0,Asia,Singapore,SG,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Australia,Australia,12.7,0,Australia,Australia,AU,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,United Kingdom,4.05,0,Europe,United Kingdom,UK,,false,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,United Kingdom,8.1,0,Europe,United Kingdom,UK,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Storage,NVMe,180 GB NVMe,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
@@ -668,15 +668,15 @@ vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (Central),5.2,0,America,United States (Central),US,Central,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (Central),10.4,0,America,United States (Central),US,Central,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (East),12.7,0,America,United States (East),US,East,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (West),11.5,0,America,United States (West),US,West,false,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,India,11.16,0,Asia,India,IN,,false,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,Japan,12.15,0,Asia,Japan,JP,,false,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,Singapore,11.76,0,Asia,Singapore,SG,,false,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Australia,Australia,10.02,0,Australia,Australia,AU,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,India,18.6,0,Asia,India,IN,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,Japan,20.25,0,Asia,Japan,JP,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,Singapore,19.6,0,Asia,Singapore,SG,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Australia,Australia,16.7,0,Australia,Australia,AU,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Europe,United Kingdom,6.24,0,Europe,United Kingdom,UK,,false,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Europe,United Kingdom,10.4,0,Europe,United Kingdom,UK,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Storage,NVMe,240 GB NVMe,0,0,,,,,true,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
@@ -726,15 +726,15 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (Central),5.2,0,America,United States (Central),US,Central,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (Central),10.4,0,America,United States (Central),US,Central,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (East),12.7,0,America,United States (East),US,East,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (West),11.5,0,America,United States (West),US,West,false,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,India,18.34,0,Asia,India,IN,,false,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,Japan,19.95,0,Asia,Japan,JP,,false,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,Singapore,19.32,0,Asia,Singapore,SG,,false,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Australia,Australia,16.52,0,Australia,Australia,AU,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,India,26.2,0,Asia,India,IN,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,Japan,28.5,0,Asia,Japan,JP,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,Singapore,27.6,0,Asia,Singapore,SG,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Australia,Australia,23.6,0,Australia,Australia,AU,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Europe,United Kingdom,7.28,0,Europe,United Kingdom,UK,,false,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Europe,United Kingdom,10.4,0,Europe,United Kingdom,UK,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,NVMe,360 GB NVMe,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
@@ -782,15 +782,15 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,IPv4,1 IP Address,0,0,,,,,true,E
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (Central),5.2,0,America,United States (Central),US,Central,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (Central),10.4,0,America,United States (Central),US,Central,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (East),12.7,0,America,United States (East),US,East,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (West),11.5,0,America,United States (West),US,West,false,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,India,25.42,0,Asia,India,IN,,false,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,Japan,27.56,0,Asia,Japan,JP,,false,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,Singapore,26.77,0,Asia,Singapore,SG,,false,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Australia,Australia,22.87,0,Australia,Australia,AU,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,India,33.9,0,Asia,India,IN,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,Japan,36.75,0,Asia,Japan,JP,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,Singapore,35.7,0,Asia,Singapore,SG,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Australia,Australia,30.5,0,Australia,Australia,AU,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Europe,United Kingdom,7.8,0,Europe,United Kingdom,UK,,false,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Europe,United Kingdom,10.4,0,Europe,United Kingdom,UK,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Storage,NVMe,480 GB NVMe,0,0,,,,,true,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR
@@ -840,15 +840,15 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,IPv4,1 IP Address,0,0,,,,,tru
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,false,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (Central),7.62,0,America,United States (Central),US,Central,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (Central),12.7,0,America,United States (Central),US,Central,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (East),15,0,America,United States (East),US,East,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (West),13.8,0,America,United States (West),US,West,false,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,India,40.2,0,Asia,India,IN,,false,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Japan,43.6,0,Asia,Japan,JP,,false,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Singapore,42.32,0,Asia,Singapore,SG,,false,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Australia,Australia,36.12,0,Australia,Australia,AU,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,India,50.25,0,Asia,India,IN,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Japan,54.5,0,Asia,Japan,JP,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Singapore,52.9,0,Asia,Singapore,SG,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Australia,Australia,45.15,0,Australia,Australia,AU,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Europe,United Kingdom,10.16,0,Europe,United Kingdom,UK,,false,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Europe,United Kingdom,12.7,0,Europe,United Kingdom,UK,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Storage,NVMe,720 GB NVMe,0,0,,,,,true,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Storage,SSD,1 TB SSD,24.99,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Storage,SSD,2 TB SSD,39.09,0,,,,,false,EUR

@@ -1,6 +1,6 @@
 # Contabo Pricing
 
-> **Last updated:** 2026-04-26T18:36:08.526Z  
+> **Last updated:** 2026-04-27T08:37:11.681Z  
 > Auto-refreshed twice daily · data from [contabo.com](https://contabo.com)
 
 ## ☁️ Cloud VPS
@@ -52,7 +52,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€0.36 | +€0.36 | +€1.85 | +€2.20 | +€1.67 | +€1.77 | +€1.82 | +€1.50 |
+| free | +€1.45 | +€1.45 | +€1.85 | +€2.20 | +€3.35 | +€3.55 | +€3.65 | +€3.00 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€2.00`
@@ -74,7 +74,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€0.73 | +€0.73 | +€3.65 | +€4.40 | +€3.35 | +€3.55 | +€3.65 | +€3.02 |
+| free | +€2.95 | +€2.95 | +€3.65 | +€4.40 | +€6.70 | +€7.10 | +€7.30 | +€6.05 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€3.50`
@@ -96,7 +96,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€2.10 | +€2.10 | +€6.55 | +€7.85 | +€7.14 | +€7.62 | +€7.80 | +€6.48 |
+| free | +€5.25 | +€5.25 | +€6.55 | +€7.85 | +€11.90 | +€12.70 | +€13.00 | +€10.80 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€6.00`
@@ -118,7 +118,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€3.90 | +€3.90 | +€9.65 | +€11.60 | +€12.35 | +€13.16 | +€13.47 | +€11.16 |
+| free | +€7.80 | +€7.80 | +€9.65 | +€11.60 | +€17.65 | +€18.80 | +€19.25 | +€15.95 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€7.50`
@@ -140,7 +140,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€6.18 | +€6.18 | +€12.80 | +€15.35 | +€18.68 | +€19.92 | +€20.40 | +€16.92 |
+| free | +€10.30 | +€10.30 | +€12.80 | +€15.35 | +€23.35 | +€24.90 | +€25.50 | +€21.15 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€9.50`
@@ -194,7 +194,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€0.36 | +€0.36 | +€1.85 | +€2.20 | +€1.67 | +€1.77 | +€1.82 | +€1.50 |
+| free | +€1.45 | +€1.45 | +€1.85 | +€2.20 | +€3.35 | +€3.55 | +€3.65 | +€3.00 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 
@@ -215,7 +215,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€0.73 | +€0.73 | +€3.65 | +€4.40 | +€3.35 | +€3.55 | +€3.65 | +€3.02 |
+| free | +€2.95 | +€2.95 | +€3.65 | +€4.40 | +€6.70 | +€7.10 | +€7.30 | +€6.05 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 
@@ -236,7 +236,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€2.10 | +€2.10 | +€6.55 | +€7.85 | +€7.14 | +€7.62 | +€7.80 | +€6.48 |
+| free | +€5.25 | +€5.25 | +€6.55 | +€7.85 | +€11.90 | +€12.70 | +€13.00 | +€10.80 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 
@@ -257,7 +257,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€3.90 | +€3.90 | +€9.65 | +€11.60 | +€12.35 | +€13.16 | +€13.47 | +€11.16 |
+| free | +€7.80 | +€7.80 | +€9.65 | +€11.60 | +€17.65 | +€18.80 | +€19.25 | +€15.95 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 
@@ -288,7 +288,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€4.05 | +€2.02 | +€9.20 | +€10.40 | +€7.12 | +€7.50 | +€7.75 | +€6.35 |
+| free | +€8.10 | +€8.10 | +€9.20 | +€10.40 | +€14.25 | +€15.00 | +€15.50 | +€12.70 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Unlimited and Unmetered Traffic `+€86.29` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€5.79`
 **Storage** — 180 GB NVMe *(included)* · Upgrades: 1 TB SSD `+€24.99` · 2 TB SSD `+€39.09` · 4 TB SSD `+€103.49`
@@ -310,7 +310,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€6.24 | +€5.20 | +€11.50 | +€12.70 | +€11.16 | +€11.76 | +€12.15 | +€10.02 |
+| free | +€10.40 | +€10.40 | +€11.50 | +€12.70 | +€18.60 | +€19.60 | +€20.25 | +€16.70 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · Unlimited and Unmetered Traffic `+€172.49` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€5.79`
 **Storage** — 240 GB NVMe *(included)* · Upgrades: 1 TB SSD `+€24.99` · 2 TB SSD `+€39.09` · 4 TB SSD `+€103.49`
@@ -332,7 +332,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€7.28 | +€5.20 | +€11.50 | +€12.70 | +€18.34 | +€19.32 | +€19.95 | +€16.52 |
+| free | +€10.40 | +€10.40 | +€11.50 | +€12.70 | +€26.20 | +€27.60 | +€28.50 | +€23.60 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · Unlimited and Unmetered Traffic `+€258.79` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€5.79`
 **Storage** — 360 GB NVMe *(included)* · Upgrades: 1 TB SSD `+€24.99` · 2 TB SSD `+€39.09` · 4 TB SSD `+€103.49`
@@ -354,7 +354,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€7.80 | +€5.20 | +€11.50 | +€12.70 | +€25.42 | +€26.77 | +€27.56 | +€22.87 |
+| free | +€10.40 | +€10.40 | +€11.50 | +€12.70 | +€33.90 | +€35.70 | +€36.75 | +€30.50 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · 243 TB Out + Unlimited In `+€258.79` · Unlimited and Unmetered Traffic `+€344.99` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€5.79`
 **Storage** — 480 GB NVMe *(included)* · Upgrades: 1 TB SSD `+€24.99` · 2 TB SSD `+€39.09` · 4 TB SSD `+€103.49`
@@ -376,7 +376,7 @@
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€10.16 | +€7.62 | +€13.80 | +€15.00 | +€40.20 | +€42.32 | +€43.60 | +€36.12 |
+| free | +€12.70 | +€12.70 | +€13.80 | +€15.00 | +€50.25 | +€52.90 | +€54.50 | +€45.15 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · 243 TB Out + Unlimited In `+€258.79` · Unlimited and Unmetered Traffic `+€344.99` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€5.79`
 **Storage** — 720 GB NVMe *(included)* · Upgrades: 1 TB SSD `+€24.99` · 2 TB SSD `+€39.09` · 4 TB SSD `+€103.49`
