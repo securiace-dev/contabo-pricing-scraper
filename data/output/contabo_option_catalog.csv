@@ -22,6 +22,7 @@ cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 9,0,0,,,,,
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,false,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,false,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,false,EUR
@@ -75,6 +76,7 @@ cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Rocky Linux 9,0,0,,,,,
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2016 Datacenter,12.6,0,,,,,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2019 Datacenter,15.5,0,,,,,false,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2022 Datacenter,15.5,0,,,,,false,EUR
@@ -128,6 +130,7 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Rocky Linux 9,0,0,,,,,
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2016 Datacenter,23.1,0,,,,,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2019 Datacenter,26,0,,,,,false,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2022 Datacenter,26,0,,,,,false,EUR
@@ -181,6 +184,7 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Rocky Linux 9,0,0,,,,,
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2016 Datacenter,45.6,0,,,,,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2019 Datacenter,49,0,,,,,false,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2022 Datacenter,49,0,,,,,false,EUR
@@ -234,6 +238,7 @@ cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Rocky Linux 9,0,0,,,,,
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2016 Datacenter,55.7,0,,,,,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2019 Datacenter,58.5,0,,,,,false,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2022 Datacenter,58.5,0,,,,,false,EUR
@@ -287,6 +292,7 @@ cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Rocky Linux 9,0,0,,,,,
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2016 Datacenter,65,0,,,,,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2019 Datacenter,70,0,,,,,false,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2022 Datacenter,70,0,,,,,false,EUR
@@ -339,6 +345,7 @@ storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Rocky Linux 9,
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2016 Datacenter,4,0,,,,,false,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2022 Datacenter,4.75,0,,,,,false,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2025 Datacenter,4.75,0,,,,,false,EUR
@@ -387,6 +394,7 @@ storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Rocky Linux 9,
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,false,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,false,EUR
@@ -438,6 +446,7 @@ storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Rocky Linux 9,
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2016 Datacenter,12.6,0,,,,,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2019 Datacenter,15.5,0,,,,,false,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2022 Datacenter,15.5,0,,,,,false,EUR
@@ -489,6 +498,7 @@ storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Rocky Linux 9,
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2016 Datacenter,23.1,0,,,,,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2019 Datacenter,26,0,,,,,false,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2022 Datacenter,26,0,,,,,false,EUR
@@ -540,6 +550,7 @@ storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Rocky Linux 9,
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2016 Datacenter,45.6,0,,,,,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2019 Datacenter,49,0,,,,,false,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2022 Datacenter,49,0,,,,,false,EUR
@@ -591,6 +602,7 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
@@ -626,7 +638,6 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Storage,SSD,4 TB SSD,103.49,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Coolify Server,0,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,DeepSeek,0,0,,,,,false,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Docker,0,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,GitLab Server,0,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,LAMP,0,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
@@ -648,6 +659,7 @@ vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
@@ -694,7 +706,6 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Bitcoin Node,0,0,,,,,false,EU
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Ethereum Staking Node,0,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Arch Linux,0,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Debian 12,0,0,,,,,false,EUR
@@ -705,6 +716,7 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
@@ -761,6 +773,7 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
@@ -818,6 +831,7 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2016 Standard,50,50,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2019 Standard,50,50,,,,,false,EUR
@@ -827,7 +841,6 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Admin Edition,12,0,,,
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin,0,0,,,,,false,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,false,EUR

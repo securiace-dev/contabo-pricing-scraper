@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.2.1",
-  "generated_at": "2026-04-28T19:17:58.385Z",
+  "generated_at": "2026-04-29T08:28:58.454Z",
   "plan_count": 16,
   "plans": {
     "https://contabo.com/en/storage-vps/storage-vps-10/": {
@@ -53,7 +53,7 @@
         "12": 0
       },
       "family": "Storage VPS",
-      "fetched_at": "2026-04-28T19:17:57.595Z",
+      "fetched_at": "2026-04-29T08:28:52.852Z",
       "options": {
         "Data Protection": [
           {
@@ -275,6 +275,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "storage-vps-10",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "storage-vps-10",
             "setup_fee_delta": 0
           },
@@ -639,7 +649,7 @@
         "12": 0
       },
       "family": "Storage VPS",
-      "fetched_at": "2026-04-28T19:17:58.370Z",
+      "fetched_at": "2026-04-29T08:28:52.363Z",
       "options": {
         "Data Protection": [
           {
@@ -861,6 +871,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "storage-vps-20",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "storage-vps-20",
             "setup_fee_delta": 0
           },
@@ -1235,7 +1255,7 @@
         "12": 0
       },
       "family": "Storage VPS",
-      "fetched_at": "2026-04-28T19:17:54.336Z",
+      "fetched_at": "2026-04-29T08:28:54.945Z",
       "options": {
         "Data Protection": [
           {
@@ -1477,6 +1497,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "storage-vps-30",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "storage-vps-30",
             "setup_fee_delta": 0
           },
@@ -1851,7 +1881,7 @@
         "12": 0
       },
       "family": "Storage VPS",
-      "fetched_at": "2026-04-28T19:17:57.689Z",
+      "fetched_at": "2026-04-29T08:28:52.483Z",
       "options": {
         "Data Protection": [
           {
@@ -2093,6 +2123,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "storage-vps-40",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "storage-vps-40",
             "setup_fee_delta": 0
           },
@@ -2467,7 +2507,7 @@
         "12": 0
       },
       "family": "Storage VPS",
-      "fetched_at": "2026-04-28T19:17:57.544Z",
+      "fetched_at": "2026-04-29T08:28:58.438Z",
       "options": {
         "Data Protection": [
           {
@@ -2709,6 +2749,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "storage-vps-50",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "storage-vps-50",
             "setup_fee_delta": 0
           },
@@ -3083,7 +3133,7 @@
         "12": 0
       },
       "family": "Cloud VDS",
-      "fetched_at": "2026-04-28T19:17:57.217Z",
+      "fetched_at": "2026-04-29T08:28:55.684Z",
       "options": {
         "Data Protection": [
           {
@@ -3219,16 +3269,6 @@
             "setup_fee_delta": 0
           },
           {
-            "category": "Blockchain",
-            "currency": "EUR",
-            "dimension": "Image",
-            "is_default": false,
-            "monthly_price_delta": 0,
-            "option_label": "IPFS Node",
-            "plan_sku": "vds-l",
-            "setup_fee_delta": 0
-          },
-          {
             "category": "OS",
             "currency": "EUR",
             "dimension": "Image",
@@ -3325,6 +3365,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "vds-l",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "vds-l",
             "setup_fee_delta": 0
           },
@@ -3769,7 +3819,7 @@
         "12": 0
       },
       "family": "Cloud VDS",
-      "fetched_at": "2026-04-28T19:17:54.668Z",
+      "fetched_at": "2026-04-29T08:28:55.616Z",
       "options": {
         "Data Protection": [
           {
@@ -3801,16 +3851,6 @@
             "is_default": false,
             "monthly_price_delta": 0,
             "option_label": "DeepSeek",
-            "plan_sku": "vds-m",
-            "setup_fee_delta": 0
-          },
-          {
-            "category": "Apps",
-            "currency": "EUR",
-            "dimension": "Image",
-            "is_default": false,
-            "monthly_price_delta": 0,
-            "option_label": "Docker",
             "plan_sku": "vds-m",
             "setup_fee_delta": 0
           },
@@ -4021,6 +4061,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "vds-m",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "vds-m",
             "setup_fee_delta": 0
           },
@@ -4455,7 +4505,7 @@
         "12": 0
       },
       "family": "Cloud VDS",
-      "fetched_at": "2026-04-28T19:17:55.283Z",
+      "fetched_at": "2026-04-29T08:28:55.290Z",
       "options": {
         "Data Protection": [
           {
@@ -4697,6 +4747,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "vds-s",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "vds-s",
             "setup_fee_delta": 0
           },
@@ -5121,7 +5181,7 @@
         "12": 0
       },
       "family": "Cloud VDS",
-      "fetched_at": "2026-04-28T19:17:57.663Z",
+      "fetched_at": "2026-04-29T08:28:55.930Z",
       "options": {
         "Data Protection": [
           {
@@ -5343,6 +5403,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "vds-xl",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "vds-xl",
             "setup_fee_delta": 0
           },
@@ -5787,7 +5857,7 @@
         "12": 0
       },
       "family": "Cloud VDS",
-      "fetched_at": "2026-04-28T19:17:57.783Z",
+      "fetched_at": "2026-04-29T08:28:57.595Z",
       "options": {
         "Data Protection": [
           {
@@ -6027,6 +6097,16 @@
             "currency": "EUR",
             "dimension": "Image",
             "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
+            "plan_sku": "vds-xxl",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
             "monthly_price_delta": 50,
             "option_label": "Windows Server 2012R2 Standard",
             "plan_sku": "vds-xxl",
@@ -6109,16 +6189,6 @@
             "is_default": false,
             "monthly_price_delta": 0,
             "option_label": "Webmin",
-            "plan_sku": "vds-xxl",
-            "setup_fee_delta": 0
-          },
-          {
-            "category": "Panels",
-            "currency": "EUR",
-            "dimension": "Image",
-            "is_default": false,
-            "monthly_price_delta": 0,
-            "option_label": "Webmin + LAMP",
             "plan_sku": "vds-xxl",
             "setup_fee_delta": 0
           },
@@ -6473,7 +6543,7 @@
         "12": 0
       },
       "family": "Cloud VPS",
-      "fetched_at": "2026-04-28T19:17:54.611Z",
+      "fetched_at": "2026-04-29T08:28:52.700Z",
       "options": {
         "Data Protection": [
           {
@@ -6705,6 +6775,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "cloud-vps-10",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "cloud-vps-10",
             "setup_fee_delta": 0
           },
@@ -7109,7 +7189,7 @@
         "12": 0
       },
       "family": "Cloud VPS",
-      "fetched_at": "2026-04-28T19:17:54.346Z",
+      "fetched_at": "2026-04-29T08:28:56.741Z",
       "options": {
         "Data Protection": [
           {
@@ -7341,6 +7421,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "cloud-vps-20",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "cloud-vps-20",
             "setup_fee_delta": 0
           },
@@ -7745,7 +7835,7 @@
         "12": 0
       },
       "family": "Cloud VPS",
-      "fetched_at": "2026-04-28T19:17:53.937Z",
+      "fetched_at": "2026-04-29T08:28:52.718Z",
       "options": {
         "Data Protection": [
           {
@@ -7977,6 +8067,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "cloud-vps-30",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "cloud-vps-30",
             "setup_fee_delta": 0
           },
@@ -8381,7 +8481,7 @@
         "12": 0
       },
       "family": "Cloud VPS",
-      "fetched_at": "2026-04-28T19:17:54.198Z",
+      "fetched_at": "2026-04-29T08:28:52.723Z",
       "options": {
         "Data Protection": [
           {
@@ -8613,6 +8713,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "cloud-vps-40",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "cloud-vps-40",
             "setup_fee_delta": 0
           },
@@ -9017,7 +9127,7 @@
         "12": 0
       },
       "family": "Cloud VPS",
-      "fetched_at": "2026-04-28T19:17:56.411Z",
+      "fetched_at": "2026-04-29T08:28:52.136Z",
       "options": {
         "Data Protection": [
           {
@@ -9249,6 +9359,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "cloud-vps-50",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "cloud-vps-50",
             "setup_fee_delta": 0
           },
@@ -9653,7 +9773,7 @@
         "12": 0
       },
       "family": "Cloud VPS",
-      "fetched_at": "2026-04-28T19:17:54.376Z",
+      "fetched_at": "2026-04-29T08:28:55.521Z",
       "options": {
         "Data Protection": [
           {
@@ -9885,6 +10005,16 @@
             "is_default": true,
             "monthly_price_delta": 0,
             "option_label": "Ubuntu 24.04",
+            "plan_sku": "cloud-vps-60",
+            "setup_fee_delta": 0
+          },
+          {
+            "category": "OS",
+            "currency": "EUR",
+            "dimension": "Image",
+            "is_default": false,
+            "monthly_price_delta": 0,
+            "option_label": "Ubuntu 26.04",
             "plan_sku": "cloud-vps-60",
             "setup_fee_delta": 0
           },
