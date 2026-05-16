@@ -73,12 +73,36 @@ All files are written to `--output` (default `data/output/`). The directory is c
 | `contabo_base_plans.json` | Base plan specs and all contract period pricing |
 | `contabo_configs.json` | Per-plan configurator state (options grouped by dimension) |
 | `contabo_pricing_dataset.json` | Combined dataset with metadata, plans, options, and gaps |
+| `contabo_view_model.json` | Canonical render model — one flat row per plan × period, with options summary. Source for `report.html` |
 | `contabo_base_plans.csv` | Flat CSV of base plans with pricing for all contract periods |
 | `contabo_option_catalog.csv` | Normalized option catalog (one row per plan × option) |
 | `contabo_gap_report.json` | Raw list of unclassified/failed items |
 | `contabo_gap_summary.json` | Gap counts grouped by type |
+| `contabo_consistency_report.json` | Reconciliation of `contabo_view_model.json` against `contabo_pricing_dataset.json` — flags scrape/transform drift |
 
 > `data/output/` is excluded from git — run the scraper to regenerate.
+
+## Interactive report
+
+`report.html` (repo root) is a self-contained, interactive view of all plans: sortable
+comparison table, 2–4 plan side-by-side compare, per-plan detail with an **interactive
+plan + add-on cost calculator** (pick OS / region / storage / backup / networking and
+see the live configured monthly, setup, and period total), dark mode. It is regenerated
+alongside `PRICES.md`.
+
+```bash
+# Generate locally after a scrape (Node ≥ 18, no dependencies):
+node scripts/contabo_scraper.js                 # or: cargo run --release
+node .github/scripts/enrich_output.js           # enrich (recommended)
+node .github/scripts/generate_html.js           # → report.html + consistency report
+open report.html
+```
+
+The table/compare always work from `contabo_view_model.json`. The per-plan **calculator**
+is driven by `contabo_configs.json` (present after any scrape); without it the detail
+panel degrades to a static add-on list and the calculator is omitted. The default
+configuration shown is anchored to the scraper's own `default_monthly_by_period`, and
+`contabo_consistency_report.json` reconciles that arithmetic every run.
 
 ## Data model
 

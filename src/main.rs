@@ -1019,6 +1019,86 @@ fn build_quick_reference(base_plans: &[Value], plan_configs: &HashMap<String, Va
     json!({ "generated_at": generated_at, "plans": plans })
 }
 
+/// Canonical, render-ready model: one flat row per (plan × period). The HTML
+/// visualizer reads only this file; `contabo_pricing_dataset.json` is reconciled
+/// against it downstream to surface scrape/transform drift.
+fn build_view_model(base_plans: &[Value], plan_configs: &HashMap<String, Value>, generated_at: &str) -> Value {
+    let mut rows: Vec<Value> = Vec::new();
+
+    for plan in base_plans {
+        let slug = plan["product_slug"].as_str().unwrap_or("");
+        let config = plan_configs.values().find(|c| c["slug"].as_str() == Some(slug));
+
+        // Per-dimension option summary from the plan config
+        let mut options_summary: Map<String, Value> = Map::new();
+        if let Some(opts) = config.and_then(|c| c["options"].as_object()) {
+            for (dim, list) in opts {
+                let arr = match list.as_array() {
+                    Some(a) => a,
+                    None => continue,
+                };
+                let defaults: Vec<&str> = arr.iter()
+                    .filter(|o| o["is_default"].as_bool().unwrap_or(false))
+                    .filter_map(|o| o["option_label"].as_str())
+                    .collect();
+                let deltas: Vec<f64> = arr.iter()
+                    .filter_map(|o| o["monthly_price_delta"].as_f64())
+                    .collect();
+                let paid_count = deltas.iter().filter(|d| **d > 0.0).count();
+                let min_delta = deltas.iter().cloned().fold(f64::INFINITY, f64::min);
+                let max_delta = deltas.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+                options_summary.insert(dim.clone(), json!({
+                    "default_label": if defaults.is_empty() { Value::Null } else { json!(defaults.join(", ")) },
+                    "option_count":  arr.len(),
+                    "paid_count":    paid_count,
+                    "min_delta":     if min_delta.is_finite() { json_num(min_delta) } else { Value::Null },
+                    "max_delta":     if max_delta.is_finite() { json_num(max_delta) } else { Value::Null },
+                }));
+            }
+        }
+
+        if let Some(periods) = plan["periods"].as_array() {
+            for p in periods {
+                rows.push(json!({
+                    "plan_slug":         plan["product_slug"],
+                    "family":            plan["family"],
+                    "product_name":      plan["product_name"],
+                    "product_url":       plan["product_url"],
+                    "plan_rank":         plan["plan_rank"],
+                    "plan_family_rank":  plan["plan_family_rank"],
+                    "period_months":     p["months"],
+                    "is_hidden_from_ui": p["is_hidden_from_ui"],
+                    "effective_monthly": p["effective_monthly"],
+                    "setup_fee":         p["setup_fee"],
+                    "discount_total":    p["discount_total"],
+                    "total_period_cost": p["total_period_cost"],
+                    "base_monthly":      plan["base_monthly_price"],
+                    "specs": {
+                        "cpu_count":            plan["specs_parsed"]["cpu_count"],
+                        "ram_gb":               plan["specs_parsed"]["ram_gb"],
+                        "storage_primary_gb":   plan["specs_parsed"]["storage_primary_gb"],
+                        "storage_primary_type": plan["specs_parsed"]["storage_primary_type"],
+                        "port_speed_mbps":      plan["specs_parsed"]["port_speed_mbps"],
+                    },
+                    "options_summary": options_summary,
+                }));
+            }
+        }
+    }
+
+    json!({
+        "meta": {
+            "scraper_version": VERSION,
+            "schema_version":  SCHEMA_VERSION,
+            "generated_at":    generated_at,
+            "plan_count":      base_plans.len(),
+            "row_count":       rows.len(),
+        },
+        "dimension_schema": dimension_meta_json(generated_at),
+        "rows": rows,
+    })
+}
+
 fn gap_summary(gap_report: &[GapEntry]) -> Vec<Value> {
     let mut acc: BTreeMap<String, (String, String, u32, Vec<String>)> = BTreeMap::new();
     for g in gap_report {
@@ -1240,6 +1320,7 @@ async fn main() {
             ("contabo_gap_summary.json",      &json!(gap_summary_json)),
             ("contabo_dimension_schema.json", &dimension_meta_json(&generated_at)),
             ("contabo_quick_reference.json",  &build_quick_reference(&base_plans, &plan_configs, &generated_at)),
+            ("contabo_view_model.json",       &build_view_model(&base_plans, &plan_configs, &generated_at)),
         ];
         for (name, data) in files {
             if let Err(e) = write(name, data) {

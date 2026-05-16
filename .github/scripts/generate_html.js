@@ -1,0 +1,873 @@
+#!/usr/bin/env node
+'use strict';
+
+// Renders the interactive, self-contained report.html from the Rust-emitted
+// contabo_view_model.json (canonical) plus the enriched option_catalog (so the
+// detail panel matches PRICES.md exactly), then reconciles the view model
+// against contabo_pricing_dataset.json and writes a consistency report.
+
+const fs   = require('fs');
+const path = require('path');
+
+const OUTPUT_DIR    = path.resolve(__dirname, '../../data/output');
+const VM_PATH       = path.join(OUTPUT_DIR, 'contabo_view_model.json');
+const DATASET_PATH  = path.join(OUTPUT_DIR, 'contabo_pricing_dataset.json');
+const CONFIGS_PATH  = path.join(OUTPUT_DIR, 'contabo_configs.json');
+const QR_PATH       = path.join(OUTPUT_DIR, 'contabo_quick_reference.json');
+const HTML_PATH     = path.resolve(__dirname, '../../report.html');
+const RECON_PATH    = path.join(OUTPUT_DIR, 'contabo_consistency_report.json');
+
+const round2 = (x) => Math.round((Number(x) + Number.EPSILON) * 100) / 100;
+
+// Indicative INR display only (report.html). 3.5% card forex markup ×1.18 GST
+// + typical bank padding ≈ 5.4% effective over mid-market. Applied silently in
+// the browser; never labelled, never written to JSON/CSV/PRICES.md.
+const INR_MARKUP = 0.054;
+
+async function fetchFx() {
+  const fx = { eurInr: null, at: null, source: 'frankfurter.app', markup: INR_MARKUP };
+  try {
+    const ac = new AbortController();
+    const to = setTimeout(() => ac.abort(), 4000);
+    const res = await fetch('https://api.frankfurter.app/latest?from=EUR&to=INR', { signal: ac.signal });
+    clearTimeout(to);
+    if (res.ok) {
+      const j = await res.json();
+      const rt = j && j.rates && j.rates.INR;
+      if (typeof rt === 'number' && rt > 0) { fx.eurInr = rt; fx.at = new Date().toISOString(); }
+    }
+  } catch { /* non-fatal: offline/firewalled CI — the browser retries live, else INR is omitted */ }
+  return fx;
+}
+
+if (!fs.existsSync(VM_PATH)) {
+  console.log(`No view model at ${VM_PATH} — skipping report.html generation.`);
+  process.exit(0);
+}
+
+const vm    = JSON.parse(fs.readFileSync(VM_PATH, 'utf8'));
+const rows  = Array.isArray(vm.rows) ? vm.rows : [];
+const genAt = vm.meta?.generated_at || '';
+
+let dataset = null;
+if (fs.existsSync(DATASET_PATH)) {
+  try { dataset = JSON.parse(fs.readFileSync(DATASET_PATH, 'utf8')); }
+  catch { /* graceful: no add-ons / reconciliation if malformed */ }
+}
+const optionCatalog = dataset?.option_catalog || [];
+
+let configsRoot = null;
+if (fs.existsSync(CONFIGS_PATH)) {
+  try {
+    const raw = JSON.parse(fs.readFileSync(CONFIGS_PATH, 'utf8'));
+    const inner = raw?.plans ?? raw;          // enrich_output.js wraps it
+    configsRoot = {};
+    for (const v of Object.values(inner)) {
+      if (v && typeof v === 'object' && v.slug) configsRoot[v.slug] = v;
+    }
+    if (Object.keys(configsRoot).length === 0) configsRoot = null;
+  } catch { configsRoot = null; }
+}
+
+// ── Calculator model: slug → { controls[], defaultMonthlyByPeriod, … } ────────
+// Controls are derived from each plan's OWN option dimensions. Image is split by
+// category into independent controls (OS/Apps/Panels/Blockchain); Networking is
+// split per category (grouped_single). Default per control = the is_default
+// option; else a synthetic "None" (optional) else the cheapest.
+const NETWORK_CATS = ['Bandwidth', 'IPv4', 'Private Networking'];
+const IMAGE_CATS   = ['OS', 'Apps', 'Panels', 'Blockchain'];
+const IMAGE_LABEL  = { OS: 'OS', Apps: 'App', Panels: 'Control Panel', Blockchain: 'Blockchain' };
+
+function mapOpt(o) {
+  return {
+    label:   o.option_label,
+    monthly: Number(o.monthly_price_delta) || 0,
+    setup:   Number(o.setup_fee_delta) || 0,
+    isDef:   !!o.is_default,
+  };
+}
+function finalizeControl(key, label, optional, opts) {
+  opts.sort((a, b) =>
+    (a.isDef !== b.isDef) ? (a.isDef ? -1 : 1)
+    : (a.monthly !== b.monthly) ? a.monthly - b.monthly
+    : String(a.label).localeCompare(String(b.label)));
+  if (optional && !opts.some((o) => o.label === 'None'))
+    opts.unshift({ label: 'None', monthly: 0, setup: 0, isDef: false });
+  let defaultIdx = opts.findIndex((o) => o.isDef);
+  if (defaultIdx < 0) defaultIdx = optional ? opts.findIndex((o) => o.label === 'None') : 0;
+  if (defaultIdx < 0) defaultIdx = 0;
+  return { key, label, optional, defaultIdx, options: opts.map(({ label, monthly, setup }) => ({ label, monthly, setup })) };
+}
+
+const planConfig = {};
+if (configsRoot) {
+  for (const [slug, cfg] of Object.entries(configsRoot)) {
+    const controls = [];
+    const opts = cfg.options || {};
+    for (const dim of Object.keys(opts)) {
+      const list = (opts[dim] || []).map(mapOpt);
+      if (list.length === 0) continue;
+      if (dim === 'Networking') {
+        for (const cat of NETWORK_CATS) {
+          const sub = list.filter((_, i) => (opts[dim][i].category) === cat);
+          if (sub.length) controls.push(finalizeControl('Networking:' + cat, cat, false, sub));
+        }
+      } else if (dim === 'Image') {
+        const cats = [...IMAGE_CATS, ...new Set(opts[dim].map((o) => o.category).filter((c) => !IMAGE_CATS.includes(c)))];
+        for (const cat of cats) {
+          const sub = list.filter((_, i) => opts[dim][i].category === cat);
+          if (sub.length) controls.push(finalizeControl('Image:' + cat, IMAGE_LABEL[cat] || cat, cat !== 'OS', sub));
+        }
+      } else {
+        const optional = dim === 'Data Protection';
+        controls.push(finalizeControl(dim, dim, optional, list));
+      }
+    }
+    planConfig[slug] = {
+      controls,
+      defaultMonthlyByPeriod: cfg.default_monthly_by_period || {},
+      defaultSetupByPeriod:   cfg.default_setup_by_period   || {},
+    };
+  }
+}
+
+// ── Fallback only (no configs.json): static add-on tag map ───────────────────
+const NEGATION_DEFAULTS = new Set([
+  'No Data Protection', 'No Backup Space', 'No Private Networking',
+]);
+const planAddons = {};
+if (!configsRoot) {
+  for (const opt of optionCatalog) {
+    if (opt.dimension === 'Storage Type') continue;
+    if (NEGATION_DEFAULTS.has(opt.option_label)) continue;
+    const slug = opt.plan_sku;
+    planAddons[slug] ??= {};
+    planAddons[slug][opt.dimension] ??= [];
+    planAddons[slug][opt.dimension].push({
+      label:       opt.option_label,
+      category:    opt.category,
+      delta:       opt.monthly_price_delta ?? 0,
+      isDefault:   !!opt.is_default,
+      regionGroup: opt.region_group || null,
+    });
+  }
+  for (const slug of Object.keys(planAddons)) {
+    for (const dim of Object.keys(planAddons[slug])) {
+      planAddons[slug][dim].sort((a, b) => {
+        if (a.isDefault !== b.isDefault) return a.isDefault ? -1 : 1;
+        if (a.delta !== b.delta)         return a.delta - b.delta;
+        return a.label.localeCompare(b.label);
+      });
+    }
+  }
+}
+
+// ── Reconciliation: view_model rows vs pricing_dataset.plans ──────────────────
+const mismatches = [];
+let checked = 0;
+if (dataset && Array.isArray(dataset.plans)) {
+  const FIELDS = [
+    ['effective_monthly', 'effective_monthly'],
+    ['setup_fee',         'setup_fee'],
+    ['discount_total',    'discount_total'],
+    ['total_period_cost', 'total_period_cost'],
+  ];
+  const bySlug = new Map();
+  for (const p of dataset.plans) bySlug.set(p.product_slug, p);
+
+  for (const r of rows) {
+    const p = bySlug.get(r.plan_slug);
+    if (!p) {
+      mismatches.push({ plan_slug: r.plan_slug, period: r.period_months, field: '*plan*',
+        view_model_value: 'present', dataset_value: 'missing' });
+      continue;
+    }
+    const per = (p.periods || []).find((x) => x.months === r.period_months);
+    if (!per) {
+      mismatches.push({ plan_slug: r.plan_slug, period: r.period_months, field: '*period*',
+        view_model_value: 'present', dataset_value: 'missing' });
+      continue;
+    }
+    checked++;
+    for (const [vmK, dsK] of FIELDS) {
+      const a = Number(r[vmK]), b = Number(per[dsK]);
+      if (Math.abs(a - b) > 0.005) {
+        mismatches.push({ plan_slug: r.plan_slug, period: r.period_months, field: vmK,
+          view_model_value: a, dataset_value: b });
+      }
+    }
+    const specMap = { cpu_count: 'cpu_count', ram_gb: 'ram_gb',
+      storage_primary_gb: 'storage_primary_gb', storage_primary_type: 'storage_primary_type',
+      port_speed_mbps: 'port_speed_mbps' };
+    for (const [k, dsK] of Object.entries(specMap)) {
+      const a = r.specs?.[k], b = p.specs_parsed?.[dsK];
+      if (a !== b) {
+        mismatches.push({ plan_slug: r.plan_slug, period: r.period_months, field: `specs.${k}`,
+          view_model_value: a, dataset_value: b });
+      }
+    }
+  }
+}
+// ── Reconcile the scraper's own default-config arithmetic ────────────────────
+// effective_monthly + Σ(is_default option deltas) must equal the scraper's
+// default_monthly_by_period (same for setup). Independent of the UI Image split.
+let defaultChecks = 0;
+if (configsRoot) {
+  for (const r of rows) {
+    const cfg = configsRoot[r.plan_slug];
+    if (!cfg || !cfg.options) continue;
+    const pk = String(r.period_months);
+    let dM = 0, dS = 0;
+    for (const list of Object.values(cfg.options)) {
+      for (const o of list) {
+        if (o.is_default) {
+          dM += Number(o.monthly_price_delta) || 0;
+          dS += Number(o.setup_fee_delta) || 0;
+        }
+      }
+    }
+    const expM = round2(Number(r.effective_monthly) + dM);
+    const gotM = cfg.default_monthly_by_period?.[pk];
+    if (gotM != null && Math.abs(expM - Number(gotM)) > 0.01) {
+      mismatches.push({ plan_slug: r.plan_slug, period: r.period_months,
+        field: 'default_config_monthly', view_model_value: expM, dataset_value: Number(gotM) });
+    }
+    const expS = round2(Number(r.setup_fee) + dS);
+    const gotS = cfg.default_setup_by_period?.[pk];
+    if (gotS != null && Math.abs(expS - Number(gotS)) > 0.01) {
+      mismatches.push({ plan_slug: r.plan_slug, period: r.period_months,
+        field: 'default_config_setup', view_model_value: expS, dataset_value: Number(gotS) });
+    }
+    defaultChecks += 2;
+  }
+}
+
+const recon = {
+  generated_at: new Date().toISOString(),
+  view_model_generated_at: genAt,
+  source: 'contabo_view_model.json vs contabo_pricing_dataset.json + contabo_configs.json default-config arithmetic',
+  checked,
+  default_config_checks: defaultChecks,
+  mismatch_count: mismatches.length,
+  mismatches,
+};
+fs.writeFileSync(RECON_PATH, JSON.stringify(recon, null, 2) + '\n');
+
+// ── Build the HTML ────────────────────────────────────────────────────────────
+const payload = {
+  meta: vm.meta || {},
+  rows,
+  consistency: { checked, mismatch_count: mismatches.length },
+};
+if (configsRoot) {
+  payload.planConfig     = planConfig;
+  payload.dimensionSchema = vm.dimension_schema || null;
+} else {
+  payload.planAddons = planAddons;   // fallback: static tag list, no calculator
+}
+;(async () => {
+payload.fx = await fetchFx();
+const dataJson = JSON.stringify(payload, null, 1)
+  .replace(/</g, '\\u003c')
+  .replace(/>/g, '\\u003e');
+
+const html = `<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contabo Pricing — Interactive</title>
+<style>
+  :root{
+    --bg:#0d1117;--panel:#161b22;--panel2:#1c2230;--border:#30363d;
+    --fg:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--good:#3fb950;--bad:#f85149;
+    --chip:#21262d;--row-hover:#1b2330;
+  }
+  html[data-theme=light]{
+    --bg:#ffffff;--panel:#f6f8fa;--panel2:#eef1f5;--border:#d0d7de;
+    --fg:#1f2328;--muted:#636c76;--accent:#0969da;--good:#1a7f37;--bad:#cf222e;
+    --chip:#eaeef2;--row-hover:#f0f3f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{padding:20px 24px;border-bottom:1px solid var(--border);
+    display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline}
+  header h1{font-size:20px;margin:0}
+  header .sub{color:var(--muted);font-size:12px}
+  header .spacer{flex:1}
+  .toolbar{padding:14px 24px;display:flex;flex-wrap:wrap;gap:10px 18px;
+    align-items:center;border-bottom:1px solid var(--border);
+    position:sticky;top:0;background:var(--bg);z-index:5}
+  .pills{display:flex;gap:6px;flex-wrap:wrap}
+  .pill{padding:5px 12px;border:1px solid var(--border);border-radius:999px;
+    background:var(--chip);color:var(--fg);cursor:pointer;font-size:12px}
+  .pill[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .toolbar label{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
+  .toolbar input[type=text],.toolbar input[type=number]{
+    background:var(--panel);border:1px solid var(--border);color:var(--fg);
+    border-radius:6px;padding:5px 8px;font-size:12px;width:90px}
+  .toolbar input[type=text]{width:170px}
+  .btn{background:var(--panel);border:1px solid var(--border);color:var(--fg);
+    border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .wrap{overflow-x:auto;padding:0 0 140px}
+  table{border-collapse:collapse;width:100%;min-width:760px}
+  thead th{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--border);
+    padding:9px 12px;text-align:right;font-size:12px;white-space:nowrap;cursor:pointer;
+    user-select:none}
+  thead th.l{text-align:left}
+  thead th:hover{color:var(--accent)}
+  thead th .arr{color:var(--accent);font-size:10px}
+  tbody td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--border);
+    white-space:nowrap}
+  tbody td.l{text-align:left}
+  tbody tr{cursor:pointer}
+  tbody tr:hover{background:var(--row-hover)}
+  tbody tr.hidden-period{opacity:.55}
+  .plan-cell{position:sticky;left:0;background:var(--bg);font-weight:600}
+  tbody tr:hover .plan-cell{background:var(--row-hover)}
+  .fam{display:inline-block;font-size:11px;color:var(--muted)}
+  .save{color:var(--good);font-weight:600}
+  .muted{color:var(--muted)}
+  .badge{font-size:10px;color:var(--muted);border:1px solid var(--border);
+    border-radius:4px;padding:1px 5px;margin-left:6px}
+  .empty{padding:40px;text-align:center;color:var(--muted)}
+  /* compare drawer */
+  #drawer{position:fixed;left:0;right:0;bottom:0;background:var(--panel);
+    border-top:2px solid var(--accent);max-height:46vh;overflow:auto;
+    transform:translateY(105%);transition:transform .2s;z-index:20;padding:14px 24px}
+  #drawer.open{transform:translateY(0)}
+  #drawer h3{margin:0 0 10px;font-size:14px}
+  #drawer .close{float:right}
+  .cmp{border-collapse:collapse;width:100%;min-width:480px}
+  .cmp th,.cmp td{padding:7px 12px;border-bottom:1px solid var(--border);
+    text-align:right;white-space:nowrap}
+  .cmp th.l,.cmp td.l{text-align:left;color:var(--muted)}
+  .cmp .delta{font-size:11px;margin-left:6px}
+  .delta.up{color:var(--bad)}.delta.down{color:var(--good)}
+  /* detail modal */
+  #modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;
+    align-items:flex-start;justify-content:center;z-index:30;padding:40px 16px;overflow:auto}
+  #modal.open{display:flex}
+  .sheet{background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    max-width:760px;width:100%;padding:22px 26px}
+  .sheet h2{margin:0 0 4px;font-size:18px}
+  .sheet .specs{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .sheet h4{margin:18px 0 6px;font-size:13px;text-transform:uppercase;
+    letter-spacing:.5px;color:var(--muted)}
+  .sheet table{min-width:auto;margin:6px 0}
+  .sheet td,.sheet th{padding:6px 10px;font-size:13px}
+  .sheet .close{float:right}
+  .pp{font-size:13px;margin:3px 0}
+  .pp b{color:var(--fg)}
+  .tag{display:inline-block;background:var(--chip);border:1px solid var(--border);
+    border-radius:4px;padding:1px 6px;font-size:11px;margin:2px 4px 2px 0}
+  .tag.def{border-color:var(--good);color:var(--good)}
+  .tag.paid{border-color:var(--accent)}
+  code{background:var(--chip);padding:1px 5px;border-radius:4px;font-size:12px}
+  .inr{color:var(--muted);font-size:.86em;white-space:nowrap}
+  .curtog{display:inline-flex;border:1px solid var(--border);border-radius:6px;
+    overflow:hidden}
+  .curtog button{background:var(--panel);color:var(--muted);border:0;
+    padding:5px 10px;font-size:12px;cursor:pointer}
+  .curtog button+button{border-left:1px solid var(--border)}
+  .curtog button[aria-pressed=true]{background:var(--accent);color:#fff}
+  /* configurator */
+  .cfg-grid{display:grid;grid-template-columns:120px 1fr;gap:8px 12px;
+    align-items:center;margin:8px 0 4px}
+  .cfg-grid label{color:var(--muted);font-size:12px;text-align:right}
+  .cfg-grid select{width:100%;background:var(--panel2);color:var(--fg);
+    border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:13px}
+  .cfg-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:10px 0}
+  .cfg-bar select{background:var(--panel2);color:var(--fg);border:1px solid var(--border);
+    border-radius:6px;padding:5px 8px;font-size:13px}
+  .osum{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+  .osum .ln{display:flex;justify-content:space-between;font-size:13px;padding:2px 0}
+  .osum .ln.muted{color:var(--muted)}
+  .osum .ln.tot{font-weight:700;font-size:15px;border-top:1px solid var(--border);
+    margin-top:6px;padding-top:6px}
+  .osum .ln.tot .v{color:var(--accent)}
+  .osum .chg .v{color:var(--good)}
+  .osum .chg.up .v{color:var(--bad)}
+  .osum .sel{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+  @media (max-width:560px){ .cfg-grid{grid-template-columns:1fr}
+    .cfg-grid label{text-align:left} }
+  footer{padding:18px 24px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Contabo Pricing</h1>
+  <span class="sub">canonical view model · generated ${genAt || 'n/a'}</span>
+  <span class="spacer"></span>
+  <span class="sub" id="reconBadge"></span>
+  <span class="curtog" id="curTog" role="group" aria-label="Currency">
+    <button data-cur="EUR">EUR</button>
+    <button data-cur="INR">INR</button>
+    <button data-cur="BOTH">Both</button>
+  </span>
+  <button class="btn" id="themeBtn">◐ Theme</button>
+</header>
+
+<div class="toolbar">
+  <div class="pills" id="famPills"></div>
+  <label>Period
+    <select id="periodSel" class="btn">
+      <option value="all">All</option>
+      <option value="1">1 mo</option>
+      <option value="6" selected>6 mo</option>
+      <option value="12">12 mo</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="showHidden"> show hidden (3 mo)</label>
+  <label>min vCPU <input type="number" id="minCpu" min="0" step="1"></label>
+  <label>min RAM <input type="number" id="minRam" min="0" step="1"></label>
+  <label><input type="text" id="search" placeholder="search plan…"></label>
+  <span class="spacer"></span>
+  <span class="sub" id="count"></span>
+</div>
+
+<div class="wrap">
+  <table id="grid">
+    <thead><tr id="head"></tr></thead>
+    <tbody id="body"></tbody>
+  </table>
+  <div class="empty" id="empty" style="display:none">No plans match the current filters.</div>
+</div>
+
+<div id="drawer">
+  <button class="btn close" onclick="clearCompare()">Clear ✕</button>
+  <h3 id="cmpTitle">Compare</h3>
+  <div style="overflow-x:auto"><table class="cmp" id="cmpTable"></table></div>
+</div>
+
+<div id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<footer>
+  Prices in EUR, excl. VAT. Base prices at EU region, Ubuntu OS, 1 IP.
+  Source: <a href="https://contabo.com" rel="noopener">contabo.com</a> ·
+  Also see <a href="PRICES.md">PRICES.md</a> ·
+  Generated by contabo-pricing-scraper.
+  <span id="inrNote" hidden> · INR figures are indicative estimates.</span>
+</footer>
+
+<script type="application/json" id="contabo-data">
+${dataJson}
+</script>
+<script>
+'use strict';
+const DATA = JSON.parse(document.getElementById('contabo-data').textContent);
+const ROWS = DATA.rows;
+const ADDONS = DATA.planAddons || {};
+const CFG = DATA.planConfig || {};
+const FAMILIES = [...new Set(ROWS.map(r => r.family))];
+
+// Group rows → plans { slug -> {meta, periods:{m->row}} }
+const PLANS = {};
+for (const r of ROWS) {
+  const p = PLANS[r.plan_slug] ??= {
+    slug:r.plan_slug, family:r.family, name:r.product_name, url:r.product_url,
+    rank:r.plan_rank, frank:r.plan_family_rank, specs:r.specs,
+    options:r.options_summary || {}, periods:{}
+  };
+  p.periods[r.period_months] = r;
+}
+const PLAN_LIST = Object.values(PLANS);
+
+const lsGet=(k)=>{ try{ return localStorage.getItem(k); }catch{ return null; } };
+const lsSet=(k,v)=>{ try{ localStorage.setItem(k,v); }catch{} };
+const fmtEur = v => (v==null||v==='')?'—':'€'+Number(v).toFixed(2);
+const FX = { rate:(DATA.fx&&DATA.fx.eurInr)||null, markup:(DATA.fx&&DATA.fx.markup)||0 };
+const inrNF = new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
+const fmtInr = v => (!FX.rate||v==null||v==='')?'':'≈ '+inrNF.format(Math.round(Number(v)*FX.rate*(1+FX.markup)));
+function money(v){
+  if(v==null||v==='') return '—';
+  const e=fmtEur(v);
+  if(state.cur==='EUR') return e;
+  const r=fmtInr(v);
+  if(state.cur==='INR') return r||e;
+  return r ? e+' <span class="inr">'+r+'</span>' : e;
+}
+const eur = money;                       // all price call sites are now currency-aware
+const num = v => (v==null)?'—':v;
+const r2  = x => Math.round((Number(x)+Number.EPSILON)*100)/100;
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sgn = v => (v<0?'−':'+')+'€'+Math.abs(v).toFixed(2);
+const savePct = p => {
+  const a=p.periods[1]?.effective_monthly, b=p.periods[12]?.effective_monthly;
+  if(!a||!b) return null;
+  return Math.round((1-b/a)*100);
+};
+
+let state = { fam:'All', period:'6', showHidden:false, minCpu:0, minRam:0,
+  q:'', sortKey:'frank', sortDir:1, compare:new Set(),
+  cur:(lsGet('contabo_cur')||'BOTH') };
+
+// ── Family pills ──────────────────────────────────────────────────────────────
+const famPills = document.getElementById('famPills');
+['All',...FAMILIES].forEach(f=>{
+  const b=document.createElement('button');
+  b.className='pill'; b.textContent=f;
+  b.setAttribute('aria-pressed', f===state.fam);
+  b.onclick=()=>{ state.fam=f;
+    [...famPills.children].forEach(c=>c.setAttribute('aria-pressed',c.textContent===f));
+    render(); };
+  famPills.appendChild(b);
+});
+
+// ── Columns ───────────────────────────────────────────────────────────────────
+const COLS = [
+  {k:'name',  t:'Plan',    l:true, v:p=>p.name, sort:p=>p.frank},
+  {k:'family',t:'Family',  l:true, v:p=>'<span class="fam">'+p.family+'</span>', sort:p=>p.family},
+  {k:'cpu',   t:'vCPU',    v:p=>num(p.specs.cpu_count), sort:p=>p.specs.cpu_count||0},
+  {k:'ram',   t:'RAM',     v:p=>num(p.specs.ram_gb)+' GB', sort:p=>p.specs.ram_gb||0},
+  {k:'stor',  t:'Storage', v:p=>num(p.specs.storage_primary_gb)+' GB '+(p.specs.storage_primary_type||''),
+    sort:p=>p.specs.storage_primary_gb||0},
+  {k:'port',  t:'Port',    v:p=>num(p.specs.port_speed_mbps)+' Mbps', sort:p=>p.specs.port_speed_mbps||0},
+  {k:'p1',    t:'1 mo',    v:p=>eur(p.periods[1]?.effective_monthly), sort:p=>p.periods[1]?.effective_monthly??1e9},
+  {k:'p3',    t:'3 mo',    hidden:true, v:p=>eur(p.periods[3]?.effective_monthly), sort:p=>p.periods[3]?.effective_monthly??1e9},
+  {k:'p6',    t:'6 mo',    v:p=>eur(p.periods[6]?.effective_monthly), sort:p=>p.periods[6]?.effective_monthly??1e9},
+  {k:'p12',   t:'12 mo',   v:p=>'<b>'+eur(p.periods[12]?.effective_monthly)+'</b>', sort:p=>p.periods[12]?.effective_monthly??1e9},
+  {k:'save',  t:'Save',    v:p=>{const s=savePct(p);return s?'<span class="save">−'+s+'%</span>':'—';}, sort:p=>savePct(p)??-1},
+];
+const SORTBY = {frank:p=>p.frank};
+const activeCols = () => COLS.filter(c => !c.hidden || state.showHidden);
+
+const head = document.getElementById('head');
+function renderHead(){
+  head.innerHTML='<th></th>'+activeCols().map(c=>{
+    const active = state.sortKey===c.k;
+    const arr = active ? (state.sortDir>0?' ▲':' ▼') : '';
+    return '<th class="'+(c.l?'l':'')+'" data-k="'+c.k+'">'+c.t+
+      '<span class="arr">'+arr+'</span></th>';
+  }).join('');
+  head.querySelectorAll('th[data-k]').forEach(th=>{
+    th.onclick=()=>{
+      const k=th.dataset.k;
+      if(state.sortKey===k) state.sortDir*=-1;
+      else { state.sortKey=k; state.sortDir=1; }
+      render();
+    };
+  });
+}
+
+function filtered(){
+  return PLAN_LIST.filter(p=>{
+    if(state.fam!=='All' && p.family!==state.fam) return false;
+    if(state.minCpu && (p.specs.cpu_count||0) < state.minCpu) return false;
+    if(state.minRam && (p.specs.ram_gb||0) < state.minRam) return false;
+    if(state.q && !p.name.toLowerCase().includes(state.q.toLowerCase())) return false;
+    return true;
+  }).sort((a,b)=>{
+    const col=COLS.find(c=>c.k===state.sortKey);
+    const f = col?col.sort:(SORTBY[state.sortKey]||(x=>0));
+    const av=f(a), bv=f(b);
+    if(av<bv) return -1*state.sortDir;
+    if(av>bv) return  1*state.sortDir;
+    return 0;
+  });
+}
+
+const body=document.getElementById('body');
+const emptyEl=document.getElementById('empty');
+function render(){
+  renderHead();
+  const list=filtered();
+  const cols=activeCols();
+  body.innerHTML = list.map(p=>{
+    const checked = state.compare.has(p.slug)?'checked':'';
+    return '<tr data-slug="'+p.slug+'">'+
+      '<td><input type="checkbox" class="cmpck" data-slug="'+p.slug+'" '+checked+'></td>'+
+      cols.map((c,i)=>'<td class="'+(c.l?'l':'')+(i===0?' plan-cell':'')+'">'+c.v(p)+'</td>').join('')+
+      '</tr>';
+  }).join('');
+  emptyEl.style.display = list.length?'none':'block';
+  document.getElementById('grid').style.display = list.length?'':'none';
+  document.getElementById('count').textContent =
+    list.length+' / '+PLAN_LIST.length+' plans';
+  body.querySelectorAll('tr').forEach(tr=>{
+    tr.onclick=e=>{ if(e.target.classList.contains('cmpck')) return;
+      openModal(tr.dataset.slug); };
+  });
+  body.querySelectorAll('.cmpck').forEach(ck=>{
+    ck.onclick=e=>{ e.stopPropagation();
+      const s=ck.dataset.slug;
+      if(ck.checked){ if(state.compare.size>=4){ ck.checked=false;
+          alert('Compare up to 4 plans.'); return; } state.compare.add(s); }
+      else state.compare.delete(s);
+      renderCompare();
+    };
+  });
+}
+
+// ── Compare drawer ────────────────────────────────────────────────────────────
+const drawer=document.getElementById('drawer');
+function clearCompare(){ state.compare.clear(); render(); renderCompare(); }
+function renderCompare(){
+  const slugs=[...state.compare];
+  if(slugs.length<2){ drawer.classList.remove('open'); return; }
+  drawer.classList.add('open');
+  const ps=slugs.map(s=>PLANS[s]);
+  document.getElementById('cmpTitle').textContent='Comparing '+ps.length+' plans';
+  const base=ps[0];
+  const row=(label,fn,fmt,dir)=>{
+    const vals=ps.map(fn);
+    return '<tr><td class="l">'+label+'</td>'+vals.map((v,i)=>{
+      let d='';
+      if(i>0 && typeof v==='number' && typeof vals[0]==='number'){
+        const diff=v-vals[0];
+        if(Math.abs(diff)>1e-9){
+          const cls = (dir==='lowerBetter') ? (diff>0?'up':'down') : (diff>0?'down':'up');
+          d=' <span class="delta '+cls+'">'+(diff>0?'+':'')+
+            (fmt===eur?fmtEur(diff):(Math.round(diff*100)/100))+'</span>';
+        }
+      }
+      return '<td>'+(fmt?fmt(v):v)+d+'</td>';
+    }).join('')+'</tr>';
+  };
+  const t=['<tr><th class="l">Spec</th>'+ps.map(p=>'<th>'+p.name+'</th>').join('')+'</tr>',
+    row('Family',p=>p.family),
+    row('vCPU',p=>p.specs.cpu_count,null,'higherBetter'),
+    row('RAM (GB)',p=>p.specs.ram_gb,null,'higherBetter'),
+    row('Storage (GB)',p=>p.specs.storage_primary_gb,v=>v+' '+base.specs.storage_primary_type,'higherBetter'),
+    row('Port (Mbps)',p=>p.specs.port_speed_mbps,null,'higherBetter'),
+    row('1 mo',p=>p.periods[1]?.effective_monthly,eur,'lowerBetter'),
+    row('6 mo',p=>p.periods[6]?.effective_monthly,eur,'lowerBetter'),
+    row('12 mo',p=>p.periods[12]?.effective_monthly,eur,'lowerBetter'),
+    row('Setup (1 mo)',p=>p.periods[1]?.setup_fee,eur,'lowerBetter'),
+  ].join('');
+  document.getElementById('cmpTable').innerHTML=t;
+}
+
+// ── Detail modal ──────────────────────────────────────────────────────────────
+const modal=document.getElementById('modal');
+function closeModal(){ modal.classList.remove('open'); }
+function tagList(items){
+  return items.map(o=>{
+    const cls=o.isDefault?'tag def':(o.delta>0?'tag paid':'tag');
+    const price=o.delta>0?(' <code>+€'+o.delta.toFixed(2)+'</code>'):(o.isDefault?' (default)':'');
+    return '<span class="'+cls+'">'+o.label+price+'</span>';
+  }).join('');
+}
+// ── Calculator ────────────────────────────────────────────────────────────────
+let MCFG=null, MPER=null, MSLUG=null;
+function cfgPeriods(per){ return Object.keys(per).map(Number).sort((a,b)=>a-b); }
+function cfgInitPeriod(per){
+  const ps=cfgPeriods(per);
+  const want=Number(state.period);
+  if(state.period!=='all' && ps.includes(want)) return want;
+  if(ps.includes(6)) return 6;
+  return ps[0];
+}
+function optText(o){
+  let t=esc(o.label);
+  t += o.monthly>0 ? ' (+€'+o.monthly.toFixed(2)+'/mo)' : ' — free';
+  if(o.setup>0) t += ' +€'+o.setup.toFixed(2)+' setup';
+  return t;
+}
+function renderConfigurator(cfg, per){
+  const ip=cfgInitPeriod(per);
+  let h='<h4>Configure &amp; price</h4>';
+  h+='<div class="cfg-bar"><label>Period <select id="cfgPeriod">'+
+     cfgPeriods(per).map(m=>'<option value="'+m+'"'+(m===ip?' selected':'')+'>'+m+
+       ' mo'+(per[m]&&per[m].is_hidden_from_ui?' (hidden)':'')+'</option>').join('')+
+     '</select></label>'+
+     '<button class="btn" id="cfgReset">Reset to defaults</button></div>';
+  h+='<div class="cfg-grid">';
+  cfg.controls.forEach((c,ci)=>{
+    h+='<label for="csel_'+ci+'">'+esc(c.label)+'</label>'+
+       '<select class="cfgsel" id="csel_'+ci+'" data-ci="'+ci+'">'+
+       c.options.map((o,oi)=>'<option value="'+oi+'"'+(oi===c.defaultIdx?' selected':'')+
+          '>'+optText(o)+'</option>').join('')+'</select>';
+  });
+  h+='</div><div class="osum" id="osum"></div>';
+  return h;
+}
+function recalcCfg(){
+  if(!MCFG) return;
+  const cfg=MCFG, per=MPER;
+  const p=Number(document.getElementById('cfgPeriod').value);
+  const row=per[p]||{};
+  const base=Number(row.effective_monthly)||0;
+  const anchorM=cfg.defaultMonthlyByPeriod[String(p)]!=null
+    ? Number(cfg.defaultMonthlyByPeriod[String(p)]) : base;
+  const anchorS=cfg.defaultSetupByPeriod[String(p)]!=null
+    ? Number(cfg.defaultSetupByPeriod[String(p)]) : (Number(row.setup_fee)||0);
+  let mD=0,sD=0;
+  const changes=[], selected=[];
+  cfg.controls.forEach((c,ci)=>{
+    const selI=Number(document.getElementById('csel_'+ci).value);
+    const sel=c.options[selI], def=c.options[c.defaultIdx];
+    mD+=sel.monthly-def.monthly; sD+=sel.setup-def.setup;
+    selected.push(esc(c.label)+'='+esc(sel.label));
+    if(selI!==c.defaultIdx)
+      changes.push({label:c.label,from:def.label,to:sel.label,
+        dm:r2(sel.monthly-def.monthly),ds:r2(sel.setup-def.setup)});
+  });
+  const cfgM=r2(anchorM+mD), cfgS=r2(anchorS+sD), tot=r2(cfgM*p+cfgS);
+  let h='<div class="ln muted"><span>Default config ('+p+' mo)</span><span>'+eur(anchorM)+'/mo</span></div>';
+  for(const ch of changes){
+    const up=ch.dm>0;
+    h+='<div class="ln chg'+(up?' up':'')+'"><span>'+esc(ch.label)+': '+esc(ch.to)+
+       '</span><span class="v">'+sgn(ch.dm)+'/mo'+(ch.ds?' · '+sgn(ch.ds)+' setup':'')+'</span></div>';
+  }
+  h+='<div class="ln tot"><span>Configured monthly</span><span class="v">'+eur(cfgM)+'/mo</span></div>';
+  h+='<div class="ln"><span>Setup (one-time)</span><span>'+(cfgS>0?eur(cfgS):'—')+'</span></div>';
+  h+='<div class="ln"><span>Billed total ('+p+' mo)</span><span>'+eur(tot)+'</span></div>';
+  h+='<div class="sel"><b>Selected:</b> '+selected.join(' · ')+'</div>';
+  document.getElementById('osum').innerHTML=h;
+}
+function wireCfg(slug){
+  const cfg=CFG[slug];
+  MCFG=cfg; MPER=PLANS[slug].periods;
+  document.getElementById('cfgPeriod').onchange=recalcCfg;
+  document.querySelectorAll('.cfgsel').forEach(s=>s.onchange=recalcCfg);
+  document.getElementById('cfgReset').onclick=()=>{
+    cfg.controls.forEach((c,ci)=>{ document.getElementById('csel_'+ci).value=c.defaultIdx; });
+    recalcCfg();
+  };
+  recalcCfg();
+}
+
+function openModal(slug){
+  const p=PLANS[slug]; if(!p) return;
+  MSLUG=slug;
+  const per=p.periods;
+  const order=[1,3,6,12].filter(m=>per[m]);
+  let h='<button class="btn close" onclick="closeModal()">Close ✕</button>';
+  h+='<h2><a href="'+p.url+'" target="_blank" rel="noopener">'+p.name+'</a></h2>';
+  h+='<div class="specs">'+num(p.specs.cpu_count)+' vCPU · '+num(p.specs.ram_gb)+
+     ' GB RAM · '+num(p.specs.storage_primary_gb)+' GB '+(p.specs.storage_primary_type||'')+
+     ' · '+num(p.specs.port_speed_mbps)+' Mbps</div>';
+
+  h+='<h4>Billing</h4><table><tr><th class="l"></th>'+
+     order.map(m=>'<th>'+m+' mo'+(per[m].is_hidden_from_ui?' <span class="badge">hidden</span>':'')+'</th>').join('')+'</tr>';
+  h+='<tr><td class="l">Monthly</td>'+order.map(m=>'<td>'+eur(per[m].effective_monthly)+'</td>').join('')+'</tr>';
+  if(order.some(m=>per[m].setup_fee>0))
+    h+='<tr><td class="l">Setup fee</td>'+order.map(m=>'<td>'+(per[m].setup_fee>0?eur(per[m].setup_fee):'—')+'</td>').join('')+'</tr>';
+  h+='<tr><td class="l">Billed total</td>'+order.map(m=>'<td>'+eur(per[m].total_period_cost)+'</td>').join('')+'</tr>';
+  h+='</table>';
+
+  const cfg=CFG[slug];
+  if(cfg && cfg.controls && cfg.controls.length){
+    h+=renderConfigurator(cfg, per);
+  } else if(ADDONS[slug]){
+    const ad=ADDONS[slug];
+    const img=ad['Image']||[];
+    const byCat=c=>img.filter(o=>o.category===c);
+    const sec=(t,items)=>items.length?('<div class="pp"><b>'+t+'</b> — '+tagList(items)+'</div>'):'';
+    if(img.length){
+      h+='<h4>Image</h4>';
+      h+=sec('OS',byCat('OS'))+sec('Apps',byCat('Apps'))+
+         sec('Control Panels',byCat('Panels'))+sec('Blockchain',byCat('Blockchain'));
+    }
+    const reg=ad['Region']||[];
+    if(reg.length){
+      const G=['Europe','America','Asia','Australia','Other'],g={};
+      reg.forEach(o=>(g[o.regionGroup||'Other']??=[]).push(o));
+      const ord=G.flatMap(x=>g[x]||[]);
+      h+='<h4>Regions</h4><table><tr>'+
+        ord.map(o=>'<th>'+o.label.replace('European Union','EU')+(o.isDefault?' *':'')+'</th>').join('')+'</tr><tr>'+
+        ord.map(o=>'<td>'+(o.delta===0?'free':'+€'+o.delta.toFixed(2))+'</td>').join('')+'</tr></table>';
+    }
+    const net=ad['Networking']||[];
+    if(net.length){
+      const cat=c=>net.filter(o=>o.category===c);
+      h+='<h4>Networking</h4>';
+      const bw=cat('Bandwidth'), ip=cat('IPv4').filter(o=>o.delta>0), pv=cat('Private Networking').filter(o=>o.delta>0);
+      if(bw.length) h+='<div class="pp"><b>Bandwidth</b> — '+tagList(bw)+'</div>';
+      if(ip.length) h+='<div class="pp"><b>Extra IPv4</b> — '+tagList(ip)+'</div>';
+      if(pv.length) h+='<div class="pp"><b>Private Network</b> — '+tagList(pv)+'</div>';
+    }
+    const dp=(ad['Data Protection']||[]).filter(o=>o.delta>0);
+    if(dp.length) h+='<h4>Backup</h4><div class="pp">'+tagList(dp)+'</div>';
+    const st=ad['Storage']||[];
+    if(st.length){
+      h+='<h4>Storage</h4><div class="pp">'+tagList(st)+'</div>';
+    }
+  } else {
+    h+='<h4>Add-ons</h4><div class="muted pp">Run the enrich step for add-on detail.</div>';
+  }
+  document.getElementById('sheet').innerHTML=h;
+  modal.classList.add('open');
+  if(cfg && cfg.controls && cfg.controls.length) wireCfg(slug);
+}
+
+// ── Wire controls ─────────────────────────────────────────────────────────────
+document.getElementById('periodSel').onchange=e=>{ state.period=e.target.value;
+  // period selector primarily affects sort default; keep table showing all period cols
+  if(state.period!=='all'){ state.sortKey={'1':'p1','6':'p6','12':'p12'}[state.period];
+    state.sortDir=1; }
+  render(); };
+document.getElementById('showHidden').onchange=e=>{ state.showHidden=e.target.checked; render(); };
+document.getElementById('minCpu').oninput=e=>{ state.minCpu=+e.target.value||0; render(); };
+document.getElementById('minRam').oninput=e=>{ state.minRam=+e.target.value||0; render(); };
+document.getElementById('search').oninput=e=>{ state.q=e.target.value; render(); };
+document.getElementById('themeBtn').onclick=()=>{
+  const r=document.documentElement;
+  r.dataset.theme = r.dataset.theme==='dark'?'light':'dark';
+};
+addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+const rb=document.getElementById('reconBadge');
+const cc=DATA.consistency||{};
+rb.textContent = cc.mismatch_count===0
+  ? '✓ reconciled ('+cc.checked+' checks)'
+  : '⚠ '+cc.mismatch_count+' reconciliation mismatch(es)';
+rb.style.color = cc.mismatch_count===0 ? 'var(--good)' : 'var(--bad)';
+
+// ── Currency toggle + indicative INR ──────────────────────────────────────────
+const curTog=document.getElementById('curTog');
+const inrNote=document.getElementById('inrNote');
+function updateCurUI(){
+  curTog.querySelectorAll('button').forEach(b=>
+    b.setAttribute('aria-pressed', b.dataset.cur===state.cur));
+  inrNote.hidden = !(state.cur!=='EUR' && FX.rate);
+}
+function applyFx(){
+  render(); renderCompare();
+  if(modal.classList.contains('open') && MSLUG) openModal(MSLUG);
+  updateCurUI();
+}
+curTog.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  state.cur=b.dataset.cur; lsSet('contabo_cur',state.cur); applyFx();
+});
+(function refreshFx(){
+  try{
+    const c=JSON.parse(lsGet('contabo_fx')||'null');
+    if(c && c.rate>0 && (Date.now()-c.ts) < 12*3600*1000){ FX.rate=c.rate; return; }
+    if(typeof fetch!=='function') return;
+    const ac=new AbortController(); const to=setTimeout(()=>ac.abort(),4000);
+    fetch('https://api.frankfurter.app/latest?from=EUR&to=INR',{signal:ac.signal})
+      .then(r=>r.ok?r.json():null).then(j=>{
+        clearTimeout(to);
+        const rt=j&&j.rates&&j.rates.INR;
+        if(typeof rt==='number'&&rt>0){
+          FX.rate=rt; lsSet('contabo_fx',JSON.stringify({rate:rt,ts:Date.now()}));
+          applyFx();
+        }
+      }).catch(()=>{});
+  }catch{}
+})();
+
+updateCurUI();
+render(); renderCompare();
+</script>
+</body>
+</html>
+`;
+
+fs.writeFileSync(HTML_PATH, html);
+const planCount = new Set(rows.map(r => r.plan_slug)).size;
+console.log(
+  `Generated report.html · ${planCount} plans · ${rows.length} rows · ${genAt}` +
+  ` · reconciliation: ${mismatches.length === 0 ? 'OK' : mismatches.length + ' mismatch(es)'}` +
+  `${mismatches.length ? ' — see ' + path.basename(RECON_PATH) : ''}` +
+  ` · FX: ${payload.fx && payload.fx.eurInr ? 'EUR→INR ' + payload.fx.eurInr + ' (embedded)' : 'unavailable (browser will retry)'}`,
+);
+})();

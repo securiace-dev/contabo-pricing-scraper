@@ -1,0 +1,5 @@
+# report.html is regenerated twice daily by the scraper pipeline — treat it as
+# a build artifact so large blob diffs don't drown out real changes in PRs and
+# commit notifications.
+report.html linguist-generated=true
+report.html -diff

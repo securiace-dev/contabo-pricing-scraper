@@ -183,7 +183,8 @@ const out = [
   '# Contabo Pricing',
   '',
   `> **Last updated:** ${genAt}  `,
-  '> Auto-refreshed twice daily · data from [contabo.com](https://contabo.com)',
+  '> Auto-refreshed twice daily · data from [contabo.com](https://contabo.com)  ',
+  '> 📊 **[Interactive view → report.html](report.html)** — sort, filter & compare plans',
   '',
 ];
 
