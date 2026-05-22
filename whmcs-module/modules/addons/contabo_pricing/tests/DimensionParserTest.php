@@ -127,9 +127,9 @@ final class DimensionParserTest extends TestCase
         $result = DimensionParser::parse($this->options());
         $byKey  = $this->indexByDimensionKey($result['specs']);
 
-        $this->assertSame(0, $byKey['Networking:Bandwidth']['optiontype']);             // dropdown
-        $this->assertSame(3, $byKey['Networking:IPv4']['optiontype']);                  // qty
-        $this->assertSame(2, $byKey['Networking:Private Networking']['optiontype']);    // yes/no
+        $this->assertSame(1, $byKey['Networking:Bandwidth']['optiontype']);             // dropdown
+        $this->assertSame(4, $byKey['Networking:IPv4']['optiontype']);                  // qty
+        $this->assertSame(3, $byKey['Networking:Private Networking']['optiontype']);    // yes/no
     }
 
     public function testRegionStorageDataProtectionEachOneSpec(): void
@@ -147,9 +147,9 @@ final class DimensionParserTest extends TestCase
         $result = DimensionParser::parse($this->options());
         $byKey  = $this->indexByDimensionKey($result['specs']);
 
-        $this->assertSame(1, $byKey['Region']['optiontype']);          // radio (3 values)
-        $this->assertSame(1, $byKey['Storage Type']['optiontype']);    // radio (4 values)
-        $this->assertSame(2, $byKey['Data Protection']['optiontype']); // yes/no (exactly 2)
+        $this->assertSame(2, $byKey['Region']['optiontype']);          // radio (3 values)
+        $this->assertSame(2, $byKey['Storage Type']['optiontype']);    // radio (4 values)
+        $this->assertSame(3, $byKey['Data Protection']['optiontype']); // yes/no (exactly 2)
     }
 
     public function testTotalSpecCount(): void

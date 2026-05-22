@@ -37,8 +37,12 @@ optionname,optiontype,qtyminimum,qtymaximum,order,hidden) → `tblproductconfigo
 (id,configid,optionname,sortorder,hidden); `tblproductconfiglinks`(id,gid,pid);
 `tblhostingconfigoptions`(id,relid,configid,optionid,qty); `tblpricing` rows
 `type='configoptions'` keyed by `relid = tblproductconfigoptionssub.id`, 6 cycle + 6
-setup-fee columns. `optiontype`: 0=dropdown, 1=radio, 2=yes/no, 3=qty, 4=text.
-Currencies: 1=INR(base), 2=USD, 3=EUR, 4=GBP.
+setup-fee columns. `optiontype`: **1=dropdown, 2=radio, 3=yes/no, 4=quantity**
+(empirically corrected in the A.6 preflight — WHMCS has no type 0 and no text
+type; an earlier draft of this line was wrong. A type-3 yes/no charges only at
+qty=1; a type-4 quantity multiplies the unit price by qty). Currencies: id 1 is
+the install's **base** currency (INR on prod my.securiace.com; USD on the local
+dev WHMCS) — the syncer must key off the base currency, not assume id 1 == INR.
 
 ---
 
@@ -83,7 +87,7 @@ unless an explicit `product_scope_key` differs (see amendment 7).
 
 ## 2. Image option model (headline rule)
 
-ONE WHMCS option `Image` per profile. `optiontype` = 0 (dropdown — 34 values) with
+ONE WHMCS option `Image` per profile. `optiontype` = 1 (dropdown — 34 values) with
 **prefixed labels + sortorder** for grouping (see amendment 2; do NOT assume real
 optgroups). Sub-options = all 34 image values; `category` drives sortorder + label prefix
 (`[OS] Ubuntu 24.04`, `[Panel] cPanel`, `[App] Docker`, `[Blockchain] Geth`). Exactly one

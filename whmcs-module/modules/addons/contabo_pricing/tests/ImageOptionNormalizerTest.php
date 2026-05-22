@@ -78,7 +78,7 @@ final class ImageOptionNormalizerTest extends TestCase
     public function testOptiontypeIsDropdown(): void
     {
         $spec = ImageOptionNormalizer::normalize($this->imageRows());
-        $this->assertSame(0, $spec['optiontype']); // dropdown
+        $this->assertSame(\ContaboPricing\OptionTypeMapper::TYPE_DROPDOWN, $spec['optiontype']); // dropdown = 1
     }
 
     public function testLabelsArePrefixedByCategory(): void

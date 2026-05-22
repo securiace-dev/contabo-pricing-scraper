@@ -184,7 +184,7 @@ final class WhmcsConfigOptionsAdapter
 
     /**
      * Upsert an option within a group, keyed by (gid, optionname).
-     * optiontype: 0=dropdown 1=radio 2=yes/no 3=qty 4=text.
+     * optiontype: 1=dropdown 2=radio 3=yes/no 4=quantity (see OptionTypeMapper).
      *
      * @return array{id:?int, action:string, table:string, payload:array<string,mixed>}
      */

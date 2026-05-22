@@ -155,7 +155,7 @@ final class ImageOptionNormalizer
 
         return [
             'dimension_key'     => self::DIMENSION_KEY,
-            // 34 mutually-exclusive values → always a dropdown (optiontype 0).
+            // 34 mutually-exclusive values → always a dropdown (optiontype 1).
             'optiontype'        => OptionTypeMapper::mapFor(self::DIMENSION_KEY),
             'category_groups'   => self::orderedCategoryGroups($values),
             'values'            => $values,

@@ -6,14 +6,15 @@ namespace ContaboPricing;
 /**
  * Canonical Contabo dimension-key → WHMCS configurable-option `optiontype` map.
  *
- * WHMCS `tblproductconfigoptions.optiontype` values (verified on
- * my.securiace.com, see PHASE_A52_DESIGN_IMPACT.md §"Verified facts"):
+ * WHMCS `tblproductconfigoptions.optiontype` values (empirically verified on
+ * a live install during the A.6 preflight — see PHASE_A6_PREFLIGHT_CONFIGOPTIONS.md.
+ * NOTE: an earlier draft listed a wrong `0..4` map; WHMCS has NO type 0 and NO
+ * text type — the real values are 1..4):
  *
- *   0 = dropdown
- *   1 = radio
- *   2 = yes/no   (a single toggle sub-option)
- *   3 = quantity (qtyminimum / qtymaximum, one priced sub-option per unit)
- *   4 = text
+ *   1 = dropdown
+ *   2 = radio
+ *   3 = yes/no   (a single toggle sub-option; charges only when qty = 1)
+ *   4 = quantity (qtyminimum / qtymaximum; line price multiplies by qty)
  *
  * The dimension keys understood here are the *normalised* keys emitted by
  * {@see DimensionParser}, NOT the raw Contabo `dimension` strings. In
@@ -25,13 +26,13 @@ namespace ContaboPricing;
  *
  *   | Normalised dimension key       | optiontype | rationale                       |
  *   |--------------------------------|-----------:|---------------------------------|
- *   | Image                          |  0 dropdown| 34 mutually-exclusive values    |
- *   | Region                         |  1 radio   | one choice, modest cardinality  |
- *   | Storage Type                   |  1 radio   | one choice, ~4 tiers            |
- *   | Data Protection                |  2 yes/no  | exactly None / Auto Backup      |
- *   | Networking:Bandwidth           |  0 dropdown| one choice, several tiers       |
- *   | Networking:IPv4                |  3 qty     | additional IPs are a quantity   |
- *   | Networking:Private Networking  |  2 yes/no  | on / off toggle                 |
+ *   | Image                          |  1 dropdown| 34 mutually-exclusive values    |
+ *   | Region                         |  2 radio   | one choice, modest cardinality  |
+ *   | Storage Type                   |  2 radio   | one choice, ~4 tiers            |
+ *   | Data Protection                |  3 yes/no  | exactly None / Auto Backup      |
+ *   | Networking:Bandwidth           |  1 dropdown| one choice, several tiers       |
+ *   | Networking:IPv4                |  4 qty     | additional IPs are a quantity   |
+ *   | Networking:Private Networking  |  3 yes/no  | on / off toggle                 |
  *
  * Region/Data Protection fall back to a value-count heuristic when the caller
  * supplies one ({@see mapForWithValueCount}): a radio with too many values is
@@ -45,12 +46,16 @@ namespace ContaboPricing;
  */
 final class OptionTypeMapper
 {
-    /** WHMCS optiontype literals. */
-    public const TYPE_DROPDOWN = 0;
-    public const TYPE_RADIO    = 1;
-    public const TYPE_YESNO    = 2;
-    public const TYPE_QUANTITY = 3;
-    public const TYPE_TEXT     = 4;
+    /**
+     * WHMCS optiontype literals (1..4 — there is no type 0 and no text type).
+     * Empirically confirmed during the A.6 preflight: a type-3 (yes/no) option
+     * charges only at qty=1, while a type-4 (quantity) multiplies the unit
+     * price by qty — so mis-mapping IPv4 to 3 instead of 4 would undercharge.
+     */
+    public const TYPE_DROPDOWN = 1;
+    public const TYPE_RADIO    = 2;
+    public const TYPE_YESNO    = 3;
+    public const TYPE_QUANTITY = 4;
 
     /** Normalised dimension keys (mirrors DimensionParser output). */
     public const DIM_IMAGE             = 'Image';
@@ -87,7 +92,7 @@ final class OptionTypeMapper
     /**
      * Map a normalised dimension key to its default WHMCS optiontype.
      *
-     * Unknown keys fall back to a dropdown (0) — the safest default for an
+     * Unknown keys fall back to a dropdown (1) — the safest default for an
      * unrecognised mutually-exclusive dimension and never accidentally a
      * quantity or yes/no.
      */
