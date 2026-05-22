@@ -120,13 +120,13 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
     <button type="button" data-cb-filter="inactive" aria-pressed="false">Inactive</button>
   </div>
 
+  <span class="glabel">Search</span>
   <div class="cb-search" role="search">
-    <span class="glabel">Search</span>
     <input data-cb-search type="text" placeholder="Search profiles…" autocomplete="off">
   </div>
 
+  <span class="glabel">Sort</span>
   <div class="cb-seg" role="group" aria-label="Sort by">
-    <span class="glabel">Sort</span>
     <button type="button" data-cb-sort="name"        aria-pressed="true">Name</button>
     <button type="button" data-cb-sort="updated_at"  aria-pressed="false">Recently changed</button>
     <button type="button" data-cb-sort="plan_slug"   aria-pressed="false">Plan slug</button>
@@ -140,7 +140,7 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
 </div>
 
 <!-- ───────────────────── Bulk-action bar ───────────────────── -->
-<div class="cb-card cb-bulk-bar" data-cb-bulk-toolbar hidden style="display:flex; align-items:center; gap:10px; padding:10px 14px;">
+<div class="cb-card cb-bulk-bar" data-cb-bulk-toolbar hidden style="align-items:center; gap:10px; padding:10px 14px;">
   <strong><span data-cb-bulk-count>0</span> selected</strong>
   <span style="opacity:.5">·</span>
   <button type="button" class="cb-btn subtle" data-cb-bulk-action="apply-latest">Apply latest version</button>

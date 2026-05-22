@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.4 — 2026-05-22 (profiles toolbar + bulk-bar fixes)
+
+### Fixed
+- **Toolbar labels overlapped their controls.** The "Search" label sat inside
+  `.cb-search`, whose `::before` search icon is absolutely positioned at the
+  left — so the icon rendered on top of the label ("SE⎄RCH"). The "Sort" label
+  sat inside the bordered `.cb-seg` segment box, cramped against the first
+  button. Both labels are now siblings of their controls, separated by the
+  toolbar's gap. (profiles.tpl)
+- **Bulk-action bar never tracked the selection.** `refreshBulkToolbar()` looked
+  for the bar via `table.closest('.cb-card')`, but the bar is a separate sibling
+  card — so it was never found: the "N selected" count stayed at 0 and the bar's
+  visibility never toggled. It now resolves the bar at document scope, updates
+  the count, and toggles the `hidden` attribute. (assets/app.js)
+- **Bulk bar was always visible.** Its `hidden` attribute was defeated by an
+  inline `display:flex`; the inline display is removed so `hidden` hides it until
+  a row is selected. (profiles.tpl)
+
 ## 0.4.3 — 2026-05-22 (visual-QA gap fixes: drawer, sidebar, flash, asset cache-buster)
 
 Found during a browser-driven visual walk of every admin page against the local

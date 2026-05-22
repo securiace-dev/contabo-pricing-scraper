@@ -278,11 +278,22 @@
   }
 
   function refreshBulkToolbar(table) {
-    var scope = table.closest('.cb-card, section, body') || document;
-    var bar = scope.querySelector('[data-cb-bulk-toolbar]');
+    // The bulk bar is a sibling card of the table (not inside it), so search
+    // the whole document — scoping to the table's card finds nothing.
+    var bar = document.querySelector('[data-cb-bulk-toolbar]');
     if (!bar) return;
-    var any = $$('[data-cb-bulk]', table).some(function (cb) { return cb.checked; });
-    bar.style.display = any ? '' : 'none';
+    var n = $$('[data-cb-bulk]', table).filter(function (cb) { return cb.checked; }).length;
+    var countEl = bar.querySelector('[data-cb-bulk-count]');
+    if (countEl) countEl.textContent = String(n);
+    // Toggle the `hidden` attribute (UA display:none) AND the inline display,
+    // mirroring the drawer fix — neither alone wins reliably against the other.
+    if (n > 0) {
+      bar.removeAttribute('hidden');
+      bar.style.display = 'flex';
+    } else {
+      bar.setAttribute('hidden', '');
+      bar.style.display = 'none';
+    }
   }
 
   // ── modal ─────────────────────────────────────────────────────────────────
