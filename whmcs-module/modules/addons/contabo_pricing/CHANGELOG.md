@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.9 — 2026-05-23 (capability + compatibility matrix repositories)
+
+### Added
+- **`ConfigOptionCapabilityRepository`** (§4 + amendment #6) — sole chokepoint for the
+  `mod_contabo_option_capability` table (existed since schema v5, was unused). upsert/find/
+  listForPlan + `canAutoApply(row, isDestructive)` enforcing the capability-source gate:
+  only `api_verified` may auto-apply a destructive/in-place change; `scrape_verified`/
+  `manual_assumption`/`admin_override`/`unknown`/missing all require admin approval. 13 tests.
+- **`ConfigOptionCompatibilityRepository`** (§5) — sole chokepoint for the
+  `mod_contabo_option_compatibility` table. upsertRule/find + `validateCombination(plan,
+  selections)` rejecting incompatible pairs, missing required values, and qty out of
+  [min,max]; returns `{valid, violations[]}`. 12 tests.
+
+### Notes
+- Foundation chokepoints only — **not yet wired** into the order/selection validation
+  flow or the apply/lifecycle path (that wiring is the next step). The tables now have
+  guarded read/write access. Both mirror the `ConfigOptionLinkRepository` pattern
+  (incl. the stdClass-cast discipline). Suite 300.
+
 ## 0.4.8 — 2026-05-23 (Phase B: landedCostWithSelections — whole-config margin)
 
 ### Added
