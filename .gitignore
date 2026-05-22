@@ -11,3 +11,9 @@ Cargo.lock
 # Local scratch files
 tmp/
 *.log
+
+# PHP addon: composer deps + phpunit cache are dev-only. The addon ships with a
+# stub autoloader, so prod runs without vendor/ (it's excluded from deploys too).
+vendor/
+.phpunit.cache/
+composer.phar

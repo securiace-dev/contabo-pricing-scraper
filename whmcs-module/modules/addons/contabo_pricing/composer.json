@@ -1,0 +1,36 @@
+{
+    "name": "yashodhank/whmcs-contabo-pricing",
+    "description": "WHMCS addon that syncs Contabo VPS/VDS pricing into WHMCS products via versioned profiles",
+    "type": "whmcs-module",
+    "license": "MIT",
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "ext-json": "*",
+        "ext-curl": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "ContaboPricing\\": "lib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ContaboPricing\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist"
+    },
+    "scripts": {
+        "lint": "find lib -name '*.php' -print0 | xargs -0 -n1 php -l",
+        "test": "phpunit --colors=always tests"
+    },
+    "support": {
+        "source": "https://github.com/yashodhank/contabo-pricing-scraper",
+        "issues": "https://github.com/yashodhank/contabo-pricing-scraper/issues"
+    }
+}
