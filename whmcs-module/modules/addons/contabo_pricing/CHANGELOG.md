@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.4.12 — 2026-05-23 (schema v6 — drift detection: re-apply won't clobber admin edits)
+
+### Added
+- **Schema v6** (`migrateTo6`) — adds a nullable `expected_hash` column to the three
+  config link tables (idempotent, hasColumn-guarded). The `upgrade()` chain runs it
+  automatically on the next admin load / activation.
+- **`DriftHasher`** — pure, deterministic canonical hash of an object's addon-controlled
+  fields (order-independent, control-byte separators, sha1). 15 tests.
+- **Drift guard in `apply` (amendment #14)** — before overwriting a WHMCS option the
+  addon previously created, it re-hashes the live object and compares to the recorded
+  baseline. On a mismatch (an admin hand-edited it out of band) the option is **flagged
+  (`drift_skip` audit, `summary.drift_skipped`) and skipped — never clobbered**. After a
+  clean write it records the new baseline. `WhmcsConfigOptionsAdapter::fetchOption()` +
+  `OPTION_DRIFT_COLUMNS` back the check; `ConfigOptionLinkRepository::upsertOptionLink`
+  stores `expected_hash`.
+
+### Notes
+- v1 covers **option-level** drift (the structural/visibility object). Sub-option +
+  pricing + group drift are a follow-up (the pattern + hash column are in place).
+  Verified end-to-end on the local dev WHMCS: a hand-edited live option survives a
+  re-apply (drift_skipped=1, edit intact). 16 new tests; suite 358.
+
 ## 0.4.11 — 2026-05-23 (exposure curation — apply produces a curated catalog)
 
 ### Fixed / Added — the configurable-product feature is now usable end-to-end

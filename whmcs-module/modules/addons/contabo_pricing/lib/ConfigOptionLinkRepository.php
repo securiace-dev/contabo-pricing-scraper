@@ -88,7 +88,7 @@ final class ConfigOptionLinkRepository
      * @param array<string,bool|int> $exposure
      * @return array<string,mixed>
      */
-    public function upsertOptionLink(int $profileId, string $dimensionKey, int $optiontype, ?int $whmcsOptionId = null, array $exposure = []): array
+    public function upsertOptionLink(int $profileId, string $dimensionKey, int $optiontype, ?int $whmcsOptionId = null, array $exposure = [], ?string $expectedHash = null): array
     {
         $now = date('Y-m-d H:i:s');
         $key = ['profile_id' => $profileId, 'dimension_key' => $dimensionKey];
@@ -96,6 +96,11 @@ final class ConfigOptionLinkRepository
         $values = ['optiontype' => $optiontype, 'enabled' => 1, 'updated_at' => $now];
         if ($whmcsOptionId !== null) {
             $values['whmcs_option_id'] = $whmcsOptionId;
+        }
+        // Drift baseline (§14): the canonical hash of the WHMCS option's
+        // addon-controlled fields as the addon last wrote them. null = leave it.
+        if ($expectedHash !== null) {
+            $values['expected_hash'] = $expectedHash;
         }
         foreach (self::EXPOSURE_FLAGS as $flag) {
             if (array_key_exists($flag, $exposure)) {

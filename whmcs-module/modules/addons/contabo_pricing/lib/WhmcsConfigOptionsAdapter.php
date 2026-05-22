@@ -242,6 +242,22 @@ final class WhmcsConfigOptionsAdapter
         });
     }
 
+    /**
+     * Read a WHMCS option's current row (drift detection §14). Returns the
+     * addon-controlled columns normalised to an array, or null if absent. Reads
+     * stay in the adapter so it remains the sole tblproductconfig* accessor.
+     *
+     * @return array<string,mixed>|null
+     */
+    public function fetchOption(int $optionId): ?array
+    {
+        $r = Capsule::table('tblproductconfigoptions')->where('id', $optionId)->first();
+        return $r !== null ? (array) $r : null;
+    }
+
+    /** The option columns the addon controls — what drift detection hashes. */
+    public const OPTION_DRIFT_COLUMNS = ['optionname', 'optiontype', 'qtyminimum', 'qtymaximum', 'hidden'];
+
     // ----------------------------------------------------------------------
     // tblproductconfigoptionssub
     // ----------------------------------------------------------------------

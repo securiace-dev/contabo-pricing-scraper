@@ -244,7 +244,7 @@ final class ConfigurableOptionsSyncer
             throw new \RuntimeException('apply() needs a non-dry-run adapter; got a dry-run one.');
         }
 
-        $summary = ['created' => 0, 'updated' => 0, 'noop' => 0, 'skipped' => 0];
+        $summary = ['created' => 0, 'updated' => 0, 'noop' => 0, 'skipped' => 0, 'drift_skipped' => 0];
 
         $group   = $this->adapter->upsertGroup($groupName, 'Contabo configurable options (profile #' . $profileId . ')');
         $groupId = (int) ($group['id'] ?? 0);
@@ -274,6 +274,36 @@ final class ConfigurableOptionsSyncer
             // a fresh apply produces a curated catalog (OS only, etc.) rather than
             // flooding the order form with all 34 images + every dimension.
             $existingLink = $this->links->findOptionLink($profileId, $dimKey);
+
+            // Drift guard (§14 / amendment 14): if the addon previously wrote this
+            // option (whmcs id + a recorded baseline hash) and the LIVE WHMCS
+            // object no longer matches that baseline, an admin hand-edited it out
+            // of band — flag it and SKIP (including its sub-values); never clobber.
+            if ($existingLink !== null
+                && (int) ($existingLink['whmcs_option_id'] ?? 0) > 0
+                && !empty($existingLink['expected_hash'])
+            ) {
+                $liveOpt = $this->adapter->fetchOption((int) $existingLink['whmcs_option_id']);
+                if ($liveOpt !== null
+                    && !DriftHasher::matches((string) $existingLink['expected_hash'], $liveOpt, WhmcsConfigOptionsAdapter::OPTION_DRIFT_COLUMNS)
+                ) {
+                    $summary['drift_skipped']++;
+                    $this->audit->record(
+                        $profileId, $dimKey, 'tblproductconfigoptions',
+                        (int) $existingLink['whmcs_option_id'], 'drift_skip',
+                        ['expected_hash' => (string) $existingLink['expected_hash']], $liveOpt,
+                        'live option hand-edited since last apply — skipped to avoid clobbering the admin change'
+                    );
+                    continue;
+                }
+            }
+
+            // Exposure curation (amendment 8). Resolution order: an existing
+            // option-link's stored flags win (the admin may have curated them via
+            // the exposure editor); otherwise the RetailVpsMinimal default. This
+            // drives WHMCS option visibility AND is recorded back on the link, so
+            // a fresh apply produces a curated catalog (OS only, etc.) rather than
+            // flooding the order form with all 34 images + every dimension.
             if ($existingLink !== null && array_key_exists('hidden', $existingLink)) {
                 $optHidden = (bool) $existingLink['hidden'];
                 $optExpose = array_key_exists('expose_to_customer', $existingLink)
@@ -287,9 +317,19 @@ final class ConfigurableOptionsSyncer
 
             $option   = $this->adapter->upsertOption($groupId, $dimKey, $optionType, $isQuantity ? 0 : null, $isQuantity ? count($values) : null, 0, $optHidden);
             $optionId = (int) ($option['id'] ?? 0);
+            // Record the NEW drift baseline = hash of the option as just written
+            // (read it back so the baseline matches what a future re-apply sees).
+            $newHash = null;
+            if ($optionId > 0) {
+                $liveAfter = $this->adapter->fetchOption($optionId);
+                if ($liveAfter !== null) {
+                    $newHash = DriftHasher::hashFields($liveAfter, WhmcsConfigOptionsAdapter::OPTION_DRIFT_COLUMNS);
+                }
+            }
             $link     = $this->links->upsertOptionLink(
                 $profileId, $dimKey, $optionType, $optionId > 0 ? $optionId : null,
-                ['expose_to_customer' => $optExpose, 'hidden' => $optHidden]
+                ['expose_to_customer' => $optExpose, 'hidden' => $optHidden],
+                $newHash
             );
             $optionLinkId = (int) ($link['id'] ?? 0);
             $this->tally($summary, (string) ($option['action'] ?? ''));

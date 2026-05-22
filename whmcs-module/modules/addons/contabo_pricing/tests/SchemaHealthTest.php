@@ -66,7 +66,7 @@ final class SchemaHealthTest extends TestCase
         $this->assertTrue($result['ok'], 'assertOrMigrate must succeed');
         $this->assertSame(3, $result['from']);
         $this->assertSame(Installer::SCHEMA_VERSION, $result['to']);
-        $this->assertSame(5, $result['to']);
+        $this->assertSame(6, $result['to']);
         $this->assertNull($result['error']);
 
         // The migration must have added the v4 identity columns.
@@ -74,10 +74,10 @@ final class SchemaHealthTest extends TestCase
         $this->assertContains('profile_fingerprint_hash', Capsule::$columns['mod_contabo_profile']);
         $this->assertContains('profile_identity_json', Capsule::$columns['mod_contabo_profile']);
 
-        // And the recorded schema_version is now current (5).
+        // And the recorded schema_version is now current (6).
         $recorded = (int) Capsule::table('mod_contabo_settings')
             ->where('key', 'schema_version')->value('value');
-        $this->assertSame(5, $recorded);
+        $this->assertSame(6, $recorded);
 
         // Post-condition: schema is now healthy.
         $after = SchemaHealth::requiredColumnsPresent();

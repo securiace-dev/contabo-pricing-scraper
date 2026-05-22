@@ -139,4 +139,24 @@ final class ConfigurableOptionsApplyTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $syncer->apply(7, 501, 'g', 'G', $this->specs(), $this->ctx());
     }
+
+    public function testReapplySkipsAndDoesNotClobberADriftedOption(): void
+    {
+        $links = new ConfigOptionLinkRepository();
+        $this->syncer($links)->apply(7, 501, 'g', 'G', $this->specs(), $this->ctx());
+
+        // An admin hand-edits the live Image option out of band.
+        $imgLink = $links->findOptionLink(7, 'Image');
+        $optId = (int) $imgLink['whmcs_option_id'];
+        $this->assertGreaterThan(0, $optId);
+        $this->assertNotEmpty($imgLink['expected_hash'], 'baseline hash recorded on first apply');
+        Capsule::table('tblproductconfigoptions')->where('id', $optId)->update(['optionname' => 'Image (hand-edited)']);
+
+        // Re-apply: the drifted option is flagged + skipped, never overwritten.
+        $r2 = $this->syncer($links)->apply(7, 501, 'g', 'G', $this->specs(), $this->ctx());
+        $this->assertGreaterThanOrEqual(1, (int) $r2['summary']['drift_skipped']);
+
+        $live = (array) Capsule::table('tblproductconfigoptions')->where('id', $optId)->first();
+        $this->assertSame('Image (hand-edited)', (string) $live['optionname'], 'admin edit must NOT be clobbered');
+    }
 }

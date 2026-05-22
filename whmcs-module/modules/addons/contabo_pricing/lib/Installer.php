@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 5;
+    public const SCHEMA_VERSION = 6;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -1030,5 +1030,38 @@ class Installer
 
         // ── Schema-version bump is performed by upgrade() after this method
         //    returns; nothing to do here (mirrors migrateTo2/migrateTo3/migrateTo4).
+    }
+
+    /**
+     * Schema v6 — drift detection (design §14 / amendment 14). Adds an
+     * `expected_hash` column to the three config link tables. apply() stores a
+     * canonical DriftHasher hash of each WHMCS object's addon-controlled fields
+     * when it writes; a later re-apply re-hashes the live object and, on a
+     * mismatch (an admin hand-edited it out of band), FLAGS the drift and
+     * refuses to overwrite — never silently clobbering the admin's change.
+     *
+     * Idempotent: each addColumn is hasColumn-guarded. The schema-version bump
+     * is done by upgrade() after this returns (mirrors migrateTo2..5).
+     */
+    public function migrateTo6(): void
+    {
+        $schema = Capsule::schema();
+        $tables = [
+            'mod_contabo_config_group_link',
+            'mod_contabo_config_option_link',
+            'mod_contabo_config_option_value_link',
+        ];
+        foreach ($tables as $table) {
+            if (!$schema->hasTable($table)) {
+                logActivity('Contabo Pricing migrateTo6: ' . $table . ' absent — expected_hash skipped');
+                continue;
+            }
+            if (!$schema->hasColumn($table, 'expected_hash')) {
+                $schema->table($table, static function (Blueprint $t): void {
+                    $t->string('expected_hash', 40)->nullable();
+                });
+                logActivity('Contabo Pricing migrateTo6: added expected_hash to ' . $table);
+            }
+        }
     }
 }
