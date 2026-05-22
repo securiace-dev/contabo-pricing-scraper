@@ -1,0 +1,3896 @@
+{
+  "dimension_schema": {
+    "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
+    "schema_version": "1.1",
+    "generated_at": "2026-05-22T19:21:44.005Z",
+    "dimensions": {
+      "Data Protection": {
+        "required": false,
+        "selection_type": "single"
+      },
+      "Image": {
+        "required": true,
+        "selection_type": "single"
+      },
+      "Networking": {
+        "required": true,
+        "selection_type": "grouped_single",
+        "categories": {
+          "Bandwidth": {
+            "required": true,
+            "selection_type": "single"
+          },
+          "IPv4": {
+            "required": true,
+            "selection_type": "single"
+          },
+          "Private Networking": {
+            "required": true,
+            "selection_type": "single"
+          }
+        }
+      },
+      "Region": {
+        "required": true,
+        "selection_type": "single"
+      },
+      "Storage Type": {
+        "required": true,
+        "selection_type": "single"
+      },
+      "Storage": {
+        "required": true,
+        "selection_type": "single"
+      }
+    }
+  },
+  "meta": {
+    "generated_at": "2026-05-22T19:21:44.009Z",
+    "plan_count": 16,
+    "row_count": 64,
+    "schema_version": "1.1",
+    "scraper_version": "2.2.1"
+  },
+  "rows": [
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 1,
+      "plan_family_rank": 1,
+      "product_name": "Cloud VPS 10",
+      "product_slug": "cloud-vps-10",
+      "plan_slug": "cloud-vps-10",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-10/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 4.5,
+      "effective_monthly": 4.5,
+      "setup_fee": 4.5,
+      "discount_total": 0,
+      "total_period_cost": 9,
+      "specs": {
+        "cpu_count": 4,
+        "ram_gb": 8,
+        "storage_primary_gb": 75,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 200
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 1.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 2.35,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "75 GB NVMe",
+          "max_delta": 1.85,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 1,
+      "plan_family_rank": 1,
+      "product_name": "Cloud VPS 10",
+      "product_slug": "cloud-vps-10",
+      "plan_slug": "cloud-vps-10",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-10/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 4.5,
+      "effective_monthly": 4.5,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 13.5,
+      "specs": {
+        "cpu_count": 4,
+        "ram_gb": 8,
+        "storage_primary_gb": 75,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 200
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 1.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 2.35,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "75 GB NVMe",
+          "max_delta": 1.85,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 1,
+      "plan_family_rank": 1,
+      "product_name": "Cloud VPS 10",
+      "product_slug": "cloud-vps-10",
+      "plan_slug": "cloud-vps-10",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-10/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 4.5,
+      "effective_monthly": 4.05,
+      "setup_fee": 2.25,
+      "discount_total": 2.7,
+      "total_period_cost": 26.55,
+      "specs": {
+        "cpu_count": 4,
+        "ram_gb": 8,
+        "storage_primary_gb": 75,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 200
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 1.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 2.35,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "75 GB NVMe",
+          "max_delta": 1.85,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 1,
+      "plan_family_rank": 1,
+      "product_name": "Cloud VPS 10",
+      "product_slug": "cloud-vps-10",
+      "plan_slug": "cloud-vps-10",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-10/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 4.5,
+      "effective_monthly": 3.6,
+      "setup_fee": 0,
+      "discount_total": 10.8,
+      "total_period_cost": 43.2,
+      "specs": {
+        "cpu_count": 4,
+        "ram_gb": 8,
+        "storage_primary_gb": 75,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 200
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 1.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 2.35,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "75 GB NVMe",
+          "max_delta": 1.85,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 2,
+      "plan_family_rank": 2,
+      "product_name": "Cloud VPS 20",
+      "product_slug": "cloud-vps-20",
+      "plan_slug": "cloud-vps-20",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-20/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 7,
+      "effective_monthly": 7,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 7,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 12,
+        "storage_primary_gb": 100,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 300
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 2,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 3.65,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "100 GB NVMe",
+          "max_delta": 2.55,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 2,
+      "plan_family_rank": 2,
+      "product_name": "Cloud VPS 20",
+      "product_slug": "cloud-vps-20",
+      "plan_slug": "cloud-vps-20",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-20/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 7,
+      "effective_monthly": 7,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 21,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 12,
+        "storage_primary_gb": 100,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 300
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 2,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 3.65,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "100 GB NVMe",
+          "max_delta": 2.55,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 2,
+      "plan_family_rank": 2,
+      "product_name": "Cloud VPS 20",
+      "product_slug": "cloud-vps-20",
+      "plan_slug": "cloud-vps-20",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-20/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 7,
+      "effective_monthly": 6.3,
+      "setup_fee": 0,
+      "discount_total": 4.2,
+      "total_period_cost": 37.8,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 12,
+        "storage_primary_gb": 100,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 300
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 2,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 3.65,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "100 GB NVMe",
+          "max_delta": 2.55,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 2,
+      "plan_family_rank": 2,
+      "product_name": "Cloud VPS 20",
+      "product_slug": "cloud-vps-20",
+      "plan_slug": "cloud-vps-20",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-20/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 7,
+      "effective_monthly": 5.6,
+      "setup_fee": 0,
+      "discount_total": 16.8,
+      "total_period_cost": 67.2,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 12,
+        "storage_primary_gb": 100,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 300
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 2,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 3.65,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "100 GB NVMe",
+          "max_delta": 2.55,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 3,
+      "plan_family_rank": 3,
+      "product_name": "Cloud VPS 30",
+      "product_slug": "cloud-vps-30",
+      "plan_slug": "cloud-vps-30",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-30/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 14,
+      "effective_monthly": 14,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 14,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 24,
+        "storage_primary_gb": 200,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 600
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 7.3,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "200 GB NVMe",
+          "max_delta": 3.85,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 3,
+      "plan_family_rank": 3,
+      "product_name": "Cloud VPS 30",
+      "product_slug": "cloud-vps-30",
+      "plan_slug": "cloud-vps-30",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-30/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 14,
+      "effective_monthly": 14,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 42,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 24,
+        "storage_primary_gb": 200,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 600
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 7.3,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "200 GB NVMe",
+          "max_delta": 3.85,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 3,
+      "plan_family_rank": 3,
+      "product_name": "Cloud VPS 30",
+      "product_slug": "cloud-vps-30",
+      "plan_slug": "cloud-vps-30",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-30/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 14,
+      "effective_monthly": 12.6,
+      "setup_fee": 0,
+      "discount_total": 8.4,
+      "total_period_cost": 75.6,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 24,
+        "storage_primary_gb": 200,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 600
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 7.3,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "200 GB NVMe",
+          "max_delta": 3.85,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 3,
+      "plan_family_rank": 3,
+      "product_name": "Cloud VPS 30",
+      "product_slug": "cloud-vps-30",
+      "plan_slug": "cloud-vps-30",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-30/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 14,
+      "effective_monthly": 11.2,
+      "setup_fee": 0,
+      "discount_total": 33.6,
+      "total_period_cost": 134.4,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 24,
+        "storage_primary_gb": 200,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 600
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 7.3,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "200 GB NVMe",
+          "max_delta": 3.85,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 4,
+      "plan_family_rank": 4,
+      "product_name": "Cloud VPS 40",
+      "product_slug": "cloud-vps-40",
+      "plan_slug": "cloud-vps-40",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-40/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 25,
+      "effective_monthly": 25,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 25,
+      "specs": {
+        "cpu_count": 12,
+        "ram_gb": 48,
+        "storage_primary_gb": 250,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 800
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 6,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 49,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 13,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "250 GB NVMe",
+          "max_delta": 4.95,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 4,
+      "plan_family_rank": 4,
+      "product_name": "Cloud VPS 40",
+      "product_slug": "cloud-vps-40",
+      "plan_slug": "cloud-vps-40",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-40/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 25,
+      "effective_monthly": 25,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 75,
+      "specs": {
+        "cpu_count": 12,
+        "ram_gb": 48,
+        "storage_primary_gb": 250,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 800
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 6,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 49,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 13,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "250 GB NVMe",
+          "max_delta": 4.95,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 4,
+      "plan_family_rank": 4,
+      "product_name": "Cloud VPS 40",
+      "product_slug": "cloud-vps-40",
+      "plan_slug": "cloud-vps-40",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-40/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 25,
+      "effective_monthly": 22.5,
+      "setup_fee": 0,
+      "discount_total": 15,
+      "total_period_cost": 135,
+      "specs": {
+        "cpu_count": 12,
+        "ram_gb": 48,
+        "storage_primary_gb": 250,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 800
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 6,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 49,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 13,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "250 GB NVMe",
+          "max_delta": 4.95,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 4,
+      "plan_family_rank": 4,
+      "product_name": "Cloud VPS 40",
+      "product_slug": "cloud-vps-40",
+      "plan_slug": "cloud-vps-40",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-40/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 25,
+      "effective_monthly": 20,
+      "setup_fee": 0,
+      "discount_total": 60,
+      "total_period_cost": 240,
+      "specs": {
+        "cpu_count": 12,
+        "ram_gb": 48,
+        "storage_primary_gb": 250,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 800
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 6,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 49,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 13,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "250 GB NVMe",
+          "max_delta": 4.95,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 5,
+      "plan_family_rank": 5,
+      "product_name": "Cloud VPS 50",
+      "product_slug": "cloud-vps-50",
+      "plan_slug": "cloud-vps-50",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-50/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 37,
+      "effective_monthly": 37,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 37,
+      "specs": {
+        "cpu_count": 16,
+        "ram_gb": 64,
+        "storage_primary_gb": 300,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 7.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 58.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 19.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "300 GB NVMe",
+          "max_delta": 6.15,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 5,
+      "plan_family_rank": 5,
+      "product_name": "Cloud VPS 50",
+      "product_slug": "cloud-vps-50",
+      "plan_slug": "cloud-vps-50",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-50/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 37,
+      "effective_monthly": 37,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 111,
+      "specs": {
+        "cpu_count": 16,
+        "ram_gb": 64,
+        "storage_primary_gb": 300,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 7.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 58.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 19.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "300 GB NVMe",
+          "max_delta": 6.15,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 5,
+      "plan_family_rank": 5,
+      "product_name": "Cloud VPS 50",
+      "product_slug": "cloud-vps-50",
+      "plan_slug": "cloud-vps-50",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-50/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 37,
+      "effective_monthly": 33.3,
+      "setup_fee": 0,
+      "discount_total": 22.2,
+      "total_period_cost": 199.8,
+      "specs": {
+        "cpu_count": 16,
+        "ram_gb": 64,
+        "storage_primary_gb": 300,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 7.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 58.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 19.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "300 GB NVMe",
+          "max_delta": 6.15,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 5,
+      "plan_family_rank": 5,
+      "product_name": "Cloud VPS 50",
+      "product_slug": "cloud-vps-50",
+      "plan_slug": "cloud-vps-50",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-50/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 37,
+      "effective_monthly": 29.6,
+      "setup_fee": 0,
+      "discount_total": 88.8,
+      "total_period_cost": 355.2,
+      "specs": {
+        "cpu_count": 16,
+        "ram_gb": 64,
+        "storage_primary_gb": 300,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 7.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 58.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 19.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "300 GB NVMe",
+          "max_delta": 6.15,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 6,
+      "plan_family_rank": 6,
+      "product_name": "Cloud VPS 60",
+      "product_slug": "cloud-vps-60",
+      "plan_slug": "cloud-vps-60",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-60/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 49,
+      "effective_monthly": 49,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 49,
+      "specs": {
+        "cpu_count": 18,
+        "ram_gb": 96,
+        "storage_primary_gb": 350,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 9.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 70,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 25.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "350 GB NVMe",
+          "max_delta": 6.95,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 6,
+      "plan_family_rank": 6,
+      "product_name": "Cloud VPS 60",
+      "product_slug": "cloud-vps-60",
+      "plan_slug": "cloud-vps-60",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-60/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 49,
+      "effective_monthly": 49,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 147,
+      "specs": {
+        "cpu_count": 18,
+        "ram_gb": 96,
+        "storage_primary_gb": 350,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 9.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 70,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 25.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "350 GB NVMe",
+          "max_delta": 6.95,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 6,
+      "plan_family_rank": 6,
+      "product_name": "Cloud VPS 60",
+      "product_slug": "cloud-vps-60",
+      "plan_slug": "cloud-vps-60",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-60/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 49,
+      "effective_monthly": 44.1,
+      "setup_fee": 0,
+      "discount_total": 29.4,
+      "total_period_cost": 264.6,
+      "specs": {
+        "cpu_count": 18,
+        "ram_gb": 96,
+        "storage_primary_gb": 350,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 9.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 70,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 25.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "350 GB NVMe",
+          "max_delta": 6.95,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Cloud VPS",
+      "plan_rank": 6,
+      "plan_family_rank": 6,
+      "product_name": "Cloud VPS 60",
+      "product_slug": "cloud-vps-60",
+      "plan_slug": "cloud-vps-60",
+      "product_url": "https://contabo.com/en/vps/cloud-vps-60/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 49,
+      "effective_monthly": 39.2,
+      "setup_fee": 0,
+      "discount_total": 117.6,
+      "total_period_cost": 470.4,
+      "specs": {
+        "cpu_count": 18,
+        "ram_gb": 96,
+        "storage_primary_gb": 350,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 9.5,
+          "min_delta": 0,
+          "option_count": 2,
+          "paid_count": 1
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 70,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 25.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "350 GB NVMe",
+          "max_delta": 6.95,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 2
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 7,
+      "plan_family_rank": 1,
+      "product_name": "Storage VPS 10",
+      "product_slug": "storage-vps-10",
+      "plan_slug": "storage-vps-10",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-10/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 4.5,
+      "effective_monthly": 4.5,
+      "setup_fee": 4.5,
+      "discount_total": 0,
+      "total_period_cost": 9,
+      "specs": {
+        "cpu_count": 2,
+        "ram_gb": 4,
+        "storage_primary_gb": 300,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 200
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 33,
+          "paid_count": 7
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 2.35,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "300 GB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 7,
+      "plan_family_rank": 1,
+      "product_name": "Storage VPS 10",
+      "product_slug": "storage-vps-10",
+      "plan_slug": "storage-vps-10",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-10/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 4.5,
+      "effective_monthly": 4.5,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 13.5,
+      "specs": {
+        "cpu_count": 2,
+        "ram_gb": 4,
+        "storage_primary_gb": 300,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 200
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 33,
+          "paid_count": 7
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 2.35,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "300 GB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 7,
+      "plan_family_rank": 1,
+      "product_name": "Storage VPS 10",
+      "product_slug": "storage-vps-10",
+      "plan_slug": "storage-vps-10",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-10/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 4.5,
+      "effective_monthly": 4.05,
+      "setup_fee": 2.25,
+      "discount_total": 2.7,
+      "total_period_cost": 26.55,
+      "specs": {
+        "cpu_count": 2,
+        "ram_gb": 4,
+        "storage_primary_gb": 300,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 200
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 33,
+          "paid_count": 7
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 2.35,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "300 GB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 7,
+      "plan_family_rank": 1,
+      "product_name": "Storage VPS 10",
+      "product_slug": "storage-vps-10",
+      "plan_slug": "storage-vps-10",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-10/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 4.5,
+      "effective_monthly": 3.6,
+      "setup_fee": 0,
+      "discount_total": 10.8,
+      "total_period_cost": 43.2,
+      "specs": {
+        "cpu_count": 2,
+        "ram_gb": 4,
+        "storage_primary_gb": 300,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 200
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 33,
+          "paid_count": 7
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 2.35,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "300 GB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 8,
+      "plan_family_rank": 2,
+      "product_name": "Storage VPS 20",
+      "product_slug": "storage-vps-20",
+      "plan_slug": "storage-vps-20",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-20/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 7,
+      "effective_monthly": 7,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 7,
+      "specs": {
+        "cpu_count": 3,
+        "ram_gb": 8,
+        "storage_primary_gb": 400,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 300
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 3.65,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "400 GB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 8,
+      "plan_family_rank": 2,
+      "product_name": "Storage VPS 20",
+      "product_slug": "storage-vps-20",
+      "plan_slug": "storage-vps-20",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-20/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 7,
+      "effective_monthly": 7,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 21,
+      "specs": {
+        "cpu_count": 3,
+        "ram_gb": 8,
+        "storage_primary_gb": 400,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 300
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 3.65,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "400 GB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 8,
+      "plan_family_rank": 2,
+      "product_name": "Storage VPS 20",
+      "product_slug": "storage-vps-20",
+      "plan_slug": "storage-vps-20",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-20/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 7,
+      "effective_monthly": 6.3,
+      "setup_fee": 0,
+      "discount_total": 4.2,
+      "total_period_cost": 37.8,
+      "specs": {
+        "cpu_count": 3,
+        "ram_gb": 8,
+        "storage_primary_gb": 400,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 300
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 3.65,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "400 GB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 8,
+      "plan_family_rank": 2,
+      "product_name": "Storage VPS 20",
+      "product_slug": "storage-vps-20",
+      "plan_slug": "storage-vps-20",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-20/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 7,
+      "effective_monthly": 5.6,
+      "setup_fee": 0,
+      "discount_total": 16.8,
+      "total_period_cost": 67.2,
+      "specs": {
+        "cpu_count": 3,
+        "ram_gb": 8,
+        "storage_primary_gb": 400,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 300
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 3.65,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "400 GB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 9,
+      "plan_family_rank": 3,
+      "product_name": "Storage VPS 30",
+      "product_slug": "storage-vps-30",
+      "plan_slug": "storage-vps-30",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-30/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 14,
+      "effective_monthly": 14,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 14,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 18,
+        "storage_primary_gb": 1000,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 600
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 7.3,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 9,
+      "plan_family_rank": 3,
+      "product_name": "Storage VPS 30",
+      "product_slug": "storage-vps-30",
+      "plan_slug": "storage-vps-30",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-30/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 14,
+      "effective_monthly": 14,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 42,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 18,
+        "storage_primary_gb": 1000,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 600
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 7.3,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 9,
+      "plan_family_rank": 3,
+      "product_name": "Storage VPS 30",
+      "product_slug": "storage-vps-30",
+      "plan_slug": "storage-vps-30",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-30/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 14,
+      "effective_monthly": 12.6,
+      "setup_fee": 0,
+      "discount_total": 8.4,
+      "total_period_cost": 75.6,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 18,
+        "storage_primary_gb": 1000,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 600
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 7.3,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 9,
+      "plan_family_rank": 3,
+      "product_name": "Storage VPS 30",
+      "product_slug": "storage-vps-30",
+      "plan_slug": "storage-vps-30",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-30/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 14,
+      "effective_monthly": 11.2,
+      "setup_fee": 0,
+      "discount_total": 33.6,
+      "total_period_cost": 134.4,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 18,
+        "storage_primary_gb": 1000,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 600
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 7.3,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 10,
+      "plan_family_rank": 4,
+      "product_name": "Storage VPS 40",
+      "product_slug": "storage-vps-40",
+      "plan_slug": "storage-vps-40",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-40/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 25,
+      "effective_monthly": 25,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 25,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 30,
+        "storage_primary_gb": 1200,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 800
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 13,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1.2 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 10,
+      "plan_family_rank": 4,
+      "product_name": "Storage VPS 40",
+      "product_slug": "storage-vps-40",
+      "plan_slug": "storage-vps-40",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-40/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 25,
+      "effective_monthly": 25,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 75,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 30,
+        "storage_primary_gb": 1200,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 800
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 13,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1.2 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 10,
+      "plan_family_rank": 4,
+      "product_name": "Storage VPS 40",
+      "product_slug": "storage-vps-40",
+      "plan_slug": "storage-vps-40",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-40/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 25,
+      "effective_monthly": 22.5,
+      "setup_fee": 0,
+      "discount_total": 15,
+      "total_period_cost": 135,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 30,
+        "storage_primary_gb": 1200,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 800
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 13,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1.2 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 10,
+      "plan_family_rank": 4,
+      "product_name": "Storage VPS 40",
+      "product_slug": "storage-vps-40",
+      "plan_slug": "storage-vps-40",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-40/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 25,
+      "effective_monthly": 20,
+      "setup_fee": 0,
+      "discount_total": 60,
+      "total_period_cost": 240,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 30,
+        "storage_primary_gb": 1200,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 800
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 36.5,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 13,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1.2 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 11,
+      "plan_family_rank": 5,
+      "product_name": "Storage VPS 50",
+      "product_slug": "storage-vps-50",
+      "plan_slug": "storage-vps-50",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-50/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 37,
+      "effective_monthly": 37,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 37,
+      "specs": {
+        "cpu_count": 14,
+        "ram_gb": 50,
+        "storage_primary_gb": 1400,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 49,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 19.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1.4 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 11,
+      "plan_family_rank": 5,
+      "product_name": "Storage VPS 50",
+      "product_slug": "storage-vps-50",
+      "plan_slug": "storage-vps-50",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-50/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 37,
+      "effective_monthly": 37,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 111,
+      "specs": {
+        "cpu_count": 14,
+        "ram_gb": 50,
+        "storage_primary_gb": 1400,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 49,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 19.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1.4 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 11,
+      "plan_family_rank": 5,
+      "product_name": "Storage VPS 50",
+      "product_slug": "storage-vps-50",
+      "plan_slug": "storage-vps-50",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-50/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 37,
+      "effective_monthly": 33.3,
+      "setup_fee": 0,
+      "discount_total": 22.2,
+      "total_period_cost": 199.8,
+      "specs": {
+        "cpu_count": 14,
+        "ram_gb": 50,
+        "storage_primary_gb": 1400,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 49,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 19.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1.4 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Storage VPS",
+      "plan_rank": 11,
+      "plan_family_rank": 5,
+      "product_name": "Storage VPS 50",
+      "product_slug": "storage-vps-50",
+      "plan_slug": "storage-vps-50",
+      "product_url": "https://contabo.com/en/storage-vps/storage-vps-50/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 37,
+      "effective_monthly": 29.6,
+      "setup_fee": 0,
+      "discount_total": 88.8,
+      "total_period_cost": 355.2,
+      "specs": {
+        "cpu_count": 14,
+        "ram_gb": 50,
+        "storage_primary_gb": 1400,
+        "storage_primary_type": "SSD",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Data Protection",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 49,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 8
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 3.5,
+          "min_delta": 0,
+          "option_count": 7,
+          "paid_count": 2
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 19.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage Type": {
+          "default_label": "1.4 TB SSD",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 12,
+      "plan_family_rank": 1,
+      "product_name": "Cloud VDS S",
+      "product_slug": "vds-s",
+      "plan_slug": "vds-s",
+      "product_url": "https://contabo.com/en/vds/vds-s/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 34.4,
+      "effective_monthly": 34.4,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 34.4,
+      "specs": {
+        "cpu_count": 3,
+        "ram_gb": 24,
+        "storage_primary_gb": 180,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 250
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 86.29,
+          "min_delta": 0,
+          "option_count": 8,
+          "paid_count": 3
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 15.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "180 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 12,
+      "plan_family_rank": 1,
+      "product_name": "Cloud VDS S",
+      "product_slug": "vds-s",
+      "plan_slug": "vds-s",
+      "product_url": "https://contabo.com/en/vds/vds-s/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 34.4,
+      "effective_monthly": 34.4,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 103.2,
+      "specs": {
+        "cpu_count": 3,
+        "ram_gb": 24,
+        "storage_primary_gb": 180,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 250
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 86.29,
+          "min_delta": 0,
+          "option_count": 8,
+          "paid_count": 3
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 15.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "180 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 12,
+      "plan_family_rank": 1,
+      "product_name": "Cloud VDS S",
+      "product_slug": "vds-s",
+      "plan_slug": "vds-s",
+      "product_url": "https://contabo.com/en/vds/vds-s/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 34.4,
+      "effective_monthly": 32.68,
+      "setup_fee": 0,
+      "discount_total": 10.32,
+      "total_period_cost": 196.08,
+      "specs": {
+        "cpu_count": 3,
+        "ram_gb": 24,
+        "storage_primary_gb": 180,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 250
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 86.29,
+          "min_delta": 0,
+          "option_count": 8,
+          "paid_count": 3
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 15.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "180 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 12,
+      "plan_family_rank": 1,
+      "product_name": "Cloud VDS S",
+      "product_slug": "vds-s",
+      "plan_slug": "vds-s",
+      "product_url": "https://contabo.com/en/vds/vds-s/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 34.4,
+      "effective_monthly": 27.52,
+      "setup_fee": 0,
+      "discount_total": 82.56,
+      "total_period_cost": 330.24,
+      "specs": {
+        "cpu_count": 3,
+        "ram_gb": 24,
+        "storage_primary_gb": 180,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 250
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 36,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 86.29,
+          "min_delta": 0,
+          "option_count": 8,
+          "paid_count": 3
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 15.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "180 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 13,
+      "plan_family_rank": 2,
+      "product_name": "Cloud VDS M",
+      "product_slug": "vds-m",
+      "plan_slug": "vds-m",
+      "product_url": "https://contabo.com/en/vds/vds-m/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 44.8,
+      "effective_monthly": 44.8,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 44.8,
+      "specs": {
+        "cpu_count": 4,
+        "ram_gb": 32,
+        "storage_primary_gb": 240,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 500
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 35,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 172.49,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 4
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 20.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "240 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 13,
+      "plan_family_rank": 2,
+      "product_name": "Cloud VDS M",
+      "product_slug": "vds-m",
+      "plan_slug": "vds-m",
+      "product_url": "https://contabo.com/en/vds/vds-m/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 44.8,
+      "effective_monthly": 44.8,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 134.4,
+      "specs": {
+        "cpu_count": 4,
+        "ram_gb": 32,
+        "storage_primary_gb": 240,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 500
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 35,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 172.49,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 4
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 20.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "240 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 13,
+      "plan_family_rank": 2,
+      "product_name": "Cloud VDS M",
+      "product_slug": "vds-m",
+      "plan_slug": "vds-m",
+      "product_url": "https://contabo.com/en/vds/vds-m/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 44.8,
+      "effective_monthly": 42.56,
+      "setup_fee": 0,
+      "discount_total": 13.44,
+      "total_period_cost": 255.36,
+      "specs": {
+        "cpu_count": 4,
+        "ram_gb": 32,
+        "storage_primary_gb": 240,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 500
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 35,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 172.49,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 4
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 20.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "240 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 13,
+      "plan_family_rank": 2,
+      "product_name": "Cloud VDS M",
+      "product_slug": "vds-m",
+      "plan_slug": "vds-m",
+      "product_url": "https://contabo.com/en/vds/vds-m/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 44.8,
+      "effective_monthly": 35.84,
+      "setup_fee": 0,
+      "discount_total": 107.52,
+      "total_period_cost": 430.08,
+      "specs": {
+        "cpu_count": 4,
+        "ram_gb": 32,
+        "storage_primary_gb": 240,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 500
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 35,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 172.49,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 4
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 20.25,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "240 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 14,
+      "plan_family_rank": 3,
+      "product_name": "Cloud VDS L",
+      "product_slug": "vds-l",
+      "plan_slug": "vds-l",
+      "product_url": "https://contabo.com/en/vds/vds-l/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 64,
+      "effective_monthly": 64,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 64,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 48,
+        "storage_primary_gb": 360,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 750
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 258.79,
+          "min_delta": 0,
+          "option_count": 10,
+          "paid_count": 5
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 28.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "360 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 14,
+      "plan_family_rank": 3,
+      "product_name": "Cloud VDS L",
+      "product_slug": "vds-l",
+      "plan_slug": "vds-l",
+      "product_url": "https://contabo.com/en/vds/vds-l/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 64,
+      "effective_monthly": 64,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 192,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 48,
+        "storage_primary_gb": 360,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 750
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 258.79,
+          "min_delta": 0,
+          "option_count": 10,
+          "paid_count": 5
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 28.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "360 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 14,
+      "plan_family_rank": 3,
+      "product_name": "Cloud VDS L",
+      "product_slug": "vds-l",
+      "plan_slug": "vds-l",
+      "product_url": "https://contabo.com/en/vds/vds-l/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 64,
+      "effective_monthly": 60.8,
+      "setup_fee": 0,
+      "discount_total": 19.2,
+      "total_period_cost": 364.8,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 48,
+        "storage_primary_gb": 360,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 750
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 258.79,
+          "min_delta": 0,
+          "option_count": 10,
+          "paid_count": 5
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 28.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "360 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 14,
+      "plan_family_rank": 3,
+      "product_name": "Cloud VDS L",
+      "product_slug": "vds-l",
+      "plan_slug": "vds-l",
+      "product_url": "https://contabo.com/en/vds/vds-l/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 64,
+      "effective_monthly": 51.2,
+      "setup_fee": 0,
+      "discount_total": 153.6,
+      "total_period_cost": 614.4,
+      "specs": {
+        "cpu_count": 6,
+        "ram_gb": 48,
+        "storage_primary_gb": 360,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 750
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 34,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 258.79,
+          "min_delta": 0,
+          "option_count": 10,
+          "paid_count": 5
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 28.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "360 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 15,
+      "plan_family_rank": 4,
+      "product_name": "Cloud VDS XL",
+      "product_slug": "vds-xl",
+      "plan_slug": "vds-xl",
+      "product_url": "https://contabo.com/en/vds/vds-xl/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 82.4,
+      "effective_monthly": 82.4,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 82.4,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 64,
+        "storage_primary_gb": 480,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 32,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 344.99,
+          "min_delta": 0,
+          "option_count": 11,
+          "paid_count": 6
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 36.75,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "480 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 15,
+      "plan_family_rank": 4,
+      "product_name": "Cloud VDS XL",
+      "product_slug": "vds-xl",
+      "plan_slug": "vds-xl",
+      "product_url": "https://contabo.com/en/vds/vds-xl/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 82.4,
+      "effective_monthly": 82.4,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 247.2,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 64,
+        "storage_primary_gb": 480,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 32,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 344.99,
+          "min_delta": 0,
+          "option_count": 11,
+          "paid_count": 6
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 36.75,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "480 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 15,
+      "plan_family_rank": 4,
+      "product_name": "Cloud VDS XL",
+      "product_slug": "vds-xl",
+      "plan_slug": "vds-xl",
+      "product_url": "https://contabo.com/en/vds/vds-xl/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 82.4,
+      "effective_monthly": 78.28,
+      "setup_fee": 0,
+      "discount_total": 24.72,
+      "total_period_cost": 469.68,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 64,
+        "storage_primary_gb": 480,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 32,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 344.99,
+          "min_delta": 0,
+          "option_count": 11,
+          "paid_count": 6
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 36.75,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "480 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 15,
+      "plan_family_rank": 4,
+      "product_name": "Cloud VDS XL",
+      "product_slug": "vds-xl",
+      "plan_slug": "vds-xl",
+      "product_url": "https://contabo.com/en/vds/vds-xl/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 82.4,
+      "effective_monthly": 65.92,
+      "setup_fee": 0,
+      "discount_total": 197.76,
+      "total_period_cost": 791.04,
+      "specs": {
+        "cpu_count": 8,
+        "ram_gb": 64,
+        "storage_primary_gb": 480,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 32,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 344.99,
+          "min_delta": 0,
+          "option_count": 11,
+          "paid_count": 6
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 36.75,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "480 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 16,
+      "plan_family_rank": 5,
+      "product_name": "Cloud VDS XXL",
+      "product_slug": "vds-xxl",
+      "plan_slug": "vds-xxl",
+      "product_url": "https://contabo.com/en/vds/vds-xxl/",
+      "period_months": 1,
+      "is_hidden_from_ui": false,
+      "base_monthly": 119,
+      "effective_monthly": 119,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 119,
+      "specs": {
+        "cpu_count": 12,
+        "ram_gb": 96,
+        "storage_primary_gb": 720,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 33,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 344.99,
+          "min_delta": 0,
+          "option_count": 11,
+          "paid_count": 6
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 54.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "720 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 16,
+      "plan_family_rank": 5,
+      "product_name": "Cloud VDS XXL",
+      "product_slug": "vds-xxl",
+      "plan_slug": "vds-xxl",
+      "product_url": "https://contabo.com/en/vds/vds-xxl/",
+      "period_months": 3,
+      "is_hidden_from_ui": true,
+      "base_monthly": 119,
+      "effective_monthly": 119,
+      "setup_fee": 0,
+      "discount_total": 0,
+      "total_period_cost": 357,
+      "specs": {
+        "cpu_count": 12,
+        "ram_gb": 96,
+        "storage_primary_gb": 720,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 33,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 344.99,
+          "min_delta": 0,
+          "option_count": 11,
+          "paid_count": 6
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 54.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "720 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 16,
+      "plan_family_rank": 5,
+      "product_name": "Cloud VDS XXL",
+      "product_slug": "vds-xxl",
+      "plan_slug": "vds-xxl",
+      "product_url": "https://contabo.com/en/vds/vds-xxl/",
+      "period_months": 6,
+      "is_hidden_from_ui": false,
+      "base_monthly": 119,
+      "effective_monthly": 113.05,
+      "setup_fee": 0,
+      "discount_total": 35.7,
+      "total_period_cost": 678.3,
+      "specs": {
+        "cpu_count": 12,
+        "ram_gb": 96,
+        "storage_primary_gb": 720,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 33,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 344.99,
+          "min_delta": 0,
+          "option_count": 11,
+          "paid_count": 6
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 54.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "720 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    },
+    {
+      "family": "Cloud VDS",
+      "plan_rank": 16,
+      "plan_family_rank": 5,
+      "product_name": "Cloud VDS XXL",
+      "product_slug": "vds-xxl",
+      "plan_slug": "vds-xxl",
+      "product_url": "https://contabo.com/en/vds/vds-xxl/",
+      "period_months": 12,
+      "is_hidden_from_ui": false,
+      "base_monthly": 119,
+      "effective_monthly": 95.2,
+      "setup_fee": 0,
+      "discount_total": 285.6,
+      "total_period_cost": 1142.4,
+      "specs": {
+        "cpu_count": 12,
+        "ram_gb": 96,
+        "storage_primary_gb": 720,
+        "storage_primary_type": "NVMe",
+        "port_speed_mbps": 1000
+      },
+      "options_summary": {
+        "Data Protection": {
+          "default_label": "No Backup Space",
+          "max_delta": 0,
+          "min_delta": 0,
+          "option_count": 1,
+          "paid_count": 0
+        },
+        "Image": {
+          "default_label": "Ubuntu 24.04",
+          "max_delta": 50,
+          "min_delta": 0,
+          "option_count": 33,
+          "paid_count": 9
+        },
+        "Networking": {
+          "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
+          "max_delta": 344.99,
+          "min_delta": 0,
+          "option_count": 11,
+          "paid_count": 6
+        },
+        "Region": {
+          "default_label": "European Union",
+          "max_delta": 54.5,
+          "min_delta": 0,
+          "option_count": 9,
+          "paid_count": 8
+        },
+        "Storage": {
+          "default_label": "720 GB NVMe",
+          "max_delta": 103.49,
+          "min_delta": 0,
+          "option_count": 4,
+          "paid_count": 3
+        }
+      }
+    }
+  ]
+}
