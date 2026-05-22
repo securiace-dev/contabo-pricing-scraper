@@ -102,6 +102,16 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
          */
         public static array $statements = [];
 
+        /**
+         * Fidelity switch: real WHMCS Capsule returns stdClass from first()/get();
+         * FakeCapsule returns arrays by default. Flip this true to make the public
+         * first()/get() return stdClass, so the integration-style tests can prove
+         * the addon's `(array)` casts hold against the REAL return type (this is
+         * exactly the class of bug FakeCapsule otherwise masks). Internal logic
+         * keeps using arrays via firstRow(). Reset to false by reset().
+         */
+        public static bool $returnStdClass = false;
+
         public static function reset(): void
         {
             self::$calls = [];
@@ -110,6 +120,7 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
             self::$columns = [];
             self::$statements = [];
             self::$nextId = 1;
+            self::$returnStdClass = false;
         }
 
         public static function table(string $table): CapsuleQuery
@@ -415,16 +426,37 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
         }
 
         /** @return array<string,mixed>|null */
-        public function first(): ?array
+        /** Internal: always returns the raw array row (FakeCapsule logic uses this). */
+        private function firstRow(): ?array
         {
             $rows = $this->collect();
             return $rows[0] ?? null;
         }
 
-        /** @return list<array<string,mixed>> */
+        /**
+         * Public read: array by default, stdClass when $returnStdClass is on
+         * (mimics real WHMCS Capsule). No return type so it can return either
+         * (PHP 7.4 has no union types).
+         *
+         * @return array<string,mixed>|object|null
+         */
+        public function first()
+        {
+            $row = $this->firstRow();
+            if ($row === null) {
+                return null;
+            }
+            return Capsule::$returnStdClass ? (object) $row : $row;
+        }
+
+        /** @return list<array<string,mixed>|object> */
         public function get(): array
         {
-            return $this->collect();
+            $rows = $this->collect();
+            if (Capsule::$returnStdClass) {
+                return array_map(static function (array $r) { return (object) $r; }, $rows);
+            }
+            return $rows;
         }
 
         public function exists(): bool
@@ -445,7 +477,7 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
          */
         public function value(string $column)
         {
-            $first = $this->first();
+            $first = $this->firstRow();
             if ($first === null) return null;
             return array_key_exists($column, $first) ? $first[$column] : null;
         }
