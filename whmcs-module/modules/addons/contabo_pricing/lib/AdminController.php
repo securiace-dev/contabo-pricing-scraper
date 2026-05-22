@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.4.4';
+    public const VERSION = '0.4.5';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -39,6 +39,7 @@ class AdminController
             case 'profile-save':     $this->profileSave($req); return;
             case 'profile-toggle':   $this->profileToggle($req); return;
             case 'profile-diff':     $this->profileDiff($req); return;
+            case 'config-preview':   $this->configPreview($req); return;
             case 'mappings':         $this->mappings($req); return;
             case 'mapping-save':     $this->mappingSave($req); return;
             case 'sync-history':     $this->syncHistory(); return;
@@ -658,6 +659,98 @@ class AdminController
         $this->render('profile_diff.tpl', [
             'profile' => $profile,
             'versions' => $versions,
+        ]);
+    }
+
+    /**
+     * A.6.3 — read-only PREVIEW of the WHMCS configurable options that the
+     * ConfigurableOptionsSyncer WOULD create for a profile. Runs the syncer in
+     * dry-run (nothing is written to WHMCS) against the profile's latest
+     * version snapshot, with pricing derived from that version's landed cost +
+     * markup. The apply path (write) is a separate, confirmed action.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function configPreview(array $req): void
+    {
+        $pm = new ProfileManager($this->settings);
+        $id = (int) ($req['id'] ?? 0);
+        $profile = $pm->find($id);
+        if ($profile === null) {
+            echo '<div class="errorbox">Profile not found. '
+                . '<a href="' . htmlspecialchars($this->settings->moduleLink, ENT_QUOTES, 'UTF-8')
+                . '&action=profiles">Back to profiles</a>.</div>';
+            return;
+        }
+
+        $version = $pm->latestVersion($id);
+        if ($version === null) {
+            echo '<div class="errorbox">This profile has no version yet — run a sync first so a '
+                . 'configuration snapshot exists to preview.</div>';
+            return;
+        }
+
+        // The configurable-option dimensions come from the plan's live Contabo
+        // options map — the version's specs_snapshot holds hardware specs, not
+        // the options. DimensionParser turns that map (Image/Networking/Region/
+        // Storage/Data Protection) into WHMCS option specs.
+        $planSlug = (string) ($profile['plan_slug'] ?? '');
+        $specs    = [];
+        $omitted  = [];
+        $apiError = '';
+        try {
+            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
+            $parsed  = DimensionParser::parse($optionsMap);
+            $specs   = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
+            $omitted = isset($parsed['omitted']) && is_array($parsed['omitted']) ? $parsed['omitted'] : [];
+        } catch (\Throwable $e) {
+            $apiError = $e->getMessage();
+        }
+
+        // Pricing context: reuse the version's landed cost basis + its markup.
+        $baseEur      = (float) ($version['base_monthly_eur'] ?? 0.0);
+        $finalMonthly = (float) ($version['final_monthly'] ?? 0.0);
+        $multiplier   = $baseEur > 0.0 ? $finalMonthly / $baseEur : 0.0;
+        $markupStrat  = (string) ($version['markup_strategy'] ?? 'cost_plus_pct');
+        $markupValue  = (float) ($version['markup_value'] ?? 0.0);
+        $roundingMode = 'exact_2_decimals';
+
+        $ctx = new ConfigOptionPricingContext(
+            WhmcsConfigOptionsAdapter::INR_CURRENCY_ID, // base currency id (1)
+            $multiplier,
+            $markupStrat,
+            $markupValue,
+            $roundingMode
+        );
+
+        // Dry-run adapter + an in-memory audit logger so repeated previews don't
+        // spam mod_contabo_config_option_audit (real audit rows are written by
+        // the apply path).
+        $adapter = new WhmcsConfigOptionsAdapter(true);
+        $audit = new class($adapter->syncBatchId()) extends OptionAuditLog {
+            protected function storeRow(array $row): int
+            {
+                static $n = 0;
+                return ++$n;
+            }
+        };
+        $syncer = new ConfigurableOptionsSyncer($adapter, $audit);
+
+        $groupName = 'Contabo ' . (string) ($profile['plan_slug'] ?? 'options');
+        $report = $syncer->observe($id, $groupName, $specs, $ctx);
+
+        $this->render('config_preview.tpl', [
+            'profile'       => $profile,
+            'version'       => $version,
+            'report'        => $report,
+            'omitted'       => $omitted,
+            'currency_iso'  => (string) ($version['currency_iso'] ?? $this->settings->currencyIso),
+            'markup_strategy' => $markupStrat,
+            'markup_value'  => $markupValue,
+            'landed_mult'   => $multiplier,
+            'api_error'     => $apiError,
+            'flash'         => (string) ($req['flash'] ?? ''),
         ]);
     }
 

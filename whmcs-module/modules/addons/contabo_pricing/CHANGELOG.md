@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.5 — 2026-05-22 (A.6.3: configurable-options preview screen)
+
+### Added
+- **Configurable-options preview** (`&action=config-preview&id=N`, "Config preview"
+  in each profile row's actions). Read-only/dry-run: fetches the plan's live Contabo
+  options from the API, runs them through `DimensionParser` →
+  `ConfigurableOptionsSyncer::observe()`, and renders the exact WHMCS configurable
+  options that would be created — group → options (Image as one dropdown; Networking
+  split into Bandwidth/IPv4/Private; Region/Storage/Data-Protection) → sub-values with
+  per-cycle pricing across all 6 billing cycles. Pricing reuses the profile version's
+  landed-cost basis + markup; cheaper-than-default values clamp to 0. Nothing is
+  written; the apply path is the next, gated step. Shows skipped/omitted dimensions
+  and the pricing assumptions used.
+
 ## 0.4.4 — 2026-05-22 (profiles toolbar + bulk-bar fixes)
 
 ### Fixed

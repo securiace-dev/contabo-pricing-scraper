@@ -240,6 +240,7 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
                     data-cb-open-modal="profile-create"
                     data-cb-profile-edit-id="<?= $pid ?>">Edit</button>
             <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profile-diff&amp;id=<?= $pid ?>">History</a>
+            <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-preview&amp;id=<?= $pid ?>" title="Preview the WHMCS configurable options this profile would create">Config preview</a>
             <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
               <input type="hidden" name="action" value="profile-toggle">
               <input type="hidden" name="id" value="<?= $pid ?>">
