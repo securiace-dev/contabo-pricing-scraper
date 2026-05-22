@@ -29,17 +29,38 @@ final class ServiceRevenueResolverTest extends TestCase
      * addons. Each $configOptions entry: [sub_id, qty, prices(cycle=>float)].
      * Each $addons entry: [id, name, recurring].
      *
-     * @param array{recurringamount:float,billingcycle:string} $base
+     * @param array{base:float,billingcycle:string} $base  base = the product's
+     *        catalog recurring price for the cycle (NOT recurringamount, which
+     *        is the stale stored charge — the resolver derives base from
+     *        tblpricing type=product).
      * @param list<array{sub_id:int,qty:int,prices:array<string,float>}> $configOptions
      * @param list<array{id:int,name:string,recurring:float}> $addons
      */
     private function seedService(int $serviceId, array $base, array $configOptions, array $addons): void
     {
+        $packageId = 7000 + $serviceId;
         Capsule::table('tblhosting')->insert([
             'id'              => $serviceId,
-            'recurringamount' => $base['recurringamount'],
+            'packageid'       => $packageId,
+            // recurringamount is the stale stored charge → exposed as current_charge.
+            'recurringamount' => $base['base'],
             'billingcycle'    => $base['billingcycle'],
         ]);
+
+        // Product catalog price (the real base source). Set the service's cycle
+        // column to the requested base.
+        $cycleCol = [
+            'monthly' => 'monthly', 'quarterly' => 'quarterly', 'semi-annually' => 'semiannually',
+            'semiannually' => 'semiannually', 'annually' => 'annually', 'biennially' => 'biennially',
+            'triennially' => 'triennially',
+        ][strtolower($base['billingcycle'])] ?? 'monthly';
+        $productPrice = [
+            'type' => 'product', 'relid' => $packageId, 'currency' => 1,
+            'monthly' => 0.0, 'quarterly' => 0.0, 'semiannually' => 0.0,
+            'annually' => 0.0, 'biennially' => 0.0, 'triennially' => 0.0,
+        ];
+        $productPrice[$cycleCol] = $base['base'];
+        Capsule::table('tblpricing')->insert($productPrice);
 
         foreach ($configOptions as $co) {
             // tblhostingconfigoptions: relid=service, optionid=sub-option id.
@@ -80,7 +101,7 @@ final class ServiceRevenueResolverTest extends TestCase
     public function testResolveForServiceSumsBaseConfigAndAddons(): void
     {
         $this->seedService(1001,
-            ['recurringamount' => 515.0, 'billingcycle' => 'monthly'],
+            ['base' => 515.0, 'billingcycle' => 'monthly'],
             [
                 ['sub_id' => 1, 'qty' => 1, 'prices' => ['monthly' => 191.0, 'annually' => 2292.0]], // Auto Backup
                 ['sub_id' => 2, 'qty' => 1, 'prices' => ['monthly' => 121.0, 'annually' => 1452.0]], // US-Central region
@@ -101,7 +122,7 @@ final class ServiceRevenueResolverTest extends TestCase
     public function testTotalEqualsSumOfParts(): void
     {
         $this->seedService(1,
-            ['recurringamount' => 100.0, 'billingcycle' => 'monthly'],
+            ['base' => 100.0, 'billingcycle' => 'monthly'],
             [['sub_id' => 1, 'qty' => 1, 'prices' => ['monthly' => 25.0]]],
             [['id' => 1, 'name' => 'A', 'recurring' => 10.0]]
         );
@@ -114,7 +135,7 @@ final class ServiceRevenueResolverTest extends TestCase
     {
         // IPv4 unit price 121/mo × qty 3 = 363.
         $this->seedService(1,
-            ['recurringamount' => 515.0, 'billingcycle' => 'monthly'],
+            ['base' => 515.0, 'billingcycle' => 'monthly'],
             [['sub_id' => 7, 'qty' => 3, 'prices' => ['monthly' => 121.0]]],
             []
         );
@@ -127,7 +148,7 @@ final class ServiceRevenueResolverTest extends TestCase
     {
         // Annual service must pull the `annually` column, not `monthly`.
         $this->seedService(1,
-            ['recurringamount' => 6180.0, 'billingcycle' => 'annually'],
+            ['base' => 6180.0, 'billingcycle' => 'annually'],
             [['sub_id' => 1, 'qty' => 1, 'prices' => ['monthly' => 191.0, 'annually' => 2292.0]]],
             []
         );
@@ -139,7 +160,7 @@ final class ServiceRevenueResolverTest extends TestCase
     public function testBreakdownContainsPerLineDetail(): void
     {
         $this->seedService(42,
-            ['recurringamount' => 515.0, 'billingcycle' => 'monthly'],
+            ['base' => 515.0, 'billingcycle' => 'monthly'],
             [['sub_id' => 5, 'qty' => 2, 'prices' => ['monthly' => 50.0]]],
             [['id' => 3, 'name' => 'Monitoring', 'recurring' => 75.0]]
         );
@@ -191,7 +212,7 @@ final class ServiceRevenueResolverTest extends TestCase
     {
         // The whole point of amendment 5: total > base when options/addons exist.
         $this->seedService(1,
-            ['recurringamount' => 515.0, 'billingcycle' => 'monthly'],
+            ['base' => 515.0, 'billingcycle' => 'monthly'],
             [['sub_id' => 1, 'qty' => 1, 'prices' => ['monthly' => 191.0]]],
             [['id' => 1, 'name' => 'X', 'recurring' => 100.0]]
         );
@@ -203,7 +224,7 @@ final class ServiceRevenueResolverTest extends TestCase
     public function testServiceWithNoOptionsOrAddonsEqualsBase(): void
     {
         $this->seedService(1,
-            ['recurringamount' => 515.0, 'billingcycle' => 'monthly'],
+            ['base' => 515.0, 'billingcycle' => 'monthly'],
             [],
             []
         );

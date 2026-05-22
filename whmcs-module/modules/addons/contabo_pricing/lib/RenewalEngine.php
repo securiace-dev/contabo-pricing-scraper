@@ -57,6 +57,12 @@ class RenewalEngine
     /** @var callable|null Optional `(int serviceId): ?array<string,mixed>` for tests. */
     private $serviceFetcher;
 
+    /** @var ServiceRevenueResolver|null Opt-in true-revenue resolver (amendment 5). */
+    private $revenueResolver;
+
+    /** @var ServiceConfigSnapshot|null Opt-in snapshot reader (preferred revenue source). */
+    private $snapshotReader;
+
     /** @var string Per-engine instance cron-run UUID. Tests can override. */
     private $cronRunId;
 
@@ -78,11 +84,22 @@ class RenewalEngine
     public function __construct(
         array $settings,
         ?PolicyResolver $policyResolver = null,
-        ?callable $serviceFetcher = null
+        ?callable $serviceFetcher = null,
+        ?ServiceRevenueResolver $revenueResolver = null,
+        ?ServiceConfigSnapshot $snapshotReader = null
     ) {
-        $this->settings       = $settings;
-        $this->policyResolver = $policyResolver !== null ? $policyResolver : new PolicyResolver();
-        $this->serviceFetcher = $serviceFetcher;
+        $this->settings        = $settings;
+        $this->policyResolver  = $policyResolver !== null ? $policyResolver : new PolicyResolver();
+        $this->serviceFetcher  = $serviceFetcher;
+        // Opt-in (amendment 5): when supplied, the engine records each service's
+        // TRUE revenue (snapshot-preferred) + the drift from the stale
+        // tblhosting.recurringamount in decision metadata. It does NOT yet drive
+        // the margin/floor decision — that needs landedCostWithSelections (the
+        // matching cost side), which §13 designates a Phase B step. Recording it
+        // here surfaces the undercharge signal without skewing the base-only
+        // margin math. Default (null) = unchanged behaviour.
+        $this->revenueResolver = $revenueResolver;
+        $this->snapshotReader  = $snapshotReader;
         $this->cronRunId      = isset($settings['cron_run_id']) && $settings['cron_run_id'] !== ''
             ? (string) $settings['cron_run_id']
             : self::uuidV4();
@@ -179,7 +196,27 @@ class RenewalEngine
             'pre_round_price'        => null,
             'rounded_price'          => null,
             'rounding_mode'          => null,
+            // Amendment 5 — true revenue vs the stale stored charge. Recorded
+            // for audit + the eventual Phase B margin use; does NOT drive this
+            // decision (the cost side, landedCostWithSelections, is Phase B).
+            'stale_recurringamount'  => $oldPrice,
+            'resolved_revenue'       => null,
+            'revenue_source'         => null,
+            'revenue_drift'          => null,
         ];
+
+        if ($this->revenueResolver !== null) {
+            $svcId = (int) ($service['id'] ?? 0);
+            if ($svcId > 0) {
+                $snap = $this->snapshotReader !== null ? $this->snapshotReader->latestForService($svcId) : null;
+                $rev = $snap !== null
+                    ? $this->revenueResolver->resolveFromSnapshot($snap)
+                    : $this->revenueResolver->resolveForService($svcId);
+                $meta['revenue_source']   = $snap !== null ? 'snapshot' : 'live';
+                $meta['resolved_revenue'] = (float) ($rev['total'] ?? 0.0);
+                $meta['revenue_drift']    = round($meta['resolved_revenue'] - $oldPrice, 4);
+            }
+        }
 
         // ── Edge-case early skips ──────────────────────────────────────────
         $earlySkip = $this->earlySkipReason($service);

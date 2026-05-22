@@ -31,7 +31,7 @@ use WHMCS\Database\Capsule;
  *
  * PHP 7.4 polyglot.
  */
-final class ServiceRevenueResolver
+class ServiceRevenueResolver
 {
     /**
      * Map a WHMCS billingcycle string to the tblpricing cycle column.
@@ -57,7 +57,8 @@ final class ServiceRevenueResolver
     public function resolveForService(int $serviceId): array
     {
         $base = $this->fetchBase($serviceId);
-        $baseAmount = (float) ($base['recurringamount'] ?? 0.0);
+        $baseAmount = (float) ($base['base'] ?? 0.0);
+        $currentCharge = (float) ($base['current_charge'] ?? 0.0);
         $billingCycle = (string) ($base['billingcycle'] ?? 'monthly');
         $cycleColumn = $this->cycleColumn($billingCycle);
 
@@ -98,6 +99,7 @@ final class ServiceRevenueResolver
             'service_id'     => $serviceId,
             'billing_cycle'  => $billingCycle,
             'cycle_column'   => $cycleColumn,
+            'current_charge' => $currentCharge, // stale tblhosting.recurringamount, for drift comparison
             'config_options' => $configBreakdown,
             'addons'         => $addonBreakdown,
         ]);
@@ -180,11 +182,35 @@ final class ServiceRevenueResolver
             ->where('id', $serviceId)
             ->first();
         if ($row === null) {
-            return ['recurringamount' => 0.0, 'billingcycle' => 'monthly'];
+            return ['base' => 0.0, 'billingcycle' => 'monthly', 'current_charge' => 0.0];
         }
+        $row = (array) $row; // real Capsule returns stdClass; normalize
+        $cycle = (string) ($row['billingcycle'] ?? 'monthly');
+
+        // The TRUE base is the PRODUCT's current catalog recurring price for the
+        // cycle — NOT tblhosting.recurringamount. recurringamount is a snapshot
+        // that already folds in config options and DRIFTS when their prices
+        // change (preflight §5), so reading it here + adding config again would
+        // double-count. We keep recurringamount only as `current_charge`: what
+        // the customer is billed today, used by callers for drift comparison.
+        $col = $this->cycleColumn($cycle);
+        $pp = Capsule::table('tblpricing')
+            ->where('type', 'product')
+            ->where('relid', (int) ($row['packageid'] ?? 0))
+            ->where('currency', WhmcsConfigOptionsAdapter::INR_CURRENCY_ID)
+            ->first();
+        $pp = $pp !== null ? (array) $pp : null;
+        $base = $pp !== null ? (float) ($pp[$col] ?? 0.0) : 0.0;
+        // A negative product price (-1.00 = cycle disabled in WHMCS) is not real
+        // revenue; treat it as 0 so a disabled cycle never produces a phantom base.
+        if ($base < 0.0) {
+            $base = 0.0;
+        }
+
         return [
-            'recurringamount' => (float) ($row['recurringamount'] ?? 0.0),
-            'billingcycle'    => (string) ($row['billingcycle'] ?? 'monthly'),
+            'base'           => $base,
+            'billingcycle'   => $cycle,
+            'current_charge' => (float) ($row['recurringamount'] ?? 0.0),
         ];
     }
 
@@ -212,6 +238,7 @@ final class ServiceRevenueResolver
                 ->where('relid', $subId)
                 ->where('currency', WhmcsConfigOptionsAdapter::INR_CURRENCY_ID)
                 ->first();
+            $price = $price !== null ? (array) $price : null; // real Capsule returns stdClass
 
             $row = ['sub_id' => $subId, 'qty' => $qty];
             foreach (['monthly', 'quarterly', 'semiannually', 'annually', 'biennially', 'triennially'] as $col) {

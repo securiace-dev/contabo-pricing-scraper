@@ -219,3 +219,25 @@ add_hook('AdminHomeWidgets', 1, static function () {
         }
     };
 });
+
+/**
+ * A.6.4 — capture a config snapshot when a service is provisioned (§12). The
+ * snapshot is the stable basis for renewal margin (amendment 5): it records the
+ * base + selected-option prices the customer agreed to, immune to later catalog
+ * drift. Read-only against billing; wrapped so a snapshot failure never breaks
+ * provisioning.
+ */
+add_hook('AfterModuleCreate', 50, static function ($vars): void {
+    try {
+        $serviceId = (int) ($vars['serviceid'] ?? ($vars['params']['serviceid'] ?? 0));
+        if ($serviceId <= 0) {
+            return;
+        }
+        $settings = contabo_pricing_loadModuleVars();
+        (new \ContaboPricing\ServiceConfigSnapshot($settings))->capture($serviceId);
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing snapshot capture failed: ' . $e->getMessage());
+        }
+    }
+});

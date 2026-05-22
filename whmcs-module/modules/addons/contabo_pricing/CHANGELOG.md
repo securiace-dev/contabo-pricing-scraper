@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.4.7 — 2026-05-22 (A.6.4 snapshot capture + ServiceRevenueResolver wiring)
+
+### Added
+- **A.6.4 service config snapshot** (`ServiceConfigSnapshot`, design §12) — captures
+  a point-in-time record of a service's configuration + agreed-upon prices into
+  `mod_contabo_service_config_snapshot` (the table existed but was unused). Captured
+  on provision via a new `AfterModuleCreate` hook; the stable basis for renewal margin
+  (immune to later catalog drift). Recovers the selected image/region by round-tripping
+  each WHMCS sub-option id back to its Contabo value link (§17).
+- **ServiceRevenueResolver wired into RenewalEngine** (amendment 5, opt-in) — when a
+  resolver (+ optional snapshot reader) is injected, the engine records each service's
+  TRUE revenue (snapshot-preferred) and the drift from the stale
+  `tblhosting.recurringamount` in `metadata_json`. Default (not injected) = unchanged.
+
+### Fixed
+- **ServiceRevenueResolver was both buggy and dormant.** (1) It read `Capsule::first()`
+  results as arrays — real WHMCS returns stdClass (same trap as the adapter), so it would
+  have crashed on a live read. (2) It treated `tblhosting.recurringamount` as the base and
+  added config options on top — but `recurringamount` already includes config options and
+  drifts (preflight §5), so it double-counted. Base now comes from the product catalog
+  (`tblpricing` type=product); `recurringamount` is exposed only as `current_charge`.
+  Class is no longer `final` (matches its "overridable for tests" design).
+
+### Notes
+- The renewal engine **records** true revenue + drift but does NOT yet let it drive the
+  margin/floor decision: that needs the matching cost side (`landedCostWithSelections`),
+  which §13 designates a Phase B step. Wiring it half-way would inflate the (base-only)
+  margin. 6 new tests (snapshot + revenue wiring); suite 268.
+
 ## 0.4.6 — 2026-05-22 (A.6.3: configurable-options apply path)
 
 ### Added

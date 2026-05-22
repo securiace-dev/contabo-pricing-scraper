@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.4.6';
+    public const VERSION = '0.4.7';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
