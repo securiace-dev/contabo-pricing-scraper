@@ -120,6 +120,26 @@ final class ConfigOptionLinkRepository
         return $r !== null ? (array) $r : null;
     }
 
+    /**
+     * List every option link for a profile, ordered by dimension_key. Each row
+     * is `(array)`-cast (real WHMCS returns stdClass; FakeCapsule returns arrays)
+     * so callers always get a plain associative array.
+     *
+     * @return list<array<string,mixed>>
+     */
+    public function listOptionLinksForProfile(int $profileId): array
+    {
+        $rows = Capsule::table(self::T_OPTION)
+            ->where('profile_id', $profileId)
+            ->orderBy('dimension_key')
+            ->get();
+        $out = [];
+        foreach ($rows as $r) {
+            $out[] = (array) $r;
+        }
+        return $out;
+    }
+
     // ── value link ──────────────────────────────────────────────────────────
 
     /**

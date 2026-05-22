@@ -226,6 +226,7 @@ $cb_capwarn = isset($cb_val['capability_warnings']) && is_array($cb_val['capabil
       I understand this writes these options &amp; pricing to the live product
     </label>
     <button type="submit" class="cb-btn">Apply</button>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-exposure&amp;id=<?= (int) ($report['profile_id'] ?? 0) ?>">Edit exposure</a>
     <span class="muted" style="font-size:12px;">Idempotent &amp; ownership-scoped — re-applying makes no duplicates. Base currency only.</span>
   </form>
 <?php endif; ?>

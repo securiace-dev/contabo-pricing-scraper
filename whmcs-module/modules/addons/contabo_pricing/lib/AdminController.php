@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.4.10';
+    public const VERSION = '0.4.11';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -41,6 +41,8 @@ class AdminController
             case 'profile-diff':     $this->profileDiff($req); return;
             case 'config-preview':   $this->configPreview($req); return;
             case 'config-apply':     $this->configApply($req); return;
+            case 'config-exposure':      $this->configExposure($req); return;
+            case 'config-exposure-save': $this->configExposureSave($req); return;
             case 'mappings':         $this->mappings($req); return;
             case 'mapping-save':     $this->mappingSave($req); return;
             case 'sync-history':     $this->syncHistory(); return;
@@ -923,6 +925,94 @@ class AdminController
             (int) $r['options'], (int) $r['values'], $capSeeded
         );
         $this->redirect('config-preview', ['id' => $id, 'flash' => $msg]);
+    }
+
+    /**
+     * Exposure editor — GET. Curate which configurable-option dimensions are
+     * exposed to customers (the `expose_to_customer` / `hidden` flags on the
+     * option-links). These flags only take effect on the live product when the
+     * admin re-runs Apply (config-apply); this screen just records intent.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function configExposure(array $req): void
+    {
+        $pm = new ProfileManager($this->settings);
+        $id = (int) ($req['id'] ?? 0);
+        $profile = $pm->find($id);
+        if ($profile === null) {
+            echo '<div class="errorbox">Profile not found. '
+                . '<a href="' . htmlspecialchars($this->settings->moduleLink, ENT_QUOTES, 'UTF-8')
+                . '&action=profiles">Back to profiles</a>.</div>';
+            return;
+        }
+
+        $links = (new ConfigOptionLinkRepository())->listOptionLinksForProfile($id);
+
+        $this->render('config_exposure.tpl', [
+            'profile'      => $profile,
+            'option_links' => $links,
+            'flash'        => (string) ($req['flash'] ?? ''),
+        ]);
+    }
+
+    /**
+     * Exposure editor — POST. For each posted option-link, persist the
+     * `expose_to_customer` + `hidden` checkboxes via the link repository
+     * (the upsert whitelists exposure flags). Nothing reaches the live product
+     * until Apply is re-run; the flash says so.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function configExposureSave(array $req): void
+    {
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        $id = (int) ($req['id'] ?? 0);
+        $pm = new ProfileManager($this->settings);
+        $profile = $pm->find($id);
+        if ($profile === null) {
+            $this->redirect('profiles', ['flash' => 'Profile not found.']);
+            return;
+        }
+
+        $repo  = new ConfigOptionLinkRepository();
+        $links = $repo->listOptionLinksForProfile($id);
+
+        $exposed = isset($req['expose_to_customer']) && is_array($req['expose_to_customer'])
+            ? $req['expose_to_customer'] : [];
+        $hidden = isset($req['hidden']) && is_array($req['hidden'])
+            ? $req['hidden'] : [];
+
+        $updated = 0;
+        foreach ($links as $existing) {
+            $dimensionKey = (string) ($existing['dimension_key'] ?? '');
+            if ($dimensionKey === '') {
+                continue;
+            }
+            $isExposed = !empty($exposed[$dimensionKey]);
+            $isHidden  = !empty($hidden[$dimensionKey]);
+            $repo->upsertOptionLink(
+                $id,
+                $dimensionKey,
+                (int) ($existing['optiontype'] ?? 0),
+                (isset($existing['whmcs_option_id']) && $existing['whmcs_option_id'] !== null)
+                    ? (int) $existing['whmcs_option_id']
+                    : null,
+                ['expose_to_customer' => $isExposed, 'hidden' => $isHidden]
+            );
+            $updated++;
+        }
+
+        $this->redirect('config-exposure', [
+            'id'    => $id,
+            'flash' => sprintf(
+                'Saved exposure for %d option%s. Re-run Apply on the preview screen to push these flags to the live product.',
+                $updated,
+                $updated === 1 ? '' : 's'
+            ),
+        ]);
     }
 
     private function mappings(array $req): void

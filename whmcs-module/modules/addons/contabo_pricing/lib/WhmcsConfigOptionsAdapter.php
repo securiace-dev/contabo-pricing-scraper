@@ -196,7 +196,8 @@ final class WhmcsConfigOptionsAdapter
         int $optionType,
         ?int $qtyMin = null,
         ?int $qtyMax = null,
-        int $order = 0
+        int $order = 0,
+        ?bool $hidden = null
     ): array {
         $payload = [
             'gid'        => $groupId,
@@ -206,12 +207,20 @@ final class WhmcsConfigOptionsAdapter
             'qtymaximum' => $qtyMax !== null ? $qtyMax : 0,
             'order'      => $order,
         ];
+        // Exposure curation (amendment 8): when $hidden is given, control WHMCS
+        // option visibility. null = leave it (back-compat: existing callers and
+        // observe() don't pass it, so behaviour is unchanged).
+        $diffCols = ['optiontype', 'qtyminimum', 'qtymaximum', 'order'];
+        if ($hidden !== null) {
+            $payload['hidden'] = $hidden ? 1 : 0;
+            $diffCols[] = 'hidden';
+        }
 
         if ($this->dryRun) {
             return $this->dryRunResult('tblproductconfigoptions', $payload, null);
         }
 
-        return $this->write(static function () use ($groupId, $optionName, $payload) {
+        return $this->write(static function () use ($groupId, $optionName, $payload, $diffCols) {
             $existing = Capsule::table('tblproductconfigoptions')
                 ->where('gid', $groupId)
                 ->where('optionname', $optionName)
@@ -220,7 +229,7 @@ final class WhmcsConfigOptionsAdapter
             if ($existing !== null) {
                 $existing = (array) $existing; // real Capsule returns stdClass; normalize
                 $id = (int) $existing['id'];
-                $diff = self::columnsThatChanged($existing, $payload, ['optiontype', 'qtyminimum', 'qtymaximum', 'order']);
+                $diff = self::columnsThatChanged($existing, $payload, $diffCols);
                 if ($diff === []) {
                     return ['id' => $id, 'action' => 'noop', 'table' => 'tblproductconfigoptions', 'payload' => $payload];
                 }

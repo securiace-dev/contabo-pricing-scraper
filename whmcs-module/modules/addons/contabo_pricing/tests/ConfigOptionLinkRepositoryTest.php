@@ -71,6 +71,32 @@ final class ConfigOptionLinkRepositoryTest extends TestCase
         $this->assertCount(1, Capsule::$tables['mod_contabo_config_option_link']);
     }
 
+    public function testListOptionLinksForProfileOrderedByDimensionAndScoped(): void
+    {
+        $repo = new ConfigOptionLinkRepository();
+        // Two dimensions for profile 7 (inserted out of alphabetical order)…
+        $repo->upsertOptionLink(7, 'Networking:IPv4', 4, 9100, ['expose_to_customer' => true]);
+        $repo->upsertOptionLink(7, 'Image', 1, 9200, ['hidden' => true]);
+        // …and one for a DIFFERENT profile, which must be excluded.
+        $repo->upsertOptionLink(8, 'Storage', 1, 9300);
+
+        $rows = $repo->listOptionLinksForProfile(7);
+        $this->assertCount(2, $rows, 'only profile 7 links');
+        // orderBy('dimension_key'): 'Image' before 'Networking:IPv4'.
+        $this->assertSame('Image', (string) $rows[0]['dimension_key']);
+        $this->assertSame('Networking:IPv4', (string) $rows[1]['dimension_key']);
+        // Each row is a plain associative array carrying the exposure flags.
+        $this->assertIsArray($rows[0]);
+        $this->assertSame(1, (int) $rows[0]['hidden']);
+        $this->assertSame(1, (int) $rows[1]['expose_to_customer']);
+    }
+
+    public function testListOptionLinksForProfileEmptyWhenNone(): void
+    {
+        $repo = new ConfigOptionLinkRepository();
+        $this->assertSame([], $repo->listOptionLinksForProfile(999));
+    }
+
     public function testValueLinkUpsertAndRoundTripLookup(): void
     {
         $repo = new ConfigOptionLinkRepository();

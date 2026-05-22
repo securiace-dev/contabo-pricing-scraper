@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.4.11 — 2026-05-23 (exposure curation — apply produces a curated catalog)
+
+### Fixed / Added — the configurable-product feature is now usable end-to-end
+Before this, `apply` exposed **every** option (no `hidden` control), so applying a
+profile flooded the customer order form with all 34 images + every dimension.
+Amendment #8 ("preview-first, nothing exposed until ticked") was not enforced.
+
+- **`WhmcsConfigOptionsAdapter::upsertOption`** gained an optional `$hidden` arg —
+  controls WHMCS option visibility (null = unchanged, so `observe()` is untouched).
+- **`ExposureResolver`** — bridges DimensionParser keys → `RetailVpsMinimalPreset`
+  exposure decisions (`decideForDimension`, `decideForImageCategory`).
+- **`ConfigurableOptionsSyncer::apply`** now sets WHMCS visibility from the exposure
+  decision: an existing option-link's curated flags win (admin edits), else the
+  Retail-Minimal default. Image sub-values are hidden per category (OS shown;
+  Panels/Apps/Blockchain hidden). The chosen exposure is recorded on the option-link.
+- **Exposure editor** — new `config-exposure` admin screen (+ `config-exposure-save`)
+  to toggle each dimension's expose/hidden flags per profile; re-apply pushes them.
+  `ConfigOptionLinkRepository::listOptionLinksForProfile()` backs it.
+
+Verified on the local dev WHMCS: applying a sample profile leaves Image + Region +
+Data Protection exposed, hides Bandwidth/Private-Networking/Storage, and hides the
+Panel/App/Blockchain image sub-values while keeping OS visible. 23 new tests; suite 343.
+
 ## 0.4.10 — 2026-05-23 (wire capability + compatibility into the live flow)
 
 ### Added

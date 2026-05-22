@@ -267,9 +267,30 @@ final class ConfigurableOptionsSyncer
             }
             $isQuantity = $optionType === OptionTypeMapper::TYPE_QUANTITY;
 
-            $option   = $this->adapter->upsertOption($groupId, $dimKey, $optionType, $isQuantity ? 0 : null, $isQuantity ? count($values) : null, 0);
+            // Exposure curation (amendment 8). Resolution order: an existing
+            // option-link's stored flags win (the admin may have curated them via
+            // the exposure editor); otherwise the RetailVpsMinimal default. This
+            // drives WHMCS option visibility AND is recorded back on the link, so
+            // a fresh apply produces a curated catalog (OS only, etc.) rather than
+            // flooding the order form with all 34 images + every dimension.
+            $existingLink = $this->links->findOptionLink($profileId, $dimKey);
+            if ($existingLink !== null && array_key_exists('hidden', $existingLink)) {
+                $optHidden = (bool) $existingLink['hidden'];
+                $optExpose = array_key_exists('expose_to_customer', $existingLink)
+                    ? (bool) $existingLink['expose_to_customer']
+                    : !$optHidden;
+            } else {
+                $d = ExposureResolver::decideForDimension($dimKey);
+                $optHidden = (bool) $d['hidden'];
+                $optExpose = (bool) $d['expose_to_customer'];
+            }
+
+            $option   = $this->adapter->upsertOption($groupId, $dimKey, $optionType, $isQuantity ? 0 : null, $isQuantity ? count($values) : null, 0, $optHidden);
             $optionId = (int) ($option['id'] ?? 0);
-            $link     = $this->links->upsertOptionLink($profileId, $dimKey, $optionType, $optionId > 0 ? $optionId : null);
+            $link     = $this->links->upsertOptionLink(
+                $profileId, $dimKey, $optionType, $optionId > 0 ? $optionId : null,
+                ['expose_to_customer' => $optExpose, 'hidden' => $optHidden]
+            );
             $optionLinkId = (int) ($link['id'] ?? 0);
             $this->tally($summary, (string) ($option['action'] ?? ''));
             $this->audit->record($profileId, $dimKey, 'tblproductconfigoptions', $optionId > 0 ? $optionId : null, $this->auditAction($option['action'] ?? ''), null, $option['payload'] ?? null, 'apply option');
@@ -282,7 +303,15 @@ final class ConfigurableOptionsSyncer
                 $isDefault = (bool) ($value['is_default'] ?? false);
                 $eurDelta  = (float) ($value['monthly_eur_delta'] ?? 0.0);
 
-                $sub   = $this->adapter->upsertSubOption($optionId, $label, $sortOrder, false);
+                // Image is ONE dropdown whose sub-values span categories; the
+                // Retail preset hides Panels/Apps/Blockchain sub-values but shows
+                // OS. Other dimensions' visibility is controlled at the option
+                // level above, so their sub-values stay visible.
+                $subHidden = false;
+                if ($dimKey === 'Image') {
+                    $subHidden = (bool) ExposureResolver::decideForImageCategory((string) ($value['category'] ?? ''))['hidden'];
+                }
+                $sub   = $this->adapter->upsertSubOption($optionId, $label, $sortOrder, $subHidden);
                 $subId = (int) ($sub['id'] ?? 0);
                 $this->links->upsertValueLink($optionLinkId, $valueKey, $label, $subId > 0 ? $subId : null, $isDefault, $eurDelta);
 
