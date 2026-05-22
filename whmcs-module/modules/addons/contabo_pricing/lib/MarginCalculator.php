@@ -106,6 +106,58 @@ final class MarginCalculator
     }
 
     /**
+     * Phase B (§13 / amendment 5) — landed MONTHLY cost of a WHOLE configured
+     * service: the base product plus every selected configurable option.
+     *
+     * landedCostMonthly is linear in EUR, so this equals
+     * landedCostMonthly(baseEur + Σ selection EUR). Each selection's EUR is
+     * clamped to >= 0 (a cheaper-than-default option never *reduces* landed
+     * cost — amendment 1) and multiplied by its quantity (>= 1; matches the
+     * ServiceRevenueResolver qty convention so revenue and cost stay aligned).
+     *
+     * Pair this with ServiceRevenueResolver's total (whole-config revenue) so a
+     * renewal margin reflects the full configuration, never base-only.
+     *
+     * @param float $baseEurMonthly Vendor base cost in EUR, monthly.
+     * @param list<array{eur_monthly:float,qty?:int}> $selections Per-option EUR
+     *        deltas (monthly, per unit) + optional quantity.
+     * @param float $fxRate
+     * @param float $fxBufferPct
+     * @param float $paymentBufferPct
+     * @param float $vendorTaxRatePct
+     * @param bool  $vendorTaxRecoverable
+     * @return float Whole-config landed cost per month, local currency.
+     */
+    public static function landedCostWithSelections(
+        float $baseEurMonthly,
+        array $selections,
+        float $fxRate,
+        float $fxBufferPct,
+        float $paymentBufferPct,
+        float $vendorTaxRatePct,
+        bool $vendorTaxRecoverable
+    ): float {
+        $totalEur = max(0.0, $baseEurMonthly);
+        foreach ($selections as $sel) {
+            $eur = max(0.0, (float) ($sel['eur_monthly'] ?? 0.0));
+            $qty = (int) ($sel['qty'] ?? 1);
+            if ($qty < 1) {
+                $qty = 1;
+            }
+            $totalEur += $eur * $qty;
+        }
+
+        return self::landedCostMonthly(
+            $totalEur,
+            $fxRate,
+            $fxBufferPct,
+            $paymentBufferPct,
+            $vendorTaxRatePct,
+            $vendorTaxRecoverable
+        );
+    }
+
+    /**
      * Sell price for a billing cycle in local currency, computed from the
      * landed MONTHLY cost and the profile's markup strategy. Result is
      * rounded to 2 decimal places (currency precision).

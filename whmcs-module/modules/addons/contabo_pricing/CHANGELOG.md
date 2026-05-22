@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.4.8 — 2026-05-23 (Phase B: landedCostWithSelections — whole-config margin)
+
+### Added
+- **`MarginCalculator::landedCostWithSelections(baseEur, selections[], fx…)`** — landed
+  monthly cost of a whole configured service (base + every selected option). Each
+  option's EUR delta is clamped ≥ 0 (a cheaper-than-default option never reduces cost)
+  and multiplied by quantity (matches the ServiceRevenueResolver qty convention so
+  revenue and cost stay aligned). Linear in EUR, so it equals the single landed-cost of
+  the summed EUR.
+- **Snapshot now carries per-option EUR deltas.** `ServiceConfigSnapshot` enriches
+  `selected_options_json` with each selection's `monthly_eur_delta` (from its value link),
+  making the snapshot self-contained for the whole-config cost calc.
+- **RenewalEngine records the whole-config margin.** When a snapshot supplies the
+  selections, the engine computes the whole-config landed cost + margin ratio
+  (`landedCostWithSelections` vs the resolved revenue) and records `margin_basis`,
+  `whole_config_landed_for_cycle`, `whole_config_margin_ratio`, `whole_config_below_floor`
+  in `metadata_json` — an **accurate signal for config-driven undercharging**.
+
+### Notes
+- This is recorded only; it does not yet *drive* the base candidate/floor decision.
+  Driving repricing off the whole config requires the candidate to back out config
+  revenue (so the base bump restores the whole-config floor) — a separate, careful step
+  in the billing-critical candidate path, deliberately not bundled here. No billing-math
+  regression: existing renewal behaviour is byte-identical without an injected snapshot.
+  11 new tests; suite 275.
+
 ## 0.4.7 — 2026-05-22 (A.6.4 snapshot capture + ServiceRevenueResolver wiring)
 
 ### Added

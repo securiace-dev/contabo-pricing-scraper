@@ -68,6 +68,8 @@ class ServiceConfigSnapshot
 
         $revenue = $this->resolver->resolveForService($serviceId);
         $selected = $this->recoverSelections($revenue);
+        // Enriched selections carry each option's EUR delta (the cost basis) so
+        // the snapshot is self-contained for Phase B's landedCostWithSelections.
 
         $row = [
             'service_id'                    => $serviceId,
@@ -77,7 +79,7 @@ class ServiceConfigSnapshot
             'whmcs_product_id'              => $productId,
             'selected_image'                => $selected['image'],
             'selected_region'               => $selected['region'],
-            'selected_options_json'         => $this->encode($revenue['breakdown']['config_options'] ?? []),
+            'selected_options_json'         => $this->encode($selected['selections']),
             'contabo_payload_json'          => null, // built by the provisioning module (Phase C)
             'base_price_snapshot'           => (float) ($revenue['base'] ?? 0.0),
             'config_option_price_snapshot'  => (float) ($revenue['config_options'] ?? 0.0),
@@ -107,40 +109,56 @@ class ServiceConfigSnapshot
     }
 
     /**
-     * Recover the selected image + region labels by round-tripping each selected
-     * sub-option id to its Contabo value link, then reading the owning option
-     * link's dimension_key.
+     * Recover the selected image + region labels AND build the enriched
+     * selections list: for each selected sub-option, round-trip to its Contabo
+     * value link to pick up the dimension, label and — critically — the
+     * `monthly_eur_delta` (the cost basis Phase B needs). Lines whose value link
+     * is missing (e.g. selections made outside the addon) keep their sell-side
+     * fields with eur_monthly = 0, so the list is always complete.
      *
      * @param array{breakdown:array<string,mixed>} $revenue
-     * @return array{image:?string, region:?string}
+     * @return array{image:?string, region:?string, selections:list<array<string,mixed>>}
      */
     private function recoverSelections(array $revenue): array
     {
         $image = null;
         $region = null;
+        $selections = [];
         $cfg = $revenue['breakdown']['config_options'] ?? [];
         if (!is_array($cfg)) {
-            return ['image' => null, 'region' => null];
+            return ['image' => null, 'region' => null, 'selections' => []];
         }
         foreach ($cfg as $line) {
             $subId = (int) ($line['sub_id'] ?? 0);
-            if ($subId <= 0) {
-                continue;
+            $qty   = (int) ($line['qty'] ?? 1);
+            $valueLink = $subId > 0 ? $this->links->findValueLinkByWhmcsSubId($subId) : null;
+
+            $dim = '';
+            $label = '';
+            $eurMonthly = 0.0;
+            if ($valueLink !== null) {
+                $eurMonthly = (float) ($valueLink['monthly_eur_delta'] ?? 0.0);
+                $label = (string) ($valueLink['contabo_label'] ?? '');
+                $optionLink = $this->fetchOptionLinkById((int) ($valueLink['option_link_id'] ?? 0));
+                $dim = $optionLink !== null ? (string) ($optionLink['dimension_key'] ?? '') : '';
+                if ($dim === 'Image' && $image === null) {
+                    $image = $label;
+                } elseif ($dim === 'Region' && $region === null) {
+                    $region = $label;
+                }
             }
-            $valueLink = $this->links->findValueLinkByWhmcsSubId($subId);
-            if ($valueLink === null) {
-                continue;
-            }
-            $optionLink = $this->fetchOptionLinkById((int) ($valueLink['option_link_id'] ?? 0));
-            $dim = $optionLink !== null ? (string) ($optionLink['dimension_key'] ?? '') : '';
-            $label = (string) ($valueLink['contabo_label'] ?? '');
-            if ($dim === 'Image' && $image === null) {
-                $image = $label;
-            } elseif ($dim === 'Region' && $region === null) {
-                $region = $label;
-            }
+
+            $selections[] = [
+                'sub_id'      => $subId,
+                'qty'         => $qty,
+                'dimension'   => $dim,
+                'label'       => $label,
+                'unit_sell'   => (float) ($line['unit'] ?? 0.0),
+                'line_sell'   => (float) ($line['line'] ?? 0.0),
+                'eur_monthly' => $eurMonthly, // cost basis for landedCostWithSelections
+            ];
         }
-        return ['image' => $image, 'region' => $region];
+        return ['image' => $image, 'region' => $region, 'selections' => $selections];
     }
 
     // ── data access (overridable for tests) ───────────────────────────────────

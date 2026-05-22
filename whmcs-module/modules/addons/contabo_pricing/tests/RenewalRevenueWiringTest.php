@@ -91,4 +91,43 @@ final class RenewalRevenueWiringTest extends TestCase
         $this->assertSame('snapshot', $meta['revenue_source']);
         $this->assertEqualsWithDelta(1500.0, $meta['resolved_revenue'], 0.001);
     }
+
+    public function testWholeConfigMarginRecordedFromSnapshotSelections(): void
+    {
+        // Snapshot supplies per-option EUR deltas → engine computes the
+        // whole-config landed cost + margin ratio (Phase B), recorded in meta.
+        $snapReader = new class([]) extends ServiceConfigSnapshot {
+            public function latestForService(int $serviceId): ?array
+            {
+                return [
+                    'service_id'                   => $serviceId,
+                    'base_price_snapshot'          => 515.0,
+                    'config_option_price_snapshot' => 985.0,
+                    'selected_options_json'        => json_encode([
+                        ['sub_id' => 101, 'qty' => 1, 'eur_monthly' => 1.5],
+                        ['sub_id' => 102, 'qty' => 2, 'eur_monthly' => 1.0],
+                    ]),
+                ];
+            }
+        };
+        $engine = new RenewalEngine($this->settings(), $this->policyStub(), null, $this->revenueStub(1500.0, 'snapshot'), $snapReader);
+        $meta = json_decode((string) $engine->decide($this->service(), new \DateTimeImmutable('2026-05-22'))['metadata_json'], true);
+
+        $this->assertSame('whole_config', $meta['margin_basis']);
+        $this->assertNotNull($meta['whole_config_landed_for_cycle']);
+        $this->assertNotNull($meta['whole_config_margin_ratio']);
+        $this->assertIsBool($meta['whole_config_below_floor']);
+        // base 10 EUR + (1.5 + 1.0×2) = 13.5 EUR; fx 90 + 2% fx + 2% pay buffers,
+        // monthly, × 1 cycle month. Whole-config landed > base-only landed.
+        $this->assertGreaterThan(0.0, (float) $meta['whole_config_landed_for_cycle']);
+    }
+
+    public function testWholeConfigNotComputedWithoutSnapshot(): void
+    {
+        // Resolver but no snapshot → margin_basis stays base_only (no EUR deltas).
+        $engine = new RenewalEngine($this->settings(), $this->policyStub(), null, $this->revenueStub(1500.0, 'live'), null);
+        $meta = json_decode((string) $engine->decide($this->service(), new \DateTimeImmutable('2026-05-22'))['metadata_json'], true);
+        $this->assertSame('base_only', $meta['margin_basis']);
+        $this->assertNull($meta['whole_config_landed_for_cycle']);
+    }
 }

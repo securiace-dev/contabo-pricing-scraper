@@ -127,4 +127,58 @@ final class MarginMathTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         MarginCalculator::minimumSellMonthlyForFloor(850.0, 100.0);
     }
+
+    // ── Phase B: landedCostWithSelections ─────────────────────────────────────
+
+    public function testLandedCostWithSelectionsSumsBaseAndOptions(): void
+    {
+        // base 10 EUR + Auto Backup 1.5 + extra storage 2.0 = 13.5 EUR; fx 90, no buffers/tax.
+        $whole = MarginCalculator::landedCostWithSelections(
+            10.0,
+            [['eur_monthly' => 1.5], ['eur_monthly' => 2.0]],
+            90.0, 0.0, 0.0, 0.0, false
+        );
+        $this->assertEqualsWithDelta(1215.0, $whole, 0.0001); // 13.5 × 90
+        // Linearity: equals base landed + each option's landed.
+        $base = MarginCalculator::landedCostMonthly(10.0, 90.0, 0.0, 0.0, 0.0, false);
+        $o1   = MarginCalculator::landedCostMonthly(1.5, 90.0, 0.0, 0.0, 0.0, false);
+        $o2   = MarginCalculator::landedCostMonthly(2.0, 90.0, 0.0, 0.0, 0.0, false);
+        $this->assertEqualsWithDelta($base + $o1 + $o2, $whole, 0.0001);
+    }
+
+    public function testLandedCostWithSelectionsClampsNegativeDelta(): void
+    {
+        // A cheaper-than-default option (negative EUR) must NOT reduce landed cost.
+        $whole = MarginCalculator::landedCostWithSelections(
+            10.0, [['eur_monthly' => -5.0]], 90.0, 0.0, 0.0, 0.0, false
+        );
+        $this->assertEqualsWithDelta(900.0, $whole, 0.0001); // base 10 × 90, option clamped to 0
+    }
+
+    public function testLandedCostWithSelectionsMultipliesQuantity(): void
+    {
+        // IPv4 1.0 EUR/unit × qty 3 = 3.0 EUR; + base 10 = 13 EUR.
+        $whole = MarginCalculator::landedCostWithSelections(
+            10.0, [['eur_monthly' => 1.0, 'qty' => 3]], 90.0, 0.0, 0.0, 0.0, false
+        );
+        $this->assertEqualsWithDelta(1170.0, $whole, 0.0001); // 13 × 90
+    }
+
+    public function testLandedCostWithSelectionsLinearUnderBuffersAndTax(): void
+    {
+        // With FX buffer + non-recoverable vendor tax, the whole equals the
+        // single-call landed cost of the summed EUR (proves linearity holds).
+        $sel = [['eur_monthly' => 1.5], ['eur_monthly' => 0.5, 'qty' => 2]];
+        $whole = MarginCalculator::landedCostWithSelections(10.0, $sel, 90.0, 2.0, 2.0, 18.0, false);
+        $sumEur = 10.0 + 1.5 + (0.5 * 2);
+        $single = MarginCalculator::landedCostMonthly($sumEur, 90.0, 2.0, 2.0, 18.0, false);
+        $this->assertEqualsWithDelta($single, $whole, 0.0001);
+    }
+
+    public function testLandedCostWithSelectionsNoSelectionsEqualsBase(): void
+    {
+        $whole = MarginCalculator::landedCostWithSelections(10.0, [], 90.0, 2.0, 2.0, 18.0, false);
+        $base  = MarginCalculator::landedCostMonthly(10.0, 90.0, 2.0, 2.0, 18.0, false);
+        $this->assertEqualsWithDelta($base, $whole, 0.0001);
+    }
 }

@@ -39,10 +39,11 @@ final class ServiceConfigSnapshotTest extends TestCase
         Capsule::table('mod_contabo_profile')->insert(['id' => 7, 'plan_slug' => 'cloud-vps-10', 'profile_mode' => 'customer_configurable_product']);
         Capsule::table('mod_contabo_profile_version')->insert(['profile_id' => 7, 'version' => 3]);
 
-        // Link tables: sub #100 → Image value, sub #101 → Data Protection value.
+        // Link tables: sub #100 → Image value (0 EUR), sub #101 → Backup value (1.5 EUR delta).
         Capsule::table('mod_contabo_config_option_link')->insert(['id' => 50, 'profile_id' => 7, 'dimension_key' => 'Image']);
-        Capsule::table('mod_contabo_config_option_link')->insert(['id' => 51, 'profile_id' => 7, 'dimension_key' => 'Region']);
-        Capsule::table('mod_contabo_config_option_value_link')->insert(['option_link_id' => 50, 'contabo_value_key' => 'os:ubuntu', 'contabo_label' => '[OS] Ubuntu 24.04', 'whmcs_sub_id' => 100]);
+        Capsule::table('mod_contabo_config_option_link')->insert(['id' => 52, 'profile_id' => 7, 'dimension_key' => 'Data Protection']);
+        Capsule::table('mod_contabo_config_option_value_link')->insert(['option_link_id' => 50, 'contabo_value_key' => 'os:ubuntu', 'contabo_label' => '[OS] Ubuntu 24.04', 'whmcs_sub_id' => 100, 'monthly_eur_delta' => 0.0]);
+        Capsule::table('mod_contabo_config_option_value_link')->insert(['option_link_id' => 52, 'contabo_value_key' => 'auto-backup', 'contabo_label' => 'Auto Backup', 'whmcs_sub_id' => 101, 'monthly_eur_delta' => 1.5]);
     }
 
     private function snap(): ServiceConfigSnapshot
@@ -86,6 +87,14 @@ final class ServiceConfigSnapshotTest extends TestCase
         $decoded = json_decode((string) $row['selected_options_json'], true);
         $this->assertIsArray($decoded);
         $this->assertCount(2, $decoded); // two selected options
+        // Each line carries the EUR cost basis Phase B needs.
+        $bySub = [];
+        foreach ($decoded as $line) {
+            $bySub[(int) $line['sub_id']] = $line;
+        }
+        $this->assertArrayHasKey('eur_monthly', $bySub[100]);
+        $this->assertEqualsWithDelta(0.0, (float) $bySub[100]['eur_monthly'], 0.0001);
+        $this->assertEqualsWithDelta(1.5, (float) $bySub[101]['eur_monthly'], 0.0001);
     }
 
     public function testUnmappedServiceStillSnapshots(): void

@@ -203,7 +203,18 @@ class RenewalEngine
             'resolved_revenue'       => null,
             'revenue_source'         => null,
             'revenue_drift'          => null,
+            // Phase B (§13) — whole-config margin (base + selected options).
+            // Recorded as an accurate undercharge signal; does NOT yet drive the
+            // base candidate/floor decision (that's the final integration step).
+            'margin_basis'                   => 'base_only',
+            'whole_config_landed_for_cycle'  => null,
+            'whole_config_margin_ratio'      => null,
+            'whole_config_below_floor'       => null,
         ];
+
+        // Phase B inputs (populated from the snapshot when present).
+        $resolvedRevenueTotal   = null;
+        $wholeConfigSelections  = [];
 
         if ($this->revenueResolver !== null) {
             $svcId = (int) ($service['id'] ?? 0);
@@ -215,6 +226,16 @@ class RenewalEngine
                 $meta['revenue_source']   = $snap !== null ? 'snapshot' : 'live';
                 $meta['resolved_revenue'] = (float) ($rev['total'] ?? 0.0);
                 $meta['revenue_drift']    = round($meta['resolved_revenue'] - $oldPrice, 4);
+                $resolvedRevenueTotal     = (float) ($rev['total'] ?? 0.0);
+                // The snapshot carries each selection's EUR delta — the cost
+                // basis the whole-config landed cost needs. (Live resolves don't
+                // carry EUR deltas, so whole-config margin requires a snapshot.)
+                if ($snap !== null) {
+                    $decoded = json_decode((string) ($snap['selected_options_json'] ?? '[]'), true);
+                    if (is_array($decoded)) {
+                        $wholeConfigSelections = $decoded;
+                    }
+                }
             }
         }
 
@@ -343,6 +364,29 @@ class RenewalEngine
             $vendorTaxRatePct, $vendorTaxRecoverable
         );
         $landedForCycle = $landedMonthly * $cycleMonths;
+
+        // Phase B (§13) — whole-config margin. When a snapshot supplied the
+        // selected options' EUR deltas, compute the landed cost + margin ratio of
+        // the WHOLE configuration (base + options) against the resolved revenue,
+        // and record whether it breaches the floor. This is the accurate signal
+        // for config-driven undercharging. It is RECORDED only — the base
+        // candidate/floor decision below is unchanged (driving repricing off the
+        // whole config needs the candidate to back out config revenue, a separate
+        // step), so there is no billing-math regression.
+        if ($wholeConfigSelections !== [] && $resolvedRevenueTotal !== null && $resolvedRevenueTotal > 0.0) {
+            $wholeLandedMonthly  = MarginCalculator::landedCostWithSelections(
+                $eurMonthly, $wholeConfigSelections, $fxRate, $fxBufferPct,
+                $paymentBufferPct, $vendorTaxRatePct, $vendorTaxRecoverable
+            );
+            $wholeLandedForCycle = $wholeLandedMonthly * $cycleMonths;
+            $wholeNet            = MarginCalculator::netRevenueForCycle($resolvedRevenueTotal, $pricesIncludeOutput, $outputTaxRatePct);
+            $wholeRatio          = MarginCalculator::currentMarginRatio($resolvedRevenueTotal, $wholeNet, $wholeLandedForCycle);
+            $floorPct            = (float) ($profile['margin_floor_pct'] ?? 0.0);
+            $meta['margin_basis']                  = 'whole_config';
+            $meta['whole_config_landed_for_cycle'] = round($wholeLandedForCycle, 4);
+            $meta['whole_config_margin_ratio']     = round($wholeRatio, 6);
+            $meta['whole_config_below_floor']      = $wholeRatio < ($floorPct / 100.0);
+        }
 
         // ── Per-cycle markup resolution (Phase A.5) ────────────────────────
         // Same JSON-decode pattern as Agent B's SyncEngine. Documented
