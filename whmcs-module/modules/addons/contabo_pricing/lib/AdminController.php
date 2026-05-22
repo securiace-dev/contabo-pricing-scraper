@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.4.9';
+    public const VERSION = '0.4.10';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -741,6 +741,14 @@ class AdminController
         $groupName = 'Contabo ' . (string) ($profile['plan_slug'] ?? 'options');
         $report = $syncer->observe($id, $groupName, $specs, $ctx);
 
+        // Validate the default selection (one default value per dimension) through
+        // SelectionValidator: hard compatibility violations + capability warnings
+        // (destructive options). Both matrices are empty until populated (compat is
+        // manual; capability is seeded on Apply), so this surfaces nothing until
+        // there's data — the hook is in place for when there is.
+        $defaultSelection = $this->defaultSelectionFromSpecs($specs);
+        $validation = (new SelectionValidator())->validate((string) ($profile['plan_slug'] ?? ''), $defaultSelection);
+
         $this->render('config_preview.tpl', [
             'profile'       => $profile,
             'version'       => $version,
@@ -752,8 +760,45 @@ class AdminController
             'landed_mult'   => $multiplier,
             'api_error'     => $apiError,
             'mapped_products' => $this->mappedProductsForProfile($id),
+            'validation'    => $validation,
             'flash'         => (string) ($req['flash'] ?? ''),
         ]);
+    }
+
+    /**
+     * The default selection (one value per dimension) from DimensionParser specs:
+     * the value flagged is_default, else the first value. Used to validate the
+     * profile's out-of-the-box configuration.
+     *
+     * @param list<array<string,mixed>> $specs
+     * @return list<array{dimension_key:string,value_key:string,qty:int}>
+     */
+    private function defaultSelectionFromSpecs(array $specs): array
+    {
+        $sel = [];
+        foreach ($specs as $spec) {
+            $dim = (string) ($spec['dimension_key'] ?? '');
+            $values = isset($spec['values']) && is_array($spec['values']) ? $spec['values'] : [];
+            if ($dim === '' || $values === []) {
+                continue;
+            }
+            $chosen = null;
+            foreach ($values as $v) {
+                if (!empty($v['is_default'])) {
+                    $chosen = $v;
+                    break;
+                }
+            }
+            if ($chosen === null) {
+                $chosen = $values[0];
+            }
+            $sel[] = [
+                'dimension_key' => $dim,
+                'value_key'     => (string) ($chosen['value_key'] ?? ''),
+                'qty'           => 1,
+            ];
+        }
+        return $sel;
     }
 
     /**
@@ -857,12 +902,25 @@ class AdminController
             return;
         }
 
+        // Seed the §4 capability defaults for the plan's dimensions/values so the
+        // capability matrix is populated alongside the WHMCS config options. These
+        // are manual_assumption defaults; a Phase C deploy-API check upgrades them.
+        $capSeeded = 0;
+        try {
+            $capSeeded = (new CapabilityDefaultsProvider())
+                ->seedForPlan($planSlug, $specs, new ConfigOptionCapabilityRepository());
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing capability seed warning (profile #' . $id . '): ' . $e->getMessage());
+            }
+        }
+
         $s = $r['summary'];
         $msg = sprintf(
-            'Applied to product #%d — %d created, %d updated, %d unchanged, %d skipped (%d options, %d values).',
+            'Applied to product #%d — %d created, %d updated, %d unchanged, %d skipped (%d options, %d values); %d capability defaults seeded.',
             $productId,
             (int) $s['created'], (int) $s['updated'], (int) $s['noop'], (int) $s['skipped'],
-            (int) $r['options'], (int) $r['values']
+            (int) $r['options'], (int) $r['values'], $capSeeded
         );
         $this->redirect('config-preview', ['id' => $id, 'flash' => $msg]);
     }

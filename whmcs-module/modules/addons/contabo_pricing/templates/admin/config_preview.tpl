@@ -90,6 +90,43 @@ $cb_fmt = static function ($n) use ($cb_cur): string {
   </p>
 </div>
 
+<?php /* Default-selection validation (compatibility + capability) ----------- */ ?>
+<?php
+$cb_val = isset($validation) && is_array($validation) ? $validation : ['valid' => true, 'violations' => [], 'capability_warnings' => []];
+$cb_violations = isset($cb_val['violations']) && is_array($cb_val['violations']) ? $cb_val['violations'] : [];
+$cb_capwarn = isset($cb_val['capability_warnings']) && is_array($cb_val['capability_warnings']) ? $cb_val['capability_warnings'] : [];
+?>
+<?php if ($cb_violations !== [] || $cb_capwarn !== []): ?>
+  <div class="cb-card" style="padding:14px 16px; margin-bottom:14px;">
+    <div class="cb-card-sub" style="margin:0 0 8px;">Default-configuration checks</div>
+    <?php if ($cb_violations !== []): ?>
+      <div class="cb-error" style="margin:0 0 8px;">
+        <strong><?= count($cb_violations) ?> compatibility violation<?= count($cb_violations) === 1 ? '' : 's' ?></strong> in the default selection:
+        <ul style="margin:6px 0 0; padding-left:18px;">
+          <?php foreach ($cb_violations as $v): ?>
+            <li><code class="mono"><?= $esc($v['dimension_key'] ?? '') ?></code> &rarr; <?= $esc($v['value_key'] ?? '') ?> — <?= $esc($v['reason'] ?? '') ?>: <?= $esc($v['detail'] ?? '') ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+    <?php if ($cb_capwarn !== []): ?>
+      <div style="font-size:13px;">
+        <strong style="color:#9a6a00;"><?= count($cb_capwarn) ?> option<?= count($cb_capwarn) === 1 ? '' : 's' ?> with destructive change semantics</strong>
+        (changing them later requires a reinstall/recreate; only <code class="mono">api_verified</code> capabilities auto-apply):
+        <ul style="margin:6px 0 0; padding-left:18px;">
+          <?php foreach ($cb_capwarn as $w): ?>
+            <li><code class="mono"><?= $esc($w['dimension_key'] ?? '') ?></code> &rarr; <?= $esc($w['value_key'] ?? '') ?>
+              <?php if (!empty($w['requires_backup_warning'])): ?><span class="cb-pill grey">backup warning</span><?php endif; ?>
+              <?php if (!empty($w['requires_admin_approval'])): ?><span class="cb-pill grey">admin approval</span><?php endif; ?>
+              <span class="muted">(<?= $esc($w['capability_source'] ?? 'unknown') ?>)</span>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+  </div>
+<?php endif; ?>
+
 <?php if (empty($report['options'])): ?>
   <div class="cb-card"><div class="cb-empty">
     <div class="display">No options to preview</div>

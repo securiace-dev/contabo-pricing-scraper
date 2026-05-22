@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.4.10 — 2026-05-23 (wire capability + compatibility into the live flow)
+
+### Added
+- **`CapabilityDefaultsProvider`** — supplies the §4 default capability classification
+  per dimension (Image→reinstall/destructive, Region→recreate, Storage→reinstall,
+  Data-Protection/IPv4/Bandwidth/Private-Net→in-place; all `capability_source=manual_assumption`)
+  and `seedForPlan()` to populate the capability table.
+- **`SelectionValidator`** — single facade composing the two matrices: hard compatibility
+  violations (`validateCombination`) + non-blocking capability warnings (destructive options).
+- **Wired into the flow:**
+  - `config-apply` now **seeds the §4 capability defaults** for the plan's
+    dimensions/values after writing the WHMCS config options (count shown in the flash).
+  - `config-preview` runs `SelectionValidator` on the default selection and **surfaces
+    compatibility violations + destructive-option warnings** (with backup/admin-approval
+    flags + capability source) in a "Default-configuration checks" panel.
+
+### Notes
+- Capability defaults are `manual_assumption` until a Phase C deploy-API check upgrades
+  them to `api_verified` (only `api_verified` may auto-apply a destructive change). The
+  compatibility matrix has no automatic data source yet, so its `validateCombination`
+  surfaces nothing until rules are added — the hook is in place. Verified end-to-end on
+  the local dev WHMCS. 20 new tests; suite 320.
+
 ## 0.4.9 — 2026-05-23 (capability + compatibility matrix repositories)
 
 ### Added
