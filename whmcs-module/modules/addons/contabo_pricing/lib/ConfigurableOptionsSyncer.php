@@ -48,10 +48,14 @@ final class ConfigurableOptionsSyncer
     /** @var OptionAuditLog */
     private $audit;
 
-    public function __construct(WhmcsConfigOptionsAdapter $adapter, OptionAuditLog $audit)
+    /** @var ConfigOptionLinkRepository|null Required for apply(); unused by observe(). */
+    private $links;
+
+    public function __construct(WhmcsConfigOptionsAdapter $adapter, OptionAuditLog $audit, ?ConfigOptionLinkRepository $links = null)
     {
         $this->adapter = $adapter;
         $this->audit   = $audit;
+        $this->links   = $links;
     }
 
     /**
@@ -201,6 +205,137 @@ final class ConfigurableOptionsSyncer
                 'skipped' => count($skipped),
             ],
         ];
+    }
+
+    /**
+     * APPLY — write the configurable options to a real WHMCS product.
+     *
+     * Same traversal as {@see observe()} but with a NON-dry-run adapter: each
+     * group/option/sub/pricing is upserted for real, the resulting WHMCS id is
+     * recorded in the link tables via {@see ConfigOptionLinkRepository} (which
+     * makes re-apply idempotent + ownership-scoped), and every action is written
+     * to {@see OptionAuditLog} with the adapter's real action (created→insert,
+     * updated→update, noop→skip_no_change).
+     *
+     * Requires: a link repo (constructor arg), a real (non-dry-run) adapter, and
+     * a target $productId. Base-currency-only and the negative-delta clamp are
+     * enforced exactly as in observe(). Drift detection (manual-edit guard) needs
+     * hash columns the v5 link tables don't carry yet — deferred to a schema bump.
+     *
+     * @param list<array<string,mixed>> $specs
+     * @return array{
+     *   profile_id:int, product_id:int, group:array<string,mixed>,
+     *   summary:array{created:int,updated:int,noop:int,skipped:int},
+     *   options:int, values:int
+     * }
+     */
+    public function apply(
+        int $profileId,
+        int $productId,
+        string $groupKey,
+        string $groupName,
+        array $specs,
+        ConfigOptionPricingContext $ctx
+    ): array {
+        if ($this->links === null) {
+            throw new \RuntimeException('ConfigurableOptionsSyncer::apply() requires a ConfigOptionLinkRepository.');
+        }
+        if ($this->adapter->isDryRun()) {
+            throw new \RuntimeException('apply() needs a non-dry-run adapter; got a dry-run one.');
+        }
+
+        $summary = ['created' => 0, 'updated' => 0, 'noop' => 0, 'skipped' => 0];
+
+        $group   = $this->adapter->upsertGroup($groupName, 'Contabo configurable options (profile #' . $profileId . ')');
+        $groupId = (int) ($group['id'] ?? 0);
+        $this->links->upsertGroupLink($profileId, $productId, $groupKey, $groupId > 0 ? $groupId : null);
+        if ($groupId > 0) {
+            $this->adapter->linkGroupToProduct($groupId, $productId);
+        }
+        $this->tally($summary, (string) ($group['action'] ?? ''));
+        $this->audit->record($profileId, null, 'tblproductconfiggroups', $groupId > 0 ? $groupId : null, $this->auditAction($group['action'] ?? ''), null, $group['payload'] ?? null, 'apply group');
+
+        $optionCount = 0;
+        $valueCount  = 0;
+
+        foreach ($specs as $spec) {
+            $dimKey     = (string) ($spec['dimension_key'] ?? '');
+            $optionType = (int) ($spec['optiontype'] ?? OptionTypeMapper::TYPE_DROPDOWN);
+            $values     = isset($spec['values']) && is_array($spec['values']) ? $spec['values'] : [];
+            if ($dimKey === '' || $values === []) {
+                continue;
+            }
+            $isQuantity = $optionType === OptionTypeMapper::TYPE_QUANTITY;
+
+            $option   = $this->adapter->upsertOption($groupId, $dimKey, $optionType, $isQuantity ? 0 : null, $isQuantity ? count($values) : null, 0);
+            $optionId = (int) ($option['id'] ?? 0);
+            $link     = $this->links->upsertOptionLink($profileId, $dimKey, $optionType, $optionId > 0 ? $optionId : null);
+            $optionLinkId = (int) ($link['id'] ?? 0);
+            $this->tally($summary, (string) ($option['action'] ?? ''));
+            $this->audit->record($profileId, $dimKey, 'tblproductconfigoptions', $optionId > 0 ? $optionId : null, $this->auditAction($option['action'] ?? ''), null, $option['payload'] ?? null, 'apply option');
+            $optionCount++;
+
+            foreach ($values as $i => $value) {
+                $label     = (string) ($value['label'] ?? ($value['value_key'] ?? ('value ' . $i)));
+                $valueKey  = (string) ($value['value_key'] ?? $label);
+                $sortOrder = (int) ($value['sortorder'] ?? $i);
+                $isDefault = (bool) ($value['is_default'] ?? false);
+                $eurDelta  = (float) ($value['monthly_eur_delta'] ?? 0.0);
+
+                $sub   = $this->adapter->upsertSubOption($optionId, $label, $sortOrder, false);
+                $subId = (int) ($sub['id'] ?? 0);
+                $this->links->upsertValueLink($optionLinkId, $valueKey, $label, $subId > 0 ? $subId : null, $isDefault, $eurDelta);
+
+                $pricing = $this->adapter->upsertConfigOptionPricing(
+                    $subId,
+                    $ctx->currencyId,
+                    $this->priceCycles($eurDelta, $ctx),
+                    $this->priceSetup((float) ($value['setup_eur_delta'] ?? 0.0), $ctx)
+                );
+                $this->tally($summary, (string) ($pricing['action'] ?? ''));
+                $this->tally($summary, (string) ($sub['action'] ?? ''));
+                $this->audit->record($profileId, $dimKey, 'tblproductconfigoptionssub', $subId > 0 ? $subId : null, $this->auditAction($sub['action'] ?? ''), null, ['label' => $label, 'value_key' => $valueKey], 'apply value');
+                $valueCount++;
+            }
+        }
+
+        return [
+            'profile_id' => $profileId,
+            'product_id' => $productId,
+            'group'      => $group,
+            'summary'    => $summary,
+            'options'    => $optionCount,
+            'values'     => $valueCount,
+        ];
+    }
+
+    /** @param array{created:int,updated:int,noop:int,skipped:int} $summary */
+    private function tally(array &$summary, string $action): void
+    {
+        if ($action === 'created') {
+            $summary['created']++;
+        } elseif ($action === 'updated') {
+            $summary['updated']++;
+        } elseif ($action === 'skipped') {
+            $summary['skipped']++;
+        } elseif ($action === 'noop') {
+            $summary['noop']++;
+        }
+    }
+
+    /** Map an adapter action to an OptionAuditLog action constant. */
+    private function auditAction(string $adapterAction): string
+    {
+        if ($adapterAction === 'created') {
+            return OptionAuditLog::ACTION_INSERT;
+        }
+        if ($adapterAction === 'updated') {
+            return OptionAuditLog::ACTION_UPDATE;
+        }
+        if ($adapterAction === 'skipped') {
+            return OptionAuditLog::ACTION_SKIP_DISABLED;
+        }
+        return OptionAuditLog::ACTION_SKIP_NO_CHANGE; // noop / dryrun
     }
 
     /**

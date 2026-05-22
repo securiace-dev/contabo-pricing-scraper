@@ -165,7 +165,30 @@ $cb_fmt = static function ($n) use ($cb_cur): string {
   </div>
 <?php endif; ?>
 
-<div class="cb-card" style="padding:14px 16px; display:flex; align-items:center; gap:12px;">
-  <button type="button" class="cb-btn" disabled title="Apply mode is gated behind the configurable-option preflight (A.6.3)">Apply to product…</button>
-  <span class="muted" style="font-size:12px;">Apply writes these options + pricing to the mapped WHMCS product. Coming in the A.6.3 apply step.</span>
-</div>
+<?php $cb_mapped = isset($mapped_products) && is_array($mapped_products) ? $mapped_products : []; ?>
+<?php if (empty($report['options'])): ?>
+  <?php /* nothing to apply */ ?>
+<?php elseif (empty($cb_mapped)): ?>
+  <div class="cb-card" style="padding:14px 16px;">
+    <strong>Apply unavailable.</strong> Map this profile to a WHMCS product first on the
+    <a href="<?= $esc($module_link) ?>&amp;action=mappings">Mappings</a> page, then return here to apply.
+  </div>
+<?php else: ?>
+  <form class="cb-card" method="post" action="<?= $esc($module_link) ?>" style="padding:14px 16px; display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
+    <input type="hidden" name="action" value="config-apply">
+    <input type="hidden" name="id" value="<?= (int) ($report['profile_id'] ?? 0) ?>">
+    <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
+    <strong>Apply to product</strong>
+    <select name="product_id" required style="padding:7px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel); font:inherit; font-size:13px;">
+      <?php foreach ($cb_mapped as $cb_mp): ?>
+        <option value="<?= (int) $cb_mp['id'] ?>"><?= $esc($cb_mp['name']) ?> (#<?= (int) $cb_mp['id'] ?>)</option>
+      <?php endforeach; ?>
+    </select>
+    <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
+      <input type="checkbox" name="confirm" value="1" required>
+      I understand this writes these options &amp; pricing to the live product
+    </label>
+    <button type="submit" class="cb-btn">Apply</button>
+    <span class="muted" style="font-size:12px;">Idempotent &amp; ownership-scoped — re-applying makes no duplicates. Base currency only.</span>
+  </form>
+<?php endif; ?>

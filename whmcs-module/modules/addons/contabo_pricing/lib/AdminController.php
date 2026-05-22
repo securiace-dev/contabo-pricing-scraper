@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.4.5';
+    public const VERSION = '0.4.6';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -40,6 +40,7 @@ class AdminController
             case 'profile-toggle':   $this->profileToggle($req); return;
             case 'profile-diff':     $this->profileDiff($req); return;
             case 'config-preview':   $this->configPreview($req); return;
+            case 'config-apply':     $this->configApply($req); return;
             case 'mappings':         $this->mappings($req); return;
             case 'mapping-save':     $this->mappingSave($req); return;
             case 'sync-history':     $this->syncHistory(); return;
@@ -750,8 +751,120 @@ class AdminController
             'markup_value'  => $markupValue,
             'landed_mult'   => $multiplier,
             'api_error'     => $apiError,
+            'mapped_products' => $this->mappedProductsForProfile($id),
             'flash'         => (string) ($req['flash'] ?? ''),
         ]);
+    }
+
+    /**
+     * The WHMCS products this profile is actively mapped to, with names. Used to
+     * pick an apply target on the preview screen.
+     *
+     * @return list<array{id:int,name:string}>
+     */
+    private function mappedProductsForProfile(int $profileId): array
+    {
+        $out = [];
+        $rows = Capsule::table('mod_contabo_mapping')
+            ->where('profile_id', $profileId)
+            ->where('active', 1)
+            ->get(['product_id']);
+        foreach ($rows as $r) {
+            $pid = (int) (is_object($r) ? $r->product_id : $r['product_id']);
+            $p = Capsule::table('tblproducts')->where('id', $pid)->first();
+            $name = $p !== null ? (string) (is_object($p) ? $p->name : $p['name']) : ('Product #' . $pid);
+            $out[] = ['id' => $pid, 'name' => $name];
+        }
+        return $out;
+    }
+
+    /**
+     * A.6.3 — APPLY: write a profile's configurable options to a mapped WHMCS
+     * product. POST-only, CSRF-protected, requires an explicit confirmation +
+     * a product the profile is actually mapped to. Idempotent + ownership-scoped
+     * via ConfigOptionLinkRepository. Base-currency only.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function configApply(array $req): void
+    {
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        $id        = (int) ($req['id'] ?? 0);
+        $productId = (int) ($req['product_id'] ?? 0);
+        $confirmed = !empty($req['confirm']);
+
+        $pm = new ProfileManager($this->settings);
+        $profile = $pm->find($id);
+        if ($profile === null) {
+            $this->redirect('profiles', ['flash' => 'Profile not found.']);
+            return;
+        }
+        if (!$confirmed) {
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Apply cancelled — you must tick the confirmation box.']);
+            return;
+        }
+        // The product must be one this profile is actively mapped to.
+        $mapped = Capsule::table('mod_contabo_mapping')
+            ->where('profile_id', $id)->where('product_id', $productId)->first();
+        if ($productId <= 0 || $mapped === null) {
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Choose a WHMCS product this profile is mapped to (map one on the Mappings page first).']);
+            return;
+        }
+        $version = $pm->latestVersion($id);
+        if ($version === null) {
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'No version to apply — run a sync first.']);
+            return;
+        }
+
+        $planSlug = (string) ($profile['plan_slug'] ?? '');
+        try {
+            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
+            $parsed = DimensionParser::parse($optionsMap);
+            $specs  = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
+        } catch (\Throwable $e) {
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Cannot apply — API error loading options: ' . $e->getMessage()]);
+            return;
+        }
+        if ($specs === []) {
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Nothing to apply — the plan has no configurable options.']);
+            return;
+        }
+
+        $baseEur    = (float) ($version['base_monthly_eur'] ?? 0.0);
+        $multiplier = $baseEur > 0.0 ? ((float) ($version['final_monthly'] ?? 0.0)) / $baseEur : 0.0;
+        $ctx = new ConfigOptionPricingContext(
+            WhmcsConfigOptionsAdapter::INR_CURRENCY_ID,
+            $multiplier,
+            (string) ($version['markup_strategy'] ?? 'cost_plus_pct'),
+            (float) ($version['markup_value'] ?? 0.0),
+            'exact_2_decimals'
+        );
+
+        $adapter = new WhmcsConfigOptionsAdapter(false); // real write
+        $audit   = new OptionAuditLog($adapter->syncBatchId());
+        $syncer  = new ConfigurableOptionsSyncer($adapter, $audit, new ConfigOptionLinkRepository());
+
+        try {
+            $r = $syncer->apply($id, $productId, 'contabo-' . $planSlug, 'Contabo ' . $planSlug, $specs, $ctx);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing config-apply error (profile #' . $id . '): ' . $e->getMessage());
+            }
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Apply failed: ' . $e->getMessage()]);
+            return;
+        }
+
+        $s = $r['summary'];
+        $msg = sprintf(
+            'Applied to product #%d — %d created, %d updated, %d unchanged, %d skipped (%d options, %d values).',
+            $productId,
+            (int) $s['created'], (int) $s['updated'], (int) $s['noop'], (int) $s['skipped'],
+            (int) $r['options'], (int) $r['values']
+        );
+        $this->redirect('config-preview', ['id' => $id, 'flash' => $msg]);
     }
 
     private function mappings(array $req): void

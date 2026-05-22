@@ -19,13 +19,25 @@ const RECON_PATH    = path.join(OUTPUT_DIR, 'contabo_consistency_report.json');
 
 const round2 = (x) => Math.round((Number(x) + Number.EPSILON) * 100) / 100;
 
-// Indicative INR display only (report.html). 3.5% card forex markup ×1.18 GST
-// + typical bank padding ≈ 5.4% effective over mid-market. Applied silently in
-// the browser; never labelled, never written to JSON/CSV/PRICES.md.
-const INR_MARKUP = 0.054;
+// Pricing model:
+//   Contabo lists prices in EUR excluding VAT/GST.
+//   For Indian buyers Contabo charges 18% GST on the EUR amount.
+//   Card networks apply a forex markup (~3.5% default) on top of the mid-market
+//   EUR→INR rate. GST and FX markup are *user-controllable* in the report UI
+//   (defaults below); they are never baked into the JSON/CSV/PRICES.md.
+const PRICES_INCLUDE_GST  = false;
+const GST_RATE            = 0.18;   // India GST on hosting
+const FX_MARKUP_DEFAULT   = 0.035;  // typical card forex markup
 
 async function fetchFx() {
-  const fx = { eurInr: null, at: null, source: 'frankfurter.app', markup: INR_MARKUP };
+  const fx = {
+    eurInr: null,
+    at: null,
+    source: 'frankfurter.app (ECB mid-market)',
+    pricesIncludeGST: PRICES_INCLUDE_GST,
+    gstRate: GST_RATE,
+    fxMarkupDefault: FX_MARKUP_DEFAULT,
+  };
   try {
     const ac = new AbortController();
     const to = setTimeout(() => ac.abort(), 4000);
@@ -34,7 +46,11 @@ async function fetchFx() {
     if (res.ok) {
       const j = await res.json();
       const rt = j && j.rates && j.rates.INR;
-      if (typeof rt === 'number' && rt > 0) { fx.eurInr = rt; fx.at = new Date().toISOString(); }
+      if (typeof rt === 'number' && rt > 0) {
+        fx.eurInr = rt;
+        fx.at = new Date().toISOString();
+        fx.rateDate = j.date || null; // ECB publication date
+      }
     }
   } catch { /* non-fatal: offline/firewalled CI — the browser retries live, else INR is omitted */ }
   return fx;
@@ -70,10 +86,6 @@ if (fs.existsSync(CONFIGS_PATH)) {
 }
 
 // ── Calculator model: slug → { controls[], defaultMonthlyByPeriod, … } ────────
-// Controls are derived from each plan's OWN option dimensions. Image is split by
-// category into independent controls (OS/Apps/Panels/Blockchain); Networking is
-// split per category (grouped_single). Default per control = the is_default
-// option; else a synthetic "None" (optional) else the cheapest.
 const NETWORK_CATS = ['Bandwidth', 'IPv4', 'Private Networking'];
 const IMAGE_CATS   = ['OS', 'Apps', 'Panels', 'Blockchain'];
 const IMAGE_LABEL  = { OS: 'OS', Apps: 'App', Panels: 'Control Panel', Blockchain: 'Blockchain' };
@@ -209,8 +221,6 @@ if (dataset && Array.isArray(dataset.plans)) {
   }
 }
 // ── Reconcile the scraper's own default-config arithmetic ────────────────────
-// effective_monthly + Σ(is_default option deltas) must equal the scraper's
-// default_monthly_by_period (same for setup). Independent of the UI Image split.
 let defaultChecks = 0;
 if (configsRoot) {
   for (const r of rows) {
@@ -263,7 +273,7 @@ if (configsRoot) {
   payload.planConfig     = planConfig;
   payload.dimensionSchema = vm.dimension_schema || null;
 } else {
-  payload.planAddons = planAddons;   // fallback: static tag list, no calculator
+  payload.planAddons = planAddons;
 }
 ;(async () => {
 payload.fx = await fetchFx();
@@ -276,184 +286,363 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Contabo Pricing — Interactive</title>
+<meta name="color-scheme" content="dark light">
+<title>Contabo Pricing — Interactive Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0d1117;--panel:#161b22;--panel2:#1c2230;--border:#30363d;
-    --fg:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--good:#3fb950;--bad:#f85149;
-    --chip:#21262d;--row-hover:#1b2330;
+    --bg:#0b0d10;--bg-elev:#11141a;--panel:#161a22;--panel2:#1d222c;
+    --border:#262d3a;--border-soft:#1f2530;
+    --fg:#e8edf3;--fg-strong:#ffffff;--muted:#8b95a7;--muted-soft:#5b6478;
+    --accent:#f0a91a;--accent-soft:rgba(240,169,26,.14);
+    --accent2:#2dd4bf;--good:#34d399;--bad:#f87171;--warn:#fbbf24;
+    --chip:#1a1f29;--row-hover:#181d27;
+    --price:#ffd57a;
+    --shadow-lg:0 20px 40px -16px rgba(0,0,0,.6),0 6px 20px -8px rgba(0,0,0,.4);
+    --radius:10px;--radius-sm:6px;
   }
   html[data-theme=light]{
-    --bg:#ffffff;--panel:#f6f8fa;--panel2:#eef1f5;--border:#d0d7de;
-    --fg:#1f2328;--muted:#636c76;--accent:#0969da;--good:#1a7f37;--bad:#cf222e;
-    --chip:#eaeef2;--row-hover:#f0f3f6;
+    --bg:#faf7f1;--bg-elev:#fefcf7;--panel:#fffaf1;--panel2:#f5efe2;
+    --border:#e6dfd0;--border-soft:#efe9d9;
+    --fg:#1a1d24;--fg-strong:#000;--muted:#5c6373;--muted-soft:#8b91a0;
+    --accent:#b45309;--accent-soft:rgba(180,83,9,.10);
+    --accent2:#0d9488;--good:#15803d;--bad:#b91c1c;--warn:#a16207;
+    --chip:#f0e9d8;--row-hover:#f5efe2;
+    --price:#b45309;
+    --shadow-lg:0 14px 30px -16px rgba(63,42,0,.18),0 4px 12px -6px rgba(63,42,0,.08);
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--fg);
-    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--fg);
+    font:14px/1.55 "IBM Plex Sans","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+    font-feature-settings:"cv11","ss01","ss02";
+    background-image:radial-gradient(800px 400px at 80% -10%,var(--accent-soft),transparent 70%);}
+  html[data-theme=light] body{background-image:radial-gradient(900px 500px at 90% -20%,var(--accent-soft),transparent 70%);}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}
-  header{padding:20px 24px;border-bottom:1px solid var(--border);
-    display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline}
-  header h1{font-size:20px;margin:0}
-  header .sub{color:var(--muted);font-size:12px}
-  header .spacer{flex:1}
-  .toolbar{padding:14px 24px;display:flex;flex-wrap:wrap;gap:10px 18px;
-    align-items:center;border-bottom:1px solid var(--border);
-    position:sticky;top:0;background:var(--bg);z-index:5}
-  .pills{display:flex;gap:6px;flex-wrap:wrap}
+  button{font:inherit}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  /* ── Header ─────────────────────────────────────────────────────────────── */
+  header.app{padding:22px 28px 18px;display:grid;
+    grid-template-columns:auto 1fr auto;gap:16px;align-items:center;
+    border-bottom:1px solid var(--border-soft)}
+  .brand{display:flex;align-items:baseline;gap:12px}
+  .brand .logo{font-family:"Instrument Serif",Georgia,serif;font-size:30px;
+    line-height:1;color:var(--fg-strong);letter-spacing:-.01em}
+  .brand .logo .dot{color:var(--accent)}
+  .brand .sub{color:var(--muted);font-size:11.5px;letter-spacing:.04em;
+    text-transform:uppercase}
+  .head-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+    justify-content:flex-end}
+  .badge{font-size:11px;color:var(--muted);background:var(--panel);
+    border:1px solid var(--border);border-radius:999px;padding:4px 10px;
+    display:inline-flex;gap:6px;align-items:center;line-height:1}
+  .badge .dot-i{width:6px;height:6px;border-radius:50%;display:inline-block}
+  .badge.ok .dot-i{background:var(--good)}
+  .badge.warn .dot-i{background:var(--warn)}
+  .badge.bad .dot-i{background:var(--bad)}
+  .badge strong{color:var(--fg);font-weight:500}
+  .iconbtn{background:var(--panel);border:1px solid var(--border);
+    color:var(--fg);border-radius:var(--radius-sm);padding:6px 10px;
+    cursor:pointer;font-size:12px}
+  .iconbtn:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ── Hero strip ─────────────────────────────────────────────────────────── */
+  .hero{padding:14px 28px 18px;border-bottom:1px solid var(--border-soft);
+    display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
+  .hero h2{margin:0;font-size:13px;color:var(--muted);font-weight:500;
+    letter-spacing:.05em;text-transform:uppercase}
+  .hero .pill-row{display:flex;gap:6px;flex-wrap:wrap}
+  .hero-card{background:var(--panel);border:1px solid var(--border);
+    border-radius:var(--radius-sm);padding:8px 14px;display:flex;gap:10px;
+    align-items:baseline}
+  .hero-card .lbl{font-size:11px;color:var(--muted);letter-spacing:.03em;
+    text-transform:uppercase}
+  .hero-card .v{font-family:"IBM Plex Mono",monospace;font-size:14px;
+    font-weight:600;color:var(--price);font-variant-numeric:tabular-nums}
+  .hero-card .nm{font-size:12px;color:var(--fg)}
+
+  /* ── Toolbar ───────────────────────────────────────────────────────────── */
+  .toolbar{padding:14px 28px;display:flex;flex-wrap:wrap;gap:14px 22px;
+    align-items:center;border-bottom:1px solid var(--border-soft);
+    position:sticky;top:0;background:var(--bg);z-index:8;backdrop-filter:blur(8px)}
+  .tb-group{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .tb-group .glabel{font-size:10.5px;color:var(--muted-soft);
+    text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-right:2px}
   .pill{padding:5px 12px;border:1px solid var(--border);border-radius:999px;
-    background:var(--chip);color:var(--fg);cursor:pointer;font-size:12px}
-  .pill[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
-  .toolbar label{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
-  .toolbar input[type=text],.toolbar input[type=number]{
-    background:var(--panel);border:1px solid var(--border);color:var(--fg);
-    border-radius:6px;padding:5px 8px;font-size:12px;width:90px}
-  .toolbar input[type=text]{width:170px}
-  .btn{background:var(--panel);border:1px solid var(--border);color:var(--fg);
-    border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer}
-  .btn:hover{border-color:var(--accent)}
-  .wrap{overflow-x:auto;padding:0 0 140px}
-  table{border-collapse:collapse;width:100%;min-width:760px}
-  thead th{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--border);
-    padding:9px 12px;text-align:right;font-size:12px;white-space:nowrap;cursor:pointer;
-    user-select:none}
-  thead th.l{text-align:left}
-  thead th:hover{color:var(--accent)}
-  thead th .arr{color:var(--accent);font-size:10px}
-  tbody td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--border);
-    white-space:nowrap}
-  tbody td.l{text-align:left}
-  tbody tr{cursor:pointer}
-  tbody tr:hover{background:var(--row-hover)}
-  tbody tr.hidden-period{opacity:.55}
-  .plan-cell{position:sticky;left:0;background:var(--bg);font-weight:600}
-  tbody tr:hover .plan-cell{background:var(--row-hover)}
-  .fam{display:inline-block;font-size:11px;color:var(--muted)}
-  .save{color:var(--good);font-weight:600}
+    background:var(--chip);color:var(--fg);cursor:pointer;font-size:12px;
+    transition:all .15s ease}
+  .pill:hover{border-color:var(--accent)}
+  .pill[aria-pressed=true]{background:var(--accent);border-color:var(--accent);
+    color:#0b0d10}
+  html[data-theme=light] .pill[aria-pressed=true]{color:#fff}
+  .seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;
+    overflow:hidden;background:var(--panel)}
+  .seg button{background:transparent;color:var(--muted);border:0;padding:6px 12px;
+    font-size:12px;cursor:pointer;transition:all .15s ease;font-weight:500}
+  .seg button+button{border-left:1px solid var(--border)}
+  .seg button:hover{color:var(--fg)}
+  .seg button[aria-pressed=true]{background:var(--accent);color:#0b0d10}
+  html[data-theme=light] .seg button[aria-pressed=true]{color:#fff}
+  .check{display:inline-flex;gap:7px;align-items:center;font-size:12px;
+    color:var(--fg);cursor:pointer;user-select:none;padding:5px 10px;
+    border:1px solid var(--border);border-radius:8px;background:var(--panel);
+    transition:all .15s ease}
+  .check:hover{border-color:var(--accent)}
+  .check input{accent-color:var(--accent);margin:0}
+  .check .pct{color:var(--accent);font-weight:600;margin-left:2px}
+  .field{display:inline-flex;gap:6px;align-items:center;font-size:11.5px;
+    color:var(--muted)}
+  .field input{background:var(--panel);border:1px solid var(--border);
+    color:var(--fg);border-radius:var(--radius-sm);padding:5px 8px;
+    font-size:12px;font-family:inherit;width:70px}
+  .field input[type=text]{width:180px}
+  .field input:focus{outline:none;border-color:var(--accent)}
+  .toolbar .spacer{flex:1}
+  .count{font-size:12px;color:var(--muted)}
+
+  /* ── Table ─────────────────────────────────────────────────────────────── */
+  .wrap{padding:0 0 160px}
+  @media (max-width:900px){ .wrap{overflow-x:auto} }
+  table.grid{border-collapse:separate;border-spacing:0;width:100%;min-width:900px}
+  table.grid thead th{position:sticky;top:var(--thead-top,0);background:var(--bg);
+    border-bottom:1px solid var(--border);padding:11px 14px;text-align:right;
+    font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;
+    font-weight:600;white-space:nowrap;cursor:pointer;user-select:none;z-index:4}
+  table.grid thead th.l{text-align:left}
+  table.grid thead th:hover{color:var(--accent)}
+  table.grid thead th .arr{color:var(--accent);font-size:9px;margin-left:3px}
+  table.grid tbody td{padding:12px 14px;text-align:right;
+    border-bottom:1px solid var(--border-soft);white-space:nowrap;
+    font-variant-numeric:tabular-nums}
+  table.grid tbody td.l{text-align:left}
+  table.grid tbody tr{cursor:pointer;transition:background .12s ease}
+  table.grid tbody tr:hover{background:var(--row-hover)}
+  .plan-cell{position:sticky;left:0;background:var(--bg);font-weight:600;z-index:3}
+  table.grid tbody tr:hover .plan-cell{background:var(--row-hover)}
+  .plan-cell .pn{color:var(--fg-strong);font-size:13.5px}
+  .plan-cell .fm{display:block;font-size:10.5px;color:var(--muted);
+    font-weight:400;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+  .price{font-family:"IBM Plex Mono",monospace;font-weight:500}
+  .price.best{color:var(--price);font-weight:600}
+  .save{color:var(--good);font-weight:600;font-size:12.5px}
+  .save .bar{display:inline-block;width:24px;height:3px;border-radius:2px;
+    background:var(--good);vertical-align:middle;margin-right:5px;opacity:.7}
   .muted{color:var(--muted)}
-  .badge{font-size:10px;color:var(--muted);border:1px solid var(--border);
-    border-radius:4px;padding:1px 5px;margin-left:6px}
-  .empty{padding:40px;text-align:center;color:var(--muted)}
+  .inr{color:var(--muted);font-size:.85em;display:block;margin-top:2px;
+    font-family:"IBM Plex Mono",monospace}
+  .empty{padding:60px;text-align:center;color:var(--muted)}
+  .gst-mark{color:var(--warn);font-size:9.5px;margin-left:4px;font-weight:600;
+    letter-spacing:.04em;vertical-align:super}
+
   /* compare drawer */
   #drawer{position:fixed;left:0;right:0;bottom:0;background:var(--panel);
-    border-top:2px solid var(--accent);max-height:46vh;overflow:auto;
-    transform:translateY(105%);transition:transform .2s;z-index:20;padding:14px 24px}
+    border-top:2px solid var(--accent);max-height:50vh;overflow:auto;
+    transform:translateY(105%);transition:transform .25s cubic-bezier(.2,.8,.2,1);
+    z-index:20;padding:18px 28px;box-shadow:var(--shadow-lg)}
   #drawer.open{transform:translateY(0)}
-  #drawer h3{margin:0 0 10px;font-size:14px}
-  #drawer .close{float:right}
-  .cmp{border-collapse:collapse;width:100%;min-width:480px}
-  .cmp th,.cmp td{padding:7px 12px;border-bottom:1px solid var(--border);
-    text-align:right;white-space:nowrap}
-  .cmp th.l,.cmp td.l{text-align:left;color:var(--muted)}
-  .cmp .delta{font-size:11px;margin-left:6px}
+  #drawer .head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  #drawer h3{margin:0;font-size:15px;font-weight:600}
+  .cmp{border-collapse:collapse;width:100%;min-width:520px}
+  .cmp th,.cmp td{padding:8px 14px;border-bottom:1px solid var(--border-soft);
+    text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .cmp th.l,.cmp td.l{text-align:left;color:var(--muted);font-weight:500}
+  .cmp .delta{font-size:11px;margin-left:6px;font-family:"IBM Plex Mono",monospace}
   .delta.up{color:var(--bad)}.delta.down{color:var(--good)}
+  .cmp th{font-weight:600;color:var(--fg-strong)}
+
   /* detail modal */
-  #modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;
-    align-items:flex-start;justify-content:center;z-index:30;padding:40px 16px;overflow:auto}
+  #modal{position:fixed;inset:0;background:rgba(8,10,14,.6);display:none;
+    align-items:flex-start;justify-content:center;z-index:30;padding:48px 20px;
+    overflow:auto;backdrop-filter:blur(4px)}
   #modal.open{display:flex}
-  .sheet{background:var(--panel);border:1px solid var(--border);border-radius:10px;
-    max-width:760px;width:100%;padding:22px 26px}
-  .sheet h2{margin:0 0 4px;font-size:18px}
-  .sheet .specs{color:var(--muted);font-size:13px;margin-bottom:16px}
-  .sheet h4{margin:18px 0 6px;font-size:13px;text-transform:uppercase;
-    letter-spacing:.5px;color:var(--muted)}
-  .sheet table{min-width:auto;margin:6px 0}
-  .sheet td,.sheet th{padding:6px 10px;font-size:13px}
-  .sheet .close{float:right}
-  .pp{font-size:13px;margin:3px 0}
-  .pp b{color:var(--fg)}
+  .sheet{background:var(--panel);border:1px solid var(--border);
+    border-radius:14px;max-width:820px;width:100%;padding:28px 32px;
+    box-shadow:var(--shadow-lg)}
+  .sheet .top{display:flex;justify-content:space-between;align-items:flex-start;
+    gap:12px;margin-bottom:14px}
+  .sheet h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em}
+  .sheet h2 a{color:var(--fg-strong);border-bottom:1px solid transparent;
+    transition:border-color .15s}
+  .sheet h2 a:hover{border-color:var(--accent);text-decoration:none}
+  .sheet .specs{color:var(--muted);font-size:13px;margin:2px 0 18px;
+    font-family:"IBM Plex Mono",monospace}
+  .sheet .specs b{color:var(--fg);font-weight:500}
+  .sheet h4{margin:22px 0 8px;font-size:11px;text-transform:uppercase;
+    letter-spacing:.08em;color:var(--muted);font-weight:600}
+  .sheet table{min-width:auto;margin:6px 0;width:100%;border-collapse:collapse}
+  .sheet td,.sheet th{padding:8px 12px;font-size:13px;text-align:right;
+    border-bottom:1px solid var(--border-soft);font-variant-numeric:tabular-nums}
+  .sheet th.l,.sheet td.l{text-align:left;color:var(--muted);font-weight:500}
+  .sheet th{font-weight:600;color:var(--fg-strong)}
+  .pp{font-size:13px;margin:4px 0;line-height:1.7}
+  .pp b{color:var(--fg);font-weight:600;margin-right:4px}
   .tag{display:inline-block;background:var(--chip);border:1px solid var(--border);
-    border-radius:4px;padding:1px 6px;font-size:11px;margin:2px 4px 2px 0}
-  .tag.def{border-color:var(--good);color:var(--good)}
-  .tag.paid{border-color:var(--accent)}
-  code{background:var(--chip);padding:1px 5px;border-radius:4px;font-size:12px}
-  .inr{color:var(--muted);font-size:.86em;white-space:nowrap}
-  .curtog{display:inline-flex;border:1px solid var(--border);border-radius:6px;
-    overflow:hidden}
-  .curtog button{background:var(--panel);color:var(--muted);border:0;
-    padding:5px 10px;font-size:12px;cursor:pointer}
-  .curtog button+button{border-left:1px solid var(--border)}
-  .curtog button[aria-pressed=true]{background:var(--accent);color:#fff}
+    border-radius:6px;padding:2px 8px;font-size:11.5px;margin:2px 4px 2px 0;
+    transition:all .12s}
+  .tag.def{border-color:var(--good);color:var(--good);background:rgba(52,211,153,.08)}
+  .tag.paid{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .tag code{background:transparent;color:inherit;padding:0;margin-left:4px;
+    font-family:"IBM Plex Mono",monospace;font-size:11px}
+  code{background:var(--chip);padding:2px 6px;border-radius:4px;
+    font-family:"IBM Plex Mono",monospace;font-size:12px}
+
   /* configurator */
-  .cfg-grid{display:grid;grid-template-columns:120px 1fr;gap:8px 12px;
+  .cfg-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;
+    margin:10px 0 14px}
+  .cfg-bar select,.cfg-grid select{background:var(--panel2);color:var(--fg);
+    border:1px solid var(--border);border-radius:var(--radius-sm);
+    padding:6px 10px;font:inherit;font-size:13px}
+  .cfg-grid{display:grid;grid-template-columns:130px 1fr;gap:8px 14px;
     align-items:center;margin:8px 0 4px}
   .cfg-grid label{color:var(--muted);font-size:12px;text-align:right}
-  .cfg-grid select{width:100%;background:var(--panel2);color:var(--fg);
-    border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:13px}
-  .cfg-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:10px 0}
-  .cfg-bar select{background:var(--panel2);color:var(--fg);border:1px solid var(--border);
-    border-radius:6px;padding:5px 8px;font-size:13px}
-  .osum{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
-  .osum .ln{display:flex;justify-content:space-between;font-size:13px;padding:2px 0}
-  .osum .ln.muted{color:var(--muted)}
+  .cfg-grid select{width:100%}
+  .osum{margin-top:16px;border-top:1px solid var(--border);padding-top:14px}
+  .osum .ln{display:flex;justify-content:space-between;font-size:13px;
+    padding:4px 0;align-items:baseline;gap:12px}
+  .osum .ln.muted{color:var(--muted);font-size:12px}
   .osum .ln.tot{font-weight:700;font-size:15px;border-top:1px solid var(--border);
-    margin-top:6px;padding-top:6px}
-  .osum .ln.tot .v{color:var(--accent)}
-  .osum .chg .v{color:var(--good)}
+    margin-top:8px;padding-top:8px}
+  .osum .ln.tot .v{color:var(--price);font-family:"IBM Plex Mono",monospace;
+    font-size:18px}
+  .osum .chg .v{color:var(--good);font-family:"IBM Plex Mono",monospace}
   .osum .chg.up .v{color:var(--bad)}
-  .osum .sel{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
-  @media (max-width:560px){ .cfg-grid{grid-template-columns:1fr}
-    .cfg-grid label{text-align:left} }
-  footer{padding:18px 24px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+  .osum .sel{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.65;
+    padding:8px 10px;background:var(--bg-elev);border-radius:var(--radius-sm)}
+  .osum .sel b{color:var(--fg)}
+  .breakdown{font-size:11px;color:var(--muted);margin-top:4px;
+    font-family:"IBM Plex Mono",monospace}
+
+  /* footer */
+  footer{padding:22px 28px;color:var(--muted);font-size:12px;
+    border-top:1px solid var(--border-soft);line-height:1.65}
+  footer .row{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
+  .kbd{display:inline-block;padding:1px 6px;background:var(--chip);
+    border:1px solid var(--border);border-radius:4px;font-size:10.5px;
+    font-family:"IBM Plex Mono",monospace}
+
+  /* mobile */
+  @media (max-width:760px){
+    header.app{padding:14px 18px;grid-template-columns:1fr;gap:8px}
+    .hero,.toolbar,.wrap,footer{padding-left:18px;padding-right:18px}
+    .head-meta{justify-content:flex-start}
+    .toolbar{top:0;gap:10px 14px}
+    table.grid thead th{padding:9px 10px;font-size:10px;top:0}
+    table.grid tbody td{padding:10px 10px;font-size:13px}
+    .sheet{padding:20px}
+    .cfg-grid{grid-template-columns:1fr}
+    .cfg-grid label{text-align:left}
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Contabo Pricing</h1>
-  <span class="sub">canonical view model · generated ${genAt || 'n/a'}</span>
-  <span class="spacer"></span>
-  <span class="sub" id="reconBadge"></span>
-  <span class="curtog" id="curTog" role="group" aria-label="Currency">
-    <button data-cur="EUR">EUR</button>
-    <button data-cur="INR">INR</button>
-    <button data-cur="BOTH">Both</button>
-  </span>
-  <button class="btn" id="themeBtn">◐ Theme</button>
+<header class="app">
+  <div class="brand">
+    <div class="logo">Contabo<span class="dot">.</span></div>
+    <div class="sub">Pricing Report · ${(genAt || '').slice(0,10)}</div>
+  </div>
+  <div></div>
+  <div class="head-meta">
+    <span class="badge" id="reconBadge"></span>
+    <span class="badge" id="fxBadge" title="EUR→INR live rate"></span>
+    <button class="iconbtn" id="themeBtn" aria-label="Toggle theme">◐</button>
+  </div>
 </header>
 
-<div class="toolbar">
-  <div class="pills" id="famPills"></div>
-  <label>Period
-    <select id="periodSel" class="btn">
-      <option value="all">All</option>
-      <option value="1">1 mo</option>
-      <option value="6" selected>6 mo</option>
-      <option value="12">12 mo</option>
-    </select>
-  </label>
-  <label><input type="checkbox" id="showHidden"> show hidden (3 mo)</label>
-  <label>min vCPU <input type="number" id="minCpu" min="0" step="1"></label>
-  <label>min RAM <input type="number" id="minRam" min="0" step="1"></label>
-  <label><input type="text" id="search" placeholder="search plan…"></label>
+<section class="hero" id="hero" aria-label="Best monthly prices per family">
+  <h2>Best 12-mo</h2>
+  <div class="pill-row" id="bestRow"></div>
+</section>
+
+<div class="toolbar" role="toolbar" aria-label="Filters and display options">
+  <div class="tb-group">
+    <span class="glabel">Family</span>
+    <div class="pill-row" id="famPills"></div>
+  </div>
+  <div class="tb-group">
+    <span class="glabel">Currency</span>
+    <span class="seg" id="curTog" role="group" aria-label="Currency">
+      <button data-cur="EUR" aria-pressed="false">EUR</button>
+      <button data-cur="INR" aria-pressed="false">INR</button>
+      <button data-cur="BOTH" aria-pressed="true">Both</button>
+    </span>
+  </div>
+  <div class="tb-group" id="gstGroup">
+    <span class="glabel">India</span>
+    <label class="check" title="Add 18% GST charged by Contabo on Indian invoices">
+      <input type="checkbox" id="gstToggle">
+      <span>GST <span class="pct">+18%</span></span>
+    </label>
+    <label class="field" title="Card forex markup applied on top of mid-market rate">
+      FX markup
+      <input type="number" id="fxMarkup" min="0" max="15" step="0.1" value="3.5"> %
+    </label>
+  </div>
+  <div class="tb-group">
+    <span class="glabel">Period</span>
+    <span class="seg" id="periodTog" role="group" aria-label="Period">
+      <button data-period="1" aria-pressed="false">1 mo</button>
+      <button data-period="6" aria-pressed="true">6 mo</button>
+      <button data-period="12" aria-pressed="false">12 mo</button>
+      <button data-period="all" aria-pressed="false">All</button>
+    </span>
+    <label class="check" title="Reveal 3-month tier that is hidden from Contabo's UI">
+      <input type="checkbox" id="showHidden"> 3 mo
+    </label>
+  </div>
+  <div class="tb-group">
+    <span class="glabel">Filter</span>
+    <label class="field">vCPU ≥ <input type="number" id="minCpu" min="0" step="1" placeholder="0"></label>
+    <label class="field">RAM ≥ <input type="number" id="minRam" min="0" step="1" placeholder="0"></label>
+    <label class="field"><input type="text" id="search" placeholder="search plan…"></label>
+  </div>
   <span class="spacer"></span>
-  <span class="sub" id="count"></span>
+  <span class="count" id="count"></span>
 </div>
 
 <div class="wrap">
-  <table id="grid">
+  <table class="grid" id="grid">
     <thead><tr id="head"></tr></thead>
     <tbody id="body"></tbody>
   </table>
   <div class="empty" id="empty" style="display:none">No plans match the current filters.</div>
 </div>
 
-<div id="drawer">
-  <button class="btn close" onclick="clearCompare()">Clear ✕</button>
-  <h3 id="cmpTitle">Compare</h3>
+<div id="drawer" aria-label="Plan comparison">
+  <div class="head">
+    <h3 id="cmpTitle">Compare</h3>
+    <span class="spacer" style="flex:1"></span>
+    <button class="iconbtn" onclick="clearCompare()">Clear ✕</button>
+  </div>
   <div style="overflow-x:auto"><table class="cmp" id="cmpTable"></table></div>
 </div>
 
-<div id="modal" onclick="if(event.target===this)closeModal()">
+<div id="modal" onclick="if(event.target===this)closeModal()" role="dialog" aria-modal="true">
   <div class="sheet" id="sheet"></div>
 </div>
 
 <footer>
-  Prices in EUR, excl. VAT. Base prices at EU region, Ubuntu OS, 1 IP.
-  Source: <a href="https://contabo.com" rel="noopener">contabo.com</a> ·
-  Also see <a href="PRICES.md">PRICES.md</a> ·
-  Generated by contabo-pricing-scraper.
-  <span id="inrNote" hidden> · INR figures are indicative estimates.</span>
+  <div class="row">
+    <span>Prices in EUR, listed by Contabo <b>excl. VAT/GST</b>. Base config: EU region, Ubuntu OS, 1 IPv4.</span>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <span>Source: <a href="https://contabo.com" rel="noopener">contabo.com</a></span>
+    <span>·</span>
+    <span>Also see <a href="PRICES.md">PRICES.md</a></span>
+    <span>·</span>
+    <span id="fxLine"></span>
+    <span>·</span>
+    <span>Keys: <span class="kbd">/</span> search, <span class="kbd">G</span> GST, <span class="kbd">T</span> theme, <span class="kbd">Esc</span> close</span>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <span class="muted" id="gstNote" hidden>GST 18% applied — Contabo charges this on Indian invoices.</span>
+    <span class="muted" id="inrNote" hidden>INR figures are indicative estimates (live ECB mid-market + your forex markup).</span>
+  </div>
 </footer>
 
 <script type="application/json" id="contabo-data">
@@ -466,6 +655,9 @@ const ROWS = DATA.rows;
 const ADDONS = DATA.planAddons || {};
 const CFG = DATA.planConfig || {};
 const FAMILIES = [...new Set(ROWS.map(r => r.family))];
+const FX_META = DATA.fx || {};
+const PRICES_INCLUDE_GST = !!FX_META.pricesIncludeGST;
+const GST_RATE = Number(FX_META.gstRate || 0.18);
 
 // Group rows → plans { slug -> {meta, periods:{m->row}} }
 const PLANS = {};
@@ -481,34 +673,62 @@ const PLAN_LIST = Object.values(PLANS);
 
 const lsGet=(k)=>{ try{ return localStorage.getItem(k); }catch{ return null; } };
 const lsSet=(k,v)=>{ try{ localStorage.setItem(k,v); }catch{} };
-const fmtEur = v => (v==null||v==='')?'—':'€'+Number(v).toFixed(2);
-const FX = { rate:(DATA.fx&&DATA.fx.eurInr)||null, markup:(DATA.fx&&DATA.fx.markup)||0 };
+
+let FX = {
+  rate: (FX_META && FX_META.eurInr) || null,
+  source: FX_META.source || '',
+  rateDate: FX_META.rateDate || null,
+  at: FX_META.at || null,
+  markup: Number(lsGet('contabo_fx_markup') ?? (FX_META.fxMarkupDefault ?? 0.035))
+};
+
+let state = {
+  fam:'All', period:(lsGet('contabo_period')||'6'), showHidden:false,
+  minCpu:0, minRam:0, q:'', sortKey:'frank', sortDir:1,
+  compare:new Set(),
+  cur:(lsGet('contabo_cur')||'BOTH'),
+  gst:(lsGet('contabo_gst')==='1') || (PRICES_INCLUDE_GST ? false : false),
+};
+
+// ── Money helpers ───────────────────────────────────────────────────────────
 const inrNF = new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
-const fmtInr = v => (!FX.rate||v==null||v==='')?'':'≈ '+inrNF.format(Math.round(Number(v)*FX.rate*(1+FX.markup)));
+const eurNF = new Intl.NumberFormat('en-US',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
+
+function gstMul(){ if(PRICES_INCLUDE_GST) return 1; return state.gst ? (1+GST_RATE) : 1; }
+function applyGst(v){ return v==null?v: Number(v) * gstMul(); }
+function fmtEur(v){
+  if(v==null||v==='') return '—';
+  return eurNF.format(applyGst(Number(v)));
+}
+function fmtInr(v){
+  if(!FX.rate || v==null || v==='') return '';
+  const e = applyGst(Number(v));
+  return inrNF.format(Math.round(e * FX.rate * (1 + (FX.markup||0))));
+}
 function money(v){
   if(v==null||v==='') return '—';
   const e=fmtEur(v);
   if(state.cur==='EUR') return e;
   const r=fmtInr(v);
   if(state.cur==='INR') return r||e;
-  return r ? e+' <span class="inr">'+r+'</span>' : e;
+  return r ? '<span class="price'+(state.gst?'':'')+'">'+e+'</span><span class="inr">≈ '+r+'</span>'
+           : '<span class="price">'+e+'</span>';
 }
-const eur = money;                       // all price call sites are now currency-aware
+const eur = money;
 const num = v => (v==null)?'—':v;
 const r2  = x => Math.round((Number(x)+Number.EPSILON)*100)/100;
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const sgn = v => (v<0?'−':'+')+'€'+Math.abs(v).toFixed(2);
+const sgn = v => {
+  const f = eurNF.format(Math.abs(applyGst(v)));
+  return (v<0?'−':'+') + f;
+};
 const savePct = p => {
   const a=p.periods[1]?.effective_monthly, b=p.periods[12]?.effective_monthly;
   if(!a||!b) return null;
   return Math.round((1-b/a)*100);
 };
 
-let state = { fam:'All', period:'6', showHidden:false, minCpu:0, minRam:0,
-  q:'', sortKey:'frank', sortDir:1, compare:new Set(),
-  cur:(lsGet('contabo_cur')||'BOTH') };
-
-// ── Family pills ──────────────────────────────────────────────────────────────
+// ── Family pills ────────────────────────────────────────────────────────────
 const famPills = document.getElementById('famPills');
 ['All',...FAMILIES].forEach(f=>{
   const b=document.createElement('button');
@@ -520,20 +740,48 @@ const famPills = document.getElementById('famPills');
   famPills.appendChild(b);
 });
 
-// ── Columns ───────────────────────────────────────────────────────────────────
+// ── Hero: best 12-mo per family ────────────────────────────────────────────
+function bestPerFamily(){
+  const by={};
+  for(const p of PLAN_LIST){
+    const m = p.periods[12]?.effective_monthly;
+    if(m==null) continue;
+    if(!by[p.family] || m < by[p.family].periods[12].effective_monthly) by[p.family]=p;
+  }
+  return by;
+}
+function renderHero(){
+  const bp = bestPerFamily();
+  document.getElementById('bestRow').innerHTML = FAMILIES.map(f=>{
+    const p = bp[f]; if(!p) return '';
+    const m = p.periods[12].effective_monthly;
+    return '<span class="hero-card" data-slug="'+p.slug+'">'+
+      '<span class="lbl">'+esc(f)+'</span>'+
+      '<span class="nm">'+esc(p.name)+'</span>'+
+      '<span class="v">'+fmtEur(m)+'/mo</span></span>';
+  }).join('');
+  document.querySelectorAll('#bestRow .hero-card').forEach(c=>{
+    c.style.cursor='pointer';
+    c.onclick=()=>openModal(c.dataset.slug);
+  });
+}
+
+// ── Columns ────────────────────────────────────────────────────────────────
 const COLS = [
-  {k:'name',  t:'Plan',    l:true, v:p=>p.name, sort:p=>p.frank},
-  {k:'family',t:'Family',  l:true, v:p=>'<span class="fam">'+p.family+'</span>', sort:p=>p.family},
+  {k:'name',  t:'Plan',    l:true, v:p=>'<span class="pn">'+esc(p.name)+'</span><span class="fm">'+esc(p.family)+'</span>', sort:p=>p.frank},
   {k:'cpu',   t:'vCPU',    v:p=>num(p.specs.cpu_count), sort:p=>p.specs.cpu_count||0},
   {k:'ram',   t:'RAM',     v:p=>num(p.specs.ram_gb)+' GB', sort:p=>p.specs.ram_gb||0},
-  {k:'stor',  t:'Storage', v:p=>num(p.specs.storage_primary_gb)+' GB '+(p.specs.storage_primary_type||''),
+  {k:'stor',  t:'Storage', v:p=>num(p.specs.storage_primary_gb)+' GB <span class="muted">'+(p.specs.storage_primary_type||'')+'</span>',
     sort:p=>p.specs.storage_primary_gb||0},
   {k:'port',  t:'Port',    v:p=>num(p.specs.port_speed_mbps)+' Mbps', sort:p=>p.specs.port_speed_mbps||0},
   {k:'p1',    t:'1 mo',    v:p=>eur(p.periods[1]?.effective_monthly), sort:p=>p.periods[1]?.effective_monthly??1e9},
   {k:'p3',    t:'3 mo',    hidden:true, v:p=>eur(p.periods[3]?.effective_monthly), sort:p=>p.periods[3]?.effective_monthly??1e9},
   {k:'p6',    t:'6 mo',    v:p=>eur(p.periods[6]?.effective_monthly), sort:p=>p.periods[6]?.effective_monthly??1e9},
-  {k:'p12',   t:'12 mo',   v:p=>'<b>'+eur(p.periods[12]?.effective_monthly)+'</b>', sort:p=>p.periods[12]?.effective_monthly??1e9},
-  {k:'save',  t:'Save',    v:p=>{const s=savePct(p);return s?'<span class="save">−'+s+'%</span>':'—';}, sort:p=>savePct(p)??-1},
+  {k:'p12',   t:'12 mo',   v:p=>{
+      const m=p.periods[12]?.effective_monthly;
+      return m==null?'—':'<span class="price best">'+(state.cur==='INR'?fmtInr(m):eurNF.format(applyGst(m)))+'</span>'+(state.cur==='BOTH'?'<span class="inr">≈ '+fmtInr(m)+'</span>':'');
+    }, sort:p=>p.periods[12]?.effective_monthly??1e9},
+  {k:'save',  t:'Save',    v:p=>{const s=savePct(p);return s?'<span class="save"><span class="bar" style="width:'+Math.min(s*0.6,30)+'px"></span>'+s+'%</span>':'—';}, sort:p=>savePct(p)??-1},
 ];
 const SORTBY = {frank:p=>p.frank};
 const activeCols = () => COLS.filter(c => !c.hidden || state.showHidden);
@@ -582,14 +830,14 @@ function render(){
   body.innerHTML = list.map(p=>{
     const checked = state.compare.has(p.slug)?'checked':'';
     return '<tr data-slug="'+p.slug+'">'+
-      '<td><input type="checkbox" class="cmpck" data-slug="'+p.slug+'" '+checked+'></td>'+
+      '<td><input type="checkbox" class="cmpck" data-slug="'+p.slug+'" '+checked+' aria-label="Add to compare"></td>'+
       cols.map((c,i)=>'<td class="'+(c.l?'l':'')+(i===0?' plan-cell':'')+'">'+c.v(p)+'</td>').join('')+
       '</tr>';
   }).join('');
   emptyEl.style.display = list.length?'none':'block';
   document.getElementById('grid').style.display = list.length?'':'none';
   document.getElementById('count').textContent =
-    list.length+' / '+PLAN_LIST.length+' plans';
+    list.length+' / '+PLAN_LIST.length+' plans'+(state.gst?' · incl. GST 18%':'');
   body.querySelectorAll('tr').forEach(tr=>{
     tr.onclick=e=>{ if(e.target.classList.contains('cmpck')) return;
       openModal(tr.dataset.slug); };
@@ -603,9 +851,10 @@ function render(){
       renderCompare();
     };
   });
+  renderHero();
 }
 
-// ── Compare drawer ────────────────────────────────────────────────────────────
+// ── Compare drawer ─────────────────────────────────────────────────────────
 const drawer=document.getElementById('drawer');
 function clearCompare(){ state.compare.clear(); render(); renderCompare(); }
 function renderCompare(){
@@ -613,7 +862,7 @@ function renderCompare(){
   if(slugs.length<2){ drawer.classList.remove('open'); return; }
   drawer.classList.add('open');
   const ps=slugs.map(s=>PLANS[s]);
-  document.getElementById('cmpTitle').textContent='Comparing '+ps.length+' plans';
+  document.getElementById('cmpTitle').textContent='Comparing '+ps.length+' plans'+(state.gst?' · incl. GST':'');
   const base=ps[0];
   const row=(label,fn,fmt,dir)=>{
     const vals=ps.map(fn);
@@ -624,13 +873,13 @@ function renderCompare(){
         if(Math.abs(diff)>1e-9){
           const cls = (dir==='lowerBetter') ? (diff>0?'up':'down') : (diff>0?'down':'up');
           d=' <span class="delta '+cls+'">'+(diff>0?'+':'')+
-            (fmt===eur?fmtEur(diff):(Math.round(diff*100)/100))+'</span>';
+            (fmt===eur?sgn(diff).replace(/^[+−]/,(diff>0?'+':'−')):(Math.round(diff*100)/100))+'</span>';
         }
       }
       return '<td>'+(fmt?fmt(v):v)+d+'</td>';
     }).join('')+'</tr>';
   };
-  const t=['<tr><th class="l">Spec</th>'+ps.map(p=>'<th>'+p.name+'</th>').join('')+'</tr>',
+  const t=['<tr><th class="l">Spec</th>'+ps.map(p=>'<th>'+esc(p.name)+'</th>').join('')+'</tr>',
     row('Family',p=>p.family),
     row('vCPU',p=>p.specs.cpu_count,null,'higherBetter'),
     row('RAM (GB)',p=>p.specs.ram_gb,null,'higherBetter'),
@@ -644,17 +893,18 @@ function renderCompare(){
   document.getElementById('cmpTable').innerHTML=t;
 }
 
-// ── Detail modal ──────────────────────────────────────────────────────────────
+// ── Detail modal ───────────────────────────────────────────────────────────
 const modal=document.getElementById('modal');
 function closeModal(){ modal.classList.remove('open'); }
 function tagList(items){
   return items.map(o=>{
     const cls=o.isDefault?'tag def':(o.delta>0?'tag paid':'tag');
-    const price=o.delta>0?(' <code>+€'+o.delta.toFixed(2)+'</code>'):(o.isDefault?' (default)':'');
-    return '<span class="'+cls+'">'+o.label+price+'</span>';
+    const price=o.delta>0?(' <code>+'+eurNF.format(applyGst(o.delta))+'</code>'):(o.isDefault?' (default)':'');
+    return '<span class="'+cls+'">'+esc(o.label)+price+'</span>';
   }).join('');
 }
-// ── Calculator ────────────────────────────────────────────────────────────────
+
+// Calculator state
 let MCFG=null, MPER=null, MSLUG=null;
 function cfgPeriods(per){ return Object.keys(per).map(Number).sort((a,b)=>a-b); }
 function cfgInitPeriod(per){
@@ -666,8 +916,8 @@ function cfgInitPeriod(per){
 }
 function optText(o){
   let t=esc(o.label);
-  t += o.monthly>0 ? ' (+€'+o.monthly.toFixed(2)+'/mo)' : ' — free';
-  if(o.setup>0) t += ' +€'+o.setup.toFixed(2)+' setup';
+  t += o.monthly>0 ? ' (+'+eurNF.format(applyGst(o.monthly))+'/mo)' : ' — free';
+  if(o.setup>0) t += ' +'+eurNF.format(applyGst(o.setup))+' setup';
   return t;
 }
 function renderConfigurator(cfg, per){
@@ -677,7 +927,7 @@ function renderConfigurator(cfg, per){
      cfgPeriods(per).map(m=>'<option value="'+m+'"'+(m===ip?' selected':'')+'>'+m+
        ' mo'+(per[m]&&per[m].is_hidden_from_ui?' (hidden)':'')+'</option>').join('')+
      '</select></label>'+
-     '<button class="btn" id="cfgReset">Reset to defaults</button></div>';
+     '<button class="iconbtn" id="cfgReset">Reset defaults</button></div>';
   h+='<div class="cfg-grid">';
   cfg.controls.forEach((c,ci)=>{
     h+='<label for="csel_'+ci+'">'+esc(c.label)+'</label>'+
@@ -710,7 +960,7 @@ function recalcCfg(){
         dm:r2(sel.monthly-def.monthly),ds:r2(sel.setup-def.setup)});
   });
   const cfgM=r2(anchorM+mD), cfgS=r2(anchorS+sD), tot=r2(cfgM*p+cfgS);
-  let h='<div class="ln muted"><span>Default config ('+p+' mo)</span><span>'+eur(anchorM)+'/mo</span></div>';
+  let h='<div class="ln muted"><span>Default ('+p+' mo)</span><span>'+eur(anchorM)+'/mo</span></div>';
   for(const ch of changes){
     const up=ch.dm>0;
     h+='<div class="ln chg'+(up?' up':'')+'"><span>'+esc(ch.label)+': '+esc(ch.to)+
@@ -719,6 +969,15 @@ function recalcCfg(){
   h+='<div class="ln tot"><span>Configured monthly</span><span class="v">'+eur(cfgM)+'/mo</span></div>';
   h+='<div class="ln"><span>Setup (one-time)</span><span>'+(cfgS>0?eur(cfgS):'—')+'</span></div>';
   h+='<div class="ln"><span>Billed total ('+p+' mo)</span><span>'+eur(tot)+'</span></div>';
+  if(state.gst || state.cur!=='EUR'){
+    const bits=[];
+    if(state.gst) bits.push('+18% GST');
+    if(state.cur!=='EUR' && FX.rate){
+      bits.push('× '+FX.rate.toFixed(3)+' EUR→INR');
+      if(FX.markup) bits.push('× '+(1+FX.markup).toFixed(3)+' card markup');
+    }
+    h+='<div class="breakdown">'+bits.join('  ')+'</div>';
+  }
   h+='<div class="sel"><b>Selected:</b> '+selected.join(' · ')+'</div>';
   document.getElementById('osum').innerHTML=h;
 }
@@ -739,19 +998,29 @@ function openModal(slug){
   MSLUG=slug;
   const per=p.periods;
   const order=[1,3,6,12].filter(m=>per[m]);
-  let h='<button class="btn close" onclick="closeModal()">Close ✕</button>';
-  h+='<h2><a href="'+p.url+'" target="_blank" rel="noopener">'+p.name+'</a></h2>';
-  h+='<div class="specs">'+num(p.specs.cpu_count)+' vCPU · '+num(p.specs.ram_gb)+
-     ' GB RAM · '+num(p.specs.storage_primary_gb)+' GB '+(p.specs.storage_primary_type||'')+
-     ' · '+num(p.specs.port_speed_mbps)+' Mbps</div>';
+  let h='<div class="top">';
+  h+='<div><h2><a href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.name)+'</a></h2>';
+  h+='<div class="specs"><b>'+num(p.specs.cpu_count)+'</b> vCPU · <b>'+num(p.specs.ram_gb)+
+     '</b> GB RAM · <b>'+num(p.specs.storage_primary_gb)+'</b> GB '+(p.specs.storage_primary_type||'')+
+     ' · <b>'+num(p.specs.port_speed_mbps)+'</b> Mbps</div></div>';
+  h+='<button class="iconbtn" onclick="closeModal()" aria-label="Close">Close ✕</button></div>';
 
   h+='<h4>Billing</h4><table><tr><th class="l"></th>'+
-     order.map(m=>'<th>'+m+' mo'+(per[m].is_hidden_from_ui?' <span class="badge">hidden</span>':'')+'</th>').join('')+'</tr>';
+     order.map(m=>'<th>'+m+' mo</th>').join('')+'</tr>';
   h+='<tr><td class="l">Monthly</td>'+order.map(m=>'<td>'+eur(per[m].effective_monthly)+'</td>').join('')+'</tr>';
   if(order.some(m=>per[m].setup_fee>0))
     h+='<tr><td class="l">Setup fee</td>'+order.map(m=>'<td>'+(per[m].setup_fee>0?eur(per[m].setup_fee):'—')+'</td>').join('')+'</tr>';
   h+='<tr><td class="l">Billed total</td>'+order.map(m=>'<td>'+eur(per[m].total_period_cost)+'</td>').join('')+'</tr>';
   h+='</table>';
+  if(state.gst || state.cur!=='EUR'){
+    const bits=[];
+    if(state.gst) bits.push('+18% GST');
+    if(state.cur!=='EUR' && FX.rate){
+      bits.push('EUR→INR @ '+FX.rate.toFixed(3));
+      if(FX.markup) bits.push((FX.markup*100).toFixed(1)+'% card markup');
+    }
+    h+='<div class="breakdown">Applied: '+bits.join(' · ')+'</div>';
+  }
 
   const cfg=CFG[slug];
   if(cfg && cfg.controls && cfg.controls.length){
@@ -760,7 +1029,7 @@ function openModal(slug){
     const ad=ADDONS[slug];
     const img=ad['Image']||[];
     const byCat=c=>img.filter(o=>o.category===c);
-    const sec=(t,items)=>items.length?('<div class="pp"><b>'+t+'</b> — '+tagList(items)+'</div>'):'';
+    const sec=(t,items)=>items.length?('<div class="pp"><b>'+t+'</b>'+tagList(items)+'</div>'):'';
     if(img.length){
       h+='<h4>Image</h4>';
       h+=sec('OS',byCat('OS'))+sec('Apps',byCat('Apps'))+
@@ -773,23 +1042,21 @@ function openModal(slug){
       const ord=G.flatMap(x=>g[x]||[]);
       h+='<h4>Regions</h4><table><tr>'+
         ord.map(o=>'<th>'+o.label.replace('European Union','EU')+(o.isDefault?' *':'')+'</th>').join('')+'</tr><tr>'+
-        ord.map(o=>'<td>'+(o.delta===0?'free':'+€'+o.delta.toFixed(2))+'</td>').join('')+'</tr></table>';
+        ord.map(o=>'<td>'+(o.delta===0?'free':'+'+eurNF.format(applyGst(o.delta)))+'</td>').join('')+'</tr></table>';
     }
     const net=ad['Networking']||[];
     if(net.length){
       const cat=c=>net.filter(o=>o.category===c);
       h+='<h4>Networking</h4>';
       const bw=cat('Bandwidth'), ip=cat('IPv4').filter(o=>o.delta>0), pv=cat('Private Networking').filter(o=>o.delta>0);
-      if(bw.length) h+='<div class="pp"><b>Bandwidth</b> — '+tagList(bw)+'</div>';
-      if(ip.length) h+='<div class="pp"><b>Extra IPv4</b> — '+tagList(ip)+'</div>';
-      if(pv.length) h+='<div class="pp"><b>Private Network</b> — '+tagList(pv)+'</div>';
+      if(bw.length) h+='<div class="pp"><b>Bandwidth</b>'+tagList(bw)+'</div>';
+      if(ip.length) h+='<div class="pp"><b>Extra IPv4</b>'+tagList(ip)+'</div>';
+      if(pv.length) h+='<div class="pp"><b>Private Network</b>'+tagList(pv)+'</div>';
     }
     const dp=(ad['Data Protection']||[]).filter(o=>o.delta>0);
     if(dp.length) h+='<h4>Backup</h4><div class="pp">'+tagList(dp)+'</div>';
     const st=ad['Storage']||[];
-    if(st.length){
-      h+='<h4>Storage</h4><div class="pp">'+tagList(st)+'</div>';
-    }
+    if(st.length){ h+='<h4>Storage</h4><div class="pp">'+tagList(st)+'</div>'; }
   } else {
     h+='<h4>Add-ons</h4><div class="muted pp">Run the enrich step for add-on detail.</div>';
   }
@@ -798,36 +1065,66 @@ function openModal(slug){
   if(cfg && cfg.controls && cfg.controls.length) wireCfg(slug);
 }
 
-// ── Wire controls ─────────────────────────────────────────────────────────────
-document.getElementById('periodSel').onchange=e=>{ state.period=e.target.value;
-  // period selector primarily affects sort default; keep table showing all period cols
-  if(state.period!=='all'){ state.sortKey={'1':'p1','6':'p6','12':'p12'}[state.period];
+// ── Wire toolbar ───────────────────────────────────────────────────────────
+const periodTog=document.getElementById('periodTog');
+function setPeriod(v){
+  state.period=v; lsSet('contabo_period',v);
+  periodTog.querySelectorAll('button').forEach(b=>
+    b.setAttribute('aria-pressed', b.dataset.period===v));
+  if(v!=='all'){ state.sortKey={'1':'p1','6':'p6','12':'p12'}[v]||state.sortKey;
     state.sortDir=1; }
-  render(); };
+  render();
+}
+periodTog.querySelectorAll('button').forEach(b=>b.onclick=()=>setPeriod(b.dataset.period));
+setPeriod(state.period);
+
 document.getElementById('showHidden').onchange=e=>{ state.showHidden=e.target.checked; render(); };
 document.getElementById('minCpu').oninput=e=>{ state.minCpu=+e.target.value||0; render(); };
 document.getElementById('minRam').oninput=e=>{ state.minRam=+e.target.value||0; render(); };
 document.getElementById('search').oninput=e=>{ state.q=e.target.value; render(); };
 document.getElementById('themeBtn').onclick=()=>{
   const r=document.documentElement;
-  r.dataset.theme = r.dataset.theme==='dark'?'light':'dark';
+  const next = r.dataset.theme==='dark'?'light':'dark';
+  r.dataset.theme=next; lsSet('contabo_theme',next);
 };
-addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+const savedTheme = lsGet('contabo_theme');
+if(savedTheme==='light'||savedTheme==='dark') document.documentElement.dataset.theme=savedTheme;
 
-const rb=document.getElementById('reconBadge');
-const cc=DATA.consistency||{};
-rb.textContent = cc.mismatch_count===0
-  ? '✓ reconciled ('+cc.checked+' checks)'
-  : '⚠ '+cc.mismatch_count+' reconciliation mismatch(es)';
-rb.style.color = cc.mismatch_count===0 ? 'var(--good)' : 'var(--bad)';
+// GST toggle
+const gstToggle=document.getElementById('gstToggle');
+gstToggle.checked=state.gst;
+const gstNote=document.getElementById('gstNote');
+function applyGstUi(){
+  gstNote.hidden=!state.gst;
+  render(); renderCompare();
+  if(modal.classList.contains('open') && MSLUG) openModal(MSLUG);
+}
+gstToggle.onchange=e=>{ state.gst=e.target.checked; lsSet('contabo_gst', state.gst?'1':'0'); applyGstUi(); };
+if(PRICES_INCLUDE_GST){
+  // Reverse model: if scraper output already included GST, toggle removes it
+  document.querySelector('#gstGroup .glabel').textContent='Tax';
+  gstToggle.parentElement.title='Prices already include 18% GST; uncheck to show ex-GST';
+  gstToggle.checked=true; state.gst=true; applyGstUi();
+}
 
-// ── Currency toggle + indicative INR ──────────────────────────────────────────
+// FX markup
+const fxMarkupEl=document.getElementById('fxMarkup');
+fxMarkupEl.value=((FX.markup||0)*100).toFixed(1);
+fxMarkupEl.oninput=e=>{
+  const v=Math.max(0,Math.min(15, Number(e.target.value)||0))/100;
+  FX.markup=v; lsSet('contabo_fx_markup', String(v));
+  render(); renderCompare();
+  if(modal.classList.contains('open') && MSLUG) openModal(MSLUG);
+};
+
+// Currency toggle
 const curTog=document.getElementById('curTog');
 const inrNote=document.getElementById('inrNote');
 function updateCurUI(){
   curTog.querySelectorAll('button').forEach(b=>
     b.setAttribute('aria-pressed', b.dataset.cur===state.cur));
   inrNote.hidden = !(state.cur!=='EUR' && FX.rate);
+  document.getElementById('gstGroup').style.opacity = state.cur==='EUR' && !state.gst ? '.85':'1';
 }
 function applyFx(){
   render(); renderCompare();
@@ -837,10 +1134,48 @@ function applyFx(){
 curTog.querySelectorAll('button').forEach(b=>b.onclick=()=>{
   state.cur=b.dataset.cur; lsSet('contabo_cur',state.cur); applyFx();
 });
+
+// Reconciliation badge
+const rb=document.getElementById('reconBadge');
+const cc=DATA.consistency||{};
+if(cc.mismatch_count===0){
+  rb.className='badge ok';
+  rb.innerHTML='<span class="dot-i"></span>reconciled · <strong>'+cc.checked+'</strong> checks';
+} else {
+  rb.className='badge bad';
+  rb.innerHTML='<span class="dot-i"></span><strong>'+cc.mismatch_count+'</strong> mismatch';
+}
+
+// FX badge + footer line
+function fxAgeText(){
+  if(!FX.rateDate && !FX.at) return '';
+  const d=new Date(FX.rateDate || FX.at);
+  const days=Math.floor((Date.now()-d.getTime())/86400000);
+  if(days<=0) return 'today';
+  if(days===1) return 'yesterday';
+  if(days<7) return days+' days ago';
+  return d.toISOString().slice(0,10);
+}
+function renderFxBadge(){
+  const fxb=document.getElementById('fxBadge');
+  if(!FX.rate){ fxb.className='badge warn';
+    fxb.innerHTML='<span class="dot-i"></span>FX unavailable'; return; }
+  const age=fxAgeText();
+  fxb.className='badge ok';
+  fxb.innerHTML='<span class="dot-i"></span>EUR→INR <strong>'+FX.rate.toFixed(2)+'</strong> · '+age;
+  document.getElementById('fxLine').innerHTML =
+    'FX: EUR→INR <b>'+FX.rate.toFixed(4)+'</b> ('+esc(FX.source||'')+', '+age+
+    '), card markup '+((FX.markup||0)*100).toFixed(1)+'%';
+}
+renderFxBadge();
+
+// Refresh FX in-browser (cache 12h)
 (function refreshFx(){
   try{
-    const c=JSON.parse(lsGet('contabo_fx')||'null');
-    if(c && c.rate>0 && (Date.now()-c.ts) < 12*3600*1000){ FX.rate=c.rate; return; }
+    const c=JSON.parse(lsGet('contabo_fx_v2')||'null');
+    if(c && c.rate>0 && (Date.now()-c.ts) < 12*3600*1000){
+      FX.rate=c.rate; FX.rateDate=c.rateDate; renderFxBadge(); render(); return;
+    }
     if(typeof fetch!=='function') return;
     const ac=new AbortController(); const to=setTimeout(()=>ac.abort(),4000);
     fetch('https://api.frankfurter.app/latest?from=EUR&to=INR',{signal:ac.signal})
@@ -848,15 +1183,38 @@ curTog.querySelectorAll('button').forEach(b=>b.onclick=()=>{
         clearTimeout(to);
         const rt=j&&j.rates&&j.rates.INR;
         if(typeof rt==='number'&&rt>0){
-          FX.rate=rt; lsSet('contabo_fx',JSON.stringify({rate:rt,ts:Date.now()}));
-          applyFx();
+          FX.rate=rt; FX.rateDate=j.date||null;
+          lsSet('contabo_fx_v2',JSON.stringify({rate:rt,ts:Date.now(),rateDate:j.date||null}));
+          renderFxBadge(); applyFx();
         }
       }).catch(()=>{});
   }catch{}
 })();
 
+// Keyboard shortcuts
+addEventListener('keydown',e=>{
+  if(e.target.matches('input,select,textarea')) {
+    if(e.key==='Escape') e.target.blur();
+    return;
+  }
+  if(e.key==='Escape'){ closeModal(); return; }
+  if(e.key==='/'){ e.preventDefault(); document.getElementById('search').focus(); return; }
+  if(e.key==='g'||e.key==='G'){ gstToggle.checked=!gstToggle.checked; gstToggle.dispatchEvent(new Event('change')); return; }
+  if(e.key==='t'||e.key==='T'){ document.getElementById('themeBtn').click(); return; }
+});
+
 updateCurUI();
-render(); renderCompare();
+applyGstUi();
+
+// Sticky-table-header offset: align thead under the (also-sticky) toolbar so
+// neither overlaps the other. Recompute on resize and after font load.
+function setStickyOffsets(){
+  const tb=document.querySelector('.toolbar');
+  if(tb) document.documentElement.style.setProperty('--thead-top', tb.offsetHeight+'px');
+}
+setStickyOffsets();
+addEventListener('resize', setStickyOffsets);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(setStickyOffsets);
 </script>
 </body>
 </html>
@@ -864,10 +1222,12 @@ render(); renderCompare();
 
 fs.writeFileSync(HTML_PATH, html);
 const planCount = new Set(rows.map(r => r.plan_slug)).size;
+const fxLine = payload.fx && payload.fx.eurInr
+  ? `EUR→INR ${payload.fx.eurInr} (${payload.fx.rateDate || 'live'})`
+  : 'unavailable (browser will retry)';
 console.log(
   `Generated report.html · ${planCount} plans · ${rows.length} rows · ${genAt}` +
   ` · reconciliation: ${mismatches.length === 0 ? 'OK' : mismatches.length + ' mismatch(es)'}` +
-  `${mismatches.length ? ' — see ' + path.basename(RECON_PATH) : ''}` +
-  ` · FX: ${payload.fx && payload.fx.eurInr ? 'EUR→INR ' + payload.fx.eurInr + ' (embedded)' : 'unavailable (browser will retry)'}`,
+  ` · FX: ${fxLine}`
 );
 })();

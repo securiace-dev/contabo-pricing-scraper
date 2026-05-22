@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.4.6 — 2026-05-22 (A.6.3: configurable-options apply path)
+
+### Added
+- **Apply path** — writes a profile's previewed configurable options to a mapped
+  WHMCS product. New `ConfigOptionLinkRepository` (sole chokepoint for the
+  `mod_contabo_config_*_link` ownership tables), `ConfigurableOptionsSyncer::apply()`
+  (real-write traversal that records each WHMCS id in the link tables + writes real
+  `OptionAuditLog` rows), and a confirmed `config-apply` admin action (POST,
+  CSRF-protected, requires the profile mapped to a product + an explicit
+  confirmation checkbox). The preview screen's Apply button is now a real form
+  (product select + confirm) or a "map a product first" notice.
+- **Idempotent + ownership-scoped**: re-applying reuses the recorded WHMCS ids
+  (no duplicates) and only ever touches addon-created objects; base-currency only.
+  Drift detection (manual-edit guard) is deferred — it needs hash columns the v5
+  link tables don't carry yet. 10 new tests (link repo + apply mode); suite 259.
+
 ## 0.4.5 — 2026-05-22 (A.6.3: configurable-options preview screen)
 
 ### Added

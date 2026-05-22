@@ -1,6 +1,49 @@
-# Contabo Pricing Scraper
+# Contabo Pricing Scraper + API
 
-Extracts pricing for all Contabo Cloud VPS, Storage VPS, and Cloud VDS plans from Contabo's embedded `__SAPPER__` server-side payload. Outputs structured JSON and CSV files ready for analysis or further automation.
+Extracts pricing for all Contabo Cloud VPS, Storage VPS, and Cloud VDS plans from Contabo's embedded `__SAPPER__` server-side payload. Outputs structured JSON and CSV files ready for analysis or further automation — **and exposes the data as a versioned REST API** for downstream integrations (WHMCS, dashboards, billing systems).
+
+Ships as a single Rust binary with two subcommands:
+
+```bash
+contabo-scraper scrape      # one-shot scrape (the original behaviour)
+contabo-scraper serve       # long-running HTTP API
+```
+
+Plus a Docker image with Caddy / Traefik / Coolify overlays for production. See [`deploy/README.md`](deploy/README.md) for deployment recipes.
+
+## API quick start
+
+```bash
+# Build + run locally
+cargo build --release
+./target/release/contabo-scraper serve --bind 127.0.0.1:8080 --auth-token "$(openssl rand -hex 32)"
+
+# Or via Docker
+docker build -t contabo-pricing .
+docker run --rm -p 8080:8080 -e CONTABO_AUTH_TOKEN=secret contabo-pricing
+```
+
+Endpoints (versioned under `/api/v1`):
+
+| Method | Path | Auth | Purpose |
+|---|---|---|---|
+| GET | `/api/v1/health` | open | liveness |
+| GET | `/api/v1/meta` | open | version + snapshot freshness |
+| GET | `/api/v1/plans` | open | list plans (`?family=Cloud VPS`) |
+| GET | `/api/v1/plans/:slug` | open | one plan |
+| GET | `/api/v1/plans/:slug/configurator` | open | option matrix + defaults |
+| GET | `/api/v1/options` | open | flat option catalog |
+| GET | `/api/v1/fx` | open | EUR→INR rate + source + age |
+| POST | `/api/v1/quote` | open | calculate configured price (GST + FX) |
+| POST | `/api/v1/refresh` | **bearer** | trigger async scrape |
+| GET | `/api/v1/jobs/:id` | open | refresh job status |
+| GET | `/` | open | the interactive report (embedded HTML) |
+
+Auth model: read endpoints are open and cacheable; `POST /refresh` requires `Authorization: Bearer <token>` matching `--auth-token` / `--auth-token-file` / `CONTABO_AUTH_TOKEN`. When no token is configured the mutating endpoint returns 503 (fail-closed).
+
+---
+
+## Original scraper documentation
 
 ## Requirements
 

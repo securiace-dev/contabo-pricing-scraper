@@ -145,6 +145,7 @@ OPTIONS
   -c, --concurrency <n>    Parallel fetches        (default: 4)
   -r, --retries <n>        Retries per URL         (default: 3)
   -p, --plans <slugs>      Comma-separated plan slugs to limit scraping
+      --plan-urls-file <p> Load plan URLs from a JSON catalog (filters status=active)
   -q, --quiet              Suppress progress output (stderr stays active)
   -j, --json               Print JSON summary to stdout on completion
       --dry-run            Fetch pages but do not write any output files
@@ -805,6 +806,32 @@ async function main() {
     gap_summary: gapSummary,
     gaps: gapReport,
   };
+
+  // ─── Snapshot-preserve guard ──────────────────────────────────────────────
+  // Mirror of src/main.rs: when every plan fetch fails (WAF block, network
+  // outage, expired TLS cert) we MUST NOT overwrite the on-disk snapshot
+  // with empty JSON. Downstream consumers (the API server, the WHMCS addon
+  // dashboard) would otherwise see "0 plans" until the next successful run.
+  // Only the all-fail case triggers the skip — partial successes still
+  // write what they have.
+  if (!opts.dryRun && basePlans.length === 0 && urls.length > 0) {
+    log(`ERROR all plan fetches failed (${urls.length} requested) — preserving previous snapshot in ${opts.output}`);
+    if (opts.json) {
+      const summary = {
+        ok: false,
+        scraper_version: SCRAPER_VERSION,
+        schema_version:  SCHEMA_VERSION,
+        generated_at:    new Date().toISOString(),
+        plans_requested: urls.length,
+        plans_scraped:   0,
+        plans_failed:    urls.length,
+        snapshot_preserved: true,
+        reason:          'all_plans_failed',
+      };
+      console.log(JSON.stringify(summary, null, 2));
+    }
+    process.exit(EXIT_ERROR);
+  }
 
   // ─── Write JSON ───────────────────────────────────────────────────────────
   const write = (filename, data) =>

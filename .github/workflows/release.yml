@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -166,8 +167,71 @@ jobs:
             ./contabo-scraper --json --quiet            # AI agent / pipeline mode
             ```
 
+            ### New in 2.3+
+
+            - **`serve` subcommand** — long-running HTTP API server. See [README](https://github.com/${{ github.repository }}#api-quick-start).
+            - **Docker image**: `ghcr.io/${{ github.repository }}:${{ github.ref_name }}` (multi-arch: linux/amd64, linux/arm64). Compose recipes under `deploy/`.
+            - **WHMCS addon** — sync Contabo pricing into WHMCS products via versioned profiles. Source under `whmcs-module/`.
+
             Verify with `SHA256SUMS.txt`.
           files: |
             artifacts/*
           draft: false
           prerelease: false
+
+  docker:
+    name: Publish Docker image to GHCR
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU for multi-arch
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: tags
+        run: |
+          IMG="ghcr.io/${{ github.repository }}"
+          VER="${{ github.ref_name }}"
+          VER="${VER#v}"   # strip leading v
+          {
+            echo "tags=${IMG}:${VER},${IMG}:latest"
+            echo "image=${IMG}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build & push (linux/amd64, linux/arm64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke-test the published image
+        run: |
+          docker run --rm "${{ steps.tags.outputs.image }}:latest" --version
+          docker run --rm -d --name cv-smoke -p 8080:8080 "${{ steps.tags.outputs.image }}:latest"
+          sleep 6
+          curl -fsS http://localhost:8080/api/v1/health
+          docker rm -f cv-smoke

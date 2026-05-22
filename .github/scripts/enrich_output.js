@@ -191,7 +191,115 @@ for (const opt of enrichedCatalog) {
 fs.writeFileSync(p('contabo_option_catalog.csv'), ocRows.join('\n') + '\n');
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STEP 7 — Delete stale *_enhanced files (from previous scraper version)
+// STEP 7 — Synthesize contabo_view_model.json from pricing_dataset
+// ─────────────────────────────────────────────────────────────────────────────
+// Rust scraper emits this file natively; Node scraper does not. Regenerating
+// here keeps both pipelines feature-equivalent for report.html.
+function buildViewModel() {
+  const plansArr = datasetEnriched.plans || [];
+  const optsByPlan = {};
+  for (const opt of enrichedCatalog) {
+    (optsByPlan[opt.plan_sku] ??= []).push(opt);
+  }
+
+  function optionsSummary(slug) {
+    const list = optsByPlan[slug] || [];
+    const byDim = {};
+    for (const o of list) {
+      const dim = o.dimension; (byDim[dim] ??= []).push(o);
+    }
+    const sum = {};
+    for (const [dim, items] of Object.entries(byDim)) {
+      const deltas = items.map(o => Number(o.monthly_price_delta) || 0);
+      const defaults = items.filter(o => o.is_default);
+      // Compose default label: for Networking, join its 3 category defaults
+      let defLabel;
+      if (dim === 'Networking' && defaults.length > 1) {
+        const order = { 'Bandwidth': 0, 'IPv4': 1, 'Private Networking': 2 };
+        defLabel = defaults
+          .sort((a, b) => (order[a.category] ?? 9) - (order[b.category] ?? 9))
+          .map(o => o.option_label).join(', ');
+      } else {
+        defLabel = defaults[0]?.option_label || null;
+      }
+      sum[dim] = {
+        default_label: defLabel,
+        max_delta: deltas.length ? Math.max(...deltas) : 0,
+        min_delta: deltas.length ? Math.min(...deltas) : 0,
+        option_count: items.length,
+        paid_count: items.filter(o => (Number(o.monthly_price_delta) || 0) > 0).length,
+      };
+    }
+    return sum;
+  }
+
+  const rows = [];
+  for (const plan of plansArr) {
+    const sp = plan.specs_parsed || {};
+    const summary = optionsSummary(plan.product_slug);
+    for (const per of (plan.periods || [])) {
+      rows.push({
+        family: plan.family,
+        plan_rank: plan.plan_rank,
+        plan_family_rank: plan.plan_family_rank,
+        product_name: plan.product_name,
+        product_slug: plan.product_slug,
+        plan_slug: plan.product_slug,
+        product_url: plan.product_url,
+        period_months: per.months,
+        is_hidden_from_ui: !!per.is_hidden_from_ui,
+        base_monthly: plan.base_monthly_price ?? null,
+        effective_monthly: per.effective_monthly ?? null,
+        setup_fee: per.setup_fee ?? null,
+        discount_total: per.discount_total ?? 0,
+        total_period_cost: per.total_period_cost ?? null,
+        specs: {
+          cpu_count: sp.cpu_count ?? null,
+          ram_gb: sp.ram_gb ?? null,
+          storage_primary_gb: sp.storage_primary_gb ?? null,
+          storage_primary_type: sp.storage_primary_type ?? null,
+          port_speed_mbps: sp.port_speed_mbps ?? null,
+        },
+        options_summary: summary,
+      });
+    }
+  }
+
+  return {
+    dimension_schema: {
+      description: 'Selection rules for Contabo plan configurator dimensions. selection_type "single" = pick exactly one option; "grouped_single" = dimension contains independent categories, each single-select.',
+      schema_version,
+      generated_at: new Date().toISOString(),
+      dimensions: {
+        'Data Protection':  { required: false, selection_type: 'single' },
+        'Image':            { required: true,  selection_type: 'single' },
+        'Networking':       { required: true,  selection_type: 'grouped_single',
+          categories: {
+            'Bandwidth':          { required: true, selection_type: 'single' },
+            'IPv4':               { required: true, selection_type: 'single' },
+            'Private Networking': { required: true, selection_type: 'single' },
+          } },
+        'Region':           { required: true,  selection_type: 'single' },
+        'Storage Type':     { required: true,  selection_type: 'single' },
+        'Storage':          { required: true,  selection_type: 'single' },
+      },
+    },
+    meta: {
+      generated_at: new Date().toISOString(),
+      plan_count: plansArr.length,
+      row_count: rows.length,
+      schema_version,
+      scraper_version,
+    },
+    rows,
+  };
+}
+
+const viewModel = buildViewModel();
+fs.writeFileSync(p('contabo_view_model.json'), JSON.stringify(viewModel, null, 2) + '\n');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STEP 8 — Delete stale *_enhanced files (from previous scraper version)
 // ─────────────────────────────────────────────────────────────────────────────
 const STALE = [
   'contabo_base_plans_enhanced.json',
@@ -215,5 +323,6 @@ console.log([
   `  pricing_dataset   → +plan_slug/family/name on ${enrichedCatalog.length} catalog entries`,
   `  base_plans.csv    → +cpu_count/ram_gb/storage/port parsed cols, +1m_total`,
   `  option_catalog.csv → +plan_slug/family/name cols`,
+  `  view_model.json    → synthesized (${viewModel.rows.length} rows from ${viewModel.meta.plan_count} plans)`,
   `  deleted ${deleted} stale *_enhanced files`,
 ].join('\n'));

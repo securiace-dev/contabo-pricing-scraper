@@ -131,6 +131,7 @@ final class WhmcsConfigOptionsAdapter
                 ->first();
 
             if ($existing !== null) {
+                $existing = (array) $existing; // real Capsule returns stdClass; normalize
                 $id = (int) $existing['id'];
                 if ((string) ($existing['description'] ?? '') === $description) {
                     return ['id' => $id, 'action' => 'noop', 'table' => 'tblproductconfiggroups', 'payload' => $payload];
@@ -170,6 +171,7 @@ final class WhmcsConfigOptionsAdapter
                 ->first();
 
             if ($existing !== null) {
+                $existing = (array) $existing; // real Capsule returns stdClass; normalize
                 return ['id' => (int) $existing['id'], 'action' => 'noop', 'table' => 'tblproductconfiglinks', 'payload' => $payload];
             }
 
@@ -216,6 +218,7 @@ final class WhmcsConfigOptionsAdapter
                 ->first();
 
             if ($existing !== null) {
+                $existing = (array) $existing; // real Capsule returns stdClass; normalize
                 $id = (int) $existing['id'];
                 $diff = self::columnsThatChanged($existing, $payload, ['optiontype', 'qtyminimum', 'qtymaximum', 'order']);
                 if ($diff === []) {
@@ -260,6 +263,7 @@ final class WhmcsConfigOptionsAdapter
                 ->first();
 
             if ($existing !== null) {
+                $existing = (array) $existing; // real Capsule returns stdClass; normalize
                 $id = (int) $existing['id'];
                 $diff = self::columnsThatChanged($existing, $payload, ['sortorder', 'hidden']);
                 if ($diff === []) {
@@ -326,6 +330,7 @@ final class WhmcsConfigOptionsAdapter
             $priceCols = array_merge(array_values(self::CYCLE_COLUMNS), array_values(self::SETUP_COLUMNS));
 
             if ($existing !== null) {
+                $existing = (array) $existing; // real Capsule returns stdClass; normalize
                 $id = (int) $existing['id'];
                 $diff = self::columnsThatChanged($existing, $row, $priceCols);
                 if ($diff === []) {
