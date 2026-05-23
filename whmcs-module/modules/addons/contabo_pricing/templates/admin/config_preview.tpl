@@ -212,21 +212,16 @@ $cb_capwarn = isset($cb_val['capability_warnings']) && is_array($cb_val['capabil
   </div>
 <?php else: ?>
   <form class="cb-card" method="post" action="<?= $esc($module_link) ?>" style="padding:14px 16px; display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
-    <input type="hidden" name="action" value="config-apply">
+    <input type="hidden" name="action" value="config-diff">
     <input type="hidden" name="id" value="<?= (int) ($report['profile_id'] ?? 0) ?>">
-    <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
     <strong>Apply to product</strong>
     <select name="product_id" required style="padding:7px 10px; border:1px solid var(--border); border-radius:8px; background:var(--panel); font:inherit; font-size:13px;">
       <?php foreach ($cb_mapped as $cb_mp): ?>
         <option value="<?= (int) $cb_mp['id'] ?>"><?= $esc($cb_mp['name']) ?> (#<?= (int) $cb_mp['id'] ?>)</option>
       <?php endforeach; ?>
     </select>
-    <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
-      <input type="checkbox" name="confirm" value="1" required>
-      I understand this writes these options &amp; pricing to the live product
-    </label>
-    <button type="submit" class="cb-btn">Apply</button>
+    <button type="submit" class="cb-btn">Review changes (diff) &rarr;</button>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-exposure&amp;id=<?= (int) ($report['profile_id'] ?? 0) ?>">Edit exposure</a>
-    <span class="muted" style="font-size:12px;">Idempotent &amp; ownership-scoped — re-applying makes no duplicates. Base currency only.</span>
+    <span class="muted" style="font-size:12px;">You’ll see a per-dimension diff of exactly what changes on the live product <em>before</em> anything is written. Idempotent &amp; ownership-scoped. Base currency only.</span>
   </form>
 <?php endif; ?>

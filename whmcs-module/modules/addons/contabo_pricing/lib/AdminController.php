@@ -41,6 +41,7 @@ class AdminController
             case 'profile-diff':     $this->profileDiff($req); return;
             case 'config-preview':   $this->configPreview($req); return;
             case 'config-apply':     $this->configApply($req); return;
+            case 'config-diff':      $this->configDiff($req); return;
             case 'config-exposure':      $this->configExposure($req); return;
             case 'config-exposure-save': $this->configExposureSave($req); return;
             case 'mappings':         $this->mappings($req); return;
@@ -824,6 +825,75 @@ class AdminController
             $out[] = ['id' => $pid, 'name' => $name];
         }
         return $out;
+    }
+
+    /**
+     * 0.5.1 — READ-ONLY pre-apply DIFF. Shows what config-apply WOULD do to THIS
+     * live product (create/update/noop/drift_skip per dimension) BEFORE any write,
+     * so the billing-impacting apply path is always preceded by a diff. The Apply
+     * form lives on the rendered diff screen. GET, zero writes.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function configDiff(array $req): void
+    {
+        $id        = (int) ($req['id'] ?? 0);
+        $productId = (int) ($req['product_id'] ?? 0);
+
+        $pm = new ProfileManager($this->settings);
+        $profile = $pm->find($id);
+        if ($profile === null) {
+            $this->redirect('profiles', ['flash' => 'Profile not found.']);
+            return;
+        }
+        $mapped = Capsule::table('mod_contabo_mapping')
+            ->where('profile_id', $id)->where('product_id', $productId)->first();
+        if ($productId <= 0 || $mapped === null) {
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Choose a WHMCS product this profile is mapped to (map one on the Mappings page first).']);
+            return;
+        }
+
+        $planSlug = (string) ($profile['plan_slug'] ?? '');
+        try {
+            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
+            $parsed = DimensionParser::parse($optionsMap);
+            $specs  = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing config-diff API error (profile #' . $id . '): ' . $e->getMessage());
+            }
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Cannot build diff — API error loading options; see the activity log.']);
+            return;
+        }
+        if ($specs === []) {
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Nothing to diff — the plan has no configurable options.']);
+            return;
+        }
+
+        $diff  = null;
+        $error = null;
+        try {
+            // Dry-run adapter: diff() only READS (fetchOption); zero writes.
+            $adapter = new WhmcsConfigOptionsAdapter(true);
+            $audit   = new OptionAuditLog($adapter->syncBatchId());
+            $syncer  = new ConfigurableOptionsSyncer($adapter, $audit, new ConfigOptionLinkRepository());
+            $diff = $syncer->diff($id, $productId, 'contabo-' . $planSlug, $specs);
+        } catch (\Throwable $e) {
+            $error = 'Could not build the diff; see the activity log.';
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing config-diff error (profile #' . $id . '): ' . $e->getMessage());
+            }
+        }
+
+        $this->render('config_diff.tpl', [
+            'profile'    => $profile,
+            'profile_id' => $id,
+            'product_id' => $productId,
+            'plan_slug'  => $planSlug,
+            'diff'       => $diff,
+            'error'      => $error,
+        ]);
     }
 
     /**

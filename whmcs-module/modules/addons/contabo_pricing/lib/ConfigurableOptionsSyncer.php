@@ -378,6 +378,95 @@ final class ConfigurableOptionsSyncer
         ];
     }
 
+    /**
+     * READ-ONLY pre-apply diff: what {@see apply()} WOULD do to THIS live product,
+     * per dimension, WITHOUT writing anything. Reuses apply's drift guard +
+     * exposure resolution so the preview matches the real run. Per-dimension action:
+     *   create     — no addon-owned option recorded yet (or the recorded one is gone)
+     *   drift_skip — live option hand-edited since last apply → apply will SKIP it
+     *   update     — addon-owned option exists but a field (name/type/visibility) differs
+     *   noop       — addon-owned option exists and already matches what apply would write
+     *
+     * Option-level (matching apply's drift granularity); each row carries the
+     * value count. Sub-option/pricing-level diff is a follow-up (item 4 territory).
+     *
+     * @param list<array<string,mixed>> $specs
+     * @return array{
+     *   profile_id:int, product_id:int, group_exists:bool,
+     *   rows:list<array<string,mixed>>,
+     *   summary:array{create:int,update:int,noop:int,drift_skip:int}
+     * }
+     */
+    public function diff(int $profileId, int $productId, string $groupKey, array $specs): array
+    {
+        if ($this->links === null) {
+            throw new \RuntimeException('ConfigurableOptionsSyncer::diff() requires a ConfigOptionLinkRepository.');
+        }
+
+        $summary = ['create' => 0, 'update' => 0, 'noop' => 0, 'drift_skip' => 0];
+        $rows = [];
+        $groupExists = $this->links->findGroupLink($profileId, $productId, $groupKey) !== null;
+
+        foreach ($specs as $spec) {
+            $dimKey     = (string) ($spec['dimension_key'] ?? '');
+            $optionType = (int) ($spec['optiontype'] ?? OptionTypeMapper::TYPE_DROPDOWN);
+            $values     = isset($spec['values']) && is_array($spec['values']) ? $spec['values'] : [];
+            if ($dimKey === '' || $values === []) {
+                continue;
+            }
+
+            // Visibility apply() WOULD write: existing link flags win, else preset.
+            $existingLink = $this->links->findOptionLink($profileId, $dimKey);
+            if ($existingLink !== null && array_key_exists('hidden', $existingLink)) {
+                $optHidden = (bool) $existingLink['hidden'];
+            } else {
+                $optHidden = (bool) ExposureResolver::decideForDimension($dimKey)['hidden'];
+            }
+
+            $liveOptionId = $existingLink !== null ? (int) ($existingLink['whmcs_option_id'] ?? 0) : 0;
+            $action = 'create';
+            $detail = 'new option — apply will create it';
+
+            if ($liveOptionId > 0) {
+                $liveOpt = $this->adapter->fetchOption($liveOptionId);
+                if ($liveOpt === null) {
+                    $action = 'create';
+                    $detail = 'recorded WHMCS option #' . $liveOptionId . ' is gone — apply will re-create it';
+                } elseif (!empty($existingLink['expected_hash'])
+                    && !DriftHasher::matches((string) $existingLink['expected_hash'], $liveOpt, WhmcsConfigOptionsAdapter::OPTION_DRIFT_COLUMNS)
+                ) {
+                    $action = 'drift_skip';
+                    $detail = 'live option hand-edited since last apply — apply will SKIP it (your edit is preserved)';
+                } else {
+                    $changed = ((string) ($liveOpt['optionname'] ?? '') !== $dimKey)
+                        || ((int) ($liveOpt['optiontype'] ?? -1) !== $optionType)
+                        || ((int) ($liveOpt['hidden'] ?? -1) !== ($optHidden ? 1 : 0));
+                    $action = $changed ? 'update' : 'noop';
+                    $detail = $changed ? 'option exists; apply will update it' : 'option exists and already matches — no change';
+                }
+            }
+
+            $summary[$action]++;
+            $rows[] = [
+                'dimension_key'   => $dimKey,
+                'optiontype'      => $optionType,
+                'values'          => count($values),
+                'action'          => $action,
+                'detail'          => $detail,
+                'whmcs_option_id' => $liveOptionId,
+                'will_be_hidden'  => $optHidden,
+            ];
+        }
+
+        return [
+            'profile_id'   => $profileId,
+            'product_id'   => $productId,
+            'group_exists' => $groupExists,
+            'rows'         => $rows,
+            'summary'      => $summary,
+        ];
+    }
+
     /** @param array{created:int,updated:int,noop:int,skipped:int} $summary */
     private function tally(array &$summary, string $action): void
     {
