@@ -62,6 +62,14 @@ class ServiceRevenueResolver
         $billingCycle = (string) ($base['billingcycle'] ?? 'monthly');
         $cycleColumn = $this->cycleColumn($billingCycle);
 
+        // A.6.5 multi-currency guard (amendment 10): the resolver only knows INR
+        // pricing. If the service is billed in another currency, the figures below
+        // are NOT its real revenue — surface that explicitly so no caller (renewal
+        // margin, snapshot) silently treats a non-INR service as correctly priced.
+        // currency_id 0 = unknown/no client on file → treat as the INR default.
+        $currencyId = (int) ($base['currency_id'] ?? 0);
+        $currencySupported = ($currencyId === 0 || $currencyId === WhmcsConfigOptionsAdapter::INR_CURRENCY_ID);
+
         $configRows = $this->fetchConfigOptions($serviceId);
         $configTotal = 0.0;
         $configBreakdown = [];
@@ -95,13 +103,15 @@ class ServiceRevenueResolver
         }
 
         return $this->assemble($baseAmount, $configTotal, $addonTotal, [
-            'source'         => 'service',
-            'service_id'     => $serviceId,
-            'billing_cycle'  => $billingCycle,
-            'cycle_column'   => $cycleColumn,
-            'current_charge' => $currentCharge, // stale tblhosting.recurringamount, for drift comparison
-            'config_options' => $configBreakdown,
-            'addons'         => $addonBreakdown,
+            'source'             => 'service',
+            'service_id'         => $serviceId,
+            'billing_cycle'      => $billingCycle,
+            'cycle_column'       => $cycleColumn,
+            'current_charge'     => $currentCharge, // stale tblhosting.recurringamount, for drift comparison
+            'currency_id'        => $currencyId,
+            'currency_supported' => $currencySupported, // false ⇒ figures are NOT real revenue (non-INR service)
+            'config_options'     => $configBreakdown,
+            'addons'             => $addonBreakdown,
         ]);
     }
 
@@ -113,7 +123,14 @@ class ServiceRevenueResolver
      * Snapshot carries the resolved figures directly:
      *   base_price_snapshot           = base recurring at order time
      *   config_option_price_snapshot  = sum of selected option recurrings
-     *   addon_price_snapshot          = sum of addon recurrings (optional)
+     *
+     * Addons are intentionally NOT part of the v1 snapshot revenue path: the
+     * snapshot table has no addon column, so this path reports addons as 0.0. The
+     * live {@see resolveForService} path is the one that sums tblhostingaddons.
+     * (Backlog: add an addon_price_snapshot column + capture it once a product in
+     * the catalog actually carries WHMCS product addons — today's VPS catalog has
+     * none.) Reporting 0.0 explicitly here keeps the snapshot-vs-live difference
+     * documented rather than a silent read of a column that doesn't exist.
      *
      * @param array<string,mixed> $snapshotRow
      * @return array{base:float, config_options:float, addons:float, total:float, breakdown:array<string,mixed>}
@@ -122,8 +139,7 @@ class ServiceRevenueResolver
     {
         $base = (float) ($snapshotRow['base_price_snapshot'] ?? 0.0);
         $config = (float) ($snapshotRow['config_option_price_snapshot'] ?? 0.0);
-        // Addon snapshot is optional in the v5 schema; default 0.0.
-        $addons = (float) ($snapshotRow['addon_price_snapshot'] ?? 0.0);
+        $addons = 0.0; // not snapshotted in v1 (see method docblock)
 
         return $this->assemble($base, $config, $addons, [
             'source'                       => 'snapshot',
@@ -132,7 +148,7 @@ class ServiceRevenueResolver
             'pricing_version_snapshot'     => $snapshotRow['pricing_version_snapshot'] ?? null,
             'base_price_snapshot'          => $base,
             'config_option_price_snapshot' => $config,
-            'addon_price_snapshot'         => $addons,
+            'addons_in_snapshot'           => false, // v1: addons resolved via the live path only
         ]);
     }
 
@@ -187,6 +203,19 @@ class ServiceRevenueResolver
         $row = (array) $row; // real Capsule returns stdClass; normalize
         $cycle = (string) ($row['billingcycle'] ?? 'monthly');
 
+        // The service's billing currency lives on its client (tblclients.currency);
+        // tblhosting has no currency column. Used by the multi-currency guard so a
+        // non-INR service isn't silently priced off INR catalog rows.
+        $currencyId = 0;
+        $userId = (int) ($row['userid'] ?? 0);
+        if ($userId > 0) {
+            $client = Capsule::table('tblclients')->where('id', $userId)->first();
+            if ($client !== null) {
+                $client = (array) $client;
+                $currencyId = (int) ($client['currency'] ?? 0);
+            }
+        }
+
         // The TRUE base is the PRODUCT's current catalog recurring price for the
         // cycle — NOT tblhosting.recurringamount. recurringamount is a snapshot
         // that already folds in config options and DRIFTS when their prices
@@ -211,6 +240,7 @@ class ServiceRevenueResolver
             'base'           => $base,
             'billingcycle'   => $cycle,
             'current_charge' => (float) ($row['recurringamount'] ?? 0.0),
+            'currency_id'    => $currencyId,
         ];
     }
 

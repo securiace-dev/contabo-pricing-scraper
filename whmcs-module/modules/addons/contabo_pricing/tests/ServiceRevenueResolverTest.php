@@ -176,29 +176,57 @@ final class ServiceRevenueResolverTest extends TestCase
         $this->assertSame('Monitoring', $r['breakdown']['addons'][0]['name']);
     }
 
-    public function testResolveFromSnapshotSumsSnapshotFields(): void
+    public function testNonInrServiceFlaggedUnsupported(): void
     {
+        // A.6.5 multi-currency guard: a service whose client bills in a non-INR
+        // currency is flagged so its INR-derived figures are never silently
+        // treated as real revenue.
+        Capsule::table('tblhosting')->insert(['id' => 9, 'userid' => 50, 'packageid' => 2, 'billingcycle' => 'monthly', 'recurringamount' => 31.0]);
+        Capsule::table('tblpricing')->insert(['type' => 'product', 'relid' => 2, 'currency' => 1, 'monthly' => 10.0]);
+        Capsule::table('tblclients')->insert(['id' => 50, 'currency' => 2]); // USD
+
+        $r = (new ServiceRevenueResolver())->resolveForService(9);
+        $this->assertFalse($r['breakdown']['currency_supported']);
+        $this->assertSame(2, $r['breakdown']['currency_id']);
+    }
+
+    public function testInrServiceFlaggedSupported(): void
+    {
+        Capsule::table('tblhosting')->insert(['id' => 10, 'userid' => 51, 'packageid' => 2, 'billingcycle' => 'monthly', 'recurringamount' => 31.0]);
+        Capsule::table('tblpricing')->insert(['type' => 'product', 'relid' => 2, 'currency' => 1, 'monthly' => 10.0]);
+        Capsule::table('tblclients')->insert(['id' => 51, 'currency' => 1]); // INR
+
+        $r = (new ServiceRevenueResolver())->resolveForService(10);
+        $this->assertTrue($r['breakdown']['currency_supported']);
+        $this->assertSame(1, $r['breakdown']['currency_id']);
+    }
+
+    public function testResolveFromSnapshotSumsBaseAndConfigOnly(): void
+    {
+        // A.6.5: addons are NOT part of the v1 snapshot revenue path (no addon
+        // column on the snapshot table). Any addon_price_snapshot key present is
+        // ignored — the live resolveForService path is the one that sums addons.
         $r = (new ServiceRevenueResolver())->resolveFromSnapshot([
             'id'                           => 77,
             'service_id'                   => 1001,
             'base_price_snapshot'          => 515.0,
             'config_option_price_snapshot' => 312.0,
-            'addon_price_snapshot'         => 300.0,
+            'addon_price_snapshot'         => 300.0, // ignored by design
             'pricing_version_snapshot'     => 'v0.5.0',
         ]);
 
         $this->assertSame(515.0, $r['base']);
         $this->assertSame(312.0, $r['config_options']);
-        $this->assertSame(300.0, $r['addons']);
-        $this->assertSame(1127.0, $r['total']);
+        $this->assertSame(0.0, $r['addons']); // never read from the snapshot
+        $this->assertSame(827.0, $r['total']);
         $this->assertSame('snapshot', $r['breakdown']['source']);
         $this->assertSame(77, $r['breakdown']['snapshot_id']);
         $this->assertSame('v0.5.0', $r['breakdown']['pricing_version_snapshot']);
+        $this->assertFalse($r['breakdown']['addons_in_snapshot']);
     }
 
-    public function testResolveFromSnapshotDefaultsAddonToZero(): void
+    public function testResolveFromSnapshotAlwaysZeroAddons(): void
     {
-        // addon_price_snapshot is optional in v5; absence → 0.0.
         $r = (new ServiceRevenueResolver())->resolveFromSnapshot([
             'service_id'                   => 1,
             'base_price_snapshot'          => 200.0,

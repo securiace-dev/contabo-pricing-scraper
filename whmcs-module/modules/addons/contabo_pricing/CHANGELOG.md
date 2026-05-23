@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.5.0 — 2026-05-23 (A.6 complete — configurable options: observe → apply → curate → safe rollback)
+
+The **A.6 milestone**: an admin maps a Contabo plan to a WHMCS product, previews the
+curated configurable-option catalog, applies it idempotently with drift protection and
+a seeded capability matrix, and can now cleanly reverse it. Cut after a three-lens review
+(architect / edge-case / security) whose release-gating conditions are all addressed below.
+
+### Added — A.6.5
+- **`ConfigPurgeService`** (design §19) — config-object-aware purge. Deletes ONLY the
+  WHMCS configurable options the addon **created** (groups / options / sub-options /
+  `tblpricing(configoptions)` rows / product links), scoped strictly to the ids recorded
+  in the `mod_contabo_config_*_link` tables. Never touches a config object the addon
+  didn't create, nor any client / service / invoice / order. Idempotent. Closes the
+  prod-rollback gap: a mis-applied catalog now has a clean, ownership-scoped reversal
+  instead of leaving orphaned objects on the live product.
+- **Maintenance purge toggle** — opt-in `purge_config_objects` checkbox on the
+  maintenance page. Runs the config-object purge **before** the `mod_contabo_*` truncate
+  (so the ownership link tables are still readable), behind the existing typed-phrase +
+  CSRF + confirmation gating. Reports per-table delete counts; logs to the activity log.
+
+### Fixed — review-gated correctness on the revenue path
+- **`addon_price_snapshot` phantom column** (architect condition #1) —
+  `ServiceRevenueResolver::resolveFromSnapshot()` no longer reads a column the snapshot
+  table doesn't have. Addons are explicitly **not** part of the v1 snapshot revenue path
+  (the live `resolveForService` path is the one that sums `tblhostingaddons`); the result
+  carries `addons_in_snapshot => false` so the snapshot-vs-live difference is documented,
+  not a silent zero.
+- **Multi-currency guard on the resolver/snapshot side** (architect condition #2,
+  amendment #10) — `ServiceRevenueResolver` now resolves the service's billing currency
+  (via the client) and surfaces `currency_id` + `currency_supported`. A non-INR service
+  is flagged (never silently priced off INR catalog rows), and `ServiceConfigSnapshot`
+  logs a loud activity-log warning when capturing one. The adapter already refused
+  non-INR writes; this completes the half-built guard on the read side.
+
+### Tests
+- `ConfigPurgeServiceTest` (ownership scope held: addon objects deleted, non-addon
+  objects + clients untouched; idempotent; no-links no-op), multi-currency guard tests
+  (INR supported / non-INR flagged), and the corrected snapshot contract. Added
+  `delete()` to the `FakeCapsule` test double. Suite: 367 tests.
+
+### Known deferrals (scoped out of 0.5.0, tracked for 0.5.x / Phase C)
+- Sub-option + pricing + group **drift** coverage (v1 is option-level only).
+- An outer transaction around `apply()` (each upsert is its own transaction today; the
+  new purge toggle provides the reversal path in the meantime).
+- Per-image-category / per-sub-value **exposure** curation; pre-apply "diff against this
+  live product" screen; `addon_price_snapshot` column + capture; per-cycle option price
+  detail in the snapshot.
+- **Do NOT** wire the recorded `whole_config_below_floor` margin signal to drive
+  repricing without first backing config revenue out of the base candidate (billing-
+  critical, Phase C).
+- Compatibility-rule seeding (the matrix is wired into `SelectionValidator` but inert);
+  capability auto-apply gate stays dormant (all entries are `manual_assumption` — correct
+  for a no-provisioning release).
+
 ## 0.4.12 — 2026-05-23 (schema v6 — drift detection: re-apply won't clobber admin edits)
 
 ### Added

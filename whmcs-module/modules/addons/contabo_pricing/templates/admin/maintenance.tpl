@@ -163,13 +163,6 @@ require __DIR__ . '/_layout_open.tpl';
     A backup export is taken first.
   </div>
 
-  <p style="margin:0 0 10px; color:var(--muted); font-size:12.5px;">
-    Unlinking addon-created WHMCS configurable-option groups / products is
-    <strong>not yet implemented</strong> (that arrives in Phase A.6, once the link
-    tables exist). This purge only clears the addon's own
-    <code class="mono">mod_contabo_*</code> data.
-  </p>
-
   <form method="post" action="<?= $esc($module_link) ?>" style="margin:0;"
         data-cb-form="maintenance-purge"
         onsubmit="return confirm('This will delete ALL Contabo Pricing addon data. Continue?');">
@@ -179,6 +172,19 @@ require __DIR__ . '/_layout_open.tpl';
     <label style="display:flex; align-items:flex-start; gap:8px; margin:12px 0; font-size:13.5px; cursor:pointer;">
       <input type="checkbox" name="purge_confirm_checkbox" value="1" required style="margin-top:3px;">
       <span>I understand this deletes all Contabo Pricing addon data.</span>
+    </label>
+
+    <label style="display:flex; align-items:flex-start; gap:8px; margin:12px 0; font-size:13.5px; cursor:pointer;">
+      <input type="checkbox" name="purge_config_objects" value="1" style="margin-top:3px;">
+      <span>
+        <strong>Also delete the WHMCS configurable options this addon created.</strong>
+        Removes only the option groups / options / sub-options / pricing rows recorded
+        in the addon's link tables (i.e. created by Apply) and the product links to them.
+        It never touches a configurable option the addon didn't create, nor any client,
+        service, invoice or order. Leave unticked to keep them and clear only
+        <code class="mono">mod_contabo_*</code> data. Runs <em>before</em> the truncate
+        so the ownership records are still available.
+      </span>
     </label>
 
     <div class="cb-field" style="max-width:420px;">

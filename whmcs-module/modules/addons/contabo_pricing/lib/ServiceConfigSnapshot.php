@@ -67,6 +67,21 @@ class ServiceConfigSnapshot
         $version = $profileId > 0 ? $this->fetchLatestVersion($profileId) : null;
 
         $revenue = $this->resolver->resolveForService($serviceId);
+
+        // A.6.5 multi-currency guard (amendment 10): v1 snapshots are INR-only. If
+        // the service is billed in another currency the captured base/config figures
+        // are INR-derived and NOT its real revenue — record the flag and warn loudly
+        // so it's never silently treated as correct. We still capture (the row is
+        // useful for the selection round-trip) but mark it unsupported.
+        $currencySupported = (bool) ($revenue['breakdown']['currency_supported'] ?? true);
+        if (!$currencySupported && function_exists('logActivity')) {
+            logActivity(sprintf(
+                'Contabo Pricing: config snapshot for service #%d captured in INR-only v1 path but the service is billed in currency #%d — base/config figures are not its real revenue.',
+                $serviceId,
+                (int) ($revenue['breakdown']['currency_id'] ?? 0)
+            ));
+        }
+
         $selected = $this->recoverSelections($revenue);
         // Enriched selections carry each option's EUR delta (the cost basis) so
         // the snapshot is self-contained for Phase B's landedCostWithSelections.

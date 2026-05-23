@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.4.12';
+    public const VERSION = '0.5.0';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -1451,6 +1451,32 @@ class AdminController
             logActivity('Contabo Pricing: PURGE requested by admin #' . $adminId . ' — backing up then truncating mod_contabo_* tables.');
         }
 
+        // A.6.5 (§19) — OPT-IN: also remove the WHMCS configurable options the addon
+        // CREATED (groups/options/sub-options/pricing/product-links), scoped strictly
+        // to the ids in the link tables. This MUST run BEFORE the truncate below,
+        // because it reads mod_contabo_config_*_link to know what it owns — once those
+        // are truncated the ownership records are gone. It never touches a config
+        // object the addon didn't create, nor any client/service/invoice/order.
+        $configPurge = '';
+        if (!empty($req['purge_config_objects'])) {
+            try {
+                $c = (new ConfigPurgeService())->removeAddonCreatedWhmcsObjects();
+                $configPurge = sprintf(
+                    ' Addon-created WHMCS config objects removed: %d groups, %d options, %d sub-options, %d pricing rows, %d product links.',
+                    (int) $c['groups'], (int) $c['options'], (int) $c['subs'], (int) $c['sub_pricing'], (int) $c['product_links']
+                );
+                if (function_exists('logActivity')) {
+                    logActivity('Contabo Pricing: PURGE removed addon-created WHMCS config objects by admin #' . $adminId . ' —' . $configPurge);
+                }
+            } catch (\Throwable $e) {
+                if (function_exists('logActivity')) {
+                    logActivity('Contabo Pricing: config-object purge failed (mod_contabo_* NOT truncated) — ' . $e->getMessage());
+                }
+                $this->redirect('maintenance', ['flash' => 'Config-object purge failed; see activity log. No data was truncated.']);
+                return;
+            }
+        }
+
         try {
             // Back up every addon table to a timestamped *_purgebackup_ table,
             // then truncate. NEVER touches non mod_contabo_* tables.
@@ -1467,7 +1493,7 @@ class AdminController
                 ['key' => 'schema_version'],
                 ['value' => (string) Installer::SCHEMA_VERSION, 'updated_at' => date('Y-m-d H:i:s')]
             );
-            $this->redirect('maintenance', ['flash' => 'Module data purged. Backup tables created with suffix _purgebackup_' . $stamp . '.']);
+            $this->redirect('maintenance', ['flash' => 'Module data purged. Backup tables created with suffix _purgebackup_' . $stamp . '.' . $configPurge]);
         } catch (\Throwable $e) {
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing: purge failed — ' . $e->getMessage());

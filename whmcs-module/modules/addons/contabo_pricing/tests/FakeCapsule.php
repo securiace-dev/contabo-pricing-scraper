@@ -383,6 +383,39 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
         }
 
         /**
+         * Eloquent ::delete() — remove every row matching the where-clause from
+         * the in-memory store and return the number deleted (mirrors real
+         * Capsule). Records the call so assertions can inspect it.
+         */
+        public function delete(): int
+        {
+            $legacyWhere = [];
+            foreach ($this->where as $w) {
+                if ($w['op'] === '=') {
+                    $legacyWhere[$w['col']] = $w['val'];
+                }
+            }
+            $deleted = 0;
+            if (isset(Capsule::$tables[$this->table])) {
+                $kept = [];
+                foreach (Capsule::$tables[$this->table] as $row) {
+                    if ($this->rowMatches($row)) {
+                        $deleted++;
+                    } else {
+                        $kept[] = $row;
+                    }
+                }
+                Capsule::$tables[$this->table] = array_values($kept);
+            }
+            Capsule::$calls[] = [
+                'table'  => $this->table,
+                'where'  => $legacyWhere,
+                'delete' => $deleted,
+            ];
+            return $deleted;
+        }
+
+        /**
          * @param array<string,mixed> $values
          */
         public function insert(array $values): bool
