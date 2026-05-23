@@ -178,7 +178,12 @@ class RenewalEngine
             $now = new \DateTimeImmutable('now');
         }
 
-        $oldPrice   = (float) ($service['recurringamount'] ?? 0.0);
+        // `service_amount` is the canonical normalized service-row key (derived
+        // from the real tblhosting.amount column by the caller). `recurringamount`
+        // is kept as a backward-compatible alias — it is a normalized row key
+        // here, NOT a raw DB column. DB callers must alias `amount AS recurringamount`
+        // (or set service_amount) when building this row.
+        $oldPrice   = (float) ($service['service_amount'] ?? $service['recurringamount'] ?? 0.0);
         $cycle      = (string) ($service['billingcycle'] ?? '');
         $cycleMonths= CycleNormalizer::monthsForCycle($cycle);
         $mapping    = isset($service['mapping']) && is_array($service['mapping']) ? $service['mapping'] : [];
@@ -973,7 +978,7 @@ class RenewalEngine
         if (!empty($service['on_demand_renewal_in_flight'])) return 'on_demand_renewal_in_flight';
         if (!empty($service['manual_edit_detected']))         return 'manual_edit_detected';
 
-        $recurring = (float) ($service['recurringamount'] ?? 0.0);
+        $recurring = (float) ($service['service_amount'] ?? $service['recurringamount'] ?? 0.0); // canonical row key (not a raw column)
         if ($recurring <= 0.0) return 'recurring_amount_invalid';
 
         // Suspended is nuanced: blocking only if there's an unpaid invoice

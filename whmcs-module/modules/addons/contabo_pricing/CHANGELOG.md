@@ -1,5 +1,71 @@
 # Changelog
 
+## 0.5.1 — unreleased (hardening — real-WHMCS schema parity, complete)
+
+Closes the **complete** raw-`tblhosting.recurringamount` parity defect class
+surfaced by the production currency audit. `recurringamount` is a WHMCS API/model
+*field name* (the `UpdateClientProduct` LocalAPI param + the `WHMCS\Service\Service`
+accessor) — it is **not** a raw `tblhosting` column. The real recurring-charge
+column is **`amount`**. Raw Capsule reads/writes of `recurringamount` silently
+returned `0.0` or errored "Unknown column" on a live install; the schemaless test
+double (FakeCapsule) hid all of it.
+
+### Fixed — every raw `recurringamount` site → `tblhosting.amount`
+- **`ServiceRevenueResolver::fetchBase()`** reads `tblhosting.amount`. A missing
+  `amount` column now **throws `SchemaMismatchException`** (it is mandatory WHMCS
+  schema — fail loud, never mask a monetary value as `0.0`). `current_charge` is
+  documented + aliased (`service_amount`) as the WHMCS service amount — explicitly
+  **not** the pricing base (which comes from `tblpricing`).
+- **`CronDriver`** — candidate query now filters `where('amount','>',0)`. The
+  broken `new RenewalEngine()` (no-args) + `decideForCron`/`decide((int)…)` calls
+  (constructor/signature TypeErrors — pre-existing scaffold drift) are removed:
+  candidate loading is isolated into the testable `loadActiveMappedServiceIds()`,
+  and per-service RenewalEngine evaluation is **explicitly deferred to Phase B with
+  a clear log — no fake success, no broken call**.
+- **`BackfillCommand`** — replaced the JOIN that selected `h.recurringamount` with
+  two portable reads selecting `tblhosting.amount` (internal key renamed to
+  `service_amount`). Candidate loading is now wrapped in command-level error
+  handling (logs + exits safely `errors=1` instead of throwing uncaught before the
+  per-service try/catch).
+- **`ServicePriceWriter`** — the raw fallback `update(['recurringamount'=>…])` →
+  `update(['amount'=>…])`. The LocalAPI `UpdateClientProduct` **param stays
+  `recurringamount`** (correct API field) — documented inline so a future sed-style
+  edit can't conflate the two.
+- **`RenewalEngine`** — `$service['recurringamount']` reads now prefer a canonical
+  `service_amount` key with `recurringamount` kept as a backward-compatible alias;
+  commented as a normalized service-row key (NOT a raw column). DB callers must
+  alias `amount AS recurringamount` (or set `service_amount`).
+- **Test-harness parity**: resolver-exercising tests now seed `amount`
+  (+ `firstpaymentamount`). New regression
+  `testCurrentChargeComesFromTblhostingAmountNotRecurringamount` +
+  `testMissingAmountColumnThrowsSchemaMismatch`. **New suites**
+  `CronDriverTest`, `BackfillCommandTest`, `ServicePriceWriterTest` (the latter
+  proves LocalAPI uses `recurringamount` while the raw fallback writes `amount`).
+  `FakeCapsule` gained `whereIn`/`whereNotIn`/`select` so these paths are testable.
+
+### Added
+- **`CurrencySupportReport`** + read-only admin diagnostic (`action=currency-report`,
+  linked from Maintenance) — in-addon equivalent of the production currency audit.
+  Verdict: `no_non_inr` / `non_inr_unmapped` / `non_inr_mapped_active_risk`. Counts
+  meaningful (Active/Suspended/Pending) services by client currency; flags non-INR
+  services on mapped products. Zero writes; reads are column-projected; amounts are
+  labelled as the WHMCS service amount, not the pricing base.
+- **Live-schema smoke guard** at **`scripts/live-schema-smoke.{php,sh}`**
+  (repo-root `scripts/`, alongside `local-whmcs.sh` — NOT under the addon dir),
+  env-gated (`CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1`), `information_schema`-only,
+  read-only. Asserts `tblhosting.amount`/`firstpaymentamount` exist + the v6
+  `expected_hash` columns; skips safely without the flag/credentials. Verified
+  green on local dev WHMCS 8.13 + 9.0.
+
+### Migration
+- **No migration required.** Code/test fixes + new read-only diagnostics; no addon
+  table changed. Schema stays **v6**.
+
+### Deferred (broad hardening items, paused pending the parity class)
+- Drift extension to sub-options + pricing rows; pre-apply live diff screen;
+  purge dry-run mode; mandatory pre-deploy gate + deploy runbook; flash/error +
+  destructive-confirmation hardening.
+
 ## 0.5.0 — 2026-05-23 (A.6 complete — configurable options: observe → apply → curate → safe rollback)
 
 The **A.6 milestone**: an admin maps a Contabo plan to a WHMCS product, previews the

@@ -95,7 +95,7 @@ final class StdClassModeTest extends TestCase
 
     public function testServiceRevenueResolverSurvivesStdClass(): void
     {
-        Capsule::table('tblhosting')->insert(['id' => 1, 'packageid' => 2, 'billingcycle' => 'monthly', 'recurringamount' => 31.0]);
+        Capsule::table('tblhosting')->insert(['id' => 1, 'packageid' => 2, 'billingcycle' => 'monthly', 'amount' => 31.0]);
         Capsule::table('tblpricing')->insert(['type' => 'product', 'relid' => 2, 'currency' => 1, 'monthly' => 10.0]);
         Capsule::table('tblhostingconfigoptions')->insert(['relid' => 1, 'configid' => 1, 'optionid' => 100, 'qty' => 1]);
         Capsule::table('tblpricing')->insert(['type' => 'configoptions', 'relid' => 100, 'currency' => 1, 'monthly' => 1.5]);

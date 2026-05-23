@@ -122,6 +122,10 @@ final class ServicePriceWriter
                 /** @var array<string,mixed> $r */
                 $r = \localAPI('UpdateClientProduct', [
                     'serviceid'       => $serviceId,
+                    // CORRECT: `recurringamount` is the UpdateClientProduct API
+                    // field (WHMCS maps it to the `amount` column internally). This
+                    // is an API param, NOT a raw column — do NOT "fix" it to `amount`
+                    // (that would break the API call). The raw fallback uses `amount`.
                     'recurringamount' => $formatted,
                     // Notifier owns customer email; never let LocalAPI send it.
                     'noemail'         => true,
@@ -155,9 +159,14 @@ final class ServicePriceWriter
      */
     private function rawUpdate(int $serviceId, float $newAmount): void
     {
+        // RAW fallback writes the REAL column `tblhosting.amount`. Do NOT change
+        // this to `recurringamount` — that is NOT a raw tblhosting column (it is
+        // the LocalAPI / Service-model FIELD name; see the UpdateClientProduct
+        // param in writeViaLocalApiOrFallback(), which is correct there). A raw
+        // update of `recurringamount` errors "Unknown column" on a live WHMCS.
         Capsule::table('tblhosting')
             ->where('id', $serviceId)
-            ->update(['recurringamount' => $newAmount]);
+            ->update(['amount' => $newAmount]);
     }
 
     private function logFallback(int $serviceId, string $message): void

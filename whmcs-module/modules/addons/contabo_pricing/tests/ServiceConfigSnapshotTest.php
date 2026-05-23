@@ -23,8 +23,8 @@ final class ServiceConfigSnapshotTest extends TestCase
 
     private function seedMappedService(): void
     {
-        // Service #1 on product #2, monthly. recurringamount is stale/irrelevant.
-        Capsule::table('tblhosting')->insert(['id' => 1, 'packageid' => 2, 'billingcycle' => 'monthly', 'recurringamount' => 31.0]);
+        // Service #1 on product #2, monthly. `amount` (real WHMCS column) is stale/irrelevant here.
+        Capsule::table('tblhosting')->insert(['id' => 1, 'packageid' => 2, 'billingcycle' => 'monthly', 'amount' => 31.0]);
         // Product catalog base = 10.00/mo.
         Capsule::table('tblpricing')->insert(['type' => 'product', 'relid' => 2, 'currency' => 1, 'monthly' => 10.0]);
 
@@ -100,7 +100,7 @@ final class ServiceConfigSnapshotTest extends TestCase
     public function testUnmappedServiceStillSnapshots(): void
     {
         // Service with no mapping → still captures base + config, marked unmapped.
-        Capsule::table('tblhosting')->insert(['id' => 9, 'packageid' => 999, 'billingcycle' => 'monthly', 'recurringamount' => 0.0]);
+        Capsule::table('tblhosting')->insert(['id' => 9, 'packageid' => 999, 'billingcycle' => 'monthly', 'amount' => 0.0]);
         Capsule::table('tblpricing')->insert(['type' => 'product', 'relid' => 999, 'currency' => 1, 'monthly' => 5.0]);
 
         $id = $this->snap()->capture(9);

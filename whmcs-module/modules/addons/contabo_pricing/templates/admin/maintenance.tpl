@@ -95,6 +95,7 @@ require __DIR__ . '/_layout_open.tpl';
     </p>
   </div>
   <div style="display:flex; gap:8px;">
+    <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=currency-report">Currency support</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=dashboard">&larr; Dashboard</a>
   </div>
 </header>

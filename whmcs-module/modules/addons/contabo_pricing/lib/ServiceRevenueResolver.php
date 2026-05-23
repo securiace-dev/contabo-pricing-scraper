@@ -107,7 +107,8 @@ class ServiceRevenueResolver
             'service_id'         => $serviceId,
             'billing_cycle'      => $billingCycle,
             'cycle_column'       => $cycleColumn,
-            'current_charge'     => $currentCharge, // stale tblhosting.recurringamount, for drift comparison
+            'current_charge'     => $currentCharge, // WHMCS service amount (tblhosting.amount) — drift comparison only, NOT the pricing base
+            'service_amount'     => $currentCharge, // explicit label for the WHMCS recurring service amount
             'currency_id'        => $currencyId,
             'currency_supported' => $currencySupported, // false ⇒ figures are NOT real revenue (non-INR service)
             'config_options'     => $configBreakdown,
@@ -190,7 +191,7 @@ class ServiceRevenueResolver
     /**
      * Base recurring + billing cycle for the service.
      *
-     * @return array{recurringamount:float, billingcycle:string}
+     * @return array{base:float, billingcycle:string, current_charge:float, service_amount:float, currency_id:int}
      */
     protected function fetchBase(int $serviceId): array
     {
@@ -217,11 +218,12 @@ class ServiceRevenueResolver
         }
 
         // The TRUE base is the PRODUCT's current catalog recurring price for the
-        // cycle — NOT tblhosting.recurringamount. recurringamount is a snapshot
-        // that already folds in config options and DRIFTS when their prices
+        // cycle — NOT the service's stored charge (tblhosting.amount). The stored
+        // charge already folds in config options and DRIFTS when their prices
         // change (preflight §5), so reading it here + adding config again would
-        // double-count. We keep recurringamount only as `current_charge`: what
-        // the customer is billed today, used by callers for drift comparison.
+        // double-count. We keep it only as `current_charge` (read below from the
+        // real `amount` column): what the customer is billed today, for drift
+        // comparison.
         $col = $this->cycleColumn($cycle);
         $pp = Capsule::table('tblpricing')
             ->where('type', 'product')
@@ -236,10 +238,30 @@ class ServiceRevenueResolver
             $base = 0.0;
         }
 
+        // current_charge = the WHMCS service recurring amount, read from the REAL
+        // column `tblhosting.amount`. There is NO `recurringamount` column on a
+        // live WHMCS install — that is an API/model field name, not a raw column;
+        // the previous read of `recurringamount` silently resolved to 0.0 in prod
+        // (caught by the production currency audit). The live-schema smoke now
+        // guards this. current_charge is what the customer is billed today, used
+        // by callers ONLY for drift comparison — it is NOT the pricing base (the
+        // base comes from tblpricing above).
+        if (!array_key_exists('amount', $row)) {
+            // tblhosting.amount is MANDATORY WHMCS schema (the live-schema smoke
+            // proves it). A missing column is a real schema mismatch — fail loud
+            // rather than mask a monetary value as 0.0.
+            throw new SchemaMismatchException(
+                'tblhosting.amount missing for service #' . $serviceId
+                . ' — WHMCS schema mismatch (mandatory recurring-charge column absent).'
+            );
+        }
+        $currentCharge = (float) $row['amount'];
+
         return [
             'base'           => $base,
             'billingcycle'   => $cycle,
-            'current_charge' => (float) ($row['recurringamount'] ?? 0.0),
+            'current_charge' => $currentCharge,
+            'service_amount' => $currentCharge, // clearer alias: the WHMCS tblhosting.amount value
             'currency_id'    => $currencyId,
         ];
     }

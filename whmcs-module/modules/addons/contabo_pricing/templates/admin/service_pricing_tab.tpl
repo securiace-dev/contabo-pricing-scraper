@@ -6,8 +6,8 @@
  * Phase A is read-only: no controls. Shows
  *   - active policy badge + locked values + manual override state,
  *   - last 5 decisions (link out to the audit log for full history),
- *   - current `recurringamount` vs the most recently APPLIED decision's
- *     `proposed_new_price` so admins can spot manual edits ("manual_edit_detected").
+ *   - current service amount (tblhosting.`amount`) vs the most recently APPLIED
+ *     decision's `proposed_new_price` so admins can spot manual edits ("manual_edit_detected").
  *
  * @var \Closure $esc
  * @var string   $module_link
@@ -18,7 +18,10 @@
  */
 
 $cb_policy  = $policy_row['policy'] ?? '';
-$cb_current = (float) ($service['recurringamount'] ?? 0);
+// tblhosting's real recurring-charge column is `amount` (NOT `recurringamount`,
+// which is an API/model field, not a raw column). `$service` here is a raw
+// tblhosting row; recurringamount kept only as a defensive back-compat fallback.
+$cb_current = (float) ($service['amount'] ?? $service['recurringamount'] ?? 0);
 $cb_appliedPrice = $latest_applied ? (float) ($latest_applied['proposed_new_price'] ?? 0) : null;
 $cb_drift = ($cb_appliedPrice !== null && $cb_appliedPrice > 0)
     ? abs($cb_current - $cb_appliedPrice) >= 0.005 : false;

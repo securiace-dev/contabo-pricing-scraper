@@ -69,6 +69,7 @@ class AdminController
             case 'maintenance':          $this->maintenance(); return;
             case 'maintenance-migrate':  $this->maintenanceMigrate(); return;
             case 'maintenance-purge':    $this->maintenancePurge($req); return;
+            case 'currency-report':      $this->currencyReport(); return;
             case 'dashboard':
             default:                 $this->dashboard(); return;
         }
@@ -1331,6 +1332,28 @@ class AdminController
      * but to keep this addon decoupled from internals we use a tiny PHP-include
      * template loop instead — every .tpl is plain PHP under a controlled scope.
      */
+    /**
+     * 0.5.1 — READ-ONLY multi-currency exposure diagnostic (CurrencySupportReport).
+     * Surfaces whether non-INR services exist and whether any are on mapped
+     * products (which would make the INR-only revenue guard an ACTIVE risk).
+     * Zero writes. Errors render a generic message + log full detail (no raw
+     * exception text in the UI).
+     */
+    private function currencyReport(): void
+    {
+        $report = null;
+        $error  = null;
+        try {
+            $report = (new CurrencySupportReport())->build();
+        } catch (\Throwable $e) {
+            $error = 'Could not build the currency report; see the activity log for detail.';
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: currency report error — ' . $e->getMessage());
+            }
+        }
+        $this->render('currency_report.tpl', ['report' => $report, 'error' => $error]);
+    }
+
     private function render(string $tpl, array $data): void
     {
         $path = $this->templateDir . '/' . $tpl;

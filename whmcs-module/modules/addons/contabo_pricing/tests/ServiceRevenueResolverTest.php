@@ -40,11 +40,13 @@ final class ServiceRevenueResolverTest extends TestCase
     {
         $packageId = 7000 + $serviceId;
         Capsule::table('tblhosting')->insert([
-            'id'              => $serviceId,
-            'packageid'       => $packageId,
-            // recurringamount is the stale stored charge → exposed as current_charge.
-            'recurringamount' => $base['base'],
-            'billingcycle'    => $base['billingcycle'],
+            'id'                 => $serviceId,
+            'packageid'          => $packageId,
+            // `amount` is the REAL WHMCS stored-charge column (there is NO
+            // `recurringamount` column on a live install) → exposed as current_charge.
+            'amount'             => $base['base'],
+            'firstpaymentamount' => $base['base'],
+            'billingcycle'       => $base['billingcycle'],
         ]);
 
         // Product catalog price (the real base source). Set the service's cycle
@@ -181,7 +183,7 @@ final class ServiceRevenueResolverTest extends TestCase
         // A.6.5 multi-currency guard: a service whose client bills in a non-INR
         // currency is flagged so its INR-derived figures are never silently
         // treated as real revenue.
-        Capsule::table('tblhosting')->insert(['id' => 9, 'userid' => 50, 'packageid' => 2, 'billingcycle' => 'monthly', 'recurringamount' => 31.0]);
+        Capsule::table('tblhosting')->insert(['id' => 9, 'userid' => 50, 'packageid' => 2, 'billingcycle' => 'monthly', 'amount' => 31.0]);
         Capsule::table('tblpricing')->insert(['type' => 'product', 'relid' => 2, 'currency' => 1, 'monthly' => 10.0]);
         Capsule::table('tblclients')->insert(['id' => 50, 'currency' => 2]); // USD
 
@@ -192,13 +194,43 @@ final class ServiceRevenueResolverTest extends TestCase
 
     public function testInrServiceFlaggedSupported(): void
     {
-        Capsule::table('tblhosting')->insert(['id' => 10, 'userid' => 51, 'packageid' => 2, 'billingcycle' => 'monthly', 'recurringamount' => 31.0]);
+        Capsule::table('tblhosting')->insert(['id' => 10, 'userid' => 51, 'packageid' => 2, 'billingcycle' => 'monthly', 'amount' => 31.0]);
         Capsule::table('tblpricing')->insert(['type' => 'product', 'relid' => 2, 'currency' => 1, 'monthly' => 10.0]);
         Capsule::table('tblclients')->insert(['id' => 51, 'currency' => 1]); // INR
 
         $r = (new ServiceRevenueResolver())->resolveForService(10);
         $this->assertTrue($r['breakdown']['currency_supported']);
         $this->assertSame(1, $r['breakdown']['currency_id']);
+    }
+
+    public function testCurrentChargeComesFromTblhostingAmountNotRecurringamount(): void
+    {
+        // REGRESSION for the prod schema-parity bug found in the currency audit:
+        // real tblhosting has `amount` (and `firstpaymentamount`), NOT
+        // `recurringamount`. Seed ONLY the real columns. Pre-fix the resolver read
+        // $row['recurringamount'] → current_charge silently 0.0 → this FAILED.
+        Capsule::table('tblhosting')->insert([
+            'id' => 77, 'packageid' => 2, 'billingcycle' => 'monthly',
+            'amount' => 515.0, 'firstpaymentamount' => 590.0,
+        ]);
+        Capsule::table('tblpricing')->insert(['type' => 'product', 'relid' => 2, 'currency' => 1, 'monthly' => 400.0]);
+
+        $r = (new ServiceRevenueResolver())->resolveForService(77);
+        $this->assertSame(515.0, $r['breakdown']['current_charge'], 'current_charge must read tblhosting.amount');
+        $this->assertSame(515.0, $r['breakdown']['service_amount']);
+        $this->assertSame(400.0, $r['base'], 'base still comes from tblpricing, independent of amount');
+    }
+
+    public function testMissingAmountColumnThrowsSchemaMismatch(): void
+    {
+        // tblhosting.amount is mandatory WHMCS schema. A row lacking it is a real
+        // schema mismatch — the resolver must throw, NOT mask it as a 0.0 monetary
+        // value. (The live-schema smoke is the environment-level guard for this.)
+        Capsule::table('tblhosting')->insert(['id' => 78, 'packageid' => 2, 'billingcycle' => 'monthly']);
+        Capsule::table('tblpricing')->insert(['type' => 'product', 'relid' => 2, 'currency' => 1, 'monthly' => 400.0]);
+
+        $this->expectException(\ContaboPricing\SchemaMismatchException::class);
+        (new ServiceRevenueResolver())->resolveForService(78);
     }
 
     public function testResolveFromSnapshotSumsBaseAndConfigOnly(): void

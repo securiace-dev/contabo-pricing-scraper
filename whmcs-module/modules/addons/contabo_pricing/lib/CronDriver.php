@@ -86,45 +86,63 @@ final class CronDriver
             return;
         }
 
-        // Mapped product IDs → load active services on those products.
-        $productIds = Capsule::table('mod_contabo_mapping')
-            ->where('active', true)
-            ->pluck('product_id')
-            ->all();
-        if (empty($productIds)) {
+        $serviceIds = $this->loadActiveMappedServiceIds();
+        if (empty($serviceIds)) {
             return;
         }
 
-        // tblhosting query: Active services only, with positive recurringamount.
-        // We intentionally do NOT load Suspended/Cancelled here — RenewalEngine
-        // will skip them anyway but Phase A keeps the cron tight on active rows.
-        $services = Capsule::table('tblhosting')
-            ->whereIn('packageid', $productIds)
+        // Phase A observe: per-service RenewalEngine evaluation needs the full
+        // service-row contract (settings + mapping/profile/version/flags), which
+        // is wired in Phase B. We deliberately do NOT invoke RenewalEngine here
+        // with a partial/incorrect signature — its constructor requires $settings
+        // and decide() takes a full service-row array, so calling it with a bare
+        // service id would TypeError. Log the candidate count honestly; no fake
+        // success, no broken call.
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing CronDriver (Phase A observe): '
+                . count($serviceIds) . ' active mapped service(s) identified; '
+                . 'per-service RenewalEngine evaluation is wired in Phase B (not invoked).');
+        }
+    }
+
+    /**
+     * Active services on Contabo-mapped products, by id. Reads the REAL
+     * `tblhosting.amount` column (NOT `recurringamount`, which is not a raw
+     * column). Isolated + testable — no RenewalEngine dependency. Public so the
+     * candidate-loading logic can be unit-tested without the engine.
+     *
+     * @return list<int>
+     */
+    public function loadActiveMappedServiceIds(): array
+    {
+        $productIds = [];
+        foreach (Capsule::table('mod_contabo_mapping')->where('active', true)->get() as $m) {
+            $m = (array) $m;
+            $pid = (int) ($m['product_id'] ?? 0);
+            if ($pid > 0) {
+                $productIds[$pid] = $pid;
+            }
+        }
+        if (empty($productIds)) {
+            return [];
+        }
+
+        $ids = [];
+        $rows = Capsule::table('tblhosting')
+            ->whereIn('packageid', array_values($productIds))
             ->where('domainstatus', 'Active')
-            ->where('recurringamount', '>', 0)
+            ->where('amount', '>', 0)
             ->select(['id'])
             ->limit(1000)
             ->get();
-
-        foreach ($services as $svc) {
-            try {
-                /** @var class-string $engineCls */
-                $engineCls = '\\ContaboPricing\\RenewalEngine';
-                $engine = new $engineCls();
-                if (method_exists($engine, 'decideForCron')) {
-                    $engine->decideForCron((int) $svc->id, $this->cronRunId);
-                } elseif (method_exists($engine, 'decide')) {
-                    // Fallback to whatever signature Agent B finalizes; pass
-                    // the service id + run id positionally.
-                    $engine->decide((int) $svc->id, $this->cronRunId);
-                }
-            } catch (\Throwable $e) {
-                if (function_exists('logActivity')) {
-                    logActivity('Contabo Pricing CronDriver observe failed for service '
-                        . (int) $svc->id . ': ' . $e->getMessage());
-                }
+        foreach ($rows as $r) {
+            $r = (array) $r;
+            $id = (int) ($r['id'] ?? 0);
+            if ($id > 0) {
+                $ids[] = $id;
             }
         }
+        return $ids;
     }
 
     /**

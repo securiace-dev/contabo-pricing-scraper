@@ -335,6 +335,20 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
             return $this;
         }
 
+        /** @param array<int,mixed> $values */
+        public function whereIn(string $column, array $values): self
+        {
+            $this->where[] = ['col' => $column, 'op' => 'in', 'val' => array_values($values)];
+            return $this;
+        }
+
+        /** @param array<int,mixed> $values */
+        public function whereNotIn(string $column, array $values): self
+        {
+            $this->where[] = ['col' => $column, 'op' => 'not_in', 'val' => array_values($values)];
+            return $this;
+        }
+
         public function orderByDesc(string $col): self
         {
             $this->orderBy[$col] = 'desc';
@@ -350,6 +364,18 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
         public function limit(int $n): self
         {
             $this->limit = $n;
+            return $this;
+        }
+
+        /**
+         * Column projection is a no-op here — FakeCapsule always returns full
+         * rows, so callers read whatever columns they seeded. Accepts both
+         * select(['a','b']) and select('a','b') forms.
+         *
+         * @param mixed ...$columns
+         */
+        public function select(...$columns): self
+        {
             return $this;
         }
 
@@ -588,6 +614,12 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
                         break;
                     case '>=':
                         if (!($rowVal >= $val)) return false;
+                        break;
+                    case 'in':
+                        if (!in_array($rowVal, (array) $val, false)) return false;
+                        break;
+                    case 'not_in':
+                        if (in_array($rowVal, (array) $val, false)) return false;
                         break;
                     default:
                         return false;
