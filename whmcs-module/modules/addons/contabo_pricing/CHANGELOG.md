@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.5.1 — unreleased (hardening — real-WHMCS schema parity, complete)
+## 0.5.1 — 2026-05-24 (hardening — real-WHMCS schema parity + operational safety)
 
 Closes the **complete** raw-`tblhosting.recurringamount` parity defect class
 surfaced by the production currency audit. `recurringamount` is a WHMCS API/model
