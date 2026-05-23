@@ -57,14 +57,29 @@ double (FakeCapsule) hid all of it.
   `expected_hash` columns; skips safely without the flag/credentials. Verified
   green on local dev WHMCS 8.13 + 9.0.
 
-### Migration
-- **No migration required.** Code/test fixes + new read-only diagnostics; no addon
-  table changed. Schema stays **v6**.
+### Hardening (operational safety — every billing-impacting write now has preview/dry-run/diff coverage)
+- **Mandatory pre-deploy gate** `scripts/predeploy-check.sh` (fail-closed: unit suite
+  + PHP 7.4 lint + live-schema smoke 8.13/9.0 + real-WHMCS integration smoke; never
+  touches prod) + `docs/DEPLOY_RUNBOOK.md` (addon-scoped rsync/chown procedure +
+  gotchas). The integration smoke gained a real-schema parity section.
+- **ConfigPurgeService dry-run** — `previewRemoval()` counts exactly what the purge
+  would delete, writing nothing; a one-click "Preview purge (dry-run)" on the
+  maintenance page (no confirmation phrase required, read-only).
+- **Pre-apply live diff** — `ConfigurableOptionsSyncer::diff()` + the `config-diff`
+  screen show create/update/noop/drift_skip per dimension against the live product
+  BEFORE any write; the preview's Apply routes through the diff (CSRF + confirm live
+  on the diff screen).
+- **Drift extended to the value level** — sub-option + recurring pricing drift via
+  `value_link.expected_hash`; a hand-edited live sub-option/price is flagged
+  (`drift_skipped`) and skipped on re-apply, never clobbered.
+- **Flash/error hardening** — admin error paths show a generic message + log full
+  detail (no raw exception/SQLSTATE leak; security review S2). config-apply gains an
+  audit-trail log (admin id + product + outcome), consistent with maintenance-purge.
 
-### Deferred (broad hardening items, paused pending the parity class)
-- Drift extension to sub-options + pricing rows; pre-apply live diff screen;
-  purge dry-run mode; mandatory pre-deploy gate + deploy runbook; flash/error +
-  destructive-confirmation hardening.
+### Migration
+- **No migration required** for any 0.5.1 work — parity is a code/test fix, the
+  diagnostics + diff are read-only, and value-level drift reuses the existing v6
+  `expected_hash` columns. Schema stays **v6**.
 
 ## 0.5.0 — 2026-05-23 (A.6 complete — configurable options: observe → apply → curate → safe rollback)
 
