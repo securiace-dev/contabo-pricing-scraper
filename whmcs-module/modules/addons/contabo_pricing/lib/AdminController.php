@@ -943,7 +943,10 @@ class AdminController
             $parsed = DimensionParser::parse($optionsMap);
             $specs  = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
         } catch (\Throwable $e) {
-            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Cannot apply — API error loading options: ' . $e->getMessage()]);
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing config-apply API error (profile #' . $id . '): ' . $e->getMessage());
+            }
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Cannot apply — error loading options from the API; see the activity log for detail.']);
             return;
         }
         if ($specs === []) {
@@ -971,7 +974,7 @@ class AdminController
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing config-apply error (profile #' . $id . '): ' . $e->getMessage());
             }
-            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Apply failed: ' . $e->getMessage()]);
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Apply failed; see the activity log for detail.']);
             return;
         }
 
@@ -995,6 +998,12 @@ class AdminController
             (int) $s['created'], (int) $s['updated'], (int) $s['noop'], (int) $s['skipped'],
             (int) $r['options'], (int) $r['values'], $capSeeded
         );
+        // Audit trail for the destructive write (consistent with maintenance-purge):
+        // record the admin + product + outcome in the WHMCS activity log.
+        if (function_exists('logActivity')) {
+            $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+            logActivity('Contabo Pricing: config-apply by admin #' . $adminId . ' (profile #' . $id . ') — ' . $msg);
+        }
         $this->redirect('config-preview', ['id' => $id, 'flash' => $msg]);
     }
 
@@ -1356,7 +1365,10 @@ class AdminController
             $r = $api->refresh();
             $this->redirect('dashboard', ['flash' => "Refresh queued: {$r['job_id']}"]);
         } catch (\Throwable $e) {
-            $this->redirect('dashboard', ['flash' => 'Refresh failed: ' . $e->getMessage()]);
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing refresh-api error: ' . $e->getMessage());
+            }
+            $this->redirect('dashboard', ['flash' => 'Refresh failed; see the activity log for detail.']);
         }
     }
 
@@ -2048,7 +2060,10 @@ class AdminController
             }
             $this->redirect('tax-settings', ['flash' => 'Tax settings saved.']);
         } catch (\Throwable $e) {
-            $this->redirect('tax-settings', ['flash' => 'Save failed: ' . $e->getMessage()]);
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing tax-settings save error: ' . $e->getMessage());
+            }
+            $this->redirect('tax-settings', ['flash' => 'Save failed; see the activity log for detail.']);
         }
     }
 
@@ -2160,8 +2175,10 @@ class AdminController
                 if ($latestApplied) { $latestApplied = (array) $latestApplied; }
             }
         } catch (\Throwable $e) {
-            return '<div style="color:#b91c1c">Contabo Pricing tab render error: '
-                . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</div>';
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing service-pricing-tab render error (service #' . $serviceId . '): ' . $e->getMessage());
+            }
+            return '<div style="color:#b91c1c">Contabo Pricing tab unavailable — see the activity log for detail.</div>';
         }
 
         $path = $this->templateDir . '/service_pricing_tab.tpl';
