@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.2.1",
-  "generated_at": "2026-05-22T19:21:43.933Z",
+  "generated_at": "2026-05-23T08:27:19.288Z",
   "plan_count": 16,
   "plans": [
     {
@@ -9,7 +9,7 @@
       "base_storage": "75 GB NVMe or 150 GB SSD",
       "cpu": "4 vCPU Cores",
       "family": "Cloud VPS",
-      "fetched_at": "2026-05-22T19:21:39.160Z",
+      "fetched_at": "2026-05-23T08:27:16.150Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -72,7 +72,7 @@
       "base_storage": "100 GB NVMe or 200 GB SSD",
       "cpu": "6 vCPU Cores",
       "family": "Cloud VPS",
-      "fetched_at": "2026-05-22T19:21:40.544Z",
+      "fetched_at": "2026-05-23T08:27:16.106Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -135,7 +135,7 @@
       "base_storage": "200 GB NVMe or 400 GB SSD",
       "cpu": "8 vCPU Cores",
       "family": "Cloud VPS",
-      "fetched_at": "2026-05-22T19:21:43.053Z",
+      "fetched_at": "2026-05-23T08:27:16.228Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -198,7 +198,7 @@
       "base_storage": "250 GB NVMe or 500 GB SSD",
       "cpu": "12 vCPU Cores",
       "family": "Cloud VPS",
-      "fetched_at": "2026-05-22T19:21:39.119Z",
+      "fetched_at": "2026-05-23T08:27:16.438Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -261,7 +261,7 @@
       "base_storage": "300 GB NVMe or 600 GB SSD",
       "cpu": "16 vCPU Cores",
       "family": "Cloud VPS",
-      "fetched_at": "2026-05-22T19:21:38.740Z",
+      "fetched_at": "2026-05-23T08:27:15.933Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -324,7 +324,7 @@
       "base_storage": "350 GB NVMe or 700 GB SSD",
       "cpu": "18 vCPU Cores",
       "family": "Cloud VPS",
-      "fetched_at": "2026-05-22T19:21:43.484Z",
+      "fetched_at": "2026-05-23T08:27:16.348Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -387,7 +387,7 @@
       "base_storage": "300 GB SSD",
       "cpu": "2 vCPU Cores",
       "family": "Storage VPS",
-      "fetched_at": "2026-05-22T19:21:43.917Z",
+      "fetched_at": "2026-05-23T08:27:16.237Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -450,7 +450,7 @@
       "base_storage": "400 GB SSD",
       "cpu": "3 vCPU Cores",
       "family": "Storage VPS",
-      "fetched_at": "2026-05-22T19:21:40.635Z",
+      "fetched_at": "2026-05-23T08:27:16.178Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -513,7 +513,7 @@
       "base_storage": "1 TB SSD",
       "cpu": "6 vCPU Cores",
       "family": "Storage VPS",
-      "fetched_at": "2026-05-22T19:21:40.065Z",
+      "fetched_at": "2026-05-23T08:27:18.842Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -576,7 +576,7 @@
       "base_storage": "1.2 TB SSD",
       "cpu": "8 vCPU Cores",
       "family": "Storage VPS",
-      "fetched_at": "2026-05-22T19:21:43.197Z",
+      "fetched_at": "2026-05-23T08:27:19.004Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -639,7 +639,7 @@
       "base_storage": "1.4 TB SSD",
       "cpu": "14 vCPU Cores",
       "family": "Storage VPS",
-      "fetched_at": "2026-05-22T19:21:40.159Z",
+      "fetched_at": "2026-05-23T08:27:18.304Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -702,7 +702,7 @@
       "base_storage": "180 GB NVMe",
       "cpu": "3 Physical Cores",
       "family": "Cloud VDS",
-      "fetched_at": "2026-05-22T19:21:40.187Z",
+      "fetched_at": "2026-05-23T08:27:18.955Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -765,7 +765,7 @@
       "base_storage": "240 GB NVMe",
       "cpu": "4 Physical Cores",
       "family": "Cloud VDS",
-      "fetched_at": "2026-05-22T19:21:41.615Z",
+      "fetched_at": "2026-05-23T08:27:18.581Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -828,7 +828,7 @@
       "base_storage": "360 GB NVMe",
       "cpu": "6 Physical Cores",
       "family": "Cloud VDS",
-      "fetched_at": "2026-05-22T19:21:42.010Z",
+      "fetched_at": "2026-05-23T08:27:19.041Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -891,7 +891,7 @@
       "base_storage": "480 GB NVMe",
       "cpu": "8 Physical Cores",
       "family": "Cloud VDS",
-      "fetched_at": "2026-05-22T19:21:41.944Z",
+      "fetched_at": "2026-05-23T08:27:19.271Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
@@ -954,7 +954,7 @@
       "base_storage": "720 GB NVMe",
       "cpu": "12 Physical Cores",
       "family": "Cloud VDS",
-      "fetched_at": "2026-05-22T19:21:42.882Z",
+      "fetched_at": "2026-05-23T08:27:19.193Z",
       "password_rules": {
         "alphanumeric_only": true,
         "max_length": 30,
