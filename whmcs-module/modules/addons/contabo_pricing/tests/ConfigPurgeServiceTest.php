@@ -81,4 +81,35 @@ final class ConfigPurgeServiceTest extends TestCase
         $this->assertSame(0, array_sum($counts));
         $this->assertNotNull(Capsule::table('tblproductconfiggroups')->where('id', 11)->first());
     }
+
+    public function testPreviewRemovalCountsButDeletesNothing(): void
+    {
+        $this->seed();
+        $svc = new ConfigPurgeService();
+
+        $preview = $svc->previewRemoval();
+        // Same counts the real purge would produce…
+        $this->assertSame(['subs' => 1, 'sub_pricing' => 1, 'options' => 1, 'product_links' => 1, 'groups' => 1], $preview);
+
+        // …but NOTHING was deleted — every addon object is still present.
+        $this->assertNotNull(Capsule::table('tblproductconfiggroups')->where('id', 10)->first());
+        $this->assertNotNull(Capsule::table('tblproductconfigoptions')->where('id', 20)->first());
+        $this->assertNotNull(Capsule::table('tblproductconfigoptionssub')->where('id', 30)->first());
+        $this->assertNotNull(Capsule::table('tblpricing')->where('id', 40)->first());
+    }
+
+    public function testPreviewMatchesActualRemovalCounts(): void
+    {
+        $this->seed();
+        $preview = (new ConfigPurgeService())->previewRemoval();
+        $actual  = (new ConfigPurgeService())->removeAddonCreatedWhmcsObjects();
+        $this->assertSame($preview, $actual, 'dry-run counts must equal the real purge counts on the same fixture');
+    }
+
+    public function testPreviewWithNoLinksIsAllZeros(): void
+    {
+        Capsule::table('tblproductconfiggroups')->insert(['id' => 11, 'name' => 'Someone Else']);
+        $preview = (new ConfigPurgeService())->previewRemoval();
+        $this->assertSame(['subs' => 0, 'sub_pricing' => 0, 'options' => 0, 'product_links' => 0, 'groups' => 0], $preview);
+    }
 }

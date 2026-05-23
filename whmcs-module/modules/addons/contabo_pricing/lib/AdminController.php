@@ -1459,6 +1459,15 @@ class AdminController
     private function maintenancePurge(array $req): void
     {
         if (!$this->verifyToken()) { return; }
+
+        // DRY-RUN (preview only): report the exact blast radius — what the purge
+        // WOULD remove — WITHOUT deleting or truncating anything. Read-only, so no
+        // typed confirmation phrase is required.
+        if (!empty($req['purge_dry_run'])) {
+            $this->maintenancePurgePreview();
+            return;
+        }
+
         if (empty($req['purge_confirm_checkbox'])) {
             $this->redirect('maintenance', ['flash' => 'Purge cancelled — confirmation checkbox not ticked.']);
             return;
@@ -1522,6 +1531,36 @@ class AdminController
                 logActivity('Contabo Pricing: purge failed — ' . $e->getMessage());
             }
             $this->redirect('maintenance', ['flash' => 'Purge failed; see activity log. No tables were truncated past the failure point.']);
+        }
+    }
+
+    /**
+     * DRY-RUN preview of the purge: counts the exact blast radius — addon-created
+     * WHMCS config objects (via ConfigPurgeService::previewRemoval) plus the
+     * mod_contabo_* row counts a truncate would clear — and flashes it. Writes
+     * nothing: no delete, no truncate, no backup.
+     */
+    private function maintenancePurgePreview(): void
+    {
+        try {
+            $config = (new ConfigPurgeService())->previewRemoval();
+            $tableCount = 0;
+            $rowTotal   = 0;
+            foreach ($this->addonTables() as $t) {
+                $tableCount++;
+                $rowTotal += (int) Capsule::table($t)->count();
+            }
+            $msg = sprintf(
+                'DRY-RUN preview — nothing was deleted. A real purge would truncate %d mod_contabo_* tables (%d rows total) and, if the config-object option is ticked, remove addon-created WHMCS config objects: %d groups, %d options, %d sub-options, %d pricing rows, %d product links.',
+                $tableCount, $rowTotal,
+                (int) $config['groups'], (int) $config['options'], (int) $config['subs'], (int) $config['sub_pricing'], (int) $config['product_links']
+            );
+            $this->redirect('maintenance', ['flash' => $msg]);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: purge dry-run preview failed — ' . $e->getMessage());
+            }
+            $this->redirect('maintenance', ['flash' => 'Purge dry-run failed; see activity log. Nothing was changed.']);
         }
     }
 

@@ -164,6 +164,17 @@ require __DIR__ . '/_layout_open.tpl';
     A backup export is taken first.
   </div>
 
+  <p style="margin:0 0 10px; color:var(--muted); font-size:12.5px;">
+    Not sure what a purge would remove? <strong>Preview the exact blast radius first</strong> —
+    this dry-run deletes nothing and needs no confirmation phrase.
+  </p>
+  <form method="post" action="<?= $esc($module_link) ?>" style="margin:0 0 18px;">
+    <input type="hidden" name="action" value="maintenance-purge">
+    <input type="hidden" name="purge_dry_run" value="1">
+    <?= generate_token() ?>
+    <button class="cb-btn subtle" type="submit">Preview purge (dry-run)</button>
+  </form>
+
   <form method="post" action="<?= $esc($module_link) ?>" style="margin:0;"
         data-cb-form="maintenance-purge"
         onsubmit="return confirm('This will delete ALL Contabo Pricing addon data. Continue?');">
