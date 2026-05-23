@@ -28,7 +28,12 @@
   --radius-sm:   6px;
 }
 
-.cb-wrap { font: 14px/1.55 "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif; color: var(--fg); }
+/* Paint the cream "paper" so the WHMCS admin theme's blue content background
+   never bleeds through the gaps between cards / behind the bare header. Without
+   an explicit background the theme colour showed as blue stripes + made the
+   header text low-contrast. The padded, rounded panel frames all addon content. */
+.cb-wrap { font: 14px/1.55 "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif; color: var(--fg); background: var(--bg); padding: 18px 22px; border-radius: var(--radius); margin: 6px 0 16px; }
+.cb-wrap a { color: var(--accent); }
 .cb-wrap .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; }
 .cb-wrap .display { font-family: "Instrument Serif", Georgia, serif; letter-spacing: -.01em; }
 
