@@ -315,6 +315,34 @@ try {
         "admin hand-edit NOT clobbered (optionname still 'X HANDEDITED', got '" . (string) ($liveAfter['optionname'] ?? '') . "')"
     );
 
+    // ── 3b) value-level drift (sub-option) ─────────────────────────────────────
+    // The Region option is still clean (only Image was hand-edited above), so its
+    // value loop runs on re-apply — letting us prove the NEW value-level guard:
+    // a hand-edited live sub-option is flagged + skipped, never clobbered.
+    smoke_section('value-level drift (sub-option + pricing)');
+    $regionLink  = $links->findOptionLink($profileId, 'Region');
+    $regionOptId = (int) ($regionLink['whmcs_option_id'] ?? 0);
+    $regionSubRow = $regionOptId > 0
+        ? Capsule::table('tblproductconfigoptionssub')->where('configid', $regionOptId)->first()
+        : null;
+    $regionSubRow = $regionSubRow !== null ? (array) $regionSubRow : array();
+    $regionSubId  = (int) ($regionSubRow['id'] ?? 0);
+    smoke_assert($regionSubId > 0, 'Region sub-option exists (id=' . $regionSubId . ')');
+
+    // Admin hand-edits the live Region SUB-OPTION (the option row stays untouched).
+    Capsule::table('tblproductconfigoptionssub')->where('id', $regionSubId)->update(array('optionname' => 'EU HAND-EDITED'));
+
+    $applyResult3  = $makeSyncer(false)->apply($profileId, $productId, $groupKey, $groupName, $specs, $ctx);
+    $valueDrift    = (int) ($applyResult3['summary']['drift_skipped'] ?? 0);
+    smoke_assert($valueDrift >= 1, 'third apply reports drift_skipped >= 1 incl. value-level (got ' . $valueDrift . ')');
+
+    $liveRegionSub = Capsule::table('tblproductconfigoptionssub')->where('id', $regionSubId)->first();
+    $liveRegionSub = $liveRegionSub !== null ? (array) $liveRegionSub : array();
+    smoke_assert(
+        (string) ($liveRegionSub['optionname'] ?? '') === 'EU HAND-EDITED',
+        "value-level drift: hand-edited Region sub NOT clobbered (got '" . (string) ($liveRegionSub['optionname'] ?? '') . "')"
+    );
+
     // ── 4) observe ──────────────────────────────────────────────────────────────
     smoke_section('observe');
     $observeResult = $makeSyncer(true)->observe($profileId, $groupName, $specs, $ctx, $productId);

@@ -160,7 +160,8 @@ final class ConfigOptionLinkRepository
         string $label,
         ?int $whmcsSubId = null,
         bool $isDefault = false,
-        float $monthlyEurDelta = 0.0
+        float $monthlyEurDelta = 0.0,
+        ?string $expectedHash = null
     ): array {
         $now = date('Y-m-d H:i:s');
         $key = ['option_link_id' => $optionLinkId, 'contabo_value_key' => $valueKey];
@@ -173,6 +174,11 @@ final class ConfigOptionLinkRepository
         ];
         if ($whmcsSubId !== null) {
             $values['whmcs_sub_id'] = $whmcsSubId;
+        }
+        // Sub-option + pricing drift baseline (schema v6 column). Recorded after a
+        // clean write so a future re-apply can detect a hand-edited sub/pricing.
+        if ($expectedHash !== null) {
+            $values['expected_hash'] = $expectedHash;
         }
         if ($this->findValueLink($optionLinkId, $valueKey) === null) {
             $values['created_at'] = $now;

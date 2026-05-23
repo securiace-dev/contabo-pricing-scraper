@@ -219,8 +219,11 @@ final class ConfigurableOptionsSyncer
      *
      * Requires: a link repo (constructor arg), a real (non-dry-run) adapter, and
      * a target $productId. Base-currency-only and the negative-delta clamp are
-     * enforced exactly as in observe(). Drift detection (manual-edit guard) needs
-     * hash columns the v5 link tables don't carry yet — deferred to a schema bump.
+     * enforced exactly as in observe(). Drift guard (manual-edit protection) runs
+     * at BOTH the option level (option link expected_hash over OPTION_DRIFT_COLUMNS)
+     * and the value level (value link expected_hash over the sub-option + recurring
+     * pricing columns) — a hand-edited live object is flagged
+     * (summary.drift_skipped) and skipped, never clobbered.
      *
      * @param list<array<string,mixed>> $specs
      * @return array{
@@ -351,9 +354,36 @@ final class ConfigurableOptionsSyncer
                 if ($dimKey === 'Image') {
                     $subHidden = (bool) ExposureResolver::decideForImageCategory((string) ($value['category'] ?? ''))['hidden'];
                 }
+
+                // Value-level drift guard (extends the option-level guard to the
+                // sub-option + pricing). If the addon previously wrote this value
+                // (sub id + recorded baseline) and the LIVE sub-option/pricing no
+                // longer matches, an admin hand-edited it — flag + SKIP this value,
+                // never clobber.
+                $existingValueLink = $this->links->findValueLink($optionLinkId, $valueKey);
+                if ($existingValueLink !== null
+                    && (int) ($existingValueLink['whmcs_sub_id'] ?? 0) > 0
+                    && !empty($existingValueLink['expected_hash'])
+                ) {
+                    $liveSub     = $this->adapter->fetchSub((int) $existingValueLink['whmcs_sub_id']);
+                    $livePricing = $this->adapter->fetchPricing((int) $existingValueLink['whmcs_sub_id'], $ctx->currencyId);
+                    if ($liveSub !== null) {
+                        $liveFields = $this->valueDriftFields($liveSub, $livePricing);
+                        if (!DriftHasher::matches((string) $existingValueLink['expected_hash'], $liveFields, array_keys($liveFields))) {
+                            $summary['drift_skipped']++;
+                            $this->audit->record(
+                                $profileId, $dimKey, 'tblproductconfigoptionssub',
+                                (int) $existingValueLink['whmcs_sub_id'], 'drift_skip',
+                                ['expected_hash' => (string) $existingValueLink['expected_hash']], $liveFields,
+                                'live sub-option/pricing hand-edited since last apply — value skipped to avoid clobbering'
+                            );
+                            continue;
+                        }
+                    }
+                }
+
                 $sub   = $this->adapter->upsertSubOption($optionId, $label, $sortOrder, $subHidden);
                 $subId = (int) ($sub['id'] ?? 0);
-                $this->links->upsertValueLink($optionLinkId, $valueKey, $label, $subId > 0 ? $subId : null, $isDefault, $eurDelta);
 
                 $pricing = $this->adapter->upsertConfigOptionPricing(
                     $subId,
@@ -361,6 +391,20 @@ final class ConfigurableOptionsSyncer
                     $this->priceCycles($eurDelta, $ctx),
                     $this->priceSetup((float) ($value['setup_eur_delta'] ?? 0.0), $ctx)
                 );
+
+                // Record the NEW value drift baseline = hash of the sub + pricing as
+                // just written (read back so it matches what a future re-apply sees).
+                $valueHash = null;
+                if ($subId > 0) {
+                    $liveSubAfter     = $this->adapter->fetchSub($subId);
+                    $livePricingAfter = $this->adapter->fetchPricing($subId, $ctx->currencyId);
+                    if ($liveSubAfter !== null) {
+                        $fieldsAfter = $this->valueDriftFields($liveSubAfter, $livePricingAfter);
+                        $valueHash = DriftHasher::hashFields($fieldsAfter, array_keys($fieldsAfter));
+                    }
+                }
+                $this->links->upsertValueLink($optionLinkId, $valueKey, $label, $subId > 0 ? $subId : null, $isDefault, $eurDelta, $valueHash);
+
                 $this->tally($summary, (string) ($pricing['action'] ?? ''));
                 $this->tally($summary, (string) ($sub['action'] ?? ''));
                 $this->audit->record($profileId, $dimKey, 'tblproductconfigoptionssub', $subId > 0 ? $subId : null, $this->auditAction($sub['action'] ?? ''), null, ['label' => $label, 'value_key' => $valueKey], 'apply value');
@@ -465,6 +509,30 @@ final class ConfigurableOptionsSyncer
             'rows'         => $rows,
             'summary'      => $summary,
         ];
+    }
+
+    /**
+     * Combined drift fields for one value = the sub-option columns + the recurring
+     * pricing columns the addon controls, flattened with stable prefixed keys and
+     * hashed into the value link's expected_hash. So a hand-edited sub-option
+     * label/sort/visibility OR a hand-edited cycle price is detected on re-apply.
+     *
+     * @param array<string,mixed>|null $sub
+     * @param array<string,mixed>|null $pricing
+     * @return array<string,string>
+     */
+    private function valueDriftFields(?array $sub, ?array $pricing): array
+    {
+        $sub = $sub ?? [];
+        $pricing = $pricing ?? [];
+        $fields = [];
+        foreach (WhmcsConfigOptionsAdapter::SUB_DRIFT_COLUMNS as $c) {
+            $fields['sub_' . $c] = (string) ($sub[$c] ?? '');
+        }
+        foreach (WhmcsConfigOptionsAdapter::PRICING_DRIFT_COLUMNS as $c) {
+            $fields['price_' . $c] = (string) ($pricing[$c] ?? '');
+        }
+        return $fields;
     }
 
     /** @param array{created:int,updated:int,noop:int,skipped:int} $summary */

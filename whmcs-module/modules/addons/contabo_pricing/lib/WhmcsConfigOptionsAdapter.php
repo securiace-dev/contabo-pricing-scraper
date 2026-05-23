@@ -258,6 +258,30 @@ final class WhmcsConfigOptionsAdapter
     /** The option columns the addon controls — what drift detection hashes. */
     public const OPTION_DRIFT_COLUMNS = ['optionname', 'optiontype', 'qtyminimum', 'qtymaximum', 'hidden'];
 
+    /** Sub-option columns the addon controls — what sub-option drift hashes. */
+    public const SUB_DRIFT_COLUMNS = ['optionname', 'sortorder', 'hidden'];
+
+    /** Recurring pricing columns the addon controls — what pricing drift hashes. */
+    public const PRICING_DRIFT_COLUMNS = ['monthly', 'quarterly', 'semiannually', 'annually', 'biennially', 'triennially'];
+
+    /** Read one sub-option row by id (drift baseline / comparison). Read-only. */
+    public function fetchSub(int $subId): ?array
+    {
+        $r = Capsule::table('tblproductconfigoptionssub')->where('id', $subId)->first();
+        return $r !== null ? (array) $r : null;
+    }
+
+    /** Read the configoptions pricing row for a sub-option in a currency. Read-only. */
+    public function fetchPricing(int $subId, int $currencyId): ?array
+    {
+        $r = Capsule::table('tblpricing')
+            ->where('type', 'configoptions')
+            ->where('currency', $currencyId)
+            ->where('relid', $subId)
+            ->first();
+        return $r !== null ? (array) $r : null;
+    }
+
     // ----------------------------------------------------------------------
     // tblproductconfigoptionssub
     // ----------------------------------------------------------------------
