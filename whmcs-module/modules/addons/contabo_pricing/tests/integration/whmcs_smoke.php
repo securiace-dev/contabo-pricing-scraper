@@ -238,6 +238,18 @@ try {
         'schema to=' . (int) ($health['to'] ?? -1) . ' === Installer::SCHEMA_VERSION=' . Installer::SCHEMA_VERSION
     );
 
+    // ── 1b) real-schema parity (catches the recurringamount→amount class) ──────
+    // FakeCapsule is schemaless, so the unit suite cannot see a wrong column name.
+    // Assert the real WHMCS columns here so that divergence fails the gate.
+    smoke_section('real-schema parity');
+    $schema = Capsule::schema();
+    smoke_assert($schema->hasColumn('tblhosting', 'amount'), 'tblhosting.amount exists (real recurring-charge column)');
+    smoke_assert($schema->hasColumn('tblhosting', 'firstpaymentamount'), 'tblhosting.firstpaymentamount exists');
+    smoke_assert(!$schema->hasColumn('tblhosting', 'recurringamount'), 'tblhosting.recurringamount is NOT a raw column (must never be read/written raw)');
+    foreach (array('mod_contabo_config_group_link', 'mod_contabo_config_option_link', 'mod_contabo_config_option_value_link') as $linkTbl) {
+        smoke_assert($schema->hasColumn($linkTbl, 'expected_hash'), $linkTbl . '.expected_hash exists (drift baseline, schema v6)');
+    }
+
     // ── 2) apply (exposure) ────────────────────────────────────────────────────
     smoke_section('apply (exposure)');
     $applyResult = $makeSyncer(false)->apply($profileId, $productId, $groupKey, $groupName, $specs, $ctx);
