@@ -15,9 +15,11 @@ on:
         required: false
         default: ''
 
-# Prevent overlapping scheduled + manual runs; cancel in-progress if newer starts
+# Prevent overlapping scheduled + manual runs on the same ref; cancel in-progress
+# if a newer run starts. Per-ref so a dispatch on a feature branch never collides
+# with the scheduled run on main — only one scrape push job runs per branch/ref.
 concurrency:
-  group: scrape
+  group: scrape-${{ github.ref }}
   cancel-in-progress: true
 
 # Defaults — override without editing YAML via:
@@ -40,6 +42,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history so the pre-push rebase can find a merge base against the
+          # latest origin/<branch> (a shallow clone makes rebase unreliable).
+          fetch-depth: 0
 
       # Resolve "latest" → concrete tag so cache key is stable across runs
       - name: Resolve binary version
@@ -118,19 +124,59 @@ jobs:
 
       - name: Commit & push
         run: |
+          set -euo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage ONLY scrape/generated artifacts — never `git add -A`/`.`, so
+          # WHMCS addon source (whmcs-module/**), Rust src, etc. can never be
+          # swept into a data commit.
           git add -f "$OUTPUT_DIR"   # -f bypasses data/output/ in .gitignore
           git add PRICES.md
           git add report.html
           git add data/plan_urls.json
+
+          # Exit cleanly when the scrape produced no changes.
           if git diff --cached --quiet; then
             echo "No changes — skipping commit"
-          else
-            MSG="data: scrape $(date -u '+%Y-%m-%d %H:%M UTC')"
-            if [ "${{ steps.discover.outputs.changed }}" = "true" ]; then
-              MSG="$MSG [catalog: +${{ steps.discover.outputs.added }} -${{ steps.discover.outputs.removed }}]"
-            fi
-            git commit -m "$MSG"
-            git push
+            exit 0
           fi
+
+          # Defence in depth: refuse to commit if anything outside the
+          # scrape/generated allowlist somehow got staged. This is the hard stop
+          # that keeps automated data commits from racing in addon source.
+          ALLOWED='^(data/output/|data/plan_urls\.json$|PRICES\.md$|report\.html$)'
+          UNEXPECTED="$(git diff --cached --name-only | grep -vE "$ALLOWED" || true)"
+          if [ -n "$UNEXPECTED" ]; then
+            echo "::error::Refusing to commit — paths outside the scrape/generated allowlist are staged:"
+            echo "$UNEXPECTED"
+            exit 1
+          fi
+
+          MSG="data: scrape $(date -u '+%Y-%m-%d %H:%M UTC')"
+          if [ "${{ steps.discover.outputs.changed }}" = "true" ]; then
+            MSG="$MSG [catalog: +${{ steps.discover.outputs.added }} -${{ steps.discover.outputs.removed }}]"
+          fi
+          git commit -m "$MSG"
+
+          # Push, rebasing onto the latest origin/<branch> first so a manual
+          # commit that landed during the scrape is preserved, never clobbered.
+          # Retry the fetch→rebase→push cycle to survive a push that lands in the
+          # narrow window between our fetch and push. NEVER force-push: on a
+          # rebase conflict we abort and fail the job, leaving main untouched.
+          BRANCH="${GITHUB_REF_NAME}"
+          for attempt in 1 2 3; do
+            git fetch origin "$BRANCH"
+            if ! git rebase "origin/$BRANCH"; then
+              echo "::error::Rebase onto origin/$BRANCH conflicted — aborting without force-push"
+              git rebase --abort || true
+              exit 1
+            fi
+            if git push origin "HEAD:$BRANCH"; then
+              echo "Pushed to $BRANCH on attempt $attempt"
+              exit 0
+            fi
+            echo "Push rejected on attempt $attempt (concurrent commit on $BRANCH) — retrying"
+          done
+          echo "::error::Could not push after 3 rebase attempts — persistent contention on $BRANCH"
+          exit 1
