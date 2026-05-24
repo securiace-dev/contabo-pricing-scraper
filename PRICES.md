@@ -1,6 +1,6 @@
 # Contabo Pricing
 
-> **Last updated:** 2026-05-23T08:27:19.288Z  
+> **Last updated:** 2026-05-24T08:39:32.593Z  
 > Auto-refreshed twice daily · data from [contabo.com](https://contabo.com)  
 > 📊 **[Interactive view → report.html](report.html)** — sort, filter & compare plans
 
