@@ -255,18 +255,49 @@ pub async fn refresh(
             }
         }
 
+        // Read scraper config from env so the serve subcommand honours
+        // FETCH_MODE, SCRAPER_PROXY, CLOAK_SCRIPT, etc. set in the systemd
+        // unit — the same env vars the CLI scrape subcommand uses.
+        let fetch_mode = match std::env::var("FETCH_MODE")
+            .unwrap_or_default()
+            .to_lowercase()
+            .as_str()
+        {
+            "cloak" => crate::FetchMode::Cloak,
+            "auto"  => crate::FetchMode::Auto,
+            _       => crate::FetchMode::Reqwest,
+        };
+        let proxy = std::env::var("SCRAPER_PROXY").ok().filter(|s| !s.is_empty());
+        let cloak_script = std::env::var("CLOAK_SCRIPT")
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|_| std::path::PathBuf::from("scripts/cloak-fetch.mjs"));
+        let concurrency: usize = std::env::var("SCRAPER_CONCURRENCY")
+            .ok().and_then(|s| s.parse().ok()).unwrap_or(4);
+        let retries: u32 = std::env::var("SCRAPER_RETRIES")
+            .ok().and_then(|s| s.parse().ok()).unwrap_or(3);
+        // Look for plan_urls.json adjacent to the data dir (e.g.
+        // /var/lib/contabo-pricing/plan_urls.json when data_dir is
+        // /var/lib/contabo-pricing/output). Falls back to the hardcoded list.
+        let plan_urls_file = std::env::var("CONTABO_PLAN_URLS_FILE")
+            .ok()
+            .map(std::path::PathBuf::from)
+            .or_else(|| {
+                let candidate = s2.data_dir.parent()?.join("plan_urls.json");
+                candidate.exists().then_some(candidate)
+            });
+
         let opts = crate::Opts {
             output: s2.data_dir.clone(),
-            concurrency: 4,
-            retries: 3,
+            concurrency,
+            retries,
             plans: None,
-            plan_urls_file: None,
+            plan_urls_file,
             quiet: true,
             json_out: false,
             dry_run: false,
-            fetch_mode: crate::FetchMode::Reqwest,
-            cloak_script: std::path::PathBuf::from("scripts/cloak-fetch.mjs"),
-            proxy: None,
+            fetch_mode,
+            cloak_script,
+            proxy,
         };
         let code = crate::run_scrape(opts).await;
 
@@ -275,10 +306,10 @@ pub async fn refresh(
 
         let mut g = s2.refresh_lock.lock().await;
         if let Some(j) = g.current_job.as_mut() {
-            j.status = if code == 0 || code == 2 {
-                JobStatus::Succeeded
-            } else {
-                JobStatus::Failed
+            j.status = match code {
+                0 => JobStatus::Succeeded,
+                2 => JobStatus::PartialSuccess,
+                _ => JobStatus::Failed,
             };
         }
         drop(g);

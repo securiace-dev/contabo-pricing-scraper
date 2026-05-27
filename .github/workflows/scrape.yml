@@ -107,14 +107,15 @@ jobs:
 
       # Install CloakBrowser npm wrapper + resolve the Chromium binary version.
       # Skipped in reqwest-only mode to avoid a 200MB download on every run.
-      # The binary itself auto-downloads on first launch (~200MB, cached below).
+      # Installed into the project root node_modules/ so scripts/cloak-fetch.mjs
+      # can import 'cloakbrowser' via normal Node module resolution.
       - name: Resolve CloakBrowser version
         id: cloak-ver
         if: env.FETCH_MODE != 'reqwest'
         run: |
-          npm install --prefix /tmp/cloak-deps cloakbrowser playwright-core --omit=dev --prefer-offline 2>/dev/null || \
-            npm install --prefix /tmp/cloak-deps cloakbrowser playwright-core --omit=dev
-          VER=$(node -e "console.log(require('/tmp/cloak-deps/node_modules/cloakbrowser/package.json').version)" 2>/dev/null || echo "unknown")
+          npm install cloakbrowser playwright-core --omit=dev --prefer-offline 2>/dev/null || \
+            npm install cloakbrowser playwright-core --omit=dev
+          VER=$(node -e "console.log(require('./node_modules/cloakbrowser/package.json').version)" 2>/dev/null || echo "unknown")
           echo "version=$VER" >> "$GITHUB_OUTPUT"
 
       - name: Cache CloakBrowser Chromium binary
@@ -135,7 +136,7 @@ jobs:
           # CloakBrowser has no separate install() function in its JS SDK; the binary
           # downloads on first launch() call and is cached in ~/.cloakbrowser/.
           node --input-type=module <<'EOF'
-          import { launch } from '/tmp/cloak-deps/node_modules/cloakbrowser/dist/index.js';
+          import { launch } from './node_modules/cloakbrowser/dist/index.js';
           const b = await launch({ headless: true });
           await b.close();
           EOF
@@ -159,7 +160,7 @@ jobs:
           # Build CloakBrowser args only when mode requires it
           CLOAK_ARGS=""
           if [ "$FETCH_MODE" != "reqwest" ]; then
-            CLOAK_ARGS="--fetch-mode $FETCH_MODE --cloak-script /tmp/cloak-deps/node_modules/.bin/cloak-fetch.mjs"
+            CLOAK_ARGS="--fetch-mode $FETCH_MODE --cloak-script scripts/cloak-fetch.mjs"
           fi
 
           bin/contabo-scraper \

@@ -72,8 +72,8 @@ try {
     const u = new URL(values.proxy);
     launchOpts.proxy = {
       server:   `${u.protocol}//${u.host}`,
-      username: decodeURIComponent(u.username),
-      password: decodeURIComponent(u.password),
+      username: u.username,
+      password: u.password,
     };
   }
   browser = await launch(launchOpts);
