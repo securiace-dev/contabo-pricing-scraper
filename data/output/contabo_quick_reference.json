@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.0",
-  "generated_at": "2026-05-27T03:25:36.090Z",
+  "generated_at": "2026-05-27T03:29:48.849Z",
   "plan_count": 1,
   "plans": [
     {
@@ -38,7 +38,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-10/",
-      "fetched_at": "2026-05-27T03:25:36.066Z",
+      "fetched_at": "2026-05-27T03:29:48.826Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 3.6,

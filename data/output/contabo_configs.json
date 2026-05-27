@@ -1,14 +1,14 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.0",
-  "generated_at": "2026-05-27T03:25:36.090Z",
+  "generated_at": "2026-05-27T03:29:48.849Z",
   "plan_count": 1,
   "plans": {
     "https://contabo.com/en/vps/cloud-vps-10/": {
       "slug": "cloud-vps-10",
       "family": "Cloud VPS",
       "title": "Cloud VPS 10",
-      "fetched_at": "2026-05-27T03:25:36.066Z",
+      "fetched_at": "2026-05-27T03:29:48.826Z",
       "base_monthly_price": 4.5,
       "contract_periods": [
         {

@@ -1,7 +1,7 @@
 {
   "scraper_version": "2.3.0",
   "schema_version": "1.1",
-  "generated_at": "2026-05-27T03:25:36.090Z",
+  "generated_at": "2026-05-27T03:29:48.849Z",
   "source": "Contabo configurator __SAPPER__ payload + SSR HTML defaults",
   "plan_count": 1,
   "option_count": 56,
@@ -14,7 +14,7 @@
       "product_name": "Cloud VPS 10",
       "product_slug": "cloud-vps-10",
       "product_url": "https://contabo.com/en/vps/cloud-vps-10/",
-      "fetched_at": "2026-05-27T03:25:36.066Z",
+      "fetched_at": "2026-05-27T03:29:48.826Z",
       "cpu": "4 vCPU Cores",
       "ram": "8 GB RAM",
       "base_storage": "75 GB NVMe or 150 GB SSD",
