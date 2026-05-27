@@ -6,7 +6,6 @@ data/output/
 
 # Rust build artifacts
 target/
-Cargo.lock
 
 # Local scratch files
 tmp/
