@@ -69,6 +69,7 @@ pub(crate) struct Opts {
     pub dry_run: bool,
     pub fetch_mode: FetchMode,
     pub cloak_script: PathBuf,
+    pub proxy: Option<String>,
 }
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
@@ -248,6 +249,11 @@ struct ScrapeArgs {
     /// Path to cloak-fetch.mjs (used when --fetch-mode is cloak or auto)
     #[arg(long, env = "CLOAK_SCRIPT", default_value = "scripts/cloak-fetch.mjs", value_name = "PATH")]
     cloak_script: PathBuf,
+
+    /// Optional HTTP/HTTPS proxy for all fetches (reqwest and CloakBrowser).
+    /// Format: http://user:pass@host:port
+    #[arg(long, env = "SCRAPER_PROXY", value_name = "URL")]
+    proxy: Option<String>,
 }
 
 impl ScrapeArgs {
@@ -266,6 +272,7 @@ impl ScrapeArgs {
             dry_run: self.dry_run,
             fetch_mode: self.fetch_mode,
             cloak_script: self.cloak_script,
+            proxy: self.proxy,
         }
     }
 }
@@ -1566,6 +1573,7 @@ async fn cloak_batch_fetch(
     cloak_script: &std::path::Path,
     tmp_dir: &std::path::Path,
     gap_report: Arc<Mutex<Vec<GapEntry>>>,
+    proxy: Option<&str>,
 ) -> Vec<Option<PlanResult>> {
     use tokio::process::Command;
 
@@ -1595,14 +1603,16 @@ async fn cloak_batch_fetch(
         "launching CloakBrowser batch fetch"
     );
 
-    let status = Command::new("node")
-        .args([
-            cloak_script.to_str().unwrap_or("scripts/cloak-fetch.mjs"),
-            "--urls",    urls_file.to_str().unwrap_or(""),
-            "--out-dir", html_dir.to_str().unwrap_or(""),
-        ])
-        .status()
-        .await;
+    let mut cmd = Command::new("node");
+    cmd.args([
+        cloak_script.to_str().unwrap_or("scripts/cloak-fetch.mjs"),
+        "--urls",    urls_file.to_str().unwrap_or(""),
+        "--out-dir", html_dir.to_str().unwrap_or(""),
+    ]);
+    if let Some(p) = proxy {
+        cmd.args(["--proxy", p]);
+    }
+    let status = cmd.status().await;
 
     match &status {
         Err(e) => {
@@ -1745,13 +1755,15 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         // (e.g. reqwest's `reqwest/0.12` default) when the request comes from a
         // data-centre IP range.
         const UA: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
-        let client = Arc::new(
-            reqwest::Client::builder()
-                .timeout(Duration::from_secs(30))
-                .user_agent(UA)
-                .build()
-                .expect("failed to build HTTP client"),
-        );
+        let mut http_builder = reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
+            .user_agent(UA);
+        if let Some(p) = &opts.proxy {
+            http_builder = http_builder.proxy(
+                reqwest::Proxy::all(p).expect("invalid SCRAPER_PROXY URL"),
+            );
+        }
+        let client = Arc::new(http_builder.build().expect("failed to build HTTP client"));
         let semaphore = Arc::new(Semaphore::new(opts.concurrency));
         let mut handles = Vec::new();
 
@@ -1848,6 +1860,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             &opts.cloak_script,
             &tmp_dir,
             Arc::clone(&gap_report),
+            opts.proxy.as_deref(),
         ).await;
         results.extend(cloak_results);
         let _ = fs::remove_dir_all(&tmp_dir);
