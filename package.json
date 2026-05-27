@@ -1,6 +1,6 @@
 {
   "name": "contabo-pricing-scraper",
-  "version": "2.3.0-dev",
+  "version": "2.3.0",
   "description": "Scrapes Contabo Cloud VPS, Storage VPS, and Cloud VDS pricing from embedded __SAPPER__ payloads",
   "license": "MIT",
   "engines": {
@@ -10,12 +10,17 @@
     "contabo-scraper": "./scripts/contabo_scraper.js"
   },
   "scripts": {
-    "scrape": "node scripts/contabo_scraper.js"
+    "scrape": "node scripts/contabo_scraper.js",
+    "cloak-fetch": "node scripts/cloak-fetch.mjs"
   },
   "keywords": [
     "contabo",
     "vps",
     "pricing",
     "scraper"
-  ]
+  ],
+  "dependencies": {
+    "cloakbrowser": "^0.3.31",
+    "playwright-core": "^1.60.0"
+  }
 }
