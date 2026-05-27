@@ -1,0 +1,31 @@
+# Overlay: front the API with Traefik v3 for automatic HTTPS via Let's Encrypt.
+# Assumes an existing Traefik network — adjust the network name below if needed.
+#
+# Usage:
+#   API_DOMAIN=pricing.example.com TRAEFIK_NETWORK=traefik \
+#     docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d
+
+services:
+  api:
+    ports: []
+    networks:
+      - traefik
+      - default
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.contabo.rule: "Host(`${API_DOMAIN:?set API_DOMAIN}`)"
+      traefik.http.routers.contabo.entrypoints: "websecure"
+      traefik.http.routers.contabo.tls.certresolver: "le"
+      traefik.http.services.contabo.loadbalancer.server.port: "8080"
+      # Security headers middleware
+      traefik.http.middlewares.contabo-sec.headers.framedeny: "true"
+      traefik.http.middlewares.contabo-sec.headers.sslredirect: "true"
+      traefik.http.middlewares.contabo-sec.headers.stsseconds: "31536000"
+      traefik.http.middlewares.contabo-sec.headers.contenttypenosniff: "true"
+      traefik.http.routers.contabo.middlewares: "contabo-sec"
+
+networks:
+  traefik:
+    name: ${TRAEFIK_NETWORK:-traefik}
+    external: true
+  default:
