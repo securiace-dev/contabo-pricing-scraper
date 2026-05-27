@@ -1,26 +1,23 @@
 {
   "schema_version": "1.1",
-  "scraper_version": "2.2.1",
-  "generated_at": "2026-05-27T02:58:59.737Z",
+  "scraper_version": "2.3.0",
+  "generated_at": "2026-05-27T03:11:30.864Z",
   "plan_count": 1,
   "plans": [
     {
-      "base_monthly_eur": 4.5,
-      "cpu_count": 4,
-      "default_monthly_eur": 4.5,
-      "family": "Cloud VPS",
-      "fetched_at": "2026-05-27T02:58:59.711Z",
-      "plan_family_rank": 1,
-      "plan_rank": 1,
       "plan_slug": "cloud-vps-10",
+      "plan_rank": 1,
+      "plan_family_rank": 1,
+      "family": "Cloud VPS",
+      "product_name": "Cloud VPS 10",
+      "cpu_count": 4,
+      "ram_gb": 8,
+      "storage_primary_gb": 75,
+      "storage_primary_type": "NVMe",
       "port_speed_mbps": 200,
+      "base_monthly_eur": 4.5,
+      "default_monthly_eur": 4.5,
       "pricing": {
-        "12m": {
-          "effective_monthly": 3.6,
-          "setup_fee": 0,
-          "total_period": 43.2,
-          "total_period_cost": 43.2
-        },
         "1m": {
           "effective_monthly": 4.5,
           "setup_fee": 4.5,
@@ -32,13 +29,16 @@
           "setup_fee": 2.25,
           "total_period": 26.55,
           "total_period_cost": 26.55
+        },
+        "12m": {
+          "effective_monthly": 3.6,
+          "setup_fee": 0,
+          "total_period": 43.2,
+          "total_period_cost": 43.2
         }
       },
-      "product_name": "Cloud VPS 10",
-      "ram_gb": 8,
-      "storage_primary_gb": 75,
-      "storage_primary_type": "NVMe",
       "url": "https://contabo.com/en/vps/cloud-vps-10/",
+      "fetched_at": "2026-05-27T03:11:30.841Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 3.6,

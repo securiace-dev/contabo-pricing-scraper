@@ -1,45 +1,45 @@
 {
+  "schema_version": "1.1",
   "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
+  "generated_at": "2026-05-27T03:11:30.864Z",
   "dimensions": {
-    "Data Protection": {
-      "required": false,
-      "selection_type": "single"
-    },
-    "Image": {
-      "required": true,
-      "selection_type": "single"
-    },
-    "Networking": {
-      "categories": {
-        "Bandwidth": {
-          "required": true,
-          "selection_type": "single"
-        },
-        "IPv4": {
-          "required": true,
-          "selection_type": "single"
-        },
-        "Private Networking": {
-          "required": true,
-          "selection_type": "single"
-        }
-      },
-      "required": true,
-      "selection_type": "grouped_single"
-    },
     "Region": {
-      "required": true,
-      "selection_type": "single"
-    },
-    "Storage": {
-      "required": true,
-      "selection_type": "single"
+      "selection_type": "single",
+      "required": true
     },
     "Storage Type": {
+      "selection_type": "single",
+      "required": true
+    },
+    "Storage": {
+      "selection_type": "single",
+      "required": true
+    },
+    "Data Protection": {
+      "selection_type": "single",
+      "required": false
+    },
+    "Networking": {
+      "selection_type": "grouped_single",
       "required": true,
-      "selection_type": "single"
+      "categories": {
+        "Bandwidth": {
+          "selection_type": "single",
+          "required": true
+        },
+        "IPv4": {
+          "selection_type": "single",
+          "required": true
+        },
+        "Private Networking": {
+          "selection_type": "single",
+          "required": true
+        }
+      }
+    },
+    "Image": {
+      "selection_type": "single",
+      "required": true
     }
-  },
-  "generated_at": "2026-05-27T02:58:59.737Z",
-  "schema_version": "1.1"
+  }
 }

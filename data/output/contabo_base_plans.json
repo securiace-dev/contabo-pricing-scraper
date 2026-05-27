@@ -1,71 +1,71 @@
 {
   "schema_version": "1.1",
-  "scraper_version": "2.2.1",
-  "generated_at": "2026-05-27T02:58:59.737Z",
+  "scraper_version": "2.3.0",
+  "generated_at": "2026-05-27T03:11:30.864Z",
   "plan_count": 1,
   "plans": [
     {
-      "base_monthly_price": 4.5,
-      "base_storage": "75 GB NVMe or 150 GB SSD",
-      "cpu": "4 vCPU Cores",
       "family": "Cloud VPS",
-      "fetched_at": "2026-05-27T02:58:59.711Z",
-      "password_rules": {
-        "alphanumeric_only": true,
-        "max_length": 30,
-        "min_length": 8,
-        "no_special_chars": true
-      },
-      "periods": [
-        {
-          "discount_total": 0,
-          "effective_monthly": 4.5,
-          "is_hidden_from_ui": false,
-          "months": 1,
-          "setup_fee": 4.5,
-          "total_period_cost": 9
-        },
-        {
-          "discount_total": 0,
-          "effective_monthly": 4.5,
-          "is_hidden_from_ui": true,
-          "months": 3,
-          "setup_fee": 0,
-          "total_period_cost": 13.5
-        },
-        {
-          "discount_total": 2.7,
-          "effective_monthly": 4.05,
-          "is_hidden_from_ui": false,
-          "months": 6,
-          "setup_fee": 2.25,
-          "total_period_cost": 26.55
-        },
-        {
-          "discount_total": 10.8,
-          "effective_monthly": 3.6,
-          "is_hidden_from_ui": false,
-          "months": 12,
-          "setup_fee": 0,
-          "total_period_cost": 43.2
-        }
-      ],
-      "plan_family_rank": 1,
       "plan_rank": 1,
-      "port": "200 Mbit/s Port",
+      "plan_family_rank": 1,
       "product_name": "Cloud VPS 10",
       "product_slug": "cloud-vps-10",
       "product_url": "https://contabo.com/en/vps/cloud-vps-10/",
+      "fetched_at": "2026-05-27T03:11:30.841Z",
+      "cpu": "4 vCPU Cores",
       "ram": "8 GB RAM",
+      "base_storage": "75 GB NVMe or 150 GB SSD",
       "snapshots": "1 Snapshot",
-      "source": "sapper",
+      "port": "200 Mbit/s Port",
+      "base_monthly_price": 4.5,
+      "periods": [
+        {
+          "months": 1,
+          "is_hidden_from_ui": false,
+          "effective_monthly": 4.5,
+          "setup_fee": 4.5,
+          "total_period_cost": 9,
+          "discount_total": 0
+        },
+        {
+          "months": 3,
+          "is_hidden_from_ui": true,
+          "effective_monthly": 4.5,
+          "setup_fee": 0,
+          "total_period_cost": 13.5,
+          "discount_total": 0
+        },
+        {
+          "months": 6,
+          "is_hidden_from_ui": false,
+          "effective_monthly": 4.05,
+          "setup_fee": 2.25,
+          "total_period_cost": 26.55,
+          "discount_total": 2.7
+        },
+        {
+          "months": 12,
+          "is_hidden_from_ui": false,
+          "effective_monthly": 3.6,
+          "setup_fee": 0,
+          "total_period_cost": 43.2,
+          "discount_total": 10.8
+        }
+      ],
       "specs_parsed": {
         "cpu_count": 4,
-        "port_speed_mbps": 200,
         "ram_gb": 8,
+        "port_speed_mbps": 200,
         "storage_primary_gb": 75,
         "storage_primary_type": "NVMe"
-      }
+      },
+      "password_rules": {
+        "min_length": 8,
+        "max_length": 30,
+        "alphanumeric_only": true,
+        "no_special_chars": true
+      },
+      "source": "sapper"
     }
   ]
 }

@@ -1,57 +1,57 @@
 plan_sku,plan_slug,plan_family,plan_name,dimension,category,option_label,monthly_price_delta,setup_fee_delta,region_group,country,country_code,subregion,is_default,currency
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Data Protection,Auto Backup,Auto Backup,1.5,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Data Protection,Auto Backup,Auto Backup,1.5,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Coolify Server,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Docker,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,GitLab Server,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,LAMP,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Nextcloud Server,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,OpenClaw Server,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,WireGuard Server,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,n8n Server,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,Flux Node,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,Horizen Node,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,IPFS Node,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,AlmaLinux 10,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,AlmaLinux 9,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Arch Linux,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 12,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 13,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,FreeBSD 12.2,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 10,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 8,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 9,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 22.04,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Coolify Server,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Docker,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,GitLab Server,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,LAMP,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,n8n Server,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,Flux Node,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Arch Linux,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 12,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 13,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 26.04,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2025 Datacenter,7.5,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Admin Edition,12,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Host Edition,36.5,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Pro Edition,19,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Webmin,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Webmin + LAMP,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2025 Datacenter,7.5,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Webmin,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,IPv4,Additional IP Address,3.5,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (Central),0.95,0,America,United States (Central),US,Central,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (East),1.4,0,America,United States (East),US,East,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (West),1.15,0,America,United States (West),US,West,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,India,2.15,0,Asia,India,IN,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Japan,2.35,0,Asia,Japan,JP,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Singapore,2.3,0,Asia,Singapore,SG,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Australia,Australia,1.95,0,Australia,Australia,AU,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (Central),0.95,0,America,United States (Central),US,Central,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (East),1.4,0,America,United States (East),US,East,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (West),1.15,0,America,United States (West),US,West,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,India,2.15,0,Asia,India,IN,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Japan,2.35,0,Asia,Japan,JP,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Singapore,2.3,0,Asia,Singapore,SG,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Australia,Australia,1.95,0,Australia,Australia,AU,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Europe,United Kingdom,0.95,0,Europe,United Kingdom,UK,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,NVMe,150 GB NVMe,1.85,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Europe,United Kingdom,0.95,0,Europe,United Kingdom,UK,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,NVMe,150 GB NVMe,1.85,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,NVMe,75 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,SSD,150 GB SSD,0,0,,,,,false,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,SSD,300 GB SSD,1.55,0,,,,,false,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,SSD,150 GB SSD,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,SSD,300 GB SSD,1.55,0,,,,,,EUR
