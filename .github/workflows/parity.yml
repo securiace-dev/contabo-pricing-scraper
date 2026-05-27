@@ -1,0 +1,55 @@
+name: Scraper Parity
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scripts/contabo_scraper.js'
+      - '.github/scripts/enrich_output.js'
+      - '.github/scripts/parity_check.sh'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+  workflow_dispatch:
+
+# A breaking parity diff blocks the merge — the two scrapers must stay equivalent
+concurrency:
+  group: parity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  parity:
+    name: Rust ↔ Node output equivalence
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run parity check
+        run: bash .github/scripts/parity_check.sh
+
+      - name: Upload diff on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: parity-diff
+          path: /tmp/contabo-parity.*
+          if-no-files-found: ignore

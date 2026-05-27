@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Pre-commit hook for contabo-pricing-scraper.
+#
+# Activate with:
+#   git config core.hooksPath .githooks
+#
+# Skips gracefully when a toolchain isn't installed — useful for partial-tree
+# clones, but the equivalent CI job (parity.yml + ci.yml) is the source of truth.
+
+set -e
+
+FAIL=0
+report() { echo -e "  \033[31m✗\033[0m $1"; FAIL=1; }
+ok()     { echo -e "  \033[32m✓\033[0m $1"; }
+
+staged() { git diff --cached --name-only --diff-filter=ACMR; }
+matches() { staged | grep -E "$1" -q; }
+
+# ── 1. Rust ──────────────────────────────────────────────────────────────────
+if matches '\.rs$' && command -v cargo >/dev/null 2>&1; then
+    echo "▸ Rust"
+    if cargo fmt --check 2>/dev/null; then ok "cargo fmt"; else report "cargo fmt --check found unformatted files (run 'cargo fmt')"; fi
+    if cargo clippy --quiet -- -D warnings 2>&1 | grep -q '^error'; then
+        report "cargo clippy reported errors"
+    else
+        ok "cargo clippy"
+    fi
+fi
+
+# ── 2. Node ──────────────────────────────────────────────────────────────────
+if matches 'scripts/.*\.js$|\.github/scripts/.*\.js$'; then
+    echo "▸ Node"
+    if command -v node >/dev/null 2>&1; then
+        for f in $(staged | grep -E '(scripts|\.github/scripts)/.*\.js$' || true); do
+            if node --check "$f" 2>/dev/null; then ok "$f"; else report "$f failed node --check"; fi
+        done
+    fi
+fi
+
+# ── 3. PHP / WHMCS addon ─────────────────────────────────────────────────────
+if matches 'whmcs-module/.*\.(php|tpl)$'; then
+    echo "▸ PHP"
+    if command -v php >/dev/null 2>&1; then
+        for f in $(staged | grep -E 'whmcs-module/.*\.(php|tpl)$' || true); do
+            if php -l "$f" >/dev/null 2>&1; then ok "$f"; else report "$f failed php -l"; fi
+        done
+    fi
+fi
+
+# ── 4. Schema-version reminder (advisory; doesn't fail commit) ──────────────
+if matches '(src/main\.rs|enrich_output\.js|src/api/handlers\.rs|Installer\.php|ProfileVersionInput\.php)$'; then
+    echo "▸ Schema guard reminder"
+    if ! staged | grep -q 'SCHEMA_VERSION.md\|SCHEMA_VERSION'; then
+        echo -e "  \033[33m!\033[0m  Schema-touching files staged but no SCHEMA_VERSION change. Confirm this is additive."
+    else
+        ok "schema version touched"
+    fi
+fi
+
+if [ "$FAIL" -ne 0 ]; then
+    echo
+    echo "Commit blocked. Fix the issues above or run 'git commit --no-verify' to bypass intentionally."
+    exit 1
+fi
