@@ -266,6 +266,7 @@ pub async fn refresh(
             dry_run: false,
             fetch_mode: crate::FetchMode::Reqwest,
             cloak_script: std::path::PathBuf::from("scripts/cloak-fetch.mjs"),
+            proxy: None,
         };
         let code = crate::run_scrape(opts).await;
 
