@@ -1,6 +1,6 @@
 # Contabo Pricing
 
-> **Last updated:** 2026-05-26T19:53:48.349Z  
+> **Last updated:** 2026-05-27T04:32:59.413Z  
 > Auto-refreshed twice daily · data from [contabo.com](https://contabo.com)  
 > 📊 **[Interactive view → report.html](report.html)** — sort, filter & compare plans
 
@@ -357,7 +357,7 @@
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | free | +€10.40 | +€10.40 | +€11.50 | +€12.70 | +€33.90 | +€35.70 | +€36.75 | +€30.50 |
 
-**Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · 243 TB Out + Unlimited In `+€258.79` · Unlimited and Unmetered Traffic `+€344.99` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€5.79`
+**Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · 243 TB Out + Unlimited In `+€258.79` · Unlimited and Unmetered Traffic `+€344.99` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Storage** — 480 GB NVMe *(included)* · Upgrades: 1 TB SSD `+€24.99` · 2 TB SSD `+€39.09` · 4 TB SSD `+€103.49`
 
 ---
