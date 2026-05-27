@@ -43,10 +43,14 @@ COPY package.json ./
 RUN npm install --omit=dev
 
 # Pre-download the CloakBrowser Chromium binary (~200MB) so containers start
-# instantly without a runtime download. The binary lives in ~/.cache/ms-playwright
-# but cloakbrowser may use a different XDG path — we trigger install() to let
-# the package resolve the correct location.
-RUN node -e "require('cloakbrowser').install && require('cloakbrowser').install().catch(e => process.stderr.write('[warn] cloakbrowser.install: ' + e.message + '\n'))" || true
+# instantly without a runtime download. CloakBrowser stores its binary in
+# ~/.cloakbrowser/ and auto-downloads on first launch() — no separate install()
+# function exists in the JS SDK, so we trigger download via a real launch call.
+RUN node --input-type=module - <<'EOF' || true
+import { launch } from '/app/node_modules/cloakbrowser/index.mjs';
+const b = await launch({ headless: true });
+await b.close();
+EOF
 
 COPY scripts ./scripts
 COPY .github/scripts ./.github/scripts
@@ -71,13 +75,13 @@ WORKDIR /app
 COPY --from=rust-builder /src/target/release/contabo-scraper /usr/local/bin/contabo-scraper
 COPY --from=node-builder /app /app
 # Copy the pre-downloaded CloakBrowser Chromium binary from the builder stage.
-# This avoids a 200MB download at container start time.
-COPY --from=node-builder /root/.cache/ms-playwright /root/.cache/ms-playwright
+# The binary lives in ~/.cloakbrowser/ (not ~/.cache/ms-playwright).
+COPY --from=node-builder /root/.cloakbrowser /home/contabo/.cloakbrowser
 COPY report.html /app/report.html
 
 # Output dir is the only mutable path; mount a volume here in production
 RUN mkdir -p /app/data/output && chown -R contabo:contabo /app \
- && chown -R contabo:contabo /root/.cache/ms-playwright 2>/dev/null || true
+ && chown -R contabo:contabo /home/contabo/.cloakbrowser 2>/dev/null || true
 
 USER contabo
 EXPOSE 8080
