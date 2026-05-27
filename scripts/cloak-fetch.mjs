@@ -22,6 +22,7 @@ const { values } = parseArgs({
   options: {
     urls:      { type: 'string' },
     'out-dir': { type: 'string' },
+    proxy:     { type: 'string' },
   },
   strict: false,
 });
@@ -58,7 +59,7 @@ let failed    = 0;
 
 let browser;
 try {
-  browser = await launch({
+  const launchOpts = {
     headless: true,
     humanize: false,  // not needed for SSR pages; saves time
     args: [
@@ -66,7 +67,16 @@ try {
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',  // required in CI environments with limited /dev/shm
     ],
-  });
+  };
+  if (values.proxy) {
+    const u = new URL(values.proxy);
+    launchOpts.proxy = {
+      server:   `${u.protocol}//${u.host}`,
+      username: decodeURIComponent(u.username),
+      password: decodeURIComponent(u.password),
+    };
+  }
+  browser = await launch(launchOpts);
 } catch (err) {
   process.stderr.write(`[cloak] FATAL: cannot launch CloakBrowser: ${err.message}\n`);
   process.stderr.write('[cloak] Is `npm install cloakbrowser playwright-core` complete?\n');
