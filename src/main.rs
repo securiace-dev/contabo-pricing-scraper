@@ -42,6 +42,18 @@ static ALL_PLAN_URLS: &[&str] = &[
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+/// Which HTTP backend to use for page fetches.
+#[derive(Clone, Debug, PartialEq, Default, clap::ValueEnum)]
+pub enum FetchMode {
+    /// Pure reqwest (default). Fast; evades basic WAF header checks.
+    #[default]
+    Reqwest,
+    /// CloakBrowser only. Routes all URLs through a patched Chromium subprocess.
+    Cloak,
+    /// reqwest first; fall back to CloakBrowser for any blocked/non-200 URLs.
+    Auto,
+}
+
 #[derive(Clone)]
 pub(crate) struct Opts {
     pub output: PathBuf,
@@ -55,6 +67,8 @@ pub(crate) struct Opts {
     pub quiet: bool,
     pub json_out: bool,
     pub dry_run: bool,
+    pub fetch_mode: FetchMode,
+    pub cloak_script: PathBuf,
 }
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
@@ -226,6 +240,14 @@ struct ScrapeArgs {
     /// Fetch pages but do not write any output files
     #[arg(long)]
     dry_run: bool,
+
+    /// Fetch strategy: reqwest (default), cloak (CloakBrowser only), auto (reqwest + cloak fallback on block)
+    #[arg(long, env = "FETCH_MODE", default_value = "reqwest", value_name = "MODE")]
+    fetch_mode: FetchMode,
+
+    /// Path to cloak-fetch.mjs (used when --fetch-mode is cloak or auto)
+    #[arg(long, env = "CLOAK_SCRIPT", default_value = "scripts/cloak-fetch.mjs", value_name = "PATH")]
+    cloak_script: PathBuf,
 }
 
 impl ScrapeArgs {
@@ -242,6 +264,8 @@ impl ScrapeArgs {
             quiet: self.quiet,
             json_out: self.json,
             dry_run: self.dry_run,
+            fetch_mode: self.fetch_mode,
+            cloak_script: self.cloak_script,
         }
     }
 }
@@ -1530,6 +1554,127 @@ fn get_period(plan: &Value, months: u64) -> &Value {
         .unwrap_or(&NULL)
 }
 
+// ─── CloakBrowser batch fetcher ──────────────────────────────────────────────
+//
+// Spawns a single `node <cloak_script>` subprocess that fetches all requested
+// URLs through a patched Chromium instance and writes HTML to a temp dir.
+// The Rust pipeline then reads those files and processes them via the same
+// process_plan() path as the reqwest pass — no data-processing changes needed.
+
+async fn cloak_batch_fetch(
+    urls: &[String],
+    cloak_script: &std::path::Path,
+    tmp_dir: &std::path::Path,
+    gap_report: Arc<Mutex<Vec<GapEntry>>>,
+) -> Vec<Option<PlanResult>> {
+    use tokio::process::Command;
+
+    let urls_file = tmp_dir.join("cloak-urls.json");
+    let html_dir  = tmp_dir.join("html");
+
+    if let Err(e) = fs::create_dir_all(&html_dir) {
+        tracing::error!(error = %e, "CloakBrowser: cannot create temp HTML dir");
+        return (0..urls.len()).map(|_| None).collect();
+    }
+
+    let urls_json = match serde_json::to_string(urls) {
+        Ok(j) => j,
+        Err(e) => {
+            tracing::error!(error = %e, "CloakBrowser: cannot serialise URL list");
+            return (0..urls.len()).map(|_| None).collect();
+        }
+    };
+    if let Err(e) = fs::write(&urls_file, &urls_json) {
+        tracing::error!(error = %e, "CloakBrowser: cannot write URL list file");
+        return (0..urls.len()).map(|_| None).collect();
+    }
+
+    tracing::info!(
+        count = urls.len(),
+        script = %cloak_script.display(),
+        "launching CloakBrowser batch fetch"
+    );
+
+    let status = Command::new("node")
+        .args([
+            cloak_script.to_str().unwrap_or("scripts/cloak-fetch.mjs"),
+            "--urls",    urls_file.to_str().unwrap_or(""),
+            "--out-dir", html_dir.to_str().unwrap_or(""),
+        ])
+        .status()
+        .await;
+
+    match &status {
+        Err(e) => {
+            tracing::error!(
+                error = %e,
+                "CloakBrowser subprocess failed to start — is `node` installed and `npm install cloakbrowser playwright-core` complete?"
+            );
+            return (0..urls.len()).map(|_| None).collect();
+        }
+        Ok(s) if s.code() == Some(2) => {
+            tracing::error!("CloakBrowser could not fetch any URLs (exit 2)");
+        }
+        Ok(s) => {
+            tracing::info!(exit_code = ?s.code(), "CloakBrowser batch complete");
+        }
+    }
+
+    let mut results = Vec::with_capacity(urls.len());
+    for url in urls {
+        let slug = slug_from_url(url).to_string();
+        let html_path = html_dir.join(format!("{slug}.html"));
+
+        let html = match fs::read_to_string(&html_path) {
+            Ok(h) => h,
+            Err(e) => {
+                tracing::error!(slug = %slug, error = %e, "CloakBrowser: HTML file missing after fetch");
+                gap_report.lock().await.push(GapEntry {
+                    plan_sku: None,
+                    gap: "cloak_fetch_failed".into(),
+                    title: None,
+                    error: Some(e.to_string()),
+                });
+                results.push(None);
+                continue;
+            }
+        };
+
+        let url2  = url.clone();
+        let slug2 = slug.clone();
+        let gr    = Arc::clone(&gap_report);
+        let result = tokio::task::spawn_blocking(move || {
+            let mut local_gaps: Vec<GapEntry> = vec![];
+            let r = process_plan(&url2, &html, &mut local_gaps);
+            (r, local_gaps)
+        }).await;
+
+        match result {
+            Ok((plan_result, local_gaps)) => {
+                gr.lock().await.extend(local_gaps);
+                if plan_result.is_none() {
+                    tracing::error!(slug = %slug2, "CloakBrowser: __SAPPER__ parse failed");
+                } else {
+                    tracing::info!(slug = %slug2, "CloakBrowser: parsed OK");
+                }
+                results.push(plan_result);
+            }
+            Err(e) => {
+                tracing::error!(slug = %slug2, error = %e, "CloakBrowser: parse panic");
+                gap_report.lock().await.push(GapEntry {
+                    plan_sku: None,
+                    gap: "cloak_parse_panic".into(),
+                    title: None,
+                    error: Some(e.to_string()),
+                });
+                results.push(None);
+            }
+        }
+    }
+
+    results
+}
+
 // ─── Scrape orchestrator (callable from CLI and API refresh handlers) ────────
 
 pub(crate) async fn run_scrape(opts: Opts) -> i32 {
@@ -1589,94 +1734,124 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
     );
     tracing::info!(output = %opts.output.display(), "output dir");
 
-    // Use the same browser-like User-Agent as the Node scraper. Contabo's WAF
-    // returns 403 to anything that looks like a default library client
-    // (e.g. reqwest's `reqwest/0.12` default) when the request comes from a
-    // data-centre IP range.
-    const UA: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
-    let client = Arc::new(
-        reqwest::Client::builder()
-            .timeout(Duration::from_secs(30))
-            .user_agent(UA)
-            .build()
-            .expect("failed to build HTTP client"),
-    );
-
-    let semaphore = Arc::new(Semaphore::new(opts.concurrency));
     let gap_report = Arc::new(Mutex::new(Vec::<GapEntry>::new()));
+    let failed_fetch_urls = Arc::new(Mutex::new(Vec::<String>::new()));
     let started = Instant::now();
 
-    let mut handles = Vec::new();
+    // ─── reqwest pass (skipped entirely in Cloak-only mode) ──────────────────
+    let mut results: Vec<Option<PlanResult>> = if opts.fetch_mode != FetchMode::Cloak {
+        // Use the same browser-like User-Agent as the Node scraper. Contabo's WAF
+        // returns 403 to anything that looks like a default library client
+        // (e.g. reqwest's `reqwest/0.12` default) when the request comes from a
+        // data-centre IP range.
+        const UA: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+        let client = Arc::new(
+            reqwest::Client::builder()
+                .timeout(Duration::from_secs(30))
+                .user_agent(UA)
+                .build()
+                .expect("failed to build HTTP client"),
+        );
+        let semaphore = Arc::new(Semaphore::new(opts.concurrency));
+        let mut handles = Vec::new();
 
-    for url in &urls {
-        let client = Arc::clone(&client);
-        let semaphore = Arc::clone(&semaphore);
-        let gap_report = Arc::clone(&gap_report);
-        let retries = opts.retries;
-        let url = url.to_string();
-
-        let handle = tokio::spawn(async move {
-            let _permit = semaphore.acquire().await.expect("semaphore acquire");
-            let slug = slug_from_url(&url).to_string();
-            let t0 = Instant::now();
-            tracing::info!(slug = %slug, "fetch");
-
-            let html = match fetch_with_retry(&client, &url, retries).await {
-                Ok(h) => h,
-                Err(e) => {
-                    tracing::error!(slug = %slug, error = %e, "fetch failed");
-                    gap_report.lock().await.push(GapEntry {
-                        plan_sku: None,
-                        gap: "fetch_failed".into(),
-                        title: None,
-                        error: Some(e),
-                    });
-                    return None;
-                }
-            };
-
-            // HTML parsing is synchronous + CPU-bound; run in a thread pool
-            let url2 = url.clone();
-            let slug2 = slug.clone();
+        for url in &urls {
+            let client = Arc::clone(&client);
+            let semaphore = Arc::clone(&semaphore);
             let gap_report = Arc::clone(&gap_report);
-            let result = tokio::task::spawn_blocking(move || {
-                let mut local_gaps: Vec<GapEntry> = vec![];
-                let result = process_plan(&url2, &html, &mut local_gaps);
-                (result, local_gaps)
-            })
-            .await;
+            let failed_fetch_urls = Arc::clone(&failed_fetch_urls);
+            let retries = opts.retries;
+            let url = url.to_string();
 
-            match result {
-                Ok((plan_result, local_gaps)) => {
-                    let mut gr = gap_report.lock().await;
-                    gr.extend(local_gaps);
-                    if plan_result.is_none() {
-                        tracing::error!(slug = %slug2, "parse: plan not found in SAPPER payload");
+            let handle = tokio::spawn(async move {
+                let _permit = semaphore.acquire().await.expect("semaphore acquire");
+                let slug = slug_from_url(&url).to_string();
+                let t0 = Instant::now();
+                tracing::info!(slug = %slug, "fetch");
+
+                let html = match fetch_with_retry(&client, &url, retries).await {
+                    Ok(h) => h,
+                    Err(e) => {
+                        tracing::error!(slug = %slug, error = %e, "fetch failed");
+                        gap_report.lock().await.push(GapEntry {
+                            plan_sku: None,
+                            gap: "fetch_failed".into(),
+                            title: None,
+                            error: Some(e),
+                        });
+                        failed_fetch_urls.lock().await.push(url.clone());
+                        return None;
                     }
-                    tracing::info!(slug = %slug2, elapsed_ms = t0.elapsed().as_millis() as u64, "done");
-                    plan_result
-                }
-                Err(e) => {
-                    tracing::error!(slug = %slug2, error = %e, "parse panic");
-                    gap_report.lock().await.push(GapEntry {
-                        plan_sku: None,
-                        gap: "parse_panic".into(),
-                        title: None,
-                        error: Some(e.to_string()),
-                    });
-                    None
-                }
-            }
-        });
+                };
 
-        handles.push(handle);
+                // HTML parsing is synchronous + CPU-bound; run in a thread pool
+                let url2 = url.clone();
+                let slug2 = slug.clone();
+                let gap_report = Arc::clone(&gap_report);
+                let result = tokio::task::spawn_blocking(move || {
+                    let mut local_gaps: Vec<GapEntry> = vec![];
+                    let result = process_plan(&url2, &html, &mut local_gaps);
+                    (result, local_gaps)
+                })
+                .await;
+
+                match result {
+                    Ok((plan_result, local_gaps)) => {
+                        let mut gr = gap_report.lock().await;
+                        gr.extend(local_gaps);
+                        if plan_result.is_none() {
+                            tracing::error!(slug = %slug2, "parse: plan not found in SAPPER payload");
+                        }
+                        tracing::info!(slug = %slug2, elapsed_ms = t0.elapsed().as_millis() as u64, "done");
+                        plan_result
+                    }
+                    Err(e) => {
+                        tracing::error!(slug = %slug2, error = %e, "parse panic");
+                        gap_report.lock().await.push(GapEntry {
+                            plan_sku: None,
+                            gap: "parse_panic".into(),
+                            title: None,
+                            error: Some(e.to_string()),
+                        });
+                        None
+                    }
+                }
+            });
+
+            handles.push(handle);
+        }
+
+        futures::future::join_all(handles)
+            .await
+            .into_iter()
+            .map(|r| r.unwrap_or(None))
+            .collect()
+    } else {
+        tracing::info!(fetch_mode = "cloak", "skipping reqwest pass — all URLs go to CloakBrowser");
+        vec![]
+    };
+
+    // ─── CloakBrowser pass (Auto: retry blocked URLs; Cloak: all URLs) ────────
+    let failed_fetched = Arc::try_unwrap(failed_fetch_urls)
+        .expect("all reqwest tasks completed before CloakBrowser pass")
+        .into_inner();
+    let cloak_urls: Vec<String> = match opts.fetch_mode {
+        FetchMode::Cloak   => urls.clone(),
+        FetchMode::Auto    => failed_fetched,
+        FetchMode::Reqwest => vec![],
+    };
+    if !cloak_urls.is_empty() {
+        tracing::info!(count = cloak_urls.len(), "starting CloakBrowser fallback");
+        let tmp_dir = opts.output.join(".cloak-tmp");
+        let cloak_results = cloak_batch_fetch(
+            &cloak_urls,
+            &opts.cloak_script,
+            &tmp_dir,
+            Arc::clone(&gap_report),
+        ).await;
+        results.extend(cloak_results);
+        let _ = fs::remove_dir_all(&tmp_dir);
     }
-
-    let results: Vec<Option<PlanResult>> = futures::future::join_all(handles)
-        .await
-        .into_iter()
-        .map(|r| r.unwrap_or(None))
-        .collect();
 
     let mut base_plans: Vec<Value> = vec![];
     let mut option_catalog: Vec<OptionItem> = vec![];
