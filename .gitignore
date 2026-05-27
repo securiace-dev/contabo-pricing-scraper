@@ -16,3 +16,10 @@ tmp/
 vendor/
 .phpunit.cache/
 composer.phar
+
+# Proxy credential — never commit
+deploy/proxy.env
+
+# Tool state directories
+.claude-flow/
+.kilo/
