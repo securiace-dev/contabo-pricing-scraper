@@ -1,0 +1,35 @@
+# Overlay: front the API with Caddy v2 for automatic HTTPS via Let's Encrypt.
+# Requires DNS A/AAAA records pointing to this host for ${API_DOMAIN}.
+#
+# Usage:
+#   API_DOMAIN=pricing.example.com docker compose \
+#     -f docker-compose.yml -f docker-compose.caddy.yml up -d
+
+services:
+  api:
+    # Remove the host port mapping — Caddy proxies inside the network instead
+    ports: []
+    expose:
+      - "8080"
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: contabo-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN to your public hostname}
+    volumes:
+      - ./caddy/Caddyfile.example:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  caddy-data:
+  caddy-config:
