@@ -46,6 +46,8 @@ pub enum JobStatus {
     Queued,
     Running,
     Succeeded,
+    /// Some plans succeeded, others failed (EXIT_PARTIAL).
+    PartialSuccess,
     Failed,
 }
 

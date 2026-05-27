@@ -1759,9 +1759,13 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             .timeout(Duration::from_secs(30))
             .user_agent(UA);
         if let Some(p) = &opts.proxy {
-            http_builder = http_builder.proxy(
-                reqwest::Proxy::all(p).expect("invalid SCRAPER_PROXY URL"),
-            );
+            match reqwest::Proxy::all(p) {
+                Ok(proxy) => { http_builder = http_builder.proxy(proxy); }
+                Err(e) => {
+                    eprintln!("ERROR: invalid SCRAPER_PROXY URL '{p}': {e}");
+                    return EXIT_ERROR;
+                }
+            }
         }
         let client = Arc::new(http_builder.build().expect("failed to build HTTP client"));
         let semaphore = Arc::new(Semaphore::new(opts.concurrency));

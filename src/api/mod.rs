@@ -35,15 +35,6 @@ pub struct ServeArgs {
     #[arg(long = "cors-origin")]
     pub cors_origins: Vec<String>,
 
-    /// Cron expression for periodic refresh (6 fields; sec min hour day mon dow).
-    /// Disabled by default; suggested production value: "0 0 */6 * * *" (every 6h).
-    #[arg(long, env = "CONTABO_REFRESH_CRON")]
-    pub refresh_cron: Option<String>,
-
-    /// Override the scraper command used by /refresh. Default = self (Rust).
-    /// Example: --scraper-cmd "node /app/scripts/contabo_scraper.js"
-    #[arg(long, env = "CONTABO_SCRAPER_CMD")]
-    pub scraper_cmd: Option<String>,
 }
 
 pub async fn run_serve(args: ServeArgs) -> i32 {
