@@ -1,0 +1,51 @@
+# Base compose file — runs the API on host port 8080 with no reverse proxy.
+# Suitable for local dev or behind an external load balancer.
+#
+# Overlays in this directory layer reverse-proxy + TLS on top:
+#   docker compose -f docker-compose.yml -f docker-compose.caddy.yml   up -d
+#   docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d
+#   docker compose -f docker-compose.yml -f docker-compose.coolify.yml up -d
+
+services:
+  api:
+    # Must match the image published by .github/workflows/release.yml, which pushes
+    # ghcr.io/${github.repository} (= ghcr.io/securiace-dev/contabo-pricing-scraper)
+    # with :<version> and :latest tags. The old ghcr.io/yashodhank/contabo-pricing
+    # was a legacy personal namespace CI never publishes to — a pull-based deploy
+    # (docker compose pull / up without --build) would fetch a nonexistent image.
+    image: ghcr.io/securiace-dev/contabo-pricing-scraper:latest
+    container_name: contabo-pricing
+    restart: unless-stopped
+    env_file:
+      - path: ./proxy.env
+        required: false
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    environment:
+      CONTABO_BIND: 0.0.0.0:8080
+      CONTABO_DATA_DIR: /app/data/output
+      CONTABO_AUTH_TOKEN_FILE: /run/secrets/contabo_auth_token
+      CONTABO_CORS_ORIGIN: ${CONTABO_CORS_ORIGIN:-}
+      RUST_LOG: ${RUST_LOG:-info}
+      FETCH_MODE: ${FETCH_MODE:-reqwest}
+      CLOAK_SCRIPT: /app/scripts/cloak-fetch.mjs
+    secrets:
+      - contabo_auth_token
+    volumes:
+      - contabo-data:/app/data/output
+    ports:
+      - "${API_HOST_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+secrets:
+  contabo_auth_token:
+    file: ./auth_token.txt
+
+volumes:
+  contabo-data:

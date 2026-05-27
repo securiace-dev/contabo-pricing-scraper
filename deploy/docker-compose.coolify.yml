@@ -1,0 +1,20 @@
+# Overlay: Coolify-compatible deployment.
+#
+# Coolify >= 4.x picks up labels from compose files at import. The labels
+# below tell Coolify what kind of service this is and how to route traffic.
+# Drop this file (along with docker-compose.yml) into a Coolify "Docker
+# Compose" application and set the env vars in Coolify's UI.
+
+services:
+  api:
+    ports: []   # Coolify handles routing
+    labels:
+      coolify.managed: "true"
+      coolify.type: "application"
+      coolify.name: "contabo-pricing"
+      coolify.description: "Contabo VPS/VDS pricing API (Rust)"
+      coolify.fqdn: "${COOLIFY_FQDN:-}"
+      coolify.http.port: "8080"
+      coolify.healthcheck.path: "/api/v1/health"
+      # Enable Coolify auto-update from upstream image
+      coolify.autoupdate: "false"

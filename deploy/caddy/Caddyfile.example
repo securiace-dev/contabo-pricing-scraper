@@ -1,0 +1,30 @@
+# Caddy 2 front for contabo-pricing.
+# ${API_DOMAIN} is substituted at start time from compose env.
+
+{$API_DOMAIN} {
+    encode gzip zstd
+
+    @api path /api/* /ws/* /docs* /openapi.json
+    handle @api {
+        reverse_proxy api:8080
+    }
+
+    handle {
+        reverse_proxy api:8080
+    }
+
+    # Security headers
+    header {
+        Strict-Transport-Security  "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options     "nosniff"
+        X-Frame-Options            "DENY"
+        Referrer-Policy            "strict-origin-when-cross-origin"
+        Permissions-Policy         "geolocation=(), camera=(), microphone=()"
+        -Server
+    }
+
+    log {
+        output stdout
+        format json
+    }
+}
