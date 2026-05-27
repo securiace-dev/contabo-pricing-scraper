@@ -114,7 +114,7 @@ jobs:
           # CloakBrowser has no separate install() function in its JS SDK; the binary
           # downloads on first launch() call and is cached in ~/.cloakbrowser/.
           node --input-type=module <<'EOF'
-          import { launch } from '/tmp/cloak-deps/node_modules/cloakbrowser/index.mjs';
+          import { launch } from '/tmp/cloak-deps/node_modules/cloakbrowser/dist/index.js';
           const b = await launch({ headless: true });
           await b.close();
           EOF

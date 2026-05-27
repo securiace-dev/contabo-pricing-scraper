@@ -47,7 +47,7 @@ RUN npm install --omit=dev
 # ~/.cloakbrowser/ and auto-downloads on first launch() — no separate install()
 # function exists in the JS SDK, so we trigger download via a real launch call.
 RUN node --input-type=module - <<'EOF' || true
-import { launch } from '/app/node_modules/cloakbrowser/index.mjs';
+import { launch } from '/app/node_modules/cloakbrowser/dist/index.js';
 const b = await launch({ headless: true });
 await b.close();
 EOF
