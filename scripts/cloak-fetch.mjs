@@ -61,7 +61,11 @@ try {
   browser = await launch({
     headless: true,
     humanize: false,  // not needed for SSR pages; saves time
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',  // required in CI environments with limited /dev/shm
+    ],
   });
 } catch (err) {
   process.stderr.write(`[cloak] FATAL: cannot launch CloakBrowser: ${err.message}\n`);
