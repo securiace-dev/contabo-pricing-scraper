@@ -97,15 +97,27 @@ jobs:
           echo "version=$VER" >> "$GITHUB_OUTPUT"
 
       - name: Cache CloakBrowser Chromium binary
+        id: cloak-cache
         if: env.FETCH_MODE != 'reqwest'
         uses: actions/cache@v4
         with:
-          path: ~/.cache/ms-playwright
+          # CloakBrowser stores its patched Chromium binary in ~/.cloakbrowser/
+          # (not ~/.cache/ms-playwright). The binary auto-downloads on first launch()
+          # and is cached here to avoid a 200MB download on every subsequent run.
+          path: ~/.cloakbrowser
           key: cloakbrowser-chromium-${{ steps.cloak-ver.outputs.version }}-linux-x86_64
 
       - name: Pre-download CloakBrowser Chromium binary
-        if: env.FETCH_MODE != 'reqwest' && steps.cache.outputs.cache-hit != 'true'
-        run: node -e "require('/tmp/cloak-deps/node_modules/cloakbrowser').install().catch(() => {})"
+        if: env.FETCH_MODE != 'reqwest' && steps.cloak-cache.outputs.cache-hit != 'true'
+        run: |
+          # Trigger the auto-download by launching and immediately closing a browser.
+          # CloakBrowser has no separate install() function in its JS SDK; the binary
+          # downloads on first launch() call and is cached in ~/.cloakbrowser/.
+          node --input-type=module <<'EOF'
+          import { launch } from '/tmp/cloak-deps/node_modules/cloakbrowser/index.mjs';
+          const b = await launch({ headless: true });
+          await b.close();
+          EOF
         continue-on-error: true
 
       - name: Discover plan URLs
