@@ -108,5 +108,5 @@ try {
     if (function_exists('logActivity')) {
         logActivity('Contabo Pricing ajax error: ' . $e->getMessage());
     }
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['error' => 'An internal error occurred.']);
 }

@@ -15,6 +15,14 @@ pub struct AppState {
     pub snapshot: Arc<RwLock<Snapshot>>,
     pub refresh_lock: Arc<tokio::sync::Mutex<RefreshState>>,
     pub auth: Arc<AuthConfig>,
+    pub http_client: reqwest::Client,
+    pub fx_cache: Arc<RwLock<FxCacheState>>,
+}
+
+#[derive(Default)]
+pub struct FxCacheState {
+    pub data: Option<serde_json::Value>,
+    pub fetched_at: Option<std::time::Instant>,
 }
 
 #[derive(Default, Clone)]
@@ -70,6 +78,8 @@ impl AppState {
             snapshot: Arc::new(RwLock::new(snapshot)),
             refresh_lock: Arc::new(tokio::sync::Mutex::new(RefreshState::default())),
             auth,
+            http_client: reqwest::Client::new(),
+            fx_cache: Arc::new(RwLock::new(FxCacheState::default())),
         })
     }
 }

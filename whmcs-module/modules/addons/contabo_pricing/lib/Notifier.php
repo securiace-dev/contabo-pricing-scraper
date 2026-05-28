@@ -42,6 +42,26 @@ final class Notifier
     }
 
     /**
+     * Construct from WHMCS addon settings. Returns an enabled Notifier when
+     * the 'notifier_enabled' setting is '1' or 'yes' (set via the addon
+     * maintenance page or direct DB). Defaults to disabled (Phase A safe).
+     */
+    public static function fromSettings(): self
+    {
+        $enabled = false;
+        try {
+            $val = \WHMCS\Database\Capsule::table('tbladdonmodules')
+                ->where('module', 'contabo_pricing')
+                ->where('setting', 'notifier_enabled')
+                ->value('value');
+            $enabled = in_array((string)$val, ['1', 'yes', 'true'], true);
+        } catch (\Throwable $e) {
+            // table unreadable — stay disabled
+        }
+        return new self($enabled);
+    }
+
+    /**
      * Compute the canonical idempotency key for a notice.
      *
      * Formula (Deliverable 8, item 5 of the plan):

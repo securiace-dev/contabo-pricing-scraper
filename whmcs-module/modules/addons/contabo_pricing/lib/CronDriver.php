@@ -53,7 +53,8 @@ final class CronDriver
         try {
             $this->ensureSchemaPresent();
             $this->observeMappedServices();
-            $this->scanScheduledChanges();
+            // Process due scheduled changes (Phase A: engine gate keeps this observe-only).
+            $this->processScheduledChanges();
             $this->pruneOldDecisions();
         } catch (\Throwable $e) {
             if (function_exists('logActivity')) {
@@ -145,22 +146,47 @@ final class CronDriver
         return $ids;
     }
 
-    /**
-     * Walk pending price_change_schedule rows whose effective_at has passed
-     * and queue them for evaluation. Phase A only scans + logs; it does not
-     * write tblhosting (the engine's `applyWithGuards()` is Phase B work).
-     */
-    private function scanScheduledChanges(): void
+    private function processScheduledChanges(): void
     {
+        if (!class_exists('\\ContaboPricing\\ScheduledChangeProcessor')) {
+            return;
+        }
         if (!Capsule::schema()->hasTable('mod_contabo_price_change_schedule')) {
             return;
         }
-        $due = Capsule::table('mod_contabo_price_change_schedule')
-            ->whereIn('status', ['pending', 'notified'])
-            ->where('effective_at', '<=', date('Y-m-d H:i:s'))
-            ->count();
-        if ($due > 0 && function_exists('logActivity')) {
-            logActivity("Contabo Pricing: {$due} scheduled changes pending evaluation (Phase A observe-only).");
+
+        // Build a minimal settings bag — ScheduledChangeProcessor only reads
+        // repricing_phase (engine gate) + tax/markup fields from RenewalEngine.
+        // Pull from tbladdonmodules so we respect what the admin configured.
+        $settings = [];
+        try {
+            $rows = Capsule::table('tbladdonmodules')
+                ->where('module', 'contabo_pricing')
+                ->get(['setting', 'value']);
+            foreach ($rows as $r) {
+                $r = (array) $r;
+                $settings[(string)($r['setting'] ?? '')] = $r['value'] ?? '';
+            }
+        } catch (\Throwable $e) {
+            // Settings unreadable — processor will use its defaults.
+        }
+
+        try {
+            $processor = new ScheduledChangeProcessor($settings);
+            $summary = $processor->run();
+            if (function_exists('logActivity') && ($summary['schedules_processed'] ?? 0) > 0) {
+                logActivity(sprintf(
+                    'Contabo Pricing ScheduledChangeProcessor: %d processed, %d applied, %d deferred, %d services evaluated.',
+                    (int)($summary['schedules_processed'] ?? 0),
+                    (int)($summary['schedules_applied']   ?? 0),
+                    (int)($summary['schedules_deferred']  ?? 0),
+                    (int)($summary['services_evaluated']  ?? 0)
+                ));
+            }
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: ScheduledChangeProcessor failed: ' . $e->getMessage());
+            }
         }
     }
 
