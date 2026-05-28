@@ -278,6 +278,17 @@ class ServiceRevenueResolver
             // Expiry is filtered in PHP to avoid closure-where constructs that
             // require Eloquent features not available in every test environment.
             $clientId = (int) ($order !== null ? ($order['userid'] ?? 0) : 0);
+            // A client discount applies to the client regardless of whether an
+            // order row exists — fall back to the service's owner (tblhosting).
+            if ($clientId === 0) {
+                $svcRaw = Capsule::table('tblhosting')
+                    ->where('id', $serviceId)
+                    ->select(['userid'])
+                    ->first();
+                if ($svcRaw !== null) {
+                    $clientId = (int) (((array) $svcRaw)['userid'] ?? 0);
+                }
+            }
             if ($clientId > 0) {
                 $clientDiscs = Capsule::table('tblclientdiscounts')
                     ->where('clientid', $clientId)
