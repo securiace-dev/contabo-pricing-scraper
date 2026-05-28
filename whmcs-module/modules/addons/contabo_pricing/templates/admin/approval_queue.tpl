@@ -19,7 +19,6 @@
  * @var int                               $soft_count
  * @var int                               $force_count
  * @var string                            $phase          observe|opt_in|enforce
- * @var string                            $token          WHMCS CSRF token
  * @var int                               $page
  * @var int                               $total_pages
  * @var string|null                       $flash
@@ -29,7 +28,6 @@ $cb_pending = isset($pending) && is_array($pending) ? $pending : [];
 $cb_soft    = (int) ($soft_count ?? 0);
 $cb_force   = (int) ($force_count ?? 0);
 $cb_phase   = (string) ($phase ?? 'observe');
-$cb_token   = (string) ($token ?? '');
 $cb_page    = max(1, (int) ($page ?? 1));
 $cb_pages   = max(1, (int) ($total_pages ?? 1));
 
@@ -136,7 +134,7 @@ require __DIR__ . '/_layout_open.tpl';
             <td>
               <div style="display:flex; gap:6px; flex-direction:column;">
                 <form method="post" action="<?= $esc($module_link) ?>&amp;action=approval-approve" style="margin:0;">
-                  <input type="hidden" name="token" value="<?= $esc($cb_token) ?>">
+                  <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
                   <input type="hidden" name="decision_id" value="<?= $esc((string) $cb_did) ?>">
                   <input type="hidden" name="page" value="<?= $esc((string) $cb_page) ?>">
                   <?php if ($cb_is_force): ?>
@@ -146,7 +144,7 @@ require __DIR__ . '/_layout_open.tpl';
                     onclick="return confirm('Approve decision #<?= $esc((string) $cb_did) ?> and apply the new price?');">Approve</button>
                 </form>
                 <form method="post" action="<?= $esc($module_link) ?>&amp;action=approval-reject" style="margin:0;">
-                  <input type="hidden" name="token" value="<?= $esc($cb_token) ?>">
+                  <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
                   <input type="hidden" name="decision_id" value="<?= $esc((string) $cb_did) ?>">
                   <input type="hidden" name="page" value="<?= $esc((string) $cb_page) ?>">
                   <button type="submit" class="cb-btn danger"
