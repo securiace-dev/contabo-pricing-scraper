@@ -38,6 +38,41 @@ require __DIR__ . '/_layout_open.tpl';
   <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=maintenance">← Maintenance</a>
 </div>
 
+<?php
+// Phase C: live FX rates panel. The controller injects $fx_rates (array of
+// ['currency'=>code,'rate'=>float] vs EUR), $fx_fetched_at, $fx_stale. Degrades
+// gracefully (?? null) when an older controller serves this template.
+$cb_fx       = $fx_rates ?? null;
+$cb_fx_stale = $fx_stale ?? true;
+$cb_fx_at    = $fx_fetched_at ?? null;
+?>
+<?php if ($cb_fx !== null && $cb_fx !== []): ?>
+<div class="cb-card" style="margin-bottom:12px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+    <h3 style="margin:0;">Live FX rates <span class="muted" style="font-weight:400;font-size:12px;">(vs EUR)</span></h3>
+    <span class="cb-pill <?= $esc($cb_fx_stale ? 'warn' : 'good') ?>">
+      <span class="dot"></span>
+      <?= $esc($cb_fx_stale ? 'Rates may be stale' : 'Live') ?><?php if ($cb_fx_at !== null): ?> · <?= $esc((string) $cb_fx_at) ?><?php endif; ?>
+    </span>
+  </div>
+  <table class="cb-table" style="margin-top:8px;">
+    <thead><tr><th>Currency</th><th class="right">Rate</th></tr></thead>
+    <tbody>
+      <?php foreach ($cb_fx as $fxRow): ?>
+        <tr>
+          <td><?= $esc((string) ($fxRow['currency'] ?? '')) ?></td>
+          <td class="right mono"><?= $esc(number_format((float) ($fxRow['rate'] ?? 0), 5)) ?></td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+</div>
+<?php elseif (array_key_exists('fx_rates', get_defined_vars()) && $fx_rates === null): ?>
+<div class="cb-card" style="border-left:3px solid var(--warn); margin-bottom:12px;">
+  <p style="margin:0;color:var(--warn);"><strong>FX rates unavailable.</strong> The pricing API server could not be reached; INR equivalents below may be stale or absent.</p>
+</div>
+<?php endif; ?>
+
 <?php if ($error !== null): ?>
   <div class="cb-error"><?= $esc($error) ?></div>
 <?php elseif ($cb_r === null): ?>
@@ -110,6 +145,33 @@ require __DIR__ . '/_layout_open.tpl';
   <?php if (!empty($cb_r['non_inr_mapped'])): ?>
     <div class="cb-card" style="border-left:3px solid var(--bad);">
       <h3 style="color:var(--bad);">Non-base services on mapped products (active risk)</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+        <p style="margin:0;color:var(--bad);font-weight:600;">
+          <?= $esc((string) count($cb_r['non_inr_mapped'])) ?> non-base service(s) on mapped products — revenue impact needs manual review.
+        </p>
+        <?php if (isset($csv_url)): ?>
+          <a class="cb-btn subtle" href="<?= $esc($csv_url) ?>">Export CSV</a>
+        <?php endif; ?>
+      </div>
+      <?php if (!empty($currency_preview ?? [])): ?>
+        <div class="cb-card" style="border-left:3px solid var(--warn);margin:0 0 8px;">
+          <h4 style="margin:0 0 6px;">Indicative INR equivalents</h4>
+          <table class="cb-table">
+            <thead><tr><th>Service</th><th>Currency</th><th class="right">Billed</th><th class="right">INR equiv.</th><th class="right">Rate used</th></tr></thead>
+            <tbody>
+              <?php foreach ($currency_preview as $cp): ?>
+                <tr>
+                  <td class="mono">#<?= $esc((string) (int) ($cp['service_id'] ?? 0)) ?></td>
+                  <td><?= $esc((string) ($cp['currency_code'] ?? '')) ?></td>
+                  <td class="right mono"><?= $esc(number_format((float) ($cp['amount'] ?? 0), 2)) ?></td>
+                  <td class="right mono"><?= $esc(number_format((float) ($cp['inr_equivalent'] ?? 0), 2)) ?></td>
+                  <td class="right mono"><?= $esc(number_format((float) ($cp['rate_used'] ?? 0), 5)) ?></td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      <?php endif; ?>
       <table class="cb-table">
         <thead><tr><th>Service</th><th>Client</th><th>Product</th><th>Status</th><th>Cycle</th><th class="right">Service amount</th><th>Currency</th></tr></thead>
         <tbody>
@@ -126,6 +188,15 @@ require __DIR__ . '/_layout_open.tpl';
           <?php endforeach; ?>
         </tbody>
       </table>
+    </div>
+
+    <div class="cb-card" style="border-left:3px solid var(--accent);">
+      <h4 style="margin:0 0 4px;">Remediation</h4>
+      <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--muted);">
+        <li>Move affected clients to INR billing (recommended for this addon version), or</li>
+        <li>Implement per-currency pricing profiles in a future phase (<code class="mono">mod_contabo_profile.currency_iso</code> groundwork is already in place).</li>
+        <li>Until resolved, renewal price decisions for these services use approximate figures — do not enable configurable-product billing for the affected products.</li>
+      </ul>
     </div>
   <?php endif; ?>
 
