@@ -99,6 +99,7 @@ require __DIR__ . '/_layout_open.tpl';
     </span>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=price-decisions">Audit log</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=skipped-report">Skipped report</a>
+    <a class="cb-btn<?= ((int) $awaiting) > 0 ? '' : ' ghost' ?>" href="<?= $esc($module_link) ?>&amp;action=approval-queue">Approval queue<?php if (((int) $awaiting) > 0): ?> (<?= $esc((string) (int) $awaiting) ?>)<?php endif; ?></a>
     <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=tax-settings">Tax settings</a>
   </div>
 </header>
