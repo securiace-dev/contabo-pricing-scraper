@@ -68,7 +68,10 @@ fi
 # Concrete proof that both scrapers pulled real plan data (e.g. through the
 # proxy on CI) rather than emitting a stale/empty snapshot.
 plan_count() {
-  node -e "try{const d=require('$1/contabo_base_plans.json');process.stdout.write(String(d.plan_count ?? (Array.isArray(d.plans)?d.plans.length:0)))}catch(e){process.stdout.write('0')}" 2>/dev/null
+  # base_plans.json shape differs pre-enrich: the Node scraper writes a bare
+  # array of plans; the Rust scraper writes an object with a plan_count field.
+  # Handle both so the count reflects reality on either side.
+  node -e "try{const d=require('$1/contabo_base_plans.json');const n=Array.isArray(d)?d.length:(typeof d.plan_count==='number'?d.plan_count:(Array.isArray(d.plans)?d.plans.length:0));process.stdout.write(String(n))}catch(e){process.stdout.write('0')}" 2>/dev/null
 }
 rust_plans="$(plan_count "$RUST_OUT")"
 node_plans="$(plan_count "$NODE_OUT")"
