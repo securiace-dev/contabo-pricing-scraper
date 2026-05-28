@@ -15,14 +15,26 @@ const SCHEMA_VERSION = '1.1';
 // datacenter-IP 403 block so Rust↔Node parity can be verified for real.
 // Degrades with a warning (never the credential) if undici isn't installed.
 (function setupProxy() {
-  const proxyUrl = process.env.SCRAPER_PROXY;
+  let proxyUrl = process.env.SCRAPER_PROXY;
   if (!proxyUrl) return;
+  // undici's ProxyAgent requires a full URL with scheme; the secret is often
+  // stored as user:pass@host:port. Default a missing scheme to http:// (which
+  // is also how reqwest treats a schemeless proxy on the Rust side).
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(proxyUrl)) {
+    proxyUrl = 'http://' + proxyUrl;
+  }
+  let undici;
   try {
-    const { ProxyAgent, setGlobalDispatcher } = require('undici');
-    setGlobalDispatcher(new ProxyAgent(proxyUrl));
+    undici = require('undici');
+  } catch (err) {
+    console.error(`[scraper] WARNING: SCRAPER_PROXY set but undici not installed (${err.message}); proceeding without proxy`);
+    return;
+  }
+  try {
+    undici.setGlobalDispatcher(new undici.ProxyAgent(proxyUrl));
     console.error('[scraper] routing fetches through SCRAPER_PROXY');
   } catch (err) {
-    console.error(`[scraper] WARNING: SCRAPER_PROXY set but undici unavailable (${err.message}); proceeding without proxy`);
+    console.error(`[scraper] WARNING: SCRAPER_PROXY is set but invalid (${err.message}); proceeding without proxy`);
   }
 })();
 

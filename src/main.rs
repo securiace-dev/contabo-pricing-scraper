@@ -272,7 +272,10 @@ impl ScrapeArgs {
             dry_run: self.dry_run,
             fetch_mode: self.fetch_mode,
             cloak_script: self.cloak_script,
-            proxy: self.proxy,
+            // Normalize a schemeless proxy (user:pass@host:port) to http:// once,
+            // so every downstream consumer (reqwest + the CloakBrowser subprocess,
+            // whose `new URL()` is strict) receives a valid URL.
+            proxy: self.proxy.map(|p| if p.contains("://") { p } else { format!("http://{p}") }),
         }
     }
 }
@@ -1759,6 +1762,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             .timeout(Duration::from_secs(30))
             .user_agent(UA);
         if let Some(p) = &opts.proxy {
+            // opts.proxy is already scheme-normalized in into_opts().
             match reqwest::Proxy::all(p) {
                 Ok(proxy) => { http_builder = http_builder.proxy(proxy); }
                 Err(e) => {
