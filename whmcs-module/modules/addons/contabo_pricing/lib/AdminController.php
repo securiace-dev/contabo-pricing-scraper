@@ -71,6 +71,12 @@ class AdminController
             case 'maintenance-migrate':  $this->maintenanceMigrate(); return;
             case 'maintenance-purge':    $this->maintenancePurge($req); return;
             case 'currency-report':      $this->currencyReport(); return;
+            case 'currency-report-csv':  $this->currencyReportCsv(); return;
+            // ── Phase C — approval queue ─────────────────────────────────────
+            case 'approval-queue':       $this->approvalQueue($req); return;
+            case 'approval-approve':     $this->approvalApprove($req); return;
+            case 'approval-reject':      $this->approvalReject($req); return;
+            case 'ajax-approval-count':  $this->ajaxApprovalCount(); return;
             case 'dashboard':
             default:                 $this->dashboard(); return;
         }
@@ -1433,7 +1439,368 @@ class AdminController
                 logActivity('Contabo Pricing: currency report error — ' . $e->getMessage());
             }
         }
-        $this->render('currency_report.tpl', ['report' => $report, 'error' => $error]);
+
+        // Phase C: live FX rates panel (best-effort; the report still renders if
+        // the pricing API is unreachable). $fx_rates === null signals "tried but
+        // unavailable" to the template; a populated array drives the panel.
+        $fxRates    = null;
+        $fxFetched  = null;
+        $fxStale    = true;
+        try {
+            $fx = (new ApiClient($this->settings))->fx();
+            $rates = (isset($fx['rates']) && is_array($fx['rates'])) ? $fx['rates'] : [];
+            if ($rates !== []) {
+                $fxRates = [];
+                foreach ($rates as $code => $rate) {
+                    $fxRates[] = ['currency' => (string) $code, 'rate' => (float) $rate];
+                }
+                $ts = null;
+                foreach (['asof', 'as_of', 'fetched_at', 'date', 'timestamp', 'updated_at'] as $k) {
+                    if (isset($fx[$k]) && $fx[$k] !== '') { $ts = $fx[$k]; break; }
+                }
+                if ($ts !== null) {
+                    $parsed = is_numeric($ts) ? (int) $ts : strtotime((string) $ts);
+                    if ($parsed !== false && $parsed > 0) {
+                        $fxFetched = date('Y-m-d H:i', $parsed);
+                        $fxStale   = (time() - $parsed) > 21600; // > 6h
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $fxRates = null; // unavailable
+        }
+
+        // Per-service INR equivalents for the at-risk (non-base mapped) list,
+        // using the WHMCS-configured currency rates (the rate the service is
+        // actually billed at), not the live market rate.
+        $preview = [];
+        if (is_array($report) && !empty($report['non_inr_mapped'])) {
+            $rateByCode = [];
+            foreach (($report['currencies'] ?? []) as $c) {
+                $rateByCode[(string) ($c['code'] ?? '')] = (float) ($c['rate'] ?? 0);
+            }
+            foreach ($report['non_inr_mapped'] as $s) {
+                $code   = (string) ($s['currency_code'] ?? '');
+                $amount = (float) ($s['amount'] ?? 0);
+                $rate   = $rateByCode[$code] ?? 0.0;
+                $inr    = $rate > 0 ? ($amount / $rate) : 0.0;
+                $preview[] = [
+                    'service_id'     => (int) ($s['service_id'] ?? 0),
+                    'currency_code'  => $code,
+                    'amount'         => $amount,
+                    'inr_equivalent' => round($inr, 2),
+                    'rate_used'      => $rate,
+                ];
+            }
+        }
+
+        $this->render('currency_report.tpl', [
+            'report'           => $report,
+            'error'            => $error,
+            'fx_rates'         => $fxRates,
+            'fx_fetched_at'    => $fxFetched,
+            'fx_stale'         => $fxStale,
+            'currency_preview' => $preview,
+            'csv_url'          => $this->settings->moduleLink . '&action=currency-report-csv',
+        ]);
+    }
+
+    /**
+     * Stream the at-risk (non-base, mapped-product) services as CSV so an admin
+     * can work the remediation list offline. Read-only; no token needed (GET).
+     */
+    private function currencyReportCsv(): void
+    {
+        $rows = [];
+        try {
+            $report = (new CurrencySupportReport())->build();
+            $rateByCode = [];
+            foreach (($report['currencies'] ?? []) as $c) {
+                $rateByCode[(string) ($c['code'] ?? '')] = (float) ($c['rate'] ?? 0);
+            }
+            foreach (($report['non_inr_mapped'] ?? []) as $s) {
+                $code   = (string) ($s['currency_code'] ?? '');
+                $amount = (float) ($s['amount'] ?? 0);
+                $rate   = $rateByCode[$code] ?? 0.0;
+                $rows[] = [
+                    (int) ($s['service_id'] ?? 0),
+                    (int) ($s['client_id'] ?? 0),
+                    (int) ($s['packageid'] ?? 0),
+                    $code,
+                    number_format($amount, 2, '.', ''),
+                    (string) ($s['billingcycle'] ?? ''),
+                    $rate > 0 ? number_format($amount / $rate, 2, '.', '') : '',
+                    $rate > 0 ? number_format($rate, 6, '.', '') : '',
+                ];
+            }
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: currency CSV export error — ' . $e->getMessage());
+            }
+        }
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="contabo_currency_at_risk_' . date('Ymd_His') . '.csv"');
+        $out = fopen('php://output', 'w');
+        fputcsv($out, ['service_id', 'client_id', 'product_id', 'currency', 'amount', 'billingcycle', 'inr_equivalent', 'fx_rate_used']);
+        foreach ($rows as $r) {
+            fputcsv($out, $r);
+        }
+        fclose($out);
+        exit;
+    }
+
+    // ── Phase C — approval queue ─────────────────────────────────────────────
+    //
+    // RenewalEngine parks two skip reasons for human sign-off:
+    //   awaiting_admin_approval                        (soft-threshold breach)
+    //   awaiting_force_approval_max_increase_exceeded  (hard-ceiling breach)
+    // The queue lists pending decisions that have NOT yet been resolved. A
+    // decision is "resolved" once a child decision row (parent_decision_id =
+    // its id) exists — approve/reject both INSERT a child, honouring the
+    // append-only ledger contract (the original row is never UPDATEd).
+
+    /** Build the base query for unresolved approval-pending decisions. */
+    private function approvalPendingQuery()
+    {
+        return Capsule::table('mod_contabo_price_decision as d')
+            ->where('d.requires_admin_approval', 1)
+            ->where('d.applied', 0)
+            ->whereNotExists(static function ($q): void {
+                $q->select(Capsule::raw('1'))
+                  ->from('mod_contabo_price_decision as c')
+                  ->whereColumn('c.parent_decision_id', 'd.id');
+            });
+    }
+
+    private function approvalQueue(array $req): void
+    {
+        if (!$this->guardSchema()) { return; }
+
+        $perPage = 50;
+        $page    = max(1, (int) ($req['page'] ?? 1));
+
+        $pending    = [];
+        $softCount  = 0;
+        $forceCount = 0;
+        $totalPages = 1;
+
+        try {
+            $softCount  = (int) (clone $this->approvalPendingQuery())
+                ->where('d.skip_reason', 'awaiting_admin_approval')->count();
+            $forceCount = (int) (clone $this->approvalPendingQuery())
+                ->where('d.skip_reason', 'awaiting_force_approval_max_increase_exceeded')->count();
+
+            $total      = $softCount + $forceCount;
+            $totalPages = max(1, (int) ceil($total / $perPage));
+            $page       = min($page, $totalPages);
+
+            $rows = $this->approvalPendingQuery()
+                ->leftJoin('tblhosting as h', 'h.id', '=', 'd.service_id')
+                ->orderBy('d.decided_at', 'asc')
+                ->offset(($page - 1) * $perPage)
+                ->limit($perPage)
+                ->get([
+                    'd.id', 'd.service_id', 'd.old_price', 'd.proposed_new_price',
+                    'd.skip_reason', 'd.decided_at', 'h.userid as client_id', 'h.domain',
+                ]);
+
+            foreach ($rows as $r) {
+                $r   = (array) $r;
+                $old = (float) ($r['old_price'] ?? 0);
+                $new = (float) ($r['proposed_new_price'] ?? 0);
+                $pct = $old > 0 ? (($new - $old) / $old) * 100 : 0.0;
+                $pending[] = [
+                    'id'                  => (int) $r['id'],
+                    'service_id'          => (int) $r['service_id'],
+                    'client_id'           => (int) ($r['client_id'] ?? 0),
+                    'domain'              => (string) ($r['domain'] ?? ''),
+                    'current_price'       => $old,
+                    'proposed_new_price'  => $new,
+                    'proposed_change_pct' => round($pct, 1),
+                    'skip_reason'         => (string) ($r['skip_reason'] ?? ''),
+                    'decided_at'          => (string) ($r['decided_at'] ?? ''),
+                ];
+            }
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: approval queue error — ' . $e->getMessage());
+            }
+        }
+
+        $this->render('approval_queue.tpl', [
+            'pending'     => $pending,
+            'soft_count'  => $softCount,
+            'force_count' => $forceCount,
+            'phase'       => $this->readSetting('repricing_phase', 'observe'),
+            'page'        => $page,
+            'total_pages' => $totalPages,
+            'flash'       => (string) ($req['flash'] ?? ''),
+        ]);
+    }
+
+    private function approvalApprove(array $req): void
+    {
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        $decisionId = (int) ($req['decision_id'] ?? 0);
+        $page       = max(1, (int) ($req['page'] ?? 1));
+        $adminId    = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        if ($decisionId <= 0) {
+            $this->redirect('approval-queue', ['page' => $page, 'flash' => 'Invalid decision id.']);
+            return;
+        }
+
+        $phase   = $this->readSetting('repricing_phase', 'observe');
+        $enabled = ($phase === 'opt_in' || $phase === 'enforce'); // observe suppresses the write
+        $flash   = '';
+
+        try {
+            Capsule::connection()->transaction(function () use ($decisionId, $adminId, $enabled, &$flash): void {
+                $row = Capsule::table('mod_contabo_price_decision')->where('id', $decisionId)->lockForUpdate()->first();
+                if ($row === null) { $flash = 'Decision not found.'; return; }
+                $row = (array) $row;
+
+                // Stale / concurrent-resolution guard.
+                if ((int) ($row['applied'] ?? 0) === 1 || (int) ($row['requires_admin_approval'] ?? 0) !== 1) {
+                    $flash = 'Decision already resolved.'; return;
+                }
+                $childExists = Capsule::table('mod_contabo_price_decision')->where('parent_decision_id', $decisionId)->exists();
+                if ($childExists) { $flash = 'Decision already resolved by another action.'; return; }
+
+                $serviceId = (int) $row['service_id'];
+                $newPrice  = (float) $row['proposed_new_price'];
+
+                $writeResult = (new ServicePriceWriter($enabled))
+                    ->updateRecurringAmount($serviceId, $newPrice, 'manual_admin_approval', $decisionId);
+                $applied = !empty($writeResult['applied']);
+
+                // Append-only: insert a child decision recording the outcome.
+                (new DecisionLog())->insert([
+                    'service_id'              => $serviceId,
+                    'profile_id'              => $row['profile_id'] ?? null,
+                    'profile_version_id'      => $row['profile_version_id'] ?? null,
+                    'cron_run_id'             => (string) ($row['cron_run_id'] ?? ('manual-' . date('YmdHis'))),
+                    'billing_cycle'           => (string) ($row['billing_cycle'] ?? 'monthly'),
+                    'cycle_months'            => (int) ($row['cycle_months'] ?? 1),
+                    'currency'                => (string) ($row['currency'] ?? 'INR'),
+                    'old_price'               => (float) ($row['old_price'] ?? 0),
+                    'proposed_new_price'      => $newPrice,
+                    'policy_used'             => (string) ($row['policy_used'] ?? 'manual'),
+                    'applied'                 => $applied ? 1 : 0,
+                    'applied_via'             => 'manual_admin_approval',
+                    'skip_reason'             => $applied ? null : (string) ($writeResult['via'] ?? 'writer_disabled'),
+                    'requires_admin_approval' => 0,
+                    'parent_decision_id'      => $decisionId,
+                ]);
+
+                // Action ledger: who approved (the writer logs the 'apply' row).
+                Capsule::table('mod_contabo_pricing_action')->insert([
+                    'action_type' => 'approve',
+                    'service_id'  => $serviceId,
+                    'decision_id' => $decisionId,
+                    'admin_id'    => $adminId,
+                    'reason'      => $applied ? 'approved + applied' : ('approved; write suppressed (' . (string) ($writeResult['via'] ?? '') . ')'),
+                    'created_at'  => date('Y-m-d H:i:s'),
+                ]);
+
+                $flash = $applied
+                    ? ('Approved decision #' . $decisionId . ' — new price applied.')
+                    : ('Approved decision #' . $decisionId . ' — recorded, but the write was suppressed by phase “' . $this->readSetting('repricing_phase', 'observe') . '”.');
+            });
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: approval-approve error (decision #' . $decisionId . ') — ' . $e->getMessage());
+            }
+            $flash = 'Approval failed; see the activity log for detail.';
+        }
+
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing: approval-approve by admin #' . $adminId . ' (decision #' . $decisionId . ') — ' . $flash);
+        }
+        $this->redirect('approval-queue', ['page' => $page, 'flash' => $flash]);
+    }
+
+    private function approvalReject(array $req): void
+    {
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        $decisionId = (int) ($req['decision_id'] ?? 0);
+        $page       = max(1, (int) ($req['page'] ?? 1));
+        $adminId    = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        if ($decisionId <= 0) {
+            $this->redirect('approval-queue', ['page' => $page, 'flash' => 'Invalid decision id.']);
+            return;
+        }
+
+        $flash = '';
+        try {
+            Capsule::connection()->transaction(function () use ($decisionId, $adminId, &$flash): void {
+                $row = Capsule::table('mod_contabo_price_decision')->where('id', $decisionId)->lockForUpdate()->first();
+                if ($row === null) { $flash = 'Decision not found.'; return; }
+                $row = (array) $row;
+                if ((int) ($row['applied'] ?? 0) === 1 || (int) ($row['requires_admin_approval'] ?? 0) !== 1) {
+                    $flash = 'Decision already resolved.'; return;
+                }
+                if (Capsule::table('mod_contabo_price_decision')->where('parent_decision_id', $decisionId)->exists()) {
+                    $flash = 'Decision already resolved by another action.'; return;
+                }
+
+                $serviceId = (int) $row['service_id'];
+
+                (new DecisionLog())->insert([
+                    'service_id'              => $serviceId,
+                    'profile_id'              => $row['profile_id'] ?? null,
+                    'profile_version_id'      => $row['profile_version_id'] ?? null,
+                    'cron_run_id'             => (string) ($row['cron_run_id'] ?? ('manual-' . date('YmdHis'))),
+                    'billing_cycle'           => (string) ($row['billing_cycle'] ?? 'monthly'),
+                    'cycle_months'            => (int) ($row['cycle_months'] ?? 1),
+                    'currency'                => (string) ($row['currency'] ?? 'INR'),
+                    'old_price'               => (float) ($row['old_price'] ?? 0),
+                    'proposed_new_price'      => (float) ($row['proposed_new_price'] ?? 0),
+                    'policy_used'             => (string) ($row['policy_used'] ?? 'manual'),
+                    'applied'                 => 0,
+                    'applied_via'             => null,
+                    'skip_reason'             => 'admin_rejected',
+                    'requires_admin_approval' => 0,
+                    'parent_decision_id'      => $decisionId,
+                ]);
+
+                Capsule::table('mod_contabo_pricing_action')->insert([
+                    'action_type' => 'reject',
+                    'service_id'  => $serviceId,
+                    'decision_id' => $decisionId,
+                    'admin_id'    => $adminId,
+                    'reason'      => 'admin_rejected',
+                    'created_at'  => date('Y-m-d H:i:s'),
+                ]);
+
+                $flash = 'Rejected decision #' . $decisionId . ' — no price change applied.';
+            });
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: approval-reject error (decision #' . $decisionId . ') — ' . $e->getMessage());
+            }
+            $flash = 'Rejection failed; see the activity log for detail.';
+        }
+
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing: approval-reject by admin #' . $adminId . ' (decision #' . $decisionId . ') — ' . $flash);
+        }
+        $this->redirect('approval-queue', ['page' => $page, 'flash' => $flash]);
+    }
+
+    /** JSON badge count of unresolved approval-pending decisions. */
+    private function ajaxApprovalCount(): void
+    {
+        try {
+            $count = (int) $this->approvalPendingQuery()->count();
+            $this->jsonOk(['count' => $count]);
+        } catch (\Throwable $e) {
+            $this->jsonOk(['count' => 0]);
+        }
     }
 
     private function render(string $tpl, array $data): void
