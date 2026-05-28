@@ -164,19 +164,24 @@ flowchart TD
   send a **browser-like User-Agent only** — they do **not** execute the JS challenge,
   so a UA string is insufficient. The "Node fallback" is **not** a workaround here; it
   401/403s the same way.
-- **Consequence:** `POST /refresh` on prod currently fails (logs `error=HTTP 403
-  Forbidden` ×16) and the API **safely keeps the previous snapshot** — so prod serves
-  *stale but valid* data, not empty/partial data.
-- **Mitigation options** (none trivial; evaluate before relying on automation):
-  1. Scrape from a **non-datacenter IP** (the original working model) and ship the
-     resulting JSON to the prod `CONTABO_DATA_DIR`.
-  2. Add a **headless-browser / challenge-solving** fetch path (Playwright/Puppeteer +
-     stealth → `cf_clearance` cookie). New code; biggest effort.
-  3. Egress via a **residential/clean-IP proxy**.
-  4. Source pricing from an **unprotected feed** (Contabo API/sitemap/JSON) if one exists.
+- **Consequence (when unproxied):** the API **safely keeps the previous snapshot** — so
+  prod serves *stale but valid* data, not empty/partial data.
+- **✅ Resolved via option 3 — `SCRAPER_PROXY` (residential/gateway proxy).** Routing
+  fetches through the proxy lets plain `reqwest` mode return `200` and `POST /refresh`
+  pull fresh data. Wired in three places, credential never committed:
+  - **prod**: `chmod 600` systemd drop-in `/etc/systemd/system/contabo-pricing.service.d/proxy.conf`
+    → `EnvironmentFile=/etc/contabo-pricing/proxy.env` (`SCRAPER_PROXY=…`). See
+    [deploy/README → Production scraper deploy](deploy/README.md#production-scraper-deploy-native--release-binary--proxy).
+  - **CI**: `SCRAPER_PROXY` secret in the **`Build`** environment, consumed by `scrape.yml`
+    (scheduled data pipeline) and `parity.yml` (Rust↔Node equivalence).
+  - the scraper reads `SCRAPER_PROXY` natively (clap `env=`); a schemeless value is
+    normalized to `http://` (≥ the normalize fix), but always supply the scheme for ≤ v2.3.2.
+- Other options, not used: scrape from a non-datacenter IP and ship JSON to `CONTABO_DATA_DIR`;
+  a headless-browser challenge-solver (CloakBrowser, kept only as a legacy fallback); an
+  unprotected upstream feed.
 
-> Until the challenge is solved, **installing a refresh timer is pointless** — it would
-> just fail twice a day (harmlessly). Fix the fetch path first, then automate.
+> With the proxy in place, a refresh timer is now viable — periodic `POST /api/v1/refresh`
+> (cron / `systemd` timer) pulls fresh data twice a day instead of 403-ing.
 
 ### 3) Data freshness & the refresh lifecycle
 
