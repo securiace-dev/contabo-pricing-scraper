@@ -4,12 +4,68 @@
 
 > **⚠️ Current production does NOT use these Docker recipes.** The live deployment runs
 > the binary as a **native `systemd` service** (`contabo-pricing.service`, bound to
-> `127.0.0.1:8080`, data in `/var/lib/contabo-pricing/output`), built on the host — not
-> from this image. These compose files are a supported *alternative* topology. See the
-> root [README → Production Architecture & Operational Reality](../README.md#production-architecture--operational-reality-dev--ops-deep-dive)
-> for the as-deployed truth, the **Cloudflare upstream constraint** (the scraper is
-> `403`-blocked from datacenter IPs — so a refresh from any datacenter host currently
-> fails and the API keeps serving the last good snapshot), and the dual version streams.
+> `127.0.0.1:8080`, data in `/var/lib/contabo-pricing/output`) — see
+> **[Production scraper deploy](#production-scraper-deploy-native--release-binary--proxy)**
+> below for the exact, repeatable process. These compose files are a supported
+> *alternative* topology. See the root
+> [README → Production Architecture & Operational Reality](../README.md#production-architecture--operational-reality-dev--ops-deep-dive)
+> for the as-deployed truth and the dual version streams.
+>
+> **Cloudflare upstream constraint — mitigated.** The scraper is `403`-blocked from
+> datacenter IPs. This is now resolved by routing fetches through **`SCRAPER_PROXY`**
+> (a residential/gateway proxy): set on prod via a `chmod 600` systemd drop-in, and in
+> CI via the `SCRAPER_PROXY` secret in the **`Build`** environment (used by both
+> `scrape.yml` and `parity.yml`). With the proxy, plain `reqwest` mode succeeds and
+> refreshes pull fresh data — CloakBrowser is only a legacy fallback.
+
+## Production scraper deploy (native + release binary + proxy)
+
+This is the canonical, lowest-risk process for the live API host
+(`contabo-pricing.service`, user `contabo`, bound `127.0.0.1:8080`). It ships a
+**signed public GitHub release binary** — no build, no GHCR auth, no architecture
+change — and configures the proxy. **Rollback is restoring the `.bak` binary.**
+
+```bash
+# 1. Download + checksum-verify the latest release binary (assets are PUBLIC)
+cd /tmp
+BASE=https://github.com/securiace-dev/contabo-pricing-scraper/releases/download/vX.Y.Z
+curl -fsSLO "$BASE/contabo-scraper-linux-x86_64"
+curl -fsSLO "$BASE/SHA256SUMS.txt"
+grep contabo-scraper-linux-x86_64 SHA256SUMS.txt | sha256sum -c -
+
+# 2. Proxy credential — server-side env file ONLY. chmod 600. NEVER commit it.
+install -d -m 755 /etc/contabo-pricing
+umask 077
+printf 'SCRAPER_PROXY=http://USER:PASS@HOST:PORT\n' > /etc/contabo-pricing/proxy.env
+chmod 600 /etc/contabo-pricing/proxy.env
+
+# 3. systemd drop-in wires the proxy env into the service
+install -d -m 755 /etc/systemd/system/contabo-pricing.service.d
+printf '[Service]\nEnvironmentFile=/etc/contabo-pricing/proxy.env\n' \
+  > /etc/systemd/system/contabo-pricing.service.d/proxy.conf
+
+# 4. Back up + swap the binary, then reload + restart
+cp -a /usr/local/bin/contabo-scraper /usr/local/bin/contabo-scraper.bak-$(date +%F)
+install -m 755 /tmp/contabo-scraper-linux-x86_64 /usr/local/bin/contabo-scraper
+systemctl daemon-reload && systemctl restart contabo-pricing
+
+# 5. Verify + refresh through the proxy (snapshot generated_at should jump to now)
+curl -fsS http://127.0.0.1:8080/api/v1/health
+TOKEN=$(cat /etc/contabo-pricing/auth_token)
+curl -fsS -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/refresh
+curl -s http://127.0.0.1:8080/api/v1/meta | jq '.scraper_version, .snapshot_meta.generated_at, .snapshot_meta.plan_count'
+```
+
+**Rules (do not break these):**
+- The proxy credential lives **only** in `/etc/contabo-pricing/proxy.env` (`chmod 600`)
+  on the host, or the `SCRAPER_PROXY` GitHub *environment* secret — **never** in git,
+  a tracked file, or a committed compose/env. `deploy/proxy.env` is gitignored.
+- Use the **public release binary** (`vX.Y.Z` assets), not the GHCR image, unless you
+  have made the GHCR package public or are logged in with a `read:packages` PAT.
+- Keep the bind at `127.0.0.1:8080` and the data dir at `/var/lib/contabo-pricing/output`
+  (the WHMCS module calls the loopback API).
+- `SCRAPER_PROXY` may be schemeless on ≥ the normalize fix, but **always supply the
+  `http://` scheme** for compatibility with older binaries (e.g. ≤ v2.3.2).
 
 ## Quick start (no reverse proxy)
 
