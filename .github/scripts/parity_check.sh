@@ -64,6 +64,23 @@ if [ "$rust_rc" -ne 0 ] || [ "$node_rc" -ne 0 ]; then
   exit 1
 fi
 
+# ── 2c. Report plan counts ───────────────────────────────────────────────────
+# Concrete proof that both scrapers pulled real plan data (e.g. through the
+# proxy on CI) rather than emitting a stale/empty snapshot.
+plan_count() {
+  # base_plans.json shape differs pre-enrich: the Node scraper writes a bare
+  # array of plans; the Rust scraper writes an object with a plan_count field.
+  # Handle both so the count reflects reality on either side.
+  node -e "try{const d=require('$1/contabo_base_plans.json');const n=Array.isArray(d)?d.length:(typeof d.plan_count==='number'?d.plan_count:(Array.isArray(d.plans)?d.plans.length:0));process.stdout.write(String(n))}catch(e){process.stdout.write('0')}" 2>/dev/null
+}
+rust_plans="$(plan_count "$RUST_OUT")"
+node_plans="$(plan_count "$NODE_OUT")"
+echo "[parity] plans scraped — rust=$rust_plans node=$node_plans"
+if [ "$rust_plans" = "0" ] || [ "$node_plans" = "0" ]; then
+  echo "[parity] FAILED: a scraper produced 0 plans (rust=$rust_plans node=$node_plans) — no real data fetched."
+  exit 1
+fi
+
 # ── 3. Run enrich on BOTH outputs ────────────────────────────────────────────
 # enrich_output.js reads from a fixed path (data/output); symlink each side in
 # turn so both Rust and Node outputs are post-processed identically.
