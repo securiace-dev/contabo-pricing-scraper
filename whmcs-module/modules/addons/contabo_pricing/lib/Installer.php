@@ -351,6 +351,11 @@ class Installer
                 if (!$schema->hasColumn('mod_contabo_profile', 'allow_auto_decrease')) {
                     $t->boolean('allow_auto_decrease')->default(false);
                 }
+                // Phase C: master switch — when 0, ConfigurableOptionsSyncer::apply()
+                // skips WHMCS config option group creation for this profile.
+                if (!$schema->hasColumn('mod_contabo_profile', 'expose_configurable_options')) {
+                    $t->tinyInteger('expose_configurable_options')->default(1);
+                }
             });
         }
 
