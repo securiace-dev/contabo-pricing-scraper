@@ -104,12 +104,46 @@ pub async fn list_options(State(s): State<AppState>) -> Json<Value> {
 }
 
 // ── GET /api/v1/fx ───────────────────────────────────────────────────────────
-pub async fn fx() -> Json<Value> {
-    // Phase 2 will fetch from frankfurter with cache; placeholder for now.
-    Json(json!({
-        "source": "frankfurter.app",
-        "note":   "phase-2 placeholder — wire live fetch",
-    }))
+pub async fn fx(State(s): State<AppState>) -> Json<Value> {
+    const TTL_SECS: u64 = 300;
+    const FRANKFURTER_URL: &str = "https://api.frankfurter.app/latest?base=EUR";
+
+    // Check warm cache first
+    {
+        let cache = s.fx_cache.read().await;
+        if let (Some(data), Some(fetched_at)) = (&cache.data, &cache.fetched_at) {
+            if fetched_at.elapsed().as_secs() < TTL_SECS {
+                return Json(data.clone());
+            }
+        }
+    }
+
+    // Fetch fresh
+    let fetched = s
+        .http_client
+        .get(FRANKFURTER_URL)
+        .timeout(std::time::Duration::from_secs(8))
+        .send()
+        .await
+        .ok()
+        .and_then(|r| if r.status().is_success() { Some(r) } else { None });
+
+    if let Some(resp) = fetched {
+        if let Ok(body) = resp.json::<Value>().await {
+            let mut cache = s.fx_cache.write().await;
+            cache.data = Some(body.clone());
+            cache.fetched_at = Some(std::time::Instant::now());
+            return Json(body);
+        }
+    }
+
+    // Fall back to stale cache or error
+    let cache = s.fx_cache.read().await;
+    if let Some(data) = &cache.data {
+        Json(data.clone())
+    } else {
+        Json(json!({ "error": "FX rates unavailable" }))
+    }
 }
 
 // ── POST /api/v1/quote ───────────────────────────────────────────────────────

@@ -135,35 +135,37 @@ class ProfileManager
     /** Append a new immutable version snapshot. Returns the new version id. */
     public function appendVersion(int $profileId, ProfileVersionInput $v): int
     {
-        $nextVersion = ((int) Capsule::table('mod_contabo_profile_version')
-            ->where('profile_id', $profileId)
-            ->max('version')) + 1;
+        $id = 0;
+        Capsule::connection()->transaction(function () use ($profileId, $v, &$id) {
+            $nextVersion = ((int) Capsule::table('mod_contabo_profile_version')
+                ->where('profile_id', $profileId)
+                ->max('version')) + 1;
 
-        $now = date('Y-m-d H:i:s');
-        $id = (int) Capsule::table('mod_contabo_profile_version')->insertGetId([
-            'profile_id'             => $profileId,
-            'version'                => $nextVersion,
-            'base_monthly_eur'       => $v->baseMonthlyEur,
-            'configured_monthly_eur' => $v->configuredMonthlyEur,
-            'setup_fee_eur'          => $v->setupFeeEur,
-            'options_snapshot'       => json_encode($v->optionsSnapshot),
-            'specs_snapshot'         => json_encode($v->specsSnapshot),
-            'fx_rate'                => $v->fxRate,
-            'fx_source'              => $v->fxSource,
-            'fx_markup_pct'          => $v->fxMarkupPct,
-            'gst_pct'                => $v->gstPct,
-            'currency_iso'           => $v->currencyIso,
-            'final_monthly'          => $v->finalMonthly,
-            'final_setup'            => $v->finalSetup,
-            'snapshot_generated_at'  => $v->snapshotGeneratedAt,
-            'created_at'             => $now,
-            'updated_at'             => $now,
-        ]);
+            $now = date('Y-m-d H:i:s');
+            $id = (int) Capsule::table('mod_contabo_profile_version')->insertGetId([
+                'profile_id'             => $profileId,
+                'version'                => $nextVersion,
+                'base_monthly_eur'       => $v->baseMonthlyEur,
+                'configured_monthly_eur' => $v->configuredMonthlyEur,
+                'setup_fee_eur'          => $v->setupFeeEur,
+                'options_snapshot'       => json_encode($v->optionsSnapshot),
+                'specs_snapshot'         => json_encode($v->specsSnapshot),
+                'fx_rate'                => $v->fxRate,
+                'fx_source'              => $v->fxSource,
+                'fx_markup_pct'          => $v->fxMarkupPct,
+                'gst_pct'                => $v->gstPct,
+                'currency_iso'           => $v->currencyIso,
+                'final_monthly'          => $v->finalMonthly,
+                'final_setup'            => $v->finalSetup,
+                'snapshot_generated_at'  => $v->snapshotGeneratedAt,
+                'created_at'             => $now,
+                'updated_at'             => $now,
+            ]);
 
-        Capsule::table('mod_contabo_profile')
-            ->where('id', $profileId)
-            ->update(['latest_version_id' => $id, 'updated_at' => $now]);
-
+            Capsule::table('mod_contabo_profile')
+                ->where('id', $profileId)
+                ->update(['latest_version_id' => $id, 'updated_at' => $now]);
+        });
         return $id;
     }
 
