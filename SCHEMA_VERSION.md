@@ -41,20 +41,45 @@ Initial JSON/CSV emission schema covering `contabo_base_plans.json`,
 
 ---
 
-## WHMCS DB 1 — current
+## WHMCS DB 7 — current (`Installer::SCHEMA_VERSION = 7`)
 
-Tables created by `Installer::install()`:
+`install()` creates the v1 tables, stamps `schema_version = 1`, then runs the
+idempotent `migrateTo2..7` chain — so both fresh installs and step-by-step
+upgrades converge to the current shape. Each `migrateToN` is guarded by
+`hasTable`/`hasColumn`.
+
+Highlights by version:
+- **v2** — Renewal Pricing Policy Engine: `mod_contabo_service_policy`,
+  `mod_contabo_price_decision`, `mod_contabo_pricing_action`,
+  `mod_contabo_price_change_schedule`, `mod_contabo_price_notice`,
+  `mod_contabo_repricing_lock`; additive policy/markup columns on
+  `mod_contabo_profile` + `mod_contabo_profile_version`.
+- **v3–v5** — mapping refits, catalog audit, profile identity, and the
+  configurable-options link tables (`mod_contabo_config_*`).
+- **v6** — `expected_hash` on the config-option link tables.
+- **v7 (Phase C)** — `mod_contabo_profile.expose_configurable_options`
+  (`TINYINT NOT NULL DEFAULT 1`). Master switch: when 0,
+  `ConfigurableOptionsSyncer::apply()` skips WHMCS config-option group creation.
+
+### Added (v7)
+- `mod_contabo_profile.expose_configurable_options` — via `migrateTo7`.
+
+### Migration
+`migrateTo7` is idempotent (`hasColumn` guard). It is a **separate** migration
+on purpose: installs already at v6 never re-run earlier migrations, so folding
+the column into `migrateTo2` would have left upgraded installs without it.
+
+---
+
+## WHMCS DB 1 — initial
+
+Tables created by the original `Installer::install()` (v1 shape):
 
 - `mod_contabo_profile`
 - `mod_contabo_profile_version`
 - `mod_contabo_mapping`
 - `mod_contabo_sync_log`
 - `mod_contabo_settings`
-
-### Migration
-
-None required for fresh installs. Future schemas should add a `migrateToN()`
-method on the installer; `Installer::upgrade()` runs them in sequence.
 
 ---
 

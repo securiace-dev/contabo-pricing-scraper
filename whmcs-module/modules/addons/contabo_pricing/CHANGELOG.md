@@ -1,5 +1,60 @@
 # Changelog
 
+## 0.6.0 — 2026-05-28 (Phase C — approval workflow, true revenue, multi-currency, provisioning)
+
+Phase C closes the remaining gaps after Phase B (price-write activation): an
+admin approval workflow, discount-aware revenue, a completed multi-currency
+report, a configurable-options master switch, and a first-class Contabo VPS
+provisioning module. **Schema bumps to DB v7** (`migrateTo7`).
+
+### Added — Approval Queue UI
+- New admin page `action=approval-queue` listing renewal decisions parked for
+  sign-off (`requires_admin_approval=1, applied=0` with no resolution child).
+  Handlers `approval-approve` / `approval-reject` (CSRF via `generate_token()`),
+  plus `ajax-approval-count` for a badge. Reachable from the Repricing dashboard.
+- **Append-only resolution**: approve/reject INSERT a child
+  `mod_contabo_price_decision` row (`parent_decision_id` lineage); the original
+  is never UPDATEd. The queue excludes already-resolved parents via
+  `whereNotExists`. Reuses the existing `mod_contabo_pricing_action.admin_id` /
+  `action_type` columns — **no schema change for the queue**.
+- **Concurrency-safe**: approve/reject run inside a transaction with
+  `lockForUpdate` + a child-exists re-check, so a decision can't be double-applied.
+- **Phase-aware**: the write goes through `ServicePriceWriter` only for
+  `opt_in`/`enforce`; under `observe` the approval is recorded but the write is
+  suppressed (surfaced in the flash + the queue's phase banner).
+
+### Added — ServiceRevenueResolver discounts
+- `fetchDiscounts()` now folds recurring promos (`tblorders`→`tblpromotions`,
+  honouring `recurnextcycle`) and client discounts (`tblclientdiscounts`),
+  greater-of (not additive). Schema-guarded (`hasColumn`) with a `partial=true`
+  fallback, and skipped entirely for non-INR services. New
+  `ServiceRevenueResolverDiscountTest` (7 cases).
+
+### Added — Multi-currency report
+- `action=currency-report` gains a live FX-rates panel (from the pricing API),
+  per-service INR equivalents for at-risk non-base services, a remediation
+  callout, and a `currency-report-csv` export.
+
+### Added — expose_configurable_options gate (schema v7)
+- Profile-level `expose_configurable_options` (TINYINT default 1) added to
+  `mod_contabo_profile` via **`migrateTo7`**. When 0,
+  `ConfigurableOptionsSyncer::apply()` returns early
+  (`skip_reason=expose_gate_disabled`) and `config-apply` shows a clear message
+  instead of creating WHMCS option groups.
+
+### Added — Contabo VPS provisioning module
+- New WHMCS server module `modules/servers/contabo_vps/` (separate from this
+  addon): OAuth2 password-grant auth (Keycloak) with in-memory token cache + 401
+  refresh, a curl API client (429/5xx backoff, `x-request-id`), instance mapper,
+  and `CreateAccount` / `SuspendAccount`(stop) / `UnsuspendAccount`(start) /
+  `TerminateAccount`(cancel) / restart / reset-password, admin tab + client area.
+  Credentials are redacted from `logModuleCall` and SSL verification is enforced.
+
+### Fixed
+- **Migration correctness**: `expose_configurable_options` is added in its own
+  `migrateTo7` (not folded into `migrateTo2`), so installs already at schema v6
+  receive it on upgrade.
+
 ## 0.5.1 — 2026-05-24 (hardening — real-WHMCS schema parity + operational safety)
 
 Closes the **complete** raw-`tblhosting.recurringamount` parity defect class

@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 6;
+    public const SCHEMA_VERSION = 7;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -350,11 +350,6 @@ class Installer
                 }
                 if (!$schema->hasColumn('mod_contabo_profile', 'allow_auto_decrease')) {
                     $t->boolean('allow_auto_decrease')->default(false);
-                }
-                // Phase C: master switch — when 0, ConfigurableOptionsSyncer::apply()
-                // skips WHMCS config option group creation for this profile.
-                if (!$schema->hasColumn('mod_contabo_profile', 'expose_configurable_options')) {
-                    $t->tinyInteger('expose_configurable_options')->default(1);
                 }
             });
         }
@@ -1067,6 +1062,30 @@ class Installer
                 });
                 logActivity('Contabo Pricing migrateTo6: added expected_hash to ' . $table);
             }
+        }
+    }
+
+    /**
+     * Schema v7 — Phase C: profile-level `expose_configurable_options` master
+     * switch. When 0, ConfigurableOptionsSyncer::apply() skips WHMCS config
+     * option group creation for that profile (catalog price sync only).
+     *
+     * This MUST be its own migration (not folded into migrateTo2): installs
+     * already at schema v6 never re-run earlier migrations, so the column would
+     * otherwise never be added on an upgrade. Idempotent via hasColumn.
+     */
+    public function migrateTo7(): void
+    {
+        $schema = Capsule::schema();
+        if (!$schema->hasTable('mod_contabo_profile')) {
+            logActivity('Contabo Pricing migrateTo7: mod_contabo_profile absent — expose_configurable_options skipped');
+            return;
+        }
+        if (!$schema->hasColumn('mod_contabo_profile', 'expose_configurable_options')) {
+            $schema->table('mod_contabo_profile', static function (Blueprint $t): void {
+                $t->tinyInteger('expose_configurable_options')->default(1);
+            });
+            logActivity('Contabo Pricing migrateTo7: added expose_configurable_options to mod_contabo_profile');
         }
     }
 }

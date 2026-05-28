@@ -98,6 +98,11 @@ Then load the addon admin page once so `SchemaHealth::assertOrMigrate()` runs.
 - **No manual SQL on prod.** No deploy step writes the WHMCS DB.
 - A deploy that does not bump `Installer::SCHEMA_VERSION` performs **no migration**
   (assertOrMigrate is a no-op when already current).
+- **0.6.0 / Phase C** bumps the schema to **v7** — `migrateTo7` adds the
+  idempotent `mod_contabo_profile.expose_configurable_options` column
+  (`TINYINT DEFAULT 1`). On an existing prod (currently at v6) the first admin
+  page load after deploy runs it; confirm with
+  `SELECT value FROM mod_contabo_settings WHERE \`key\`='schema_version'` → `7`.
 
 ## 4. Rollback
 
@@ -114,3 +119,24 @@ Then load the addon admin page once so `SchemaHealth::assertOrMigrate()` runs.
 3. Commit + push to `origin/main`.
 4. Deploy per §2 (explicit approval).
 5. Post-deploy verification per §2.3.
+
+## 6. Contabo VPS provisioning module (`modules/servers/contabo_vps/`)
+
+Phase C added a **separate** WHMCS server/provisioning module — it is *not* part
+of this addon and is **not** covered by `predeploy-check.sh` (which is
+addon-scoped). Notes:
+
+- **Deploy path:** rsync `whmcs-module/modules/servers/contabo_vps/` →
+  `<whmcs>/modules/servers/contabo_vps/` (same `--no-owner` + chown discipline as §2).
+- **No DB schema.** It stores the created instance id in a service custom field
+  named `contabo_instance_id` (create it on the product's Custom Fields tab).
+- **Credentials** live in WHMCS server config (Setup → Servers), encrypted at
+  rest by WHMCS: Username = OAuth2 `client_id`, Password = `client_secret`,
+  Access Hash = `apiUser:apiPassword`. They are redacted from `logModuleCall` and
+  never logged in plaintext; SSL verification is enforced on every call.
+- **Activation:** link a WHMCS product to the `contabo_vps` server module and set
+  config options 1–4 (image id, region, SSH secret id, product id). Use the
+  module's **Test Connection** before ordering.
+- Lifecycle: Contabo has no native suspend — Suspend/Unsuspend map to power
+  stop/start; Terminate issues a cancel; ChangePackage is a manual-intervention
+  message (no live resize).
