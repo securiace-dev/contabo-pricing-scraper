@@ -602,6 +602,7 @@ storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Europe,United Ki
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Storage Type,SSD,1.4 TB SSD,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Coolify Server,0,0,,,,,,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Docker,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,GitLab Server,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,n8n Server,0,0,,,,,,EUR
@@ -619,7 +620,6 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Arch Linux,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Debian 12,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Debian 13,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -661,6 +661,7 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Storage,SSD,4 TB SSD,103.49,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Coolify Server,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,DeepSeek,0,0,,,,,,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Docker,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,GitLab Server,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,n8n Server,0,0,,,,,,EUR
@@ -671,6 +672,7 @@ vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Arch Linux,0,0,,,,,,EUR
@@ -719,6 +721,7 @@ vds-m,vds-m,Cloud VDS,Cloud VDS M,Storage,SSD,4 TB SSD,103.49,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Coolify Server,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,DeepSeek,0,0,,,,,,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Docker,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,GitLab Server,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,n8n Server,0,0,,,,,,EUR
@@ -729,6 +732,7 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Arch Linux,0,0,,,,,,EUR
@@ -747,10 +751,10 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2019 Standard,50,50,,,
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2022 Standard,50,50,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Webmin,0,0,,,,,,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
@@ -775,7 +779,9 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,1 TB SSD,24.99,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,2 TB SSD,39.09,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,4 TB SSD,103.49,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Coolify Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,DeepSeek,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Docker,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,GitLab Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,n8n Server,0,0,,,,,,EUR
@@ -785,8 +791,9 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,WireGuard Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Flux Node,0,0,,,,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Arch Linux,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Debian 12,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Debian 13,0,0,,,,,,EUR
@@ -803,10 +810,9 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2019 Standard,50,50
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2022 Standard,50,50,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Webmin,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,243 TB Out + Unlimited In,258.79,0,,,,,,EUR
@@ -815,9 +821,8 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,80 TB Out + Unlimited 
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,Unlimited and Unmetered Traffic,344.99,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (Central),10.4,0,America,United States (Central),US,Central,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (East),12.7,0,America,United States (East),US,East,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (West),11.5,0,America,United States (West),US,West,,EUR
@@ -834,6 +839,7 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Storage,SSD,4 TB SSD,103.49,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Coolify Server,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,DeepSeek,0,0,,,,,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Docker,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,GitLab Server,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,n8n Server,0,0,,,,,,EUR
@@ -844,7 +850,9 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Bitcoin Node,0,0,,,,,,E
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Arch Linux,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Debian 12,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Debian 13,0,0,,,,,,EUR
@@ -861,10 +869,10 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2019 Standard,50
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2022 Standard,50,50,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin,0,0,,,,,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,243 TB Out + Unlimited In,258.79,0,,,,,,EUR
@@ -873,7 +881,6 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,80 TB Out + Unlimit
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,Unlimited and Unmetered Traffic,344.99,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (Central),12.7,0,America,United States (Central),US,Central,,EUR

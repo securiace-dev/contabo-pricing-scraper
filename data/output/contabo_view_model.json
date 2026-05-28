@@ -2,7 +2,7 @@
   "dimension_schema": {
     "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
     "schema_version": "1.1",
-    "generated_at": "2026-05-27T19:57:37.322Z",
+    "generated_at": "2026-05-28T14:18:28.727Z",
     "dimensions": {
       "Data Protection": {
         "required": false,
@@ -45,7 +45,7 @@
     }
   },
   "meta": {
-    "generated_at": "2026-05-27T19:57:37.322Z",
+    "generated_at": "2026-05-28T14:18:28.728Z",
     "plan_count": 16,
     "row_count": 64,
     "schema_version": "1.1",
@@ -2966,7 +2966,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 35,
+          "option_count": 37,
           "paid_count": 9
         },
         "Networking": {
@@ -3026,7 +3026,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 35,
+          "option_count": 37,
           "paid_count": 9
         },
         "Networking": {
@@ -3086,7 +3086,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 35,
+          "option_count": 37,
           "paid_count": 9
         },
         "Networking": {
@@ -3146,7 +3146,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 35,
+          "option_count": 37,
           "paid_count": 9
         },
         "Networking": {
@@ -3206,8 +3206,8 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 34,
-          "paid_count": 9
+          "option_count": 36,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
@@ -3266,8 +3266,8 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 34,
-          "paid_count": 9
+          "option_count": 36,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
@@ -3326,8 +3326,8 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 34,
-          "paid_count": 9
+          "option_count": 36,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
@@ -3386,8 +3386,8 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 34,
-          "paid_count": 9
+          "option_count": 36,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
@@ -3446,15 +3446,15 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 32,
-          "paid_count": 9
+          "option_count": 34,
+          "paid_count": 7
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 344.99,
           "min_delta": 0,
-          "option_count": 11,
-          "paid_count": 6
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3506,15 +3506,15 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 32,
-          "paid_count": 9
+          "option_count": 34,
+          "paid_count": 7
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 344.99,
           "min_delta": 0,
-          "option_count": 11,
-          "paid_count": 6
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3566,15 +3566,15 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 32,
-          "paid_count": 9
+          "option_count": 34,
+          "paid_count": 7
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 344.99,
           "min_delta": 0,
-          "option_count": 11,
-          "paid_count": 6
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3626,15 +3626,15 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 32,
-          "paid_count": 9
+          "option_count": 34,
+          "paid_count": 7
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 344.99,
           "min_delta": 0,
-          "option_count": 11,
-          "paid_count": 6
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3686,15 +3686,15 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 33,
-          "paid_count": 9
+          "option_count": 36,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 344.99,
           "min_delta": 0,
-          "option_count": 11,
-          "paid_count": 6
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3746,15 +3746,15 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 33,
-          "paid_count": 9
+          "option_count": 36,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 344.99,
           "min_delta": 0,
-          "option_count": 11,
-          "paid_count": 6
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3806,15 +3806,15 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 33,
-          "paid_count": 9
+          "option_count": 36,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 344.99,
           "min_delta": 0,
-          "option_count": 11,
-          "paid_count": 6
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3866,15 +3866,15 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 33,
-          "paid_count": 9
+          "option_count": 36,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 344.99,
           "min_delta": 0,
-          "option_count": 11,
-          "paid_count": 6
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",

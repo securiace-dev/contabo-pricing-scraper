@@ -1,14 +1,14 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.2",
-  "generated_at": "2026-05-27T19:57:37.235Z",
+  "generated_at": "2026-05-28T14:18:28.626Z",
   "plan_count": 16,
   "plans": {
     "https://contabo.com/en/vps/cloud-vps-10/": {
       "slug": "cloud-vps-10",
       "family": "Cloud VPS",
       "title": "Cloud VPS 10",
-      "fetched_at": "2026-05-27T19:57:33.770Z",
+      "fetched_at": "2026-05-28T14:18:27.924Z",
       "base_monthly_price": 4.5,
       "contract_periods": [
         {
@@ -625,7 +625,7 @@
       "slug": "cloud-vps-20",
       "family": "Cloud VPS",
       "title": "Cloud VPS 20",
-      "fetched_at": "2026-05-27T19:57:33.604Z",
+      "fetched_at": "2026-05-28T14:18:27.847Z",
       "base_monthly_price": 7,
       "contract_periods": [
         {
@@ -1242,7 +1242,7 @@
       "slug": "cloud-vps-30",
       "family": "Cloud VPS",
       "title": "Cloud VPS 30",
-      "fetched_at": "2026-05-27T19:57:33.325Z",
+      "fetched_at": "2026-05-28T14:18:26.645Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -1859,7 +1859,7 @@
       "slug": "cloud-vps-40",
       "family": "Cloud VPS",
       "title": "Cloud VPS 40",
-      "fetched_at": "2026-05-27T19:57:33.653Z",
+      "fetched_at": "2026-05-28T14:18:27.985Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -2476,7 +2476,7 @@
       "slug": "cloud-vps-50",
       "family": "Cloud VPS",
       "title": "Cloud VPS 50",
-      "fetched_at": "2026-05-27T19:57:33.750Z",
+      "fetched_at": "2026-05-28T14:18:28.298Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -3093,7 +3093,7 @@
       "slug": "cloud-vps-60",
       "family": "Cloud VPS",
       "title": "Cloud VPS 60",
-      "fetched_at": "2026-05-27T19:57:37.226Z",
+      "fetched_at": "2026-05-28T14:18:28.249Z",
       "base_monthly_price": 49,
       "contract_periods": [
         {
@@ -3710,7 +3710,7 @@
       "slug": "storage-vps-10",
       "family": "Storage VPS",
       "title": "Storage VPS 10",
-      "fetched_at": "2026-05-27T19:57:36.453Z",
+      "fetched_at": "2026-05-28T14:18:28.566Z",
       "base_monthly_price": 4.5,
       "contract_periods": [
         {
@@ -4282,7 +4282,7 @@
       "slug": "storage-vps-20",
       "family": "Storage VPS",
       "title": "Storage VPS 20",
-      "fetched_at": "2026-05-27T19:57:33.551Z",
+      "fetched_at": "2026-05-28T14:18:28.542Z",
       "base_monthly_price": 7,
       "contract_periods": [
         {
@@ -4863,7 +4863,7 @@
       "slug": "storage-vps-30",
       "family": "Storage VPS",
       "title": "Storage VPS 30",
-      "fetched_at": "2026-05-27T19:57:36.301Z",
+      "fetched_at": "2026-05-28T14:18:28.613Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -5462,7 +5462,7 @@
       "slug": "storage-vps-40",
       "family": "Storage VPS",
       "title": "Storage VPS 40",
-      "fetched_at": "2026-05-27T19:57:36.766Z",
+      "fetched_at": "2026-05-28T14:18:28.428Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -6061,7 +6061,7 @@
       "slug": "storage-vps-50",
       "family": "Storage VPS",
       "title": "Storage VPS 50",
-      "fetched_at": "2026-05-27T19:57:33.197Z",
+      "fetched_at": "2026-05-28T14:18:28.568Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -6660,7 +6660,7 @@
       "slug": "vds-s",
       "family": "Cloud VDS",
       "title": "Cloud VDS S",
-      "fetched_at": "2026-05-27T19:57:36.809Z",
+      "fetched_at": "2026-05-28T14:18:28.503Z",
       "base_monthly_price": 34.4,
       "contract_periods": [
         {
@@ -6716,6 +6716,15 @@
             "dimension": "Image",
             "category": "Apps",
             "option_label": "Coolify Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-s",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Docker",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -6869,15 +6878,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-s",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -7295,7 +7295,7 @@
       "slug": "vds-m",
       "family": "Cloud VDS",
       "title": "Cloud VDS M",
-      "fetched_at": "2026-05-27T19:57:33.400Z",
+      "fetched_at": "2026-05-28T14:18:27.992Z",
       "base_monthly_price": 44.8,
       "contract_periods": [
         {
@@ -7360,6 +7360,15 @@
             "dimension": "Image",
             "category": "Apps",
             "option_label": "DeepSeek",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-m",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Docker",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -7450,6 +7459,15 @@
             "dimension": "Image",
             "category": "Blockchain",
             "option_label": "Horizen Node",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-m",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Blockchain",
+            "option_label": "IPFS Node",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -7930,7 +7948,7 @@
       "slug": "vds-l",
       "family": "Cloud VDS",
       "title": "Cloud VDS L",
-      "fetched_at": "2026-05-27T19:57:36.195Z",
+      "fetched_at": "2026-05-28T14:18:26.665Z",
       "base_monthly_price": 64,
       "contract_periods": [
         {
@@ -7995,6 +8013,15 @@
             "dimension": "Image",
             "category": "Apps",
             "option_label": "DeepSeek",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-l",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Docker",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8085,6 +8112,15 @@
             "dimension": "Image",
             "category": "Blockchain",
             "option_label": "Horizen Node",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-l",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Blockchain",
+            "option_label": "IPFS Node",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8256,15 +8292,6 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Panels",
-            "option_label": "Plesk Admin Edition",
-            "monthly_price_delta": 12,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-l",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
             "option_label": "Plesk Host Edition",
             "monthly_price_delta": 36.5,
             "setup_fee_delta": 0
@@ -8284,6 +8311,15 @@
             "dimension": "Image",
             "category": "Panels",
             "option_label": "Webmin",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-l",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Panels",
+            "option_label": "Webmin + LAMP",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           }
@@ -8565,7 +8601,7 @@
       "slug": "vds-xl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XL",
-      "fetched_at": "2026-05-27T19:57:36.030Z",
+      "fetched_at": "2026-05-28T14:18:28.313Z",
       "base_monthly_price": 82.4,
       "contract_periods": [
         {
@@ -8620,7 +8656,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Coolify Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "DeepSeek",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Docker",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8710,7 +8764,7 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Blockchain",
-            "option_label": "Horizen Node",
+            "option_label": "IPFS Node",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8720,6 +8774,15 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "AlmaLinux 10",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "OS",
+            "option_label": "AlmaLinux 9",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8873,24 +8936,6 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Panels",
-            "option_label": "Plesk Admin Edition",
-            "monthly_price_delta": 12,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xl",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
-            "option_label": "Plesk Host Edition",
-            "monthly_price_delta": 36.5,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xl",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
             "option_label": "Plesk Pro Edition",
             "monthly_price_delta": 19,
             "setup_fee_delta": 0
@@ -8901,6 +8946,15 @@
             "dimension": "Image",
             "category": "Panels",
             "option_label": "Webmin",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Panels",
+            "option_label": "Webmin + LAMP",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           }
@@ -8984,15 +9038,6 @@
             "plan_sku": "vds-xl",
             "currency": "EUR",
             "dimension": "Networking",
-            "category": "IPv4",
-            "option_label": "Additional IP Address",
-            "monthly_price_delta": 3.5,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xl",
-            "currency": "EUR",
-            "dimension": "Networking",
             "category": "Private Networking",
             "option_label": "No Private Networking",
             "monthly_price_delta": 0,
@@ -9005,7 +9050,7 @@
             "dimension": "Networking",
             "category": "Private Networking",
             "option_label": "Private Networking Enabled",
-            "monthly_price_delta": 2.29,
+            "monthly_price_delta": 5.79,
             "setup_fee_delta": 0
           }
         ],
@@ -9191,7 +9236,7 @@
       "slug": "vds-xxl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XXL",
-      "fetched_at": "2026-05-27T19:57:37.103Z",
+      "fetched_at": "2026-05-28T14:18:28.503Z",
       "base_monthly_price": 119,
       "contract_periods": [
         {
@@ -9256,6 +9301,15 @@
             "dimension": "Image",
             "category": "Apps",
             "option_label": "DeepSeek",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Docker",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -9353,8 +9407,26 @@
             "plan_sku": "vds-xxl",
             "currency": "EUR",
             "dimension": "Image",
+            "category": "Blockchain",
+            "option_label": "IPFS Node",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
             "category": "OS",
             "option_label": "AlmaLinux 10",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "OS",
+            "option_label": "AlmaLinux 9",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -9508,15 +9580,6 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Panels",
-            "option_label": "Plesk Admin Edition",
-            "monthly_price_delta": 12,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xxl",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
             "option_label": "Plesk Host Edition",
             "monthly_price_delta": 36.5,
             "setup_fee_delta": 0
@@ -9536,6 +9599,15 @@
             "dimension": "Image",
             "category": "Panels",
             "option_label": "Webmin",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Panels",
+            "option_label": "Webmin + LAMP",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           }
@@ -9614,15 +9686,6 @@
             "monthly_price_delta": 0,
             "setup_fee_delta": 0,
             "is_default": true
-          },
-          {
-            "plan_sku": "vds-xxl",
-            "currency": "EUR",
-            "dimension": "Networking",
-            "category": "IPv4",
-            "option_label": "Additional IP Address",
-            "monthly_price_delta": 3.5,
-            "setup_fee_delta": 0
           },
           {
             "plan_sku": "vds-xxl",
