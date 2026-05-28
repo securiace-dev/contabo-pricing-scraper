@@ -434,11 +434,18 @@ class SyncEngine
         // engine continues to produce sensible numbers in production.
         $landedMonthly = (float) $version->finalMonthly;
 
+        // For 'fixed' strategy, $value is the admin-set total sell price for
+        // this cycle. Convert to monthly so sellPriceForCycle can use it.
+        $fixedCycleTotal = null;
+        if ($strategy === 'fixed') {
+            $fixedCycleTotal = $cycleMonths > 0 ? ($value / $cycleMonths) : $value;
+        }
+
         $preRoundCycle = MarginCalculator::sellPriceForCycle(
             $landedMonthly,
             $strategy,
             (float) $value,
-            null, // 'fixed' not supported via per-cycle override here yet
+            $fixedCycleTotal,
             $cycleMonths
         );
 

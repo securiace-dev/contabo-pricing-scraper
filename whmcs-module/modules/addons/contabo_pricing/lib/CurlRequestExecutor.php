@@ -23,6 +23,8 @@ final class CurlRequestExecutor implements RequestExecutor
             CURLOPT_TIMEOUT        => $timeoutSec,
             CURLOPT_CONNECTTIMEOUT => $timeoutSec,
             CURLOPT_USERAGENT      => 'whmcs-contabo-pricing/0.1',
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
         ]);
         if ($body !== null) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $body);

@@ -117,6 +117,10 @@ class ApiClient
      */
     private function request(string $method, string $path, ?array $body): array
     {
+        $scheme = strtolower((string)(parse_url($this->settings->apiBaseUrl, PHP_URL_SCHEME) ?? ''));
+        if ($scheme !== 'http' && $scheme !== 'https') {
+            throw new \RuntimeException('API base URL must use http or https scheme.');
+        }
         $url = $this->settings->apiBaseUrl . $path;
 
         $headers = ['Accept: application/json'];

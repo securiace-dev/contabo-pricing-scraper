@@ -60,32 +60,66 @@ final class ConfigPurgeService
     {
         $counts = ['subs' => 0, 'sub_pricing' => 0, 'options' => 0, 'product_links' => 0, 'groups' => 0];
 
-        // 1. Sub-options + their configoptions pricing (relid = sub id).
-        foreach ($this->ids('mod_contabo_config_option_value_link', 'whmcs_sub_id') as $subId) {
-            $counts['sub_pricing'] += $this->affect(
-                Capsule::table('tblpricing')->where('type', 'configoptions')->where('relid', $subId), $delete
-            );
-            $counts['subs'] += $this->affect(
-                Capsule::table('tblproductconfigoptionssub')->where('id', $subId), $delete
-            );
+        if (!$delete) {
+            // Dry-run: no transaction needed — just count.
+            // 1. Sub-options + their configoptions pricing (relid = sub id).
+            foreach ($this->ids('mod_contabo_config_option_value_link', 'whmcs_sub_id') as $subId) {
+                $counts['sub_pricing'] += $this->affect(
+                    Capsule::table('tblpricing')->where('type', 'configoptions')->where('relid', $subId), false
+                );
+                $counts['subs'] += $this->affect(
+                    Capsule::table('tblproductconfigoptionssub')->where('id', $subId), false
+                );
+            }
+
+            // 2. Options.
+            foreach ($this->ids('mod_contabo_config_option_link', 'whmcs_option_id') as $optionId) {
+                $counts['options'] += $this->affect(
+                    Capsule::table('tblproductconfigoptions')->where('id', $optionId), false
+                );
+            }
+
+            // 3. Group → product link + the group itself.
+            foreach ($this->ids('mod_contabo_config_group_link', 'whmcs_group_id') as $groupId) {
+                $counts['product_links'] += $this->affect(
+                    Capsule::table('tblproductconfiglinks')->where('gid', $groupId), false
+                );
+                $counts['groups'] += $this->affect(
+                    Capsule::table('tblproductconfiggroups')->where('id', $groupId), false
+                );
+            }
+
+            return $counts;
         }
 
-        // 2. Options.
-        foreach ($this->ids('mod_contabo_config_option_link', 'whmcs_option_id') as $optionId) {
-            $counts['options'] += $this->affect(
-                Capsule::table('tblproductconfigoptions')->where('id', $optionId), $delete
-            );
-        }
+        Capsule::connection()->transaction(function () use (&$counts) {
+            // 1. Sub-options + their configoptions pricing (relid = sub id).
+            foreach ($this->ids('mod_contabo_config_option_value_link', 'whmcs_sub_id') as $subId) {
+                $counts['sub_pricing'] += $this->affect(
+                    Capsule::table('tblpricing')->where('type', 'configoptions')->where('relid', $subId), true
+                );
+                $counts['subs'] += $this->affect(
+                    Capsule::table('tblproductconfigoptionssub')->where('id', $subId), true
+                );
+            }
 
-        // 3. Group → product link + the group itself.
-        foreach ($this->ids('mod_contabo_config_group_link', 'whmcs_group_id') as $groupId) {
-            $counts['product_links'] += $this->affect(
-                Capsule::table('tblproductconfiglinks')->where('gid', $groupId), $delete
-            );
-            $counts['groups'] += $this->affect(
-                Capsule::table('tblproductconfiggroups')->where('id', $groupId), $delete
-            );
-        }
+            // 2. Options.
+            foreach ($this->ids('mod_contabo_config_option_link', 'whmcs_option_id') as $optionId) {
+                $counts['options'] += $this->affect(
+                    Capsule::table('tblproductconfigoptions')->where('id', $optionId), true
+                );
+            }
+
+            // 3. Group → product link + the group itself.
+            foreach ($this->ids('mod_contabo_config_group_link', 'whmcs_group_id') as $groupId) {
+                $counts['product_links'] += $this->affect(
+                    Capsule::table('tblproductconfiglinks')->where('gid', $groupId), true
+                );
+                $counts['groups'] += $this->affect(
+                    Capsule::table('tblproductconfiggroups')->where('id', $groupId), true
+                );
+            }
+        });
 
         return $counts;
     }

@@ -1597,6 +1597,9 @@ class AdminController
             $stamp = date('YmdHis');
             $tables = $this->addonTables();
             foreach ($tables as $t) {
+                if (!preg_match('/^[a-zA-Z0-9_]+$/', $t)) {
+                    throw new \RuntimeException('Refusing purge: unsafe table name: ' . $t);
+                }
                 $backup = $t . '_purgebackup_' . $stamp;
                 Capsule::connection()->statement("CREATE TABLE `{$backup}` LIKE `{$t}`");
                 Capsule::connection()->statement("INSERT INTO `{$backup}` SELECT * FROM `{$t}`");

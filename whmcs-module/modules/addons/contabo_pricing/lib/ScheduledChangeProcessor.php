@@ -133,6 +133,7 @@ final class ScheduledChangeProcessor
 
             $anyApplied = false;
             $anyDeferred = false;
+            $servicesFound = 0;
 
             foreach ($cycleSet->enabledCycles() as $cycle) {
                 if ($appliesToCatalog) {
@@ -149,6 +150,7 @@ final class ScheduledChangeProcessor
                         'schedule' => $change,
                         'cycle'    => $cycle,
                     ]);
+                    $servicesFound += count(is_array($services) ? $services : []);
                     if (!is_array($services)) {
                         $services = [];
                     }
@@ -223,6 +225,11 @@ final class ScheduledChangeProcessor
             } elseif ($anyDeferred) {
                 $summary['schedules_deferred']++;
                 // Leave status as 'pending'/'notified' so the next cron retries.
+            } elseif ($appliesToRenewals && $servicesFound === 0 && !$appliesToCatalog) {
+                // No services matched — nothing to apply. Mark applied to stop
+                // this schedule from firing indefinitely on every cron tick.
+                $summary['schedules_applied']++;
+                $this->markScheduleApplied($scheduleId, $now);
             }
         }
 
@@ -264,21 +271,108 @@ final class ScheduledChangeProcessor
      * fetcher to skip the DB entirely.
      *
      * Returns service rows shaped for RenewalEngine::decideForScheduledChange()
-     * — meaning they already carry the `mapping`, `profile`, `profile_version`
-     * sub-arrays the engine reads. The default implementation is intentionally
-     * simple; production wiring should hydrate these via PolicyResolver +
-     * ProfileManager so cycle masks and overrides are present.
+     * — carrying the `mapping`, `profile`, `profile_version`, and `flags`
+     * sub-arrays the engine reads.
      *
      * @param array{schedule:array<string,mixed>, cycle:string} $args
      * @return list<array<string,mixed>>
      */
     private function defaultServicesFetcher(array $args): array
     {
-        // Production wiring is left for the DailyCronJob hook integration.
-        // Returning [] here means: without an injected fetcher, no services
-        // are evaluated. This keeps the default safe (no surprise reads /
-        // writes during the test or a half-wired install).
-        return [];
+        try {
+            $change    = isset($args['schedule']) && is_array($args['schedule']) ? $args['schedule'] : [];
+            $cycle     = isset($args['cycle']) ? (string) $args['cycle'] : '';
+            $profileId = (int) ($change['profile_id'] ?? 0);
+
+            if ($profileId <= 0 || $cycle === '') {
+                return [];
+            }
+
+            // 1. Find all active mappings for this profile.
+            $mappingRows = Capsule::table('mod_contabo_mapping')
+                ->where('profile_id', $profileId)
+                ->where('active', true)
+                ->get();
+
+            $productIds = [];
+            $mappingsByProduct = [];
+            foreach ($mappingRows as $m) {
+                $m = (array) $m;
+                $pid = (int) ($m['product_id'] ?? 0);
+                if ($pid > 0) {
+                    $productIds[$pid] = $pid;
+                    $mappingsByProduct[$pid] = $m;
+                }
+            }
+
+            if (empty($productIds)) {
+                return [];
+            }
+
+            // 2. Load profile row.
+            $profile = Capsule::table('mod_contabo_profile')
+                ->where('id', $profileId)
+                ->first();
+            $profile = $profile !== null ? (array) $profile : [];
+
+            // 3. Load the latest profile_version row.
+            $profileVersion = null;
+            $latestVersionId = (int) ($profile['latest_version_id'] ?? 0);
+            if ($latestVersionId > 0) {
+                $pv = Capsule::table('mod_contabo_profile_version')
+                    ->where('id', $latestVersionId)
+                    ->first();
+                $profileVersion = $pv !== null ? (array) $pv : null;
+            }
+            if ($profileVersion === null) {
+                // Fallback: highest version row for the profile.
+                $pv = Capsule::table('mod_contabo_profile_version')
+                    ->where('profile_id', $profileId)
+                    ->orderBy('version', 'desc')
+                    ->first();
+                $profileVersion = $pv !== null ? (array) $pv : null;
+            }
+
+            // 4. Query tblhosting for Active services on these products matching $cycle.
+            $serviceRows = Capsule::table('tblhosting')
+                ->whereIn('packageid', array_values($productIds))
+                ->where('domainstatus', 'Active')
+                ->where('billingcycle', $cycle)
+                ->where('amount', '>', 0)
+                ->select(['id', 'userid', 'packageid', 'domainstatus', 'billingcycle', 'amount', 'subscriptionid'])
+                ->limit(1000)
+                ->get();
+
+            // 5. Hydrate each service row with sub-arrays the engine expects.
+            $out = [];
+            foreach ($serviceRows as $svc) {
+                $svc = (array) $svc;
+                $pid = (int) ($svc['packageid'] ?? 0);
+                $mapping = isset($mappingsByProduct[$pid]) ? $mappingsByProduct[$pid] : [];
+
+                $svc['recurringamount'] = $svc['amount'];
+                $svc['mapping']         = $mapping;
+                $svc['profile']         = $profile;
+                $svc['profile_version'] = $profileVersion;
+                $svc['flags']           = [
+                    'unpaid_invoice'               => false,
+                    'pending_upgrade'              => false,
+                    'promo_applied'                => false,
+                    'on_demand_renewal_in_flight'  => false,
+                    'explicitly_opted_in'          => !empty($mapping['opted_in']),
+                    'plan_discontinued'            => false,
+                    'no_mapping'                   => false,
+                    'missing_baseline_version'     => $profileVersion === null,
+                    'manual_edit_detected'         => false,
+                ];
+
+                $out[] = $svc;
+            }
+
+            return $out;
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 
     private function insertAction(array $row, \DateTimeImmutable $now): void
