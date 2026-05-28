@@ -261,8 +261,15 @@ flowchart TD
   `data/output/**`, `data/plan_urls.json`, `PRICES.md`, `report.html`, and it **never
   force-pushes**. Note: this runner is also a datacenter IP, so its scrapes are subject
   to the same Cloudflare 403.
-- **`parity.yml`** runs on PRs touching scraper code and fails the merge if Rust and
-  Node outputs diverge.
+- **`parity.yml`** runs on PRs touching scraper code (excluding `src/api/**`, the
+  Rust-only web server) and fails on Rust↔Node output drift. Both scrapers fetch
+  through **`SCRAPER_PROXY`** — a GitHub *environment* secret in the **`Build`**
+  environment — which bypasses the Cloudflare datacenter-IP 403, so the check does
+  a **real** diff on stock GitHub-hosted runners (no self-hosted runner needed).
+  It reports `plans scraped — rust=N node=M`, fails if either side pulls 0 plans,
+  and skips **neutrally** only when *both* scrapers are upstream-blocked (proxy
+  absent/down) so it never false-fails. A schemeless proxy value is normalized to
+  `http://` in both scrapers.
 - **`release.yml`** fires on `v*` tags → builds binaries (zigbuild for musl) and a
   multi-arch GHCR image. ⚠️ It builds from `./Dockerfile`, which is currently
   **untracked** (see §6) — a clean-checkout Docker build would fail.
