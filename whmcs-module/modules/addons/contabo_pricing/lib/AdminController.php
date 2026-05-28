@@ -984,6 +984,16 @@ class AdminController
             return;
         }
 
+        // Phase C: the profile-level expose_configurable_options gate is off —
+        // no WHMCS config option group was created. Tell the admin plainly.
+        if (!empty($r['skipped']) && ($r['skip_reason'] ?? '') === 'expose_gate_disabled') {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: config-apply skipped (profile #' . $id . ') — expose_configurable_options gate disabled');
+            }
+            $this->redirect('config-preview', ['id' => $id, 'flash' => 'Apply skipped — “Expose configurable options” is disabled for this profile. Enable it on the profile to create WHMCS config option groups.']);
+            return;
+        }
+
         // Seed the §4 capability defaults for the plan's dimensions/values so the
         // capability matrix is populated alongside the WHMCS config options. These
         // are manual_assumption defaults; a Phase C deploy-API check upgrades them.
