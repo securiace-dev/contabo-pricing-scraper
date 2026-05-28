@@ -25,6 +25,10 @@ jobs:
     name: Rust ↔ Node output equivalence
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # The SCRAPER_PROXY secret lives in the "Build" environment. Declaring it
+    # here grants the job access so both scrapers can fetch through the proxy
+    # (bypassing the Cloudflare datacenter-IP 403 block) for a real parity diff.
+    environment: Build
 
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +51,15 @@ jobs:
         with:
           node-version: '20'
 
+      # undici provides the ProxyAgent the Node scraper uses for SCRAPER_PROXY.
+      # --ignore-scripts skips cloakbrowser/playwright postinstall browser
+      # downloads, which the parity Node path does not need.
+      - name: Install Node deps
+        run: npm ci --ignore-scripts
+
       - name: Run parity check
+        env:
+          SCRAPER_PROXY: ${{ secrets.SCRAPER_PROXY }}
         run: bash .github/scripts/parity_check.sh
 
       - name: Upload diff on failure

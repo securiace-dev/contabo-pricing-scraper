@@ -8,6 +8,24 @@ const vm = require('vm');
 const SCRAPER_VERSION = require(path.join(__dirname, '..', 'package.json')).version;
 const SCHEMA_VERSION = '1.1';
 
+// ─── Optional proxy ─────────────────────────────────────────────────────────
+// When SCRAPER_PROXY is set, route every fetch() through it via undici's
+// ProxyAgent (Node's global fetch ignores HTTPS_PROXY on its own). This mirrors
+// the Rust scraper's --proxy/SCRAPER_PROXY and lets CI bypass the Cloudflare
+// datacenter-IP 403 block so Rust↔Node parity can be verified for real.
+// Degrades with a warning (never the credential) if undici isn't installed.
+(function setupProxy() {
+  const proxyUrl = process.env.SCRAPER_PROXY;
+  if (!proxyUrl) return;
+  try {
+    const { ProxyAgent, setGlobalDispatcher } = require('undici');
+    setGlobalDispatcher(new ProxyAgent(proxyUrl));
+    console.error('[scraper] routing fetches through SCRAPER_PROXY');
+  } catch (err) {
+    console.error(`[scraper] WARNING: SCRAPER_PROXY set but undici unavailable (${err.message}); proceeding without proxy`);
+  }
+})();
+
 // Exit codes
 const EXIT_OK       = 0;  // all plans scraped successfully
 const EXIT_ERROR    = 1;  // fatal / no plans scraped
