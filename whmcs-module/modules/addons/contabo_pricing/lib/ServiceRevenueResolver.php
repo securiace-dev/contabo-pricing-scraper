@@ -102,6 +102,9 @@ class ServiceRevenueResolver
             ];
         }
 
+        $discountResult = $this->fetchDiscounts($serviceId, $baseAmount, $currencySupported);
+        $discountAmount = $discountResult['amount'];
+
         return $this->assemble($baseAmount, $configTotal, $addonTotal, [
             'source'             => 'service',
             'service_id'         => $serviceId,
@@ -113,6 +116,9 @@ class ServiceRevenueResolver
             'currency_supported' => $currencySupported, // false ⇒ figures are NOT real revenue (non-INR service)
             'config_options'     => $configBreakdown,
             'addons'             => $addonBreakdown,
+            'discounts'          => $discountAmount,
+            'discount_breakdown' => $discountResult,
+            'discounts_partial'  => $discountResult['partial'],
         ]);
     }
 
@@ -181,6 +187,126 @@ class ServiceRevenueResolver
                 'addons'         => $addons,
                 'total'          => $total,
             ], $extra),
+        ];
+    }
+
+    /**
+     * Resolve any applicable discount for a live INR service.
+     *
+     * Checks (in order):
+     *   1. tblpromotions linked via the most recent tblorders row (recurring
+     *      promos only; one-time-next-cycle promos already applied >1 time are
+     *      skipped).
+     *   2. tblclientdiscounts for the service owner (expiry checked in PHP).
+     *
+     * Whichever discount yields the larger monetary amount wins; client
+     * discounts never combine with promo discounts here (greater-of logic).
+     *
+     * Non-INR services are skipped immediately — their figures are not real
+     * revenue so applying a discount would compound the inaccuracy.
+     *
+     * @return array{amount:float, type:string, source:string, partial:bool}
+     */
+    protected function fetchDiscounts(int $serviceId, float $baseAmount, bool $currencySupported): array
+    {
+        // Non-INR services: discounts are meaningless (figures aren't real revenue).
+        if (!$currencySupported) {
+            return ['amount' => 0.0, 'type' => 'none', 'source' => 'non_inr_skipped', 'partial' => false];
+        }
+
+        $discountAmount = 0.0;
+        $discountType   = 'none';
+        $discountSource = 'none';
+        $partial        = false;
+
+        try {
+            // Guard: tblpromotions schema varies by WHMCS version; the `recurring`
+            // column was added in WHMCS 7.x — older installs lack it.
+            if (!Capsule::schema()->hasColumn('tblpromotions', 'recurring')) {
+                return ['amount' => 0.0, 'type' => 'none', 'source' => 'schema_guard', 'partial' => true];
+            }
+
+            // Find the most recent order for this service.
+            $orderRaw = Capsule::table('tblorders')
+                ->where('serviceid', $serviceId)
+                ->orderByDesc('id')
+                ->select(['id', 'userid', 'promoid'])
+                ->first();
+            $order = $orderRaw !== null ? (array) $orderRaw : null;
+
+            if ($order !== null && (int) ($order['promoid'] ?? 0) > 0) {
+                $promoRaw = Capsule::table('tblpromotions')
+                    ->where('id', (int) ($order['promoid'] ?? 0))
+                    ->first();
+                $promo = $promoRaw !== null ? (array) $promoRaw : null;
+
+                if ($promo !== null && !empty($promo['recurring'])) {
+                    $skip = false;
+
+                    // recurnextcycle = one-time next-cycle-only promo.
+                    // If the same promo has been applied to >1 orders by this
+                    // client it has already been used; skip it.
+                    if (!empty($promo['recurnextcycle'])) {
+                        $appliedCount = Capsule::table('tblorders')
+                            ->where('promoid', (int) ($order['promoid'] ?? 0))
+                            ->where('userid', (int) ($order['userid'] ?? 0))
+                            ->count();
+                        if ($appliedCount > 1) {
+                            $skip = true;
+                        }
+                    }
+
+                    if (!$skip) {
+                        $type  = (string) ($promo['type'] ?? '');
+                        $value = (float) ($promo['value'] ?? 0.0);
+
+                        if ($type === 'percentage') {
+                            $discountAmount = $baseAmount * $value / 100.0;
+                        } elseif ($type === 'fixed_amount') {
+                            $discountAmount = min($value, $baseAmount);
+                        }
+
+                        if ($discountAmount > 0.0) {
+                            $discountType   = $type;
+                            $discountSource = 'promo';
+                        }
+                    }
+                }
+            }
+
+            // Check tblclientdiscounts (client-specific recurring percentage).
+            // Expiry is filtered in PHP to avoid closure-where constructs that
+            // require Eloquent features not available in every test environment.
+            $clientId = (int) ($order !== null ? ($order['userid'] ?? 0) : 0);
+            if ($clientId > 0) {
+                $clientDiscs = Capsule::table('tblclientdiscounts')
+                    ->where('clientid', $clientId)
+                    ->get();
+                $now = date('Y-m-d H:i:s');
+                foreach ($clientDiscs as $cdRaw) {
+                    $cd     = (array) $cdRaw;
+                    $expiry = isset($cd['expiry']) && $cd['expiry'] !== null ? (string) $cd['expiry'] : null;
+                    if ($expiry !== null && $expiry <= $now) {
+                        continue; // expired
+                    }
+                    $clientDiscAmt = $baseAmount * (float) ($cd['value'] ?? 0.0) / 100.0;
+                    // Apply whichever discount is greater (greater-of, not additive).
+                    if ($clientDiscAmt > $discountAmount) {
+                        $discountAmount = $clientDiscAmt;
+                        $discountType   = 'percentage';
+                        $discountSource = 'client_discount';
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            return ['amount' => 0.0, 'type' => 'none', 'source' => 'error', 'partial' => true];
+        }
+
+        return [
+            'amount'  => round($discountAmount, 2),
+            'type'    => $discountType,
+            'source'  => $discountSource,
+            'partial' => $partial,
         ];
     }
 
