@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ContaboPricing;
 
+use WHMCS\Database\Capsule;
+
 /**
  * Phase A.6.2 — configurable-options syncer (OBSERVE / preview).
  *
@@ -245,6 +247,34 @@ final class ConfigurableOptionsSyncer
         }
         if ($this->adapter->isDryRun()) {
             throw new \RuntimeException('apply() needs a non-dry-run adapter; got a dry-run one.');
+        }
+
+        // Phase C: expose_configurable_options gate — master switch at the
+        // profile level. When disabled the admin wants catalog price sync only,
+        // not customer-facing WHMCS config option groups. Fail-open: if the
+        // gate check itself errors (pre-migration, schema race) we apply as
+        // before rather than silently skipping a requested apply.
+        try {
+            if (Capsule::schema()->hasColumn('mod_contabo_profile', 'expose_configurable_options')) {
+                $exposeEnabled = Capsule::table('mod_contabo_profile')
+                    ->where('id', $profileId)
+                    ->value('expose_configurable_options');
+                // null ⇒ no such profile row (shouldn't happen); treat as enabled.
+                if ($exposeEnabled !== null && !(bool) $exposeEnabled) {
+                    return [
+                        'profile_id'  => $profileId,
+                        'product_id'  => $productId,
+                        'group'       => [],
+                        'summary'     => ['created' => 0, 'updated' => 0, 'noop' => 0, 'skipped' => 1, 'drift_skipped' => 0],
+                        'options'     => 0,
+                        'values'      => 0,
+                        'skipped'     => true,
+                        'skip_reason' => 'expose_gate_disabled',
+                    ];
+                }
+            }
+        } catch (\Throwable $e) {
+            // fall through and apply normally (fail-open)
         }
 
         $summary = ['created' => 0, 'updated' => 0, 'noop' => 0, 'skipped' => 0, 'drift_skipped' => 0];
