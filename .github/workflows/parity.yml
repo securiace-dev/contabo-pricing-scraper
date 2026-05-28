@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - 'src/**'
+      # The Axum web server (src/api/**) is Rust-only — it has no Node
+      # counterpart and is not part of scraper output parity. Exclude it so
+      # API-only changes don't trigger (and 403-fail) this check.
+      - '!src/api/**'
       - 'scripts/contabo_scraper.js'
       - '.github/scripts/enrich_output.js'
       - '.github/scripts/parity_check.sh'
