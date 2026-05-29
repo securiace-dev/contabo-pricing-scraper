@@ -478,13 +478,8 @@
 
     var jsonEl = modal.querySelector('[data-cb-options-json]');
     if (jsonEl) jsonEl.value = JSON.stringify(serialised);
-
-    // Mirror Image:OS + Region into the legacy hidden inputs so existing
-    // sync logic that reads profile.os / profile.region keeps working.
-    var osFallback = modal.querySelector('[data-cb-os-fallback]');
-    var regionFallback = modal.querySelector('[data-cb-region-fallback]');
-    if (osFallback && serialised['Image:OS']) osFallback.value = serialised['Image:OS'].label || '';
-    if (regionFallback && serialised['Region']) regionFallback.value = serialised['Region'].label || '';
+    // OS + Region are derived server-side from the options JSON above
+    // (single source of truth) — no hidden region/os inputs to mirror.
   }
 
   function loadConfiguratorForModal(modal, opts) {
@@ -547,6 +542,8 @@
     var nameEl = modal.querySelector('input[name="name"]');
     var tagsEl = modal.querySelector('input[name="tags"]');
     var stratEl = modal.querySelector('select[name="sync_strategy"]');
+    var modeEl = modal.querySelector('[data-cb-profile-mode]');
+    var exposeEl = modal.querySelector('[data-cb-expose-config]');
     if (titleEl) titleEl.textContent = 'Create profile';
     if (submitEl) submitEl.textContent = 'Create profile';
     if (actionEl) actionEl.value = 'profile-create';
@@ -554,6 +551,8 @@
     if (nameEl) nameEl.value = '';
     if (tagsEl) tagsEl.value = '';
     if (stratEl) stratEl.value = 'notify';
+    if (modeEl) modeEl.value = 'fixed_admin_profile';
+    if (exposeEl) exposeEl.checked = true;
     var planEl = modal.querySelector('[data-cb-cfg-plan]');
     if (planEl) planEl.value = '';
     loadConfiguratorForModal(modal);
@@ -578,11 +577,16 @@
       var periodEl = modal.querySelector('[data-cb-cfg-period]');
       var tagsEl = modal.querySelector('input[name="tags"]');
       var stratEl = modal.querySelector('select[name="sync_strategy"]');
+      var modeEl = modal.querySelector('[data-cb-profile-mode]');
+      var exposeEl = modal.querySelector('[data-cb-expose-config]');
       if (nameEl) nameEl.value = p.name || '';
       if (planEl) planEl.value = p.plan_slug || '';
       if (periodEl) periodEl.value = String(p.period_months || 6);
       if (tagsEl) tagsEl.value = p.tags || '';
       if (stratEl && p.sync_strategy) stratEl.value = p.sync_strategy;
+      if (modeEl && p.profile_mode) modeEl.value = p.profile_mode;
+      // null/undefined (pre-v7 rows) → default exposed; explicit "0" → unchecked.
+      if (exposeEl) exposeEl.checked = String(p.expose_configurable_options) !== '0';
       loadConfiguratorForModal(modal, { prefill: sel });
     });
   }

@@ -241,6 +241,7 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
                     data-cb-profile-edit-id="<?= $pid ?>">Edit</button>
             <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profile-diff&amp;id=<?= $pid ?>">History</a>
             <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-preview&amp;id=<?= $pid ?>" title="Preview the WHMCS configurable options this profile would create">Config preview</a>
+            <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-exposure&amp;id=<?= $pid ?>" title="Curate which configurable options are exposed to customers">Exposure</a>
             <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
               <input type="hidden" name="action" value="profile-toggle">
               <input type="hidden" name="id" value="<?= $pid ?>">
@@ -295,6 +296,17 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
         <input id="cb-pc-name" type="text" name="name" required placeholder="e.g. Cloud VPS 10 — EU — Ubuntu 24 — 12 mo">
       </div>
 
+      <div class="cb-field">
+        <label for="cb-pc-mode">Profile mode</label>
+        <select id="cb-pc-mode" name="profile_mode" data-cb-profile-mode>
+          <option value="fixed_admin_profile" selected>Fixed admin profile — admin locks every build option; customer cannot choose</option>
+          <option value="customer_configurable_product">Customer-configurable product — admin exposes options; customer picks at order time</option>
+        </select>
+        <div class="muted" style="font-size:11px; margin-top:4px;">
+          Fixed locks the selections below into one SKU. Configurable maps this plan to one WHMCS product and lets customers choose from the options you expose.
+        </div>
+      </div>
+
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
         <div class="cb-field">
           <label for="cb-pc-plan">Plan</label>
@@ -332,11 +344,11 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
         <div data-cb-summary class="cb-osum" hidden></div>
       </div>
 
-      <!-- Configurator selections (JSON) — populated by JS on every change. -->
+      <!-- Configurator selections (JSON) — populated by JS on every change.
+           OS + Region are derived server-side from these selections
+           (AdminController::deriveOsRegionFromSelections) — the single source of
+           truth, so no separate hidden region/os inputs are needed. -->
       <input type="hidden" name="options" value="" data-cb-options-json>
-      <!-- Legacy hidden region/os overrides — derived server-side from Image:OS + Region. -->
-      <input type="hidden" name="region" value="" data-cb-region-fallback>
-      <input type="hidden" name="os"     value="" data-cb-os-fallback>
 
       <div class="cb-field">
         <label for="cb-pc-strategy">Sync strategy</label>
@@ -345,6 +357,18 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
           <option value="notify" selected>notify — email admin on drift</option>
           <option value="auto-apply">auto-apply — push price updates immediately</option>
         </select>
+      </div>
+
+      <div class="cb-field" data-cb-expose-field>
+        <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-weight:600;">
+          <!-- unchecked checkboxes don't POST; the hidden 0 is the fallback the checkbox overrides -->
+          <input type="hidden" name="expose_configurable_options" value="0">
+          <input id="cb-pc-expose" type="checkbox" name="expose_configurable_options" value="1" checked data-cb-expose-config>
+          Expose configurable options to customers
+        </label>
+        <div class="muted" style="font-size:11px; margin-top:4px;">
+          When on, “Config preview → Apply” creates the WHMCS configurable-option groups for this profile. Turn off to keep this profile’s options admin-only (Apply is skipped). Curate exactly which options show via the exposure editor.
+        </div>
       </div>
 
       <div class="cb-field">

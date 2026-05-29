@@ -117,14 +117,32 @@ class ProfileManager
         return (int) ($result['profile_id'] ?? 0);
     }
 
+    /**
+     * Updatable columns for a profile row. Anything outside this set is dropped
+     * by update() so a malformed or hostile $patch can never mass-assign
+     * arbitrary columns. `slug` is intentionally excluded — it is identity and
+     * must not change through the generic edit path.
+     *
+     * @var list<string>
+     */
+    private const UPDATABLE_COLUMNS = [
+        'name', 'plan_slug', 'period_months', 'region', 'os', 'options', 'tags',
+        'sync_strategy', 'active', 'profile_mode', 'expose_configurable_options',
+        'profile_fingerprint_hash', 'profile_identity_json', 'latest_version_id',
+        'default_policy', 'margin_floor_pct', 'fx_buffer_pct',
+        'large_increase_threshold_pct', 'max_increase_pct', 'notice_days_default',
+        'allow_auto_decrease',
+    ];
+
     /** @param array<string, mixed> $patch */
     public function update(int $id, array $patch): void
     {
-        $patch['updated_at'] = date('Y-m-d H:i:s');
-        if (isset($patch['options']) && is_array($patch['options'])) {
-            $patch['options'] = json_encode($patch['options']);
+        $clean = array_intersect_key($patch, array_flip(self::UPDATABLE_COLUMNS));
+        if (isset($clean['options']) && is_array($clean['options'])) {
+            $clean['options'] = json_encode($clean['options']);
         }
-        Capsule::table('mod_contabo_profile')->where('id', $id)->update($patch);
+        $clean['updated_at'] = date('Y-m-d H:i:s');
+        Capsule::table('mod_contabo_profile')->where('id', $id)->update($clean);
     }
 
     public function setActive(int $id, bool $active): void

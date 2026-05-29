@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.6.1 — 2026-05-29 (A.6.3 admin UI — mode, exposure gate, capability/compat editors)
+
+Wires the create/edit profile form and admin UI up to features whose backend
+already shipped in 0.6.0. **No schema change** (`SCHEMA_VERSION` stays 7).
+
+### Added — profile create/edit form
+- **Profile mode selector** (`fixed_admin_profile` | `customer_configurable_product`).
+  `profile_mode` now flows through `profileCreate`/`profileSave` →
+  `ProfileRepository`/`ProfileManager` and feeds the identity fingerprint
+  (fixed vs configurable hash differently). Defaults to fixed — fully
+  backward-compatible.
+- **“Expose configurable options” switch** (`expose_configurable_options`). Wired
+  through the form, handlers and `ProfileRepository::insert` (default on = prior
+  behavior). Closes the dead-end where `config-apply` told admins to “enable it on
+  the profile” with no UI control to do so.
+
+### Added — A.6.3 capability + compatibility editors
+- `capability-editor` / `capability-editor-save` — edit the per-(plan,dimension,
+  value) capability matrix (allowed-on-*, destructive, `capability_source`).
+- `compatibility-editor` / `compatibility-editor-save` — author
+  incompatible/required/min-max rules feeding `validateCombination()`.
+- Both enumerate the plan's dimensions from the live configurator and overlay
+  saved rows; reachable from `config-preview` and the profile row actions. New
+  `ConfigOptionCompatibilityRepository::listForPlan()`.
+
+### Fixed / hardened
+- **Drift indicator now works**: the profiles list computes `drifted` server-side
+  (orphaned-plan or stored-vs-current price mismatch) — previously dead UI.
+- **`ProfileManager::update()` column whitelist** — drops unknown keys
+  (mass-assignment guard).
+- **Region/OS dedupe** — removed the redundant JS-mirrored hidden inputs; OS/Region
+  are now derived server-side from the options selection only.
+- Refreshed `docs/UI_ARCHITECTURE.md` (0.2.0 → 0.6.1; the 5 missing AJAX
+  endpoints; the new pages, mode selector and expose switch).
+
 ## 0.6.0 — 2026-05-28 (Phase C — approval workflow, true revenue, multi-currency, provisioning)
 
 Phase C closes the remaining gaps after Phase B (price-write activation): an

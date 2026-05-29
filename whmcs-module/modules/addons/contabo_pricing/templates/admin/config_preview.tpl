@@ -222,6 +222,8 @@ $cb_capwarn = isset($cb_val['capability_warnings']) && is_array($cb_val['capabil
     </select>
     <button type="submit" class="cb-btn">Review changes (diff) &rarr;</button>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-exposure&amp;id=<?= (int) ($report['profile_id'] ?? 0) ?>">Edit exposure</a>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=capability-editor&amp;id=<?= (int) ($report['profile_id'] ?? 0) ?>">Edit capabilities</a>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=compatibility-editor&amp;id=<?= (int) ($report['profile_id'] ?? 0) ?>">Edit compatibility</a>
     <span class="muted" style="font-size:12px;">You’ll see a per-dimension diff of exactly what changes on the live product <em>before</em> anything is written. Idempotent &amp; ownership-scoped. Base currency only.</span>
   </form>
 <?php endif; ?>
