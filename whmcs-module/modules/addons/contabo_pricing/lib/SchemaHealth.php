@@ -65,6 +65,9 @@ final class SchemaHealth
             'product_scope_key',
             'commercial_variant',
             'audience_segment',
+            // schema v8 — two-layer pricing + recoverable delete
+            'published_cycles_mask',
+            'deleted_at',
         ],
     ];
 

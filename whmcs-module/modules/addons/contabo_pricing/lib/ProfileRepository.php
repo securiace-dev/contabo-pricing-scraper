@@ -187,6 +187,10 @@ final class ProfileRepository
             'name'                     => (string) ($input['name'] ?? $slug),
             'plan_slug'                => (string) ($input['plan_slug'] ?? ''),
             'period_months'            => (int) ($input['period_months'] ?? 0),
+            // v8: which cycles this profile SOURCES (offered superset; the mapping
+            // narrows to the customer-facing set). Default 63 = all six.
+            'published_cycles_mask'    => isset($input['published_cycles_mask'])
+                ? (int) $input['published_cycles_mask'] : 63,
             'region'                   => $input['region'] ?? null,
             'os'                       => $input['os'] ?? null,
             'options'                  => $this->encodeOptions($input['options'] ?? null),

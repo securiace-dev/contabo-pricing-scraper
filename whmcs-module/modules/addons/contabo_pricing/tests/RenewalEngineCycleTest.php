@@ -160,6 +160,39 @@ final class RenewalEngineCycleTest extends TestCase
     }
 
     /**
+     * Phase D — per-cycle SOURCE basis. When the version carries a
+     * period_prices_json vector, the renewal cost basis for a cycle must use that
+     * cycle's source tier (here Annually = 12-mo), not the single base_monthly_eur.
+     */
+    public function testRenewalUsesPerCycleSourceVectorBasis(): void
+    {
+        $mask = CycleSet::fromCycles(['Annually'])->toMask();
+        $svc  = $this->baseService('Annually', $mask, $mask);
+        // base_monthly_eur stays 10.0, but the 12-mo source tier is cheaper (8.0).
+        $svc['profile_version']['period_prices_json'] =
+            json_encode([1 => 10.0, 3 => 10.0, 6 => 9.0, 12 => 8.0, 24 => 8.0, 36 => 8.0]);
+
+        $engine = new RenewalEngine($this->settings(), $this->stubResolver());
+        $d = $engine->decide($svc, new \DateTimeImmutable('2026-05-22'));
+
+        $this->assertSame(8.0, (float) $d['vendor_cost_eur_monthly'], 'Annually renewal must price off the 12-mo source tier, not base_monthly_eur');
+    }
+
+    /**
+     * Phase D — legacy version with no vector falls back to base_monthly_eur.
+     */
+    public function testRenewalFallsBackToBaseMonthlyWhenNoVector(): void
+    {
+        $mask = CycleSet::fromCycles(['Annually'])->toMask();
+        $svc  = $this->baseService('Annually', $mask, $mask); // no period_prices_json
+
+        $engine = new RenewalEngine($this->settings(), $this->stubResolver());
+        $d = $engine->decide($svc, new \DateTimeImmutable('2026-05-22'));
+
+        $this->assertSame(10.0, (float) $d['vendor_cost_eur_monthly'], 'legacy version → base_monthly_eur basis');
+    }
+
+    /**
      * 28. Free Account → skip 'cycle_unsupported' (NOT 'cycle_not_mapped').
      *     CycleNormalizer returns null for Free Account, so the engine bails
      *     at the cycle_unsupported gate before it ever reads the mask.

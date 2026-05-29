@@ -1,176 +1,120 @@
-# Ruflo — Claude Code Configuration
+# Contabo Pricing — project guide for Claude Code
 
-## Rules
+This repo is a **WHMCS addon** (`whmcs-module/modules/addons/contabo_pricing`) that
+scrapes Contabo VPS/VDS pricing and syncs it into WHMCS products via versioned
+profiles, plus a companion provisioning module (`modules/servers/contabo_vps`).
+There is **no Node build** and **no ruflo/swarm tooling** — ignore any generic
+agent-swarm instructions. Work the code directly.
 
-- Do what has been asked; nothing more, nothing less
-- NEVER create files unless absolutely necessary — prefer editing existing files
-- NEVER create documentation files unless explicitly requested
-- NEVER save working files or tests to root — use `/src`, `/tests`, `/docs`, `/config`, `/scripts`
-- ALWAYS read a file before editing it
-- NEVER commit secrets, credentials, or .env files
-- NEVER add a `Co-Authored-By` trailer to user commits unless this project's `.claude/settings.json` has `attribution.commit` set (#2078). The Claude Code Bash tool may suggest one in its default commit-message template — ignore it. `Co-Authored-By` is semantic authorship attribution under git/GitHub convention; the tool is the facilitator, not a co-author.
-- Keep files under 500 lines
-- Validate input at system boundaries
-
-## Agent Comms (SendMessage-First Coordination)
-
-Named agents coordinate via `SendMessage`, not polling or shared state.
+## Where things live
 
 ```
-Lead (you) ←→ architect ←→ developer ←→ tester ←→ reviewer
-              (named agents message each other directly)
+whmcs-module/modules/addons/contabo_pricing/
+  lib/            PHP classes (PSR-4 ContaboPricing\, autoload via composer)
+  templates/admin/*.tpl   plain-PHP admin views (NOT Smarty; require _layout_open.tpl)
+  assets/app.js   vanilla JS for the admin UI (no framework, no bundler)
+  tests/          PHPUnit; FakeCapsule stubs WHMCS\Database\Capsule (no real DB)
+  docs/           DEPLOY_RUNBOOK.md, PHASE_*_*.md design specs
+scripts/          predeploy-check.sh (the gate), local-whmcs.sh (docker dev render)
+data/output/      scraped Contabo dataset (contabo_pricing_dataset.json, …)
 ```
 
-### Spawning a Coordinated Team
+## Pricing architecture (read before touching pricing) — see docs/PHASE_D_PRICING_SPEC.md
 
-```javascript
-// ALL agents in ONE message, each knows WHO to message next
-Agent({ prompt: "Research the codebase. SendMessage findings to 'architect'.",
-  subagent_type: "researcher", name: "researcher", run_in_background: true })
-Agent({ prompt: "Wait for 'researcher'. Design solution. SendMessage to 'coder'.",
-  subagent_type: "system-architect", name: "architect", run_in_background: true })
-Agent({ prompt: "Wait for 'architect'. Implement it. SendMessage to 'tester'.",
-  subagent_type: "coder", name: "coder", run_in_background: true })
-Agent({ prompt: "Wait for 'coder'. Write tests. SendMessage results to 'reviewer'.",
-  subagent_type: "tester", name: "tester", run_in_background: true })
-Agent({ prompt: "Wait for 'tester'. Review code quality and security.",
-  subagent_type: "reviewer", name: "reviewer", run_in_background: true })
+Two layers. Keep them separate.
 
-// Kick off the pipeline
-SendMessage({ to: "researcher", summary: "Start", message: "[task context]" })
-```
+- **Profile = SOURCE.** What we buy from Contabo and what it costs us. A profile
+  sources a price for **every** cycle via `period_prices_json` on each
+  `profile_version`: scraped 1/3/6/12 (EUR `effective_monthly`) plus projected
+  24/36. `published_cycles_mask` is the offered superset (default 63 = all six).
+- **Mapping = CUSTOMER.** What a customer pays on a specific WHMCS product.
+  `mod_contabo_mapping.catalog_cycles_mask` is the **customer-facing gate** (which
+  cycles reach `tblpricing`/checkout); `markup_overrides_json` + `rounding_mode` set
+  the price; optional `source_overrides_json` pins a per-product cost basis.
 
-### Patterns
+**Fallback rule (one rule, everywhere):** `Source(M)` = `effective_monthly` of the
+**longest scraped period whose months ≤ M**. So 24/36 → the 12-mo rate; a *missing*
+quarterly → the 1-mo rate (never a deeper longer-cycle discount). Implemented in
+`SyncEngine::periodPriceVectorFromPlan()` / `nearestSourceRate()`, mirrored in
+`RenewalEngine::resolveCycleEurMonthly()` and `assets/app.js` (`sourceRateForMonths`).
 
-| Pattern | Flow | Use When |
-|---------|------|----------|
-| **Pipeline** | A → B → C → D | Sequential dependencies (feature dev) |
-| **Fan-out** | Lead → A, B, C → Lead | Independent parallel work (research) |
-| **Supervisor** | Lead ↔ workers | Ongoing coordination (complex refactor) |
+- **Catalog** writes go through `SyncEngine` → `tblpricing` ONLY (a static-grep test
+  forbids `tblhosting` writes from there). New orders get the latest price.
+- **Renewal** writes go through `RenewalEngine`/`ScheduledChangeProcessor` →
+  `tblhosting.recurringamount`, gated per-service by `mod_contabo_service_policy` +
+  the global `repricing_phase`. Existing customers are **grandfathered** until their
+  own cycle boundary; only push-enabled services move. Never touch an open invoice.
+- EUR→local conversion lives in **one** place: `ProfileVersionInput::toLocalMonthly()`
+  (GST then FX). Don't reimplement it. GST placement is documented there
+  (`GST-PLACEMENT:` note) — currently on the cost basis, by owner decision.
+- The shared cost basis means catalog and renewal stay consistent; if you change one
+  engine's basis, change the other in the same commit.
 
-### Rules
+## Modes
 
-- ALWAYS name agents — `name: "role"` makes them addressable
-- ALWAYS include comms instructions in prompts — who to message, what to send
-- Spawn ALL agents in ONE message with `run_in_background: true`
-- After spawning: STOP, tell user what's running, wait for results
-- NEVER poll status — agents message back or complete automatically
+- **Fixed (`fixed_admin_profile`)** — pre-packaged SKU. Admin pins every configurator
+  dimension; **no** configurable/add-on options are exposed to customers. Save is
+  rejected unless every required dimension has a concrete value
+  (`AdminController::fixedCompletenessError`).
+- **Configurable (`customer_configurable_product`)** — customer picks exposed options;
+  curate exposure via the Exposure editor / `ConfigOptionLinkRepository`.
+- Contabo's API takes exactly **one** image (OS/Apps/Panels/Blockchain are categories
+  of a single choice). `ImageOptionNormalizer` collapses them — never split.
 
-## Swarm & Routing
+## Delete is recoverable; purge is guarded
 
-### Config
-- **Topology**: hierarchical-mesh (anti-drift)
-- **Max Agents**: 5
-- **Memory**: hybrid
-- **HNSW**: Enabled
-- **Neural**: Enabled
+- Profiles soft-delete (`deleted_at`) → Trash → Restore (Undo). Default listings
+  exclude trashed rows (`ProfileManager::listProfiles` uses `whereNull('deleted_at')`).
+- **Never hard-delete a profile without `ProfilePurgeService`.** It refuses while an
+  active mapping or a live `tblhosting` service references the profile, requires the
+  typed phrase (`SchemaHealth::isPurgeConfirmed`), cascades **only that profile's**
+  rows + the WHMCS config objects it created, and writes a `logActivity` audit.
 
-```bash
-npx @claude-flow/cli@latest swarm init --topology hierarchical --max-agents 8 --strategy specialized
-```
+## Schema migrations
 
-### Agent Routing
+- `lib/Installer.php`: `SCHEMA_VERSION` + one `migrateToN()` per bump. Every change is
+  **additive + idempotent** (`hasColumn`/`hasTable`-guarded). `SchemaHealth::assertOrMigrate`
+  runs on admin page load. Add new required columns to `SchemaHealth::REQUIRED_COLUMNS`.
+- LONGTEXT for JSON blobs — **never** the native JSON column type (FastPanel PHP 7.4 +
+  unknown MySQL/MariaDB JSON support).
 
-| Task | Agents | Topology |
-|------|--------|----------|
-| Bug Fix | researcher, coder, tester | hierarchical |
-| Feature | architect, coder, tester, reviewer | hierarchical |
-| Refactor | architect, coder, reviewer | hierarchical |
-| Performance | perf-engineer, coder | hierarchical |
-| Security | security-architect, auditor | hierarchical |
+## Coding constraints
 
-### When to Swarm
-- **YES**: 3+ files, new features, cross-module refactoring, API changes, security, performance
-- **NO**: single file edits, 1-2 line fixes, docs updates, config changes, questions
+- **PHP 7.4 polyglot floor.** No `match`, no enums, no `readonly`, no constructor
+  promotion, no union types, no `str_starts_with`. Typed properties are fine.
+  `composer lint` (`php -l` over lib + templates) enforces parse-level; the gate lints
+  under php:7.4-cli.
+- Templates are plain PHP (`<?= $esc(...) ?>`), start with `require _layout_open.tpl`,
+  end by closing the `.cb-wrap` div. There is **no** `_layout_close.tpl`.
+- `assets/app.js` is ES5-ish vanilla JS (no modules); keep `node --check` clean.
 
-### 3-Tier Model Routing
+## Tests
 
-| Tier | Handler | Use Cases |
-|------|---------|-----------|
-| 1 | Agent Booster (WASM) | Simple transforms — skip LLM, use Edit directly |
-| 2 | Haiku | Simple tasks, low complexity |
-| 3 | Sonnet/Opus | Architecture, security, complex reasoning |
+- `cd whmcs-module/modules/addons/contabo_pricing && vendor/bin/phpunit` (PHPUnit 10,
+  runs on PHP 8.x but code must stay 7.4-compatible).
+- `tests/FakeCapsule.php` is an in-memory `Capsule` stub: seed `Capsule::$tables[...]`,
+  assert via `Capsule::$calls` / `Capsule::$inserts`. It supports `whereNull`/
+  `whereNotNull` (NULL semantics matter — real `where('col', null)` is `= NULL`, which
+  never matches; use `whereNull`).
+- Always run the full suite after a change; keep it green before moving on.
 
-## Memory & Learning
+## Coordinating parallel edits
 
-### Before Any Task
-```bash
-npx @claude-flow/cli@latest memory search --query "[task keywords]" --namespace patterns
-npx @claude-flow/cli@latest hooks route --task "[task description]"
-```
+`lib/AdminController.php` (~3k lines) and `templates/admin/profiles.tpl` are the
+collision points — **serialize** edits to each (one change at a time), and only
+parallelize work on genuinely disjoint files. `mappings.tpl` and `profiles.tpl` are
+disjoint.
 
-### After Success
-```bash
-npx @claude-flow/cli@latest memory store --namespace patterns --key "[name]" --value "[what worked]"
-npx @claude-flow/cli@latest hooks post-task --task-id "[id]" --success true --store-results true
-```
+## Deploy (SSH is permission-gated; never deploy without an explicit go)
 
-### MCP Tools (use `ToolSearch("keyword")` to discover)
+1. `bash scripts/predeploy-check.sh` must be **GREEN** (unit + PHP 7.4 lint +
+   live-schema smoke 8.13/9.0 + integration smoke). Fail-closed; no deploy on red.
+2. Dev render: `scripts/local-whmcs.sh render 8 profiles|mappings` (dockerised WHMCS).
+3. Follow `docs/DEPLOY_RUNBOOK.md`: rsync to `root@195.7.4.219`, `--exclude '.claude-flow/'`,
+   chown, verify `AdminController::VERSION` + lint. Prod only on green gate + approval.
 
-| Category | Key Tools |
-|----------|-----------|
-| **Memory** | `memory_store`, `memory_search`, `memory_search_unified` |
-| **Bridge** | `memory_import_claude`, `memory_bridge_status` |
-| **Swarm** | `swarm_init`, `swarm_status`, `swarm_health` |
-| **Agents** | `agent_spawn`, `agent_list`, `agent_status` |
-| **Hooks** | `hooks_route`, `hooks_post-task`, `hooks_worker-dispatch` |
-| **Security** | `aidefence_scan`, `aidefence_is_safe`, `aidefence_has_pii` |
-| **Hive-Mind** | `hive-mind_init`, `hive-mind_consensus`, `hive-mind_spawn` |
+## Git
 
-### Background Workers
-
-| Worker | When |
-|--------|------|
-| `audit` | After security changes |
-| `optimize` | After performance work |
-| `testgaps` | After adding features |
-| `map` | Every 5+ file changes |
-| `document` | After API changes |
-
-```bash
-npx @claude-flow/cli@latest hooks worker dispatch --trigger audit
-```
-
-## Agents
-
-**Core**: `coder`, `reviewer`, `tester`, `planner`, `researcher`
-**Architecture**: `system-architect`, `backend-dev`, `mobile-dev`
-**Security**: `security-architect`, `security-auditor`
-**Performance**: `performance-engineer`, `perf-analyzer`
-**Coordination**: `hierarchical-coordinator`, `mesh-coordinator`, `adaptive-coordinator`
-**GitHub**: `pr-manager`, `code-review-swarm`, `issue-tracker`, `release-manager`
-
-Any string works as a custom agent type.
-
-## Build & Test
-
-- ALWAYS run tests after code changes
-- ALWAYS verify build succeeds before committing
-
-```bash
-npm run build && npm test
-```
-
-## CLI Quick Reference
-
-```bash
-npx @claude-flow/cli@latest init --wizard           # Setup
-npx @claude-flow/cli@latest swarm init --v3-mode     # Start swarm
-npx @claude-flow/cli@latest memory search --query "" # Vector search
-npx @claude-flow/cli@latest hooks route --task ""    # Route to agent
-npx @claude-flow/cli@latest doctor --fix             # Diagnostics
-npx @claude-flow/cli@latest security scan            # Security scan
-npx @claude-flow/cli@latest performance benchmark    # Benchmarks
-```
-
-26 commands, 140+ subcommands. Use `--help` on any command for details.
-
-## Setup
-
-```bash
-claude mcp add claude-flow -- npx -y @claude-flow/cli@latest
-npx @claude-flow/cli@latest daemon start
-npx @claude-flow/cli@latest doctor --fix
-```
-
-**Agent tool** handles execution (agents, files, code, git). **MCP tools** handle coordination (swarm, memory, hooks). **CLI** is the same via Bash.
+- Commit/push only when asked. Branch off if on the default branch.
+- Do not add a `Co-Authored-By` trailer unless `.claude/settings.json` enables it.
+- Do not put model identifiers in commits, PRs, code, or comments.

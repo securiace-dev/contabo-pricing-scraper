@@ -25,22 +25,143 @@
  *   $module_link      — base URL
  *   $esc              — escaping closure
  */
+// Normalise optional vars so both the normal + trash render paths are safe
+// under extract(EXTR_SKIP) (undefined template vars would otherwise warn).
+$trash_mode  = isset($trash_mode) ? (bool) $trash_mode : false;
+$trashed     = isset($trashed) && is_array($trashed) ? $trashed : [];
+$trash_count = isset($trash_count) ? (int) $trash_count : 0;
+$undo_id     = isset($undo_id) ? (int) $undo_id : 0;
+$cb_purge_phrase = isset($cb_purge_phrase) ? (string) $cb_purge_phrase : '';
 ?>
 
 <header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:6px 0 18px;">
   <div>
-    <h2 class="display" style="margin:0 0 4px;">Profiles</h2>
+    <h2 class="display" style="margin:0 0 4px;"><?= $trash_mode ? 'Profiles — Trash' : 'Profiles' ?></h2>
     <p class="cb-card-sub" style="margin:0; max-width:62ch;">
-      Versioned pricing templates that map Contabo plans to your WHMCS products.
+      <?= $trash_mode
+        ? 'Soft-deleted profiles. Restore brings one back; permanent purge is guarded and irreversible.'
+        : 'Versioned pricing templates that map Contabo plans to your WHMCS products.' ?>
     </p>
   </div>
-  <div>
-    <button type="button" class="cb-btn" data-cb-open-modal="profile-create">+ New profile</button>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <?php if ($trash_mode): ?>
+      <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles">← Back to profiles</a>
+    <?php else: ?>
+      <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles-trash" title="Soft-deleted profiles">
+        Trash<?= $trash_count > 0 ? ' (' . $trash_count . ')' : '' ?>
+      </a>
+      <button type="button" class="cb-btn" data-cb-open-modal="profile-create">+ New profile</button>
+    <?php endif; ?>
   </div>
 </header>
 
 <?php if (!empty($flash)): ?>
-  <div class="cb-flash"><?= $esc($flash) ?></div>
+  <div class="cb-flash" style="display:flex; align-items:center; gap:12px;">
+    <span style="flex:1 1 auto"><?= $esc($flash) ?></span>
+    <?php if ($undo_id > 0): ?>
+      <form method="post" action="<?= $esc($module_link) ?>" style="margin:0">
+        <input type="hidden" name="action" value="profile-restore">
+        <input type="hidden" name="id" value="<?= $undo_id ?>">
+        <?= generate_token() ?>
+        <button type="submit" class="cb-btn subtle" style="white-space:nowrap">↩ Undo</button>
+      </form>
+    <?php endif; ?>
+  </div>
+<?php endif; ?>
+
+<?php /* ───────────────────── Trash view ───────────────────── */ ?>
+<?php if ($trash_mode): ?>
+  <?php if (empty($trashed)): ?>
+    <div class="cb-empty">
+      <div class="display" style="font-size:22px; margin-bottom:8px;">Trash is empty</div>
+      <p class="cb-card-sub" style="margin:0 0 14px;">Deleted profiles will appear here, where you can restore or permanently purge them.</p>
+      <a class="cb-btn" href="<?= $esc($module_link) ?>&amp;action=profiles">Back to profiles</a>
+    </div>
+  <?php else: ?>
+    <div class="cb-card" style="padding:0; overflow:hidden;">
+      <table class="cb-table">
+        <thead>
+          <tr>
+            <th>Profile</th>
+            <th>Plan slug</th>
+            <th>Deleted</th>
+            <th>Purge eligibility</th>
+            <th style="text-align:right; width:260px">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($trashed as $tp):
+            $tpid   = (int) ($tp['id'] ?? 0);
+            $tname  = (string) ($tp['name'] ?? $tp['slug'] ?? ('#' . $tpid));
+            $tslug  = (string) ($tp['slug'] ?? '');
+            $tdel   = (string) ($tp['deleted_at'] ?? '');
+            $assess = is_array($tp['purge'] ?? null) ? $tp['purge'] : ['allowed' => false, 'reasons' => ['unknown']];
+            $allowed = !empty($assess['allowed']);
+          ?>
+            <tr>
+              <td>
+                <div style="font-weight:600"><?= $esc($tname) ?></div>
+                <div class="muted mono" style="font-size:11px; opacity:.7"><?= $esc($tslug) ?></div>
+              </td>
+              <td class="mono"><?= $esc((string) ($tp['plan_slug'] ?? '')) ?></td>
+              <td class="muted" style="font-size:12px"><?= $esc($tdel) ?></td>
+              <td>
+                <?php if ($allowed): ?>
+                  <span class="cb-pill good">eligible</span>
+                <?php else: ?>
+                  <span class="cb-pill warn" title="<?= $esc(implode(' ', (array) ($assess['reasons'] ?? []))) ?>">blocked</span>
+                  <div class="muted" style="font-size:11px; margin-top:2px;"><?= $esc(implode(' ', (array) ($assess['reasons'] ?? []))) ?></div>
+                <?php endif; ?>
+              </td>
+              <td style="text-align:right">
+                <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+                  <input type="hidden" name="action" value="profile-restore">
+                  <input type="hidden" name="id" value="<?= $tpid ?>">
+                  <?= generate_token() ?>
+                  <button type="submit" class="cb-btn subtle">Restore</button>
+                </form>
+                <button type="button" class="cb-btn ghost"
+                        data-cb-purge-open="<?= $tpid ?>"
+                        <?= $allowed ? '' : 'disabled title="Resolve the blockers above first"' ?>
+                        style="color:var(--bad,#b3261e)">Purge…</button>
+                <?php if ($allowed): ?>
+                  <div data-cb-purge-form="<?= $tpid ?>" hidden style="margin-top:8px; text-align:left; background:#fdf3f2; border:1px solid #e7b9b3; border-radius:8px; padding:10px;">
+                    <form method="post" action="<?= $esc($module_link) ?>" style="margin:0"
+                          onsubmit="return confirm('Permanently purge &quot;<?= $esc($tname) ?>&quot; and everything it owns? This cannot be undone.');">
+                      <input type="hidden" name="action" value="profile-purge">
+                      <input type="hidden" name="id" value="<?= $tpid ?>">
+                      <?= generate_token() ?>
+                      <label style="display:block; font-size:11.5px; margin-bottom:4px;">
+                        Type <code class="mono"><?= $esc($cb_purge_phrase) ?></code> to confirm:
+                      </label>
+                      <input type="text" name="purge_confirmation_phrase" autocomplete="off"
+                             placeholder="<?= $esc($cb_purge_phrase) ?>"
+                             style="width:100%; padding:5px 8px; font-size:12px; margin-bottom:6px;">
+                      <button type="submit" class="cb-btn" style="background:var(--bad,#b3261e); border-color:var(--bad,#b3261e); color:#fff;">Purge permanently</button>
+                    </form>
+                  </div>
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  <?php endif; ?>
+
+  <script>
+  (function () {
+    document.querySelectorAll('[data-cb-purge-open]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-cb-purge-open');
+        var box = document.querySelector('[data-cb-purge-form="' + id + '"]');
+        if (box) { box.hidden = !box.hidden; }
+      });
+    });
+  })();
+  </script>
+
+  </div><?php /* close .cb-wrap opened by _layout_open */ return; ?>
 <?php endif; ?>
 
 <!-- ───────────────────── Duplicate-conflict chooser ───────────────────── -->
@@ -248,6 +369,13 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
               <?= generate_token() ?>
               <button class="cb-btn subtle" type="submit"><?= $active ? 'Disable' : 'Enable' ?></button>
             </form>
+            <form method="post" action="<?= $esc($module_link) ?>" style="display:inline"
+                  onsubmit="return confirm('Move &quot;<?= $esc($name !== '' ? $name : $slug) ?>&quot; to Trash? You can restore it afterwards.');">
+              <input type="hidden" name="action" value="profile-delete">
+              <input type="hidden" name="id" value="<?= $pid ?>">
+              <?= generate_token() ?>
+              <button class="cb-btn ghost" type="submit" style="color:var(--bad,#b3261e)" title="Move to Trash (recoverable)">Delete</button>
+            </form>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -302,32 +430,64 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
           <option value="fixed_admin_profile" selected>Fixed admin profile — admin locks every build option; customer cannot choose</option>
           <option value="customer_configurable_product">Customer-configurable product — admin exposes options; customer picks at order time</option>
         </select>
-        <div class="muted" style="font-size:11px; margin-top:4px;">
-          Fixed locks the selections below into one SKU. Configurable maps this plan to one WHMCS product and lets customers choose from the options you expose.
+        <div class="muted" style="font-size:11px; margin-top:4px;" data-cb-mode-hint>
+          Pre-packaged plan: pick a value for every option below — that locked set becomes the SKU. Customers cannot change it.
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div class="cb-field">
-          <label for="cb-pc-plan">Plan</label>
-          <select id="cb-pc-plan" name="plan_slug" required data-cb-quote-plan data-cb-cfg-plan>
-            <option value="">— pick a plan —</option>
-            <?php foreach ($available_plans as $ap): ?>
-              <option value="<?= $esc($ap['product_slug']) ?>"><?= $esc($ap['product_name']) ?> (<?= $esc($ap['family']) ?>)</option>
-            <?php endforeach; ?>
-          </select>
-        </div>
+      <div class="cb-field">
+        <label for="cb-pc-plan">Plan</label>
+        <select id="cb-pc-plan" name="plan_slug" required data-cb-quote-plan data-cb-cfg-plan>
+          <option value="">— pick a plan —</option>
+          <?php foreach ($available_plans as $ap): ?>
+            <option value="<?= $esc($ap['product_slug']) ?>"><?= $esc($ap['product_name']) ?> (<?= $esc($ap['family']) ?>)</option>
+          <?php endforeach; ?>
+        </select>
+      </div>
 
-        <div class="cb-field">
-          <label for="cb-pc-period">Period</label>
-          <select id="cb-pc-period" name="period_months" data-cb-quote-period data-cb-cfg-period>
-            <option value="1">1 month</option>
-            <option value="3">3 months</option>
-            <option value="6" selected>6 months</option>
-            <option value="12">12 months</option>
-          </select>
+      <?php
+        // Publish cycles — which billing cycles this profile SOURCES a price for.
+        // The PROFILE is the source authority (all six can be derived: 1/3/6/12
+        // scraped, 24/36 projected from the 12-mo rate). The MAPPING later narrows
+        // these to what the customer actually sees at checkout. JS maintains the
+        // hidden published_cycles_mask + a per-cycle source-price preview.
+        $cb_publish_cycles = [
+            ['cycle' => 'Monthly',       'months' => 1,  'bit' => 1],
+            ['cycle' => 'Quarterly',     'months' => 3,  'bit' => 2],
+            ['cycle' => 'Semi-Annually', 'months' => 6,  'bit' => 4],
+            ['cycle' => 'Annually',      'months' => 12, 'bit' => 8],
+            ['cycle' => 'Biennially',    'months' => 24, 'bit' => 16],
+            ['cycle' => 'Triennially',   'months' => 36, 'bit' => 32],
+        ];
+      ?>
+      <div class="cb-field">
+        <label>Publish cycles <span class="muted" style="text-transform:none; letter-spacing:0; font-weight:400;">— which terms this profile sources</span></label>
+        <!-- The single period dropdown is gone: the profile now sources a price
+             per published cycle. period_months is derived server-side from the
+             longest published cycle (kept for slug + identity). -->
+        <input type="hidden" name="published_cycles_mask" value="63" data-cb-published-mask>
+        <div data-cb-publish-cycles style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px 12px; margin-top:6px;">
+          <?php foreach ($cb_publish_cycles as $pc): ?>
+            <label style="display:flex; align-items:baseline; gap:6px; font-size:12.5px; cursor:pointer;">
+              <input type="checkbox" data-cb-publish-cycle data-cb-bit="<?= (int) $pc['bit'] ?>" data-cb-months="<?= (int) $pc['months'] ?>" checked>
+              <span>
+                <?= $esc($pc['cycle']) ?>
+                <?php if ((int) $pc['months'] >= 24): ?><span class="cb-pill grey" title="Not sold publicly by Contabo — projected from the 12-month rate" style="font-size:9px; padding:1px 5px;">projected</span><?php endif; ?>
+                <span class="muted mono" data-cb-cycle-source="<?= (int) $pc['months'] ?>" style="display:block; font-size:11px; opacity:.75;">—</span>
+              </span>
+            </label>
+          <?php endforeach; ?>
+        </div>
+        <div class="muted" style="font-size:11px; margin-top:6px;">
+          Source (cost) price per cycle, in EUR/mo, shown once a plan loads. The
+          <strong>mapping</strong> decides which of these the customer sees and at what markup.
         </div>
       </div>
+
+      <!-- Hidden period kept ONLY to drive the configurator's dimension-delta
+           preview (app.js reads data-cb-cfg-period). The real period is derived
+           server-side from the published cycles. -->
+      <input type="hidden" value="12" data-cb-cfg-period data-cb-quote-period>
 
       <!-- Configurator: hydrated by assets/app.js once plan_slug + period are set. -->
       <div class="cb-card" style="margin-top:14px; padding:14px 16px;">

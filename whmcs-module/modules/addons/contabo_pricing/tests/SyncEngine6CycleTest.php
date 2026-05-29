@@ -539,7 +539,7 @@ final class SyncEngine6CycleTest extends TestCase
             public function __construct() { /* no-op — never called in unit tests */ }
         };
         $profileMgr = new class($settings) extends ProfileManager {
-            public function listProfiles(bool $activeOnly = true): array { return []; }
+            public function listProfiles(bool $activeOnly = true, bool $includeTrashed = false): array { return []; }
             public function latestVersion(int $profileId): ?array { return null; }
             public function appendVersion(int $profileId, ProfileVersionInput $v): int { return 0; }
         };

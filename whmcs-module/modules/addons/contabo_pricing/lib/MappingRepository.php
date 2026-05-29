@@ -25,6 +25,9 @@ final class MappingRepository
         'profile_id', 'product_id', 'product_group_id',
         'catalog_cycles_mask', 'renewal_cycles_mask',
         'markup_overrides_json', 'setup_fee_overrides_json',
+        // v8: optional per-product per-cycle SOURCE basis override (customer
+        // layer pins its own cost; falls back to the profile vector).
+        'source_overrides_json',
         'respect_disabled_cycles', 'overwrite_free_cycles', 'sync_setup_fees',
         'rounding_mode', 'active',
     ];
@@ -41,7 +44,7 @@ final class MappingRepository
 
     /** Columns coerced to a valid JSON string. */
     private const JSON_COLUMNS = [
-        'markup_overrides_json', 'setup_fee_overrides_json',
+        'markup_overrides_json', 'setup_fee_overrides_json', 'source_overrides_json',
     ];
 
     private const TABLE = 'mod_contabo_mapping';

@@ -122,6 +122,25 @@ final class MappingRepositoryTest extends TestCase
         $this->assertSame('{}', $row['setup_fee_overrides_json']);
     }
 
+    public function testSourceOverridesJsonPersisted(): void
+    {
+        $repo = new MappingRepository();
+
+        $repo->createOrUpdate([
+            'profile_id'            => 14,
+            'product_id'            => 15,
+            'source_overrides_json' => ['Monthly' => ['monthly_eur' => 20.5]],
+        ]);
+
+        $row = $repo->findByProfileAndProduct(14, 15);
+        $this->assertNotNull($row);
+        $this->assertIsString($row['source_overrides_json']);
+        $this->assertSame(
+            ['Monthly' => ['monthly_eur' => 20.5]],
+            json_decode($row['source_overrides_json'], true)
+        );
+    }
+
     public function testCreateOrUpdateUpdatesExistingRow(): void
     {
         $repo = new MappingRepository();

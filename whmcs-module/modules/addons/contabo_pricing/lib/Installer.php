@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 7;
+    public const SCHEMA_VERSION = 8;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -1086,6 +1086,75 @@ class Installer
                 $t->tinyInteger('expose_configurable_options')->default(1);
             });
             logActivity('Contabo Pricing migrateTo7: added expose_configurable_options to mod_contabo_profile');
+        }
+    }
+
+    /**
+     * Schema v8 — two-layer pricing (profile = SOURCE, mapping = CUSTOMER) +
+     * recoverable profile delete.
+     *
+     * The profile becomes the authority for WHICH cycles are published and the
+     * per-cycle SOURCE (cost-basis) price; the mapping keeps the CUSTOMER pricing
+     * (markup / rounding / guards) it already carries. Concretely this migration:
+     *
+     *   - mod_contabo_profile.published_cycles_mask  (uint, default 15 = 1/3/6/12)
+     *       which cycles this profile sells. Back-filled from the union of the
+     *       profile's existing mappings' catalog_cycles_mask so current behaviour
+     *       is preserved; defaults to 15 when a profile has no mappings.
+     *   - mod_contabo_profile.deleted_at             (nullable timestamp)
+     *       soft-delete marker for the Trash / Undo flow. Default queries exclude
+     *       rows where this is set.
+     *   - mod_contabo_profile_version.period_prices_json (longText, never JSON)
+     *       the per-period EUR SOURCE vector SyncEngine writes each pass
+     *       ({1,3,6,12} scraped + {24,36} derived from the longest available
+     *       period). computeCyclePrice reads this; NULL falls back to the legacy
+     *       single-finalMonthly basis until the next sync repopulates it.
+     *   - mod_contabo_mapping.source_overrides_json  (longText, never JSON)
+     *       optional per-product per-cycle SOURCE basis override; falls back to
+     *       the profile vector.
+     *
+     * Idempotent: every column add is hasColumn-guarded; the back-fill only sets
+     * rows still at the default. The schema-version bump to 8 is performed by
+     * upgrade() after this method returns (mirrors migrateTo2..7).
+     */
+    public function migrateTo8(): void
+    {
+        $schema = Capsule::schema();
+
+        if ($schema->hasTable('mod_contabo_profile')) {
+            $schema->table('mod_contabo_profile', static function (Blueprint $t) use ($schema): void {
+                if (!$schema->hasColumn('mod_contabo_profile', 'published_cycles_mask')) {
+                    // 63 = all six bits. The profile SOURCES a price for every
+                    // cycle it can derive (1/3/6/12 scraped + 24/36 projected), so
+                    // the offered set defaults to all six. The customer-facing
+                    // gate is the MAPPING's catalog_cycles_mask (unchanged), so an
+                    // all-offered default leaves current behaviour untouched.
+                    $t->unsignedInteger('published_cycles_mask')->default(63);
+                }
+                if (!$schema->hasColumn('mod_contabo_profile', 'deleted_at')) {
+                    $t->timestamp('deleted_at')->nullable();
+                }
+            });
+        } else {
+            logActivity('Contabo Pricing migrateTo8: mod_contabo_profile absent — profile columns skipped');
+        }
+
+        if ($schema->hasTable('mod_contabo_profile_version')) {
+            if (!$schema->hasColumn('mod_contabo_profile_version', 'period_prices_json')) {
+                $schema->table('mod_contabo_profile_version', static function (Blueprint $t): void {
+                    $t->longText('period_prices_json')->nullable();
+                });
+                logActivity('Contabo Pricing migrateTo8: added period_prices_json to mod_contabo_profile_version');
+            }
+        }
+
+        if ($schema->hasTable('mod_contabo_mapping')) {
+            if (!$schema->hasColumn('mod_contabo_mapping', 'source_overrides_json')) {
+                $schema->table('mod_contabo_mapping', static function (Blueprint $t): void {
+                    $t->longText('source_overrides_json')->nullable();
+                });
+                logActivity('Contabo Pricing migrateTo8: added source_overrides_json to mod_contabo_mapping');
+            }
         }
     }
 }
