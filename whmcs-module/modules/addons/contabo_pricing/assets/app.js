@@ -478,13 +478,8 @@
 
     var jsonEl = modal.querySelector('[data-cb-options-json]');
     if (jsonEl) jsonEl.value = JSON.stringify(serialised);
-
-    // Mirror Image:OS + Region into the legacy hidden inputs so existing
-    // sync logic that reads profile.os / profile.region keeps working.
-    var osFallback = modal.querySelector('[data-cb-os-fallback]');
-    var regionFallback = modal.querySelector('[data-cb-region-fallback]');
-    if (osFallback && serialised['Image:OS']) osFallback.value = serialised['Image:OS'].label || '';
-    if (regionFallback && serialised['Region']) regionFallback.value = serialised['Region'].label || '';
+    // OS + Region are derived server-side from the options JSON above
+    // (single source of truth) — no hidden region/os inputs to mirror.
   }
 
   function loadConfiguratorForModal(modal, opts) {
@@ -518,6 +513,7 @@
         applyConfiguratorPrefill(modal, opts.prefill);
       }
       recalcCfg(modal);
+      updatePublishCyclesPreview(modal);
       return j;
     });
   }
@@ -539,6 +535,62 @@
     });
   }
 
+  // ── Publish cycles (profile = source) ───────────────────────────────────
+  // OR the checked cycle bits into the hidden published_cycles_mask. Empty
+  // selection falls back to 63 (all) so a profile never sources nothing.
+  function syncPublishedMask(modal) {
+    var hidden = modal.querySelector('[data-cb-published-mask]');
+    if (!hidden) return;
+    var mask = 0;
+    modal.querySelectorAll('[data-cb-publish-cycle]').forEach(function (cb) {
+      if (cb.checked) mask |= parseInt(cb.getAttribute('data-cb-bit'), 10) || 0;
+    });
+    hidden.value = String(mask === 0 ? 63 : mask);
+  }
+
+  // Source (cost) price per cycle, EUR/mo, from the configurator's periods map.
+  // Fallback rule (mirrors SyncEngine): source(M) = effective_monthly of the
+  // longest available period whose months ≤ M (24/36 → 12-mo; missing 3 → 1).
+  function updatePublishCyclesPreview(modal) {
+    var state = cbCfgState.get(modal);
+    var periods = (state && state.cfg && state.cfg.periods) ? state.cfg.periods : null;
+    var scraped = {};
+    if (periods) {
+      Object.keys(periods).forEach(function (k) {
+        var m = parseInt(k, 10);
+        var row = periods[k] || {};
+        if (m > 0 && row.effective_monthly != null) scraped[m] = parseFloat(row.effective_monthly);
+      });
+    }
+    var avail = Object.keys(scraped).map(function (k) { return parseInt(k, 10); }).sort(function (a, b) { return a - b; });
+
+    modal.querySelectorAll('[data-cb-cycle-source]').forEach(function (span) {
+      var target = parseInt(span.getAttribute('data-cb-cycle-source'), 10);
+      if (!avail.length) { span.textContent = '—'; return; }
+      var best = null;
+      avail.forEach(function (m) { if (m <= target && (best === null || m > best)) best = m; });
+      if (best === null) best = avail[0];
+      span.textContent = '€' + scraped[best].toFixed(2) + '/mo';
+    });
+  }
+
+  // Reshape the form to the selected mode. Fixed = pre-packaged SKU: the admin
+  // locks every option and NO configurable options are exposed to customers, so
+  // the expose toggle is hidden. Configurable = customer picks exposed options.
+  function applyModeUi(modal) {
+    var modeSel = modal.querySelector('[data-cb-profile-mode]');
+    var mode = modeSel ? modeSel.value : 'fixed_admin_profile';
+    var isFixed = (mode !== 'customer_configurable_product');
+    var exposeField = modal.querySelector('[data-cb-expose-field]');
+    if (exposeField) exposeField.hidden = isFixed;
+    var hint = modal.querySelector('[data-cb-mode-hint]');
+    if (hint) {
+      hint.textContent = isFixed
+        ? 'Pre-packaged plan: pick a value for every option below — that locked set becomes the SKU. Customers cannot change it.'
+        : 'Configurable product: customers choose the options you expose. Curate exposure via the Exposure editor after saving.';
+    }
+  }
+
   function primeProfileCreateMode(modal) {
     var titleEl = modal.querySelector('[data-cb-modal-title]');
     var actionEl = modal.querySelector('[data-cb-form-action]');
@@ -547,6 +599,8 @@
     var nameEl = modal.querySelector('input[name="name"]');
     var tagsEl = modal.querySelector('input[name="tags"]');
     var stratEl = modal.querySelector('select[name="sync_strategy"]');
+    var modeEl = modal.querySelector('[data-cb-profile-mode]');
+    var exposeEl = modal.querySelector('[data-cb-expose-config]');
     if (titleEl) titleEl.textContent = 'Create profile';
     if (submitEl) submitEl.textContent = 'Create profile';
     if (actionEl) actionEl.value = 'profile-create';
@@ -554,6 +608,12 @@
     if (nameEl) nameEl.value = '';
     if (tagsEl) tagsEl.value = '';
     if (stratEl) stratEl.value = 'notify';
+    if (modeEl) modeEl.value = 'fixed_admin_profile';
+    if (exposeEl) exposeEl.checked = true;
+    // Default: source all six cycles (the mapping narrows to customer-facing).
+    modal.querySelectorAll('[data-cb-publish-cycle]').forEach(function (cb) { cb.checked = true; });
+    syncPublishedMask(modal);
+    applyModeUi(modal);
     var planEl = modal.querySelector('[data-cb-cfg-plan]');
     if (planEl) planEl.value = '';
     loadConfiguratorForModal(modal);
@@ -578,11 +638,25 @@
       var periodEl = modal.querySelector('[data-cb-cfg-period]');
       var tagsEl = modal.querySelector('input[name="tags"]');
       var stratEl = modal.querySelector('select[name="sync_strategy"]');
+      var modeEl = modal.querySelector('[data-cb-profile-mode]');
+      var exposeEl = modal.querySelector('[data-cb-expose-config]');
       if (nameEl) nameEl.value = p.name || '';
       if (planEl) planEl.value = p.plan_slug || '';
       if (periodEl) periodEl.value = String(p.period_months || 6);
       if (tagsEl) tagsEl.value = p.tags || '';
       if (stratEl && p.sync_strategy) stratEl.value = p.sync_strategy;
+      if (modeEl && p.profile_mode) modeEl.value = p.profile_mode;
+      // null/undefined (pre-v7 rows) → default exposed; explicit "0" → unchecked.
+      if (exposeEl) exposeEl.checked = String(p.expose_configurable_options) !== '0';
+      // Publish cycles: restore from saved mask (pre-v8 rows → all six).
+      var savedMask = (p.published_cycles_mask == null || p.published_cycles_mask === '')
+        ? 63 : (parseInt(p.published_cycles_mask, 10) || 63);
+      modal.querySelectorAll('[data-cb-publish-cycle]').forEach(function (cb) {
+        var bit = parseInt(cb.getAttribute('data-cb-bit'), 10) || 0;
+        cb.checked = (savedMask & bit) !== 0;
+      });
+      syncPublishedMask(modal);
+      applyModeUi(modal);
       loadConfiguratorForModal(modal, { prefill: sel });
     });
   }
@@ -603,6 +677,14 @@
         if (cbCfgState.get(modal)) recalcCfg(modal);
         else debouncedLoad();
       });
+
+      // Publish-cycle checkboxes maintain the hidden published_cycles_mask.
+      modal.querySelectorAll('[data-cb-publish-cycle]').forEach(function (cb) {
+        cb.addEventListener('change', function () { syncPublishedMask(modal); });
+      });
+      // Mode toggle reshapes the form (fixed = pre-packaged, no exposure).
+      var modeSel = modal.querySelector('[data-cb-profile-mode]');
+      if (modeSel) modeSel.addEventListener('change', function () { applyModeUi(modal); });
       if (resetBtn) {
         resetBtn.addEventListener('click', function (e) {
           e.preventDefault();
@@ -920,12 +1002,33 @@
     body.innerHTML = html;
   }
 
-  function renderCycleTableRows(scope, cycles, respectDisabled) {
+  // Source (cost) EUR/mo for a target cycle: nearest available period ≤ target
+  // months (24/36 → 12-mo, missing 3 → 1-mo). Mirrors the engine fallback.
+  function sourceRateForMonths(sourceEur, target) {
+    var avail = Object.keys(sourceEur || {}).map(function (k) { return parseInt(k, 10); })
+      .filter(function (m) { return m > 0; }).sort(function (a, b) { return a - b; });
+    if (!avail.length) return null;
+    var best = null;
+    avail.forEach(function (m) { if (m <= target && (best === null || m > best)) best = m; });
+    if (best === null) best = avail[0];
+    return parseFloat(sourceEur[best]);
+  }
+
+  function renderCycleTableRows(scope, cycles, respectDisabled, sourceEur) {
     cycles.forEach(function (c) {
       var sel = '[data-cb-cycle-row="' + cssAttrEscape(c.cycle) + '"]';
       var tr = scope.querySelector(sel);
       if (!tr) return;
       tr.setAttribute('data-cb-cycle-status', c.status);
+
+      var srcCell = tr.querySelector('[data-cb-cycle-source]');
+      if (srcCell) {
+        var months = parseInt(tr.getAttribute('data-cb-cycle-months'), 10) || 0;
+        var rate = sourceRateForMonths(sourceEur || {}, months);
+        srcCell.innerHTML = (rate === null)
+          ? '<span class="muted" style="font-size:11px">—</span>'
+          : '<span class="mono" title="source cost / mo × ' + months + ' mo">€' + rate.toFixed(2) + '/mo · €' + (rate * months).toFixed(2) + '</span>';
+      }
 
       var priceCell = tr.querySelector('[data-cb-cycle-current-price]');
       if (priceCell) {
@@ -974,8 +1077,10 @@
       }
       return;
     }
+    var profileEl = scope.querySelector('[data-cb-mapping-profile]');
     var params = { product_id: productId };
     if (currencyEl && currencyEl.value) params.currency_id = parseInt(currencyEl.value, 10);
+    if (profileEl && profileEl.value) params.profile_id = parseInt(profileEl.value, 10);
     if (loading) {
       loading.textContent = 'Loading catalog prices…';
       loading.style.display = '';
@@ -993,7 +1098,7 @@
       if (loading) {
         loading.style.display = 'none';
       }
-      renderCycleTableRows(scope, j.cycles || [], respectDisabled);
+      renderCycleTableRows(scope, j.cycles || [], respectDisabled, j.source_eur || {});
       refreshMappingMasks(scope);
     }).catch(function (err) {
       if (loading) {
@@ -1008,12 +1113,15 @@
       var productEl = scope.querySelector('[data-cb-product-id]');
       var currencyEl = scope.querySelector('[data-cb-currency-id]');
       var respectEl = scope.querySelector('[data-cb-respect-disabled]');
+      var mapProfileEl = scope.querySelector('[data-cb-mapping-profile]');
       var form = scope.querySelector('form[data-cb-form="mapping-save"]');
 
       var debouncedLoad = debounce(function () { loadMappingCycles(scope); }, 200);
       if (productEl)  productEl.addEventListener('change', debouncedLoad);
       if (currencyEl) currencyEl.addEventListener('change', debouncedLoad);
       if (respectEl)  respectEl.addEventListener('change', debouncedLoad);
+      // Profile drives the Source column (its per-cycle cost vector).
+      if (mapProfileEl) mapProfileEl.addEventListener('change', debouncedLoad);
 
       // Mask + JSON recompute as the admin toggles per-cycle checkboxes.
       $$('[data-cb-cycle-bit-catalog], [data-cb-cycle-bit-renewal]', scope).forEach(function (cb) {

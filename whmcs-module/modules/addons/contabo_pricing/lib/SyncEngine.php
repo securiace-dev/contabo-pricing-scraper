@@ -128,6 +128,12 @@ class SyncEngine
                     $configured = $base; // Phase-3 vNext: apply selections{} via /quote
                     $setup      = (float) ($period['setup_fee'] ?? 0);
 
+                    // Profile = SOURCE: capture the FULL per-period EUR vector so
+                    // every published cycle prices off its own scraped discount
+                    // tier, not the single profile period. Absent cycles (24/36)
+                    // are pre-expanded to the longest available period's rate.
+                    $periodPricesEur = self::periodPriceVectorFromPlan($plan);
+
                     $version = ProfileVersionInput::computed(
                         $base,
                         $configured,
@@ -139,7 +145,8 @@ class SyncEngine
                         $this->settings->fxMarkupPct,
                         $this->settings->applyGst18,
                         $this->settings->currencyIso,
-                        $sourceGeneratedAt
+                        $sourceGeneratedAt,
+                        $periodPricesEur
                     );
 
                     $latest = $this->profiles->latestVersion((int) $profile['id']);
@@ -225,6 +232,16 @@ class SyncEngine
             return $stats;
         }
 
+        // Profile = SOURCE authority for WHICH cycles are published. A cycle the
+        // profile doesn't publish is never written, regardless of the mapping's
+        // catalog mask. Absent (legacy / test drivers that pass a non-profile
+        // array) defaults to "all published" so pre-v8 behaviour is preserved.
+        $publishedSet = CycleSet::fromMask(
+            isset($profile['published_cycles_mask'])
+                ? (int) $profile['published_cycles_mask']
+                : CycleSet::MASK_MAX
+        );
+
         foreach ($mappings as $rawMapping) {
             $mapping = (array) $rawMapping;
             $productId = (int) ($mapping['product_id'] ?? 0);
@@ -265,6 +282,17 @@ class SyncEngine
                         'profile_id'        => $profileId,
                         'mapping_id'        => isset($mapping['id']) ? (int) $mapping['id'] : null,
                     ];
+
+                    // 0) Publish gate (profile-owned). A cycle the profile does
+                    //    not publish is skipped before any per-product mask.
+                    if (!$publishedSet->contains($cycle)) {
+                        $this->catalogAudit->insert(array_merge($auditBase, [
+                            'applied'        => 0,
+                            'skipped_reason' => 'cycle_not_published',
+                        ]));
+                        $stats['cycles_skipped']++;
+                        continue;
+                    }
 
                     // 1) Catalog mask gate. Out-of-mask cycles audit-skipped.
                     if (!$catalogSet->contains($cycle)) {
@@ -426,13 +454,25 @@ class SyncEngine
             $value    = $this->resolveVersionMarkupValue($version);
         }
 
-        // For now `landedMonthly` in this rewrite phase is the same value the
-        // existing pipeline produced: `version.finalMonthly` is already EUR ×
-        // FX × (1 + gst) × (1 + fxMarkup). When Agent C lands the full
-        // landed-cost pipeline this gets swapped for MarginCalculator
-        // directly. Until then we use finalMonthly as the cost basis so the
-        // engine continues to produce sensible numbers in production.
-        $landedMonthly = (float) $version->finalMonthly;
+        // Per-cycle SOURCE (cost) basis in local currency. The PROFILE owns the
+        // source: the version's per-period EUR vector, with the longest-available
+        // period's rate standing in for absent cycles (24/36). A per-product
+        // mapping `source_overrides_json` may pin its own basis (customer layer).
+        // Legacy versions with no vector fall back to the single finalMonthly
+        // basis so pre-v8 rows keep producing sensible numbers until the next
+        // sync repopulates the vector.
+        $sourceEur = $this->resolveCycleSourceEur($version, $mapping, $cycle, $cycleMonths);
+        if ($sourceEur !== null) {
+            $landedMonthly = ProfileVersionInput::toLocalMonthly(
+                $sourceEur,
+                $version->fxRate,
+                $version->fxMarkupPct,
+                $version->gstPct / 100.0,
+                $version->currencyIso
+            );
+        } else {
+            $landedMonthly = (float) $version->finalMonthly;
+        }
 
         // For 'fixed' strategy, $value is the admin-set total sell price for
         // this cycle. Convert to monthly so sellPriceForCycle can use it.
@@ -680,6 +720,115 @@ class SyncEngine
             }
         }
         return null;
+    }
+
+    /**
+     * Build the per-period EUR SOURCE vector for a plan, keyed by the six
+     * canonical cycle month-counts (1/3/6/12/24/36). Scraped periods carry their
+     * real `effective_monthly`; cycles Contabo never exposes on the public site
+     * take the rate of the LONGEST available scraped period whose months do not
+     * EXCEED the target (owner rule):
+     *
+     *   - 24/36 mo → 12-mo rate (Contabo only exposes ≤12mo publicly; 24/36 are
+     *     post-provision upgrade options, so we project from the deepest public
+     *     tier).
+     *   - a missing 3-mo (quarterly) → 1-mo rate (NOT a deeper longer-cycle
+     *     discount the customer never qualified for).
+     *
+     * i.e. the source for target M months = effective_monthly of
+     * max(scraped months ≤ M). 1-mo is always present, so a basis always exists.
+     * Returns [] when the plan exposes no usable periods (caller leaves the
+     * version vector empty → legacy single-basis fallback downstream).
+     *
+     * Public + static: a pure transformation (plan → vector) so it's unit-tested
+     * directly without the run() plumbing.
+     *
+     * @param array<string,mixed> $plan
+     * @return array<int,float>
+     */
+    public static function periodPriceVectorFromPlan(array $plan): array
+    {
+        $scraped = [];
+        foreach (($plan['periods'] ?? []) as $p) {
+            $m = (int) ($p['months'] ?? 0);
+            if ($m > 0 && isset($p['effective_monthly'])) {
+                $scraped[$m] = (float) $p['effective_monthly'];
+            }
+        }
+        if ($scraped === []) {
+            return [];
+        }
+
+        $vector = [];
+        foreach (CycleSet::allCycles() as $cycle) {
+            $months = CycleNormalizer::monthsForCycle($cycle);
+            if ($months === null) {
+                continue;
+            }
+            $vector[$months] = self::nearestSourceRate($scraped, $months);
+        }
+        return $vector;
+    }
+
+    /**
+     * Source monthly EUR for a target cycle: the effective_monthly of the
+     * longest scraped period whose months do NOT exceed the target. Falls back
+     * to the shortest available period when nothing is ≤ target (defensive; 1-mo
+     * is always present in real data).
+     *
+     * @param array<int,float> $scraped months => effective_monthly
+     */
+    private static function nearestSourceRate(array $scraped, int $targetMonths): float
+    {
+        $bestMonths = null;
+        foreach ($scraped as $m => $rate) {
+            if ($m <= $targetMonths && ($bestMonths === null || $m > $bestMonths)) {
+                $bestMonths = $m;
+            }
+        }
+        if ($bestMonths === null) {
+            $bestMonths = min(array_keys($scraped));
+        }
+        return (float) $scraped[$bestMonths];
+    }
+
+    /**
+     * Resolve the per-cycle SOURCE basis in EUR/month, in precedence order:
+     *   1. mapping.source_overrides_json[cycle].monthly_eur — per-product pin.
+     *   2. the profile version's per-period vector (exact cycle months, else the
+     *      longest available period's rate).
+     * Returns null only when the version carries no vector (legacy) — the caller
+     * then falls back to version.finalMonthly.
+     *
+     * @param array<string,mixed> $mapping
+     */
+    private function resolveCycleSourceEur(
+        ProfileVersionInput $version,
+        array $mapping,
+        string $cycle,
+        int $cycleMonths
+    ): ?float {
+        $overrideJson = (string) ($mapping['source_overrides_json'] ?? '');
+        if ($overrideJson !== '') {
+            $overrides = json_decode($overrideJson, true);
+            if (is_array($overrides) && isset($overrides[$cycle]) && is_array($overrides[$cycle])) {
+                $entry = $overrides[$cycle];
+                if (isset($entry['monthly_eur']) && is_numeric($entry['monthly_eur'])) {
+                    return (float) $entry['monthly_eur'];
+                }
+            }
+        }
+
+        $vector = $version->periodPricesEur;
+        if ($vector === []) {
+            return null;
+        }
+        if (isset($vector[$cycleMonths])) {
+            return (float) $vector[$cycleMonths];
+        }
+        // Vector is normally pre-expanded to all six cycles; this is a defensive
+        // path for a sparse vector — same rule as the builder (longest ≤ target).
+        return self::nearestSourceRate($vector, $cycleMonths);
     }
 
     /**

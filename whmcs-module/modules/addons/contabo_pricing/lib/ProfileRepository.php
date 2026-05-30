@@ -187,6 +187,10 @@ final class ProfileRepository
             'name'                     => (string) ($input['name'] ?? $slug),
             'plan_slug'                => (string) ($input['plan_slug'] ?? ''),
             'period_months'            => (int) ($input['period_months'] ?? 0),
+            // v8: which cycles this profile SOURCES (offered superset; the mapping
+            // narrows to the customer-facing set). Default 63 = all six.
+            'published_cycles_mask'    => isset($input['published_cycles_mask'])
+                ? (int) $input['published_cycles_mask'] : 63,
             'region'                   => $input['region'] ?? null,
             'os'                       => $input['os'] ?? null,
             'options'                  => $this->encodeOptions($input['options'] ?? null),
@@ -194,6 +198,9 @@ final class ProfileRepository
             'sync_strategy'            => (string) ($input['sync_strategy'] ?? $this->defaultSyncStrategy),
             'active'                   => 1,
             'profile_mode'             => $mode,
+            // v7 master switch (default 1 = exposed, matching the column default).
+            'expose_configurable_options' => isset($input['expose_configurable_options'])
+                ? (int) $input['expose_configurable_options'] : 1,
             'profile_fingerprint_hash' => $fingerprint,
             'profile_identity_json'    => $identityJson,
             'created_at'               => $now,

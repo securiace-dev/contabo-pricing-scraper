@@ -363,7 +363,12 @@ class RenewalEngine
             );
         }
 
-        $eurMonthly    = (float) ($version['base_monthly_eur'] ?? 0.0);
+        // Phase D — per-cycle SOURCE basis. The renewal cost basis must match the
+        // catalog: price each cycle off ITS OWN source tier from the version's
+        // per-period EUR vector (period_prices_json), so a quarterly renewal uses
+        // the quarterly source, not a single base monthly. Falls back to
+        // base_monthly_eur for legacy versions with no vector.
+        $eurMonthly    = self::resolveCycleEurMonthly($version, $cycleMonths);
         $landedMonthly = MarginCalculator::landedCostMonthly(
             $eurMonthly, $fxRate, $fxBufferPct, $paymentBufferPct,
             $vendorTaxRatePct, $vendorTaxRecoverable
@@ -654,6 +659,52 @@ class RenewalEngine
      * @param array<string,mixed> $version
      * @return array{strategy:string, value:float, source:string, as_total:bool}
      */
+    /**
+     * Per-cycle SOURCE basis in EUR/month for a renewal, from the version's
+     * period_prices_json vector. Exact cycle months win; else the longest period
+     * whose months ≤ target (same rule as SyncEngine — 24/36 → 12-mo, a missing
+     * 3-mo → 1-mo). Legacy versions with no vector fall back to base_monthly_eur.
+     *
+     * @param array<string,mixed> $version a profile_version DB row
+     */
+    private static function resolveCycleEurMonthly(array $version, int $cycleMonths): float
+    {
+        $vector = [];
+        $raw = $version['period_prices_json'] ?? null;
+        if (is_array($raw)) {
+            $vector = $raw;
+        } elseif (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) {
+                $vector = $decoded;
+            }
+        }
+
+        $normalized = [];
+        foreach ($vector as $m => $rate) {
+            $mi = (int) $m;
+            if ($mi > 0) {
+                $normalized[$mi] = (float) $rate;
+            }
+        }
+        if ($normalized === []) {
+            return (float) ($version['base_monthly_eur'] ?? 0.0);
+        }
+        if (isset($normalized[$cycleMonths])) {
+            return $normalized[$cycleMonths];
+        }
+        $bestMonths = null;
+        foreach ($normalized as $m => $rate) {
+            if ($m <= $cycleMonths && ($bestMonths === null || $m > $bestMonths)) {
+                $bestMonths = $m;
+            }
+        }
+        if ($bestMonths === null) {
+            $bestMonths = min(array_keys($normalized));
+        }
+        return $normalized[$bestMonths];
+    }
+
     private function resolveMarkup(array $mapping, array $version, string $cycle): array
     {
         $overridesJson = isset($mapping['markup_overrides_json']) && $mapping['markup_overrides_json'] !== null

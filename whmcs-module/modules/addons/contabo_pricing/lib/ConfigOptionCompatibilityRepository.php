@@ -100,6 +100,27 @@ final class ConfigOptionCompatibilityRepository
     }
 
     /**
+     * All compatibility rules for one plan, in stable id order. Mirrors
+     * {@see ConfigOptionCapabilityRepository::listForPlan}. Used by the
+     * compatibility editor to overlay saved rules onto the plan's dimensions.
+     *
+     * @return list<array<string,mixed>>
+     */
+    public function listForPlan(string $planSlug): array
+    {
+        $rows = Capsule::table(self::T_COMPAT)
+            ->where('plan_slug', $planSlug)
+            ->orderBy('id')
+            ->get();
+
+        $out = [];
+        foreach ($rows as $row) {
+            $out[] = (array) $row;
+        }
+        return $out;
+    }
+
+    /**
      * Validate a set of configurable-option selections against the plan's
      * compatibility matrix. Deterministic and side-effect-free (read-only).
      *

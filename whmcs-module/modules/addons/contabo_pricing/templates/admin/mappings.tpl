@@ -140,6 +140,10 @@ $cb_rounding_modes = [
       <input type="hidden" name="catalog_cycles_mask"   value="0" data-cb-catalog-mask>
       <input type="hidden" name="renewal_cycles_mask"   value="0" data-cb-renewal-mask>
       <input type="hidden" name="markup_overrides_json" value="{}" data-cb-markup-overrides-json>
+      <?php /* v8: optional per-product per-cycle SOURCE basis override (EUR/mo).
+               Empty {} = use the profile's source vector. Reserved for a future
+               inline editor; persisted as-is today. */ ?>
+      <input type="hidden" name="source_overrides_json" value="{}" data-cb-source-overrides-json>
 
       <div class="cb-field">
         <label>Billing cycles</label>
@@ -148,6 +152,7 @@ $cb_rounding_modes = [
             <thead>
               <tr>
                 <th>Cycle</th>
+                <th class="right">Source (from profile)</th>
                 <th class="right">Catalog price</th>
                 <th style="text-align:center">Catalog sync</th>
                 <th style="text-align:center">Renewal reprice</th>
@@ -163,6 +168,9 @@ $cb_rounding_modes = [
                   <td>
                     <div style="font-weight:600"><?= $esc($row['cycle']) ?></div>
                     <div class="muted mono" style="font-size:11px"><?= $esc($row['short']) ?> · <?= $esc($row['rec_col']) ?></div>
+                  </td>
+                  <td class="right" data-cb-cycle-source>
+                    <span class="muted" style="font-size:11px">—</span>
                   </td>
                   <td class="right mono price" data-cb-cycle-current-price>
                     <span class="muted" style="font-size:11.5px">—</span>

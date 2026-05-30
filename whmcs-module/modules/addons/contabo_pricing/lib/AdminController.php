@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.6.0';
+    public const VERSION = '0.7.0';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -35,15 +35,24 @@ class AdminController
         $action = (string) ($req['action'] ?? 'dashboard');
         switch ($action) {
             case 'profiles':         $this->profiles($req); return;
+            case 'profiles-trash':   $this->profilesTrash($req); return;
             case 'profile-create':   $this->profileCreate($req); return;
             case 'profile-save':     $this->profileSave($req); return;
             case 'profile-toggle':   $this->profileToggle($req); return;
+            case 'profile-delete':   $this->profileDelete($req); return;
+            case 'profile-restore':  $this->profileRestore($req); return;
+            case 'profile-purge':    $this->profilePurge($req); return;
             case 'profile-diff':     $this->profileDiff($req); return;
             case 'config-preview':   $this->configPreview($req); return;
             case 'config-apply':     $this->configApply($req); return;
             case 'config-diff':      $this->configDiff($req); return;
             case 'config-exposure':      $this->configExposure($req); return;
             case 'config-exposure-save': $this->configExposureSave($req); return;
+            // ── A.6.3 — capability + compatibility editors ───────────────────
+            case 'capability-editor':       $this->capabilityEditor($req); return;
+            case 'capability-editor-save':  $this->capabilityEditorSave($req); return;
+            case 'compatibility-editor':      $this->compatibilityEditor($req); return;
+            case 'compatibility-editor-save': $this->compatibilityEditorSave($req); return;
             case 'mappings':         $this->mappings($req); return;
             case 'mapping-save':     $this->mappingSave($req); return;
             case 'sync-history':     $this->syncHistory(); return;
@@ -507,10 +516,228 @@ class AdminController
         try { $plans = $api->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
 
         $this->render('profiles.tpl', [
-            'profiles' => $pm->listProfiles(false),
+            // Trashed profiles are excluded by default (listProfiles filters them).
+            'profiles' => $this->annotateDrift($pm->listProfiles(false), $plans),
             'available_plans' => $plans,
             'flash' => (string) ($req['flash'] ?? ''),
+            // When a delete just happened, the page renders an inline Undo for it.
+            'undo_id' => isset($req['undo_id']) ? (int) $req['undo_id'] : 0,
+            'trash_count' => count($pm->listTrashed()),
         ]);
+    }
+
+    /**
+     * Trash view — soft-deleted profiles with Restore (Undo) + guarded permanent
+     * Purge. Reuses profiles.tpl in trash mode.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function profilesTrash(array $req): void
+    {
+        $pm = new ProfileManager($this->settings);
+        $trashed = $pm->listTrashed();
+
+        // Annotate each trashed row with its purge eligibility so the template can
+        // enable/disable the permanent-delete control + show why it's blocked.
+        $purge = new ProfilePurgeService();
+        foreach ($trashed as &$row) {
+            $row['purge'] = $purge->assess((int) ($row['id'] ?? 0));
+        }
+        unset($row);
+
+        $this->render('profiles.tpl', [
+            'profiles'        => [],
+            'available_plans' => [],
+            'flash'           => (string) ($req['flash'] ?? ''),
+            'trash_mode'      => true,
+            'trashed'         => $trashed,
+            'trash_count'     => count($trashed),
+            'cb_purge_phrase' => SchemaHealth::PURGE_CONFIRMATION_PHRASE,
+        ]);
+    }
+
+    /**
+     * Soft-delete (Trash) a profile. Recoverable: the redirect carries undo_id so
+     * the profiles page renders an inline "Deleted — Undo" action.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function profileDelete(array $req): void
+    {
+        if (!$this->verifyToken()) { return; }
+        $pm = new ProfileManager($this->settings);
+        $id = (int) ($req['id'] ?? 0);
+        $row = $pm->find($id);
+        if ($row === null) {
+            $this->redirect('profiles', ['flash' => 'Profile not found.']);
+            return;
+        }
+        $pm->softDelete($id);
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing: profile #' . $id . ' (' . (string) ($row['slug'] ?? '') . ') moved to Trash.');
+        }
+        $this->redirect('profiles', [
+            'flash'   => 'Profile "' . (string) ($row['name'] ?? $row['slug'] ?? ('#' . $id)) . '" moved to Trash.',
+            'undo_id' => $id,
+        ]);
+    }
+
+    /**
+     * Restore a trashed profile (the Undo).
+     *
+     * @param array<string,mixed> $req
+     */
+    private function profileRestore(array $req): void
+    {
+        if (!$this->verifyToken()) { return; }
+        $pm = new ProfileManager($this->settings);
+        $id = (int) ($req['id'] ?? 0);
+        $row = $pm->find($id);
+        if ($row === null) {
+            $this->redirect('profiles', ['flash' => 'Profile not found.']);
+            return;
+        }
+        $pm->restore($id);
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing: profile #' . $id . ' restored from Trash.');
+        }
+        // Land back wherever made sense: trash if others remain, else profiles.
+        $dest = count($pm->listTrashed()) > 0 ? 'profiles-trash' : 'profiles';
+        $this->redirect($dest, ['flash' => 'Profile restored.']);
+    }
+
+    /**
+     * Permanently purge a trashed profile + everything it owns. Guarded:
+     * blocked while an active mapping or live service references it; requires the
+     * typed confirmation phrase; cascades only this profile's rows; audited.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function profilePurge(array $req): void
+    {
+        if (!$this->verifyToken()) { return; }
+        $pm = new ProfileManager($this->settings);
+        $id = (int) ($req['id'] ?? 0);
+        $row = $pm->find($id);
+        if ($row === null) {
+            $this->redirect('profiles-trash', ['flash' => 'Profile not found.']);
+            return;
+        }
+
+        // Typed-phrase confirmation (shared validator with the global purge).
+        $phrase = (string) ($req['purge_confirmation_phrase'] ?? '');
+        if (!SchemaHealth::isPurgeConfirmed($phrase)) {
+            $this->redirect('profiles-trash', ['flash' => 'Purge cancelled — confirmation phrase did not match.']);
+            return;
+        }
+
+        $service = new ProfilePurgeService();
+        $guard = $service->assess($id);
+        if (!$guard['allowed']) {
+            $this->redirect('profiles-trash', ['flash' => 'Purge blocked — ' . implode(' ', $guard['reasons'])]);
+            return;
+        }
+
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        try {
+            $counts = $service->purge($id);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: profile #' . $id . ' purge FAILED (admin #' . $adminId . ') — ' . $e->getMessage());
+            }
+            $this->redirect('profiles-trash', ['flash' => 'Purge failed; see activity log. Nothing was removed.']);
+            return;
+        }
+
+        if (function_exists('logActivity')) {
+            logActivity(sprintf(
+                'Contabo Pricing: PROFILE PURGE #%d (%s) by admin #%d — removed %d mapping(s), %d version(s), %d config link(s) [%d group, %d option, %d value], and addon-created WHMCS objects: %d groups, %d options, %d sub-options, %d pricing rows, %d product links.',
+                $id,
+                (string) ($row['slug'] ?? ''),
+                $adminId,
+                (int) $counts['mappings'], (int) $counts['versions'],
+                (int) $counts['group_links'] + (int) $counts['option_links'] + (int) $counts['value_links'],
+                (int) $counts['group_links'], (int) $counts['option_links'], (int) $counts['value_links'],
+                (int) $counts['groups'], (int) $counts['options'], (int) $counts['subs'],
+                (int) $counts['sub_pricing'], (int) $counts['product_links']
+            ));
+        }
+
+        $dest = count($pm->listTrashed()) > 0 ? 'profiles-trash' : 'profiles';
+        $this->redirect($dest, ['flash' => 'Profile permanently purged.']);
+    }
+
+    /**
+     * Flag each profile as drifted when its stored price no longer matches
+     * upstream. Cheap + outage-tolerant: uses ONLY the already-loaded $plans (no
+     * extra API calls) plus one batched version lookup. Drift =
+     *   (a) the plan was removed/renamed upstream (orphaned), OR
+     *   (b) the profile's latest version base monthly differs (> 1 cent) from
+     *       the current effective monthly for its period.
+     * This mirrors exactly how SyncEngine decides to append a new version
+     * (ProfileVersionInput::differsFrom on base_monthly_eur). When $plans is
+     * empty (API down) nothing is flagged — we never guess.
+     *
+     * @param list<array<string,mixed>> $profiles
+     * @param list<array<string,mixed>> $plans
+     * @return list<array<string,mixed>>
+     */
+    private function annotateDrift(array $profiles, array $plans): array
+    {
+        if (empty($profiles) || empty($plans)) {
+            return $profiles; // can't compare → leave drift unset (template reads 0)
+        }
+        $bySlug = [];
+        foreach ($plans as $p) {
+            $slug = (string) ($p['product_slug'] ?? '');
+            if ($slug !== '') { $bySlug[$slug] = $p; }
+        }
+        // Batch-load the latest version base price for every listed profile.
+        $verIds = [];
+        foreach ($profiles as $pr) {
+            $vid = (int) ($pr['latest_version_id'] ?? 0);
+            if ($vid > 0) { $verIds[] = $vid; }
+        }
+        $baseByVer = [];
+        if (!empty($verIds)) {
+            foreach (Capsule::table('mod_contabo_profile_version')
+                         ->whereIn('id', $verIds)->get(['id', 'base_monthly_eur']) as $row) {
+                $baseByVer[(int) $row->id] = (float) $row->base_monthly_eur;
+            }
+        }
+        foreach ($profiles as &$pr) {
+            $pr['drifted'] = 0;
+            $slug = (string) ($pr['plan_slug'] ?? '');
+            if ($slug === '') { continue; }
+            if (!isset($bySlug[$slug])) { $pr['drifted'] = 1; continue; } // orphaned upstream
+            $vid = (int) ($pr['latest_version_id'] ?? 0);
+            if ($vid <= 0 || !isset($baseByVer[$vid])) { continue; }      // no snapshot to compare
+            $current = $this->currentEffectiveMonthly($bySlug[$slug], (int) ($pr['period_months'] ?? 0));
+            if ($current === null) { continue; }                          // period not comparable
+            if (abs($current - $baseByVer[$vid]) > 0.01) { $pr['drifted'] = 1; }
+        }
+        unset($pr);
+        return $profiles;
+    }
+
+    /**
+     * Current effective monthly (EUR) for a plan at a given period, read from
+     * the plan's `periods[]`. Returns null when the period isn't offered or the
+     * payload lacks a per-period breakdown — caller treats null as "can't
+     * compare" (no drift), never as a price.
+     *
+     * @param array<string,mixed> $plan
+     */
+    private function currentEffectiveMonthly(array $plan, int $periodMonths): ?float
+    {
+        if ($periodMonths <= 0) { return null; }
+        $periods = isset($plan['periods']) && is_array($plan['periods']) ? $plan['periods'] : [];
+        foreach ($periods as $per) {
+            if (is_array($per) && (int) ($per['months'] ?? 0) === $periodMonths && isset($per['effective_monthly'])) {
+                return (float) $per['effective_monthly'];
+            }
+        }
+        return null;
     }
 
     private function profileCreate(array $req): void
@@ -528,15 +755,41 @@ class AdminController
             if ($derived['os'] !== '')     { $os = $derived['os']; }
             if ($derived['region'] !== '') { $region = $derived['region']; }
         }
+        // v8: cycles the profile SOURCES (offered superset). Default 63 (all six)
+        // when the form posts nothing. period_months is DERIVED from the longest
+        // published cycle so the slug + identity fingerprint stay stable (the
+        // Period dropdown is gone from the form).
+        $publishedMask = $this->coercePublishedMask($req['published_cycles_mask'] ?? null);
+        $periodMonths  = $this->longestPublishedMonths($publishedMask);
+
+        $mode = $this->normalizeProfileMode($req['profile_mode'] ?? null);
+
+        // Fixed mode is a pre-packaged SKU: every configurator dimension must be
+        // pinned to a concrete value. Reject an incomplete fixed profile.
+        if ($mode === ProfileIdentityResolver::MODE_FIXED) {
+            $err = $this->fixedCompletenessError((string) ($req['plan_slug'] ?? ''), $optionsPayload);
+            if ($err !== null) {
+                $this->redirect('profiles', ['flash' => 'Cannot create fixed profile — ' . $err]);
+                return;
+            }
+        }
+
         $create = [
             'slug'          => (string) ($req['slug'] ?? ''),
             'name'          => trim((string) ($req['name'] ?? '')),
             'plan_slug'     => (string) ($req['plan_slug'] ?? ''),
-            'period_months' => (int) ($req['period_months'] ?? 1),
+            'period_months' => $periodMonths,
+            'published_cycles_mask' => $publishedMask,
             'region'        => $region,
             'os'            => $os,
             'tags'          => (string) ($req['tags'] ?? ''),
             'sync_strategy' => (string) ($req['sync_strategy'] ?? $this->settings->defaultSyncStrategy),
+            // Mode + exposure gate. profile_mode feeds the identity fingerprint
+            // (fixed vs configurable hash differently — see ProfileIdentityResolver);
+            // expose_configurable_options is the master switch ConfigurableOptionsSyncer
+            // honours on Apply. Both default to the backward-compatible values.
+            'profile_mode'  => $mode,
+            'expose_configurable_options' => $this->normalizeExposeFlag($req['expose_configurable_options'] ?? null),
         ];
         if ($optionsPayload !== null) {
             $create['options'] = $optionsPayload;
@@ -566,7 +819,7 @@ class AdminController
         $plans = [];
         try { $plans = (new ApiClient($this->settings))->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
         $this->render('profiles.tpl', [
-            'profiles'        => (new ProfileManager($this->settings))->listProfiles(false),
+            'profiles'        => $this->annotateDrift((new ProfileManager($this->settings))->listProfiles(false), $plans),
             'available_plans' => $plans,
             'flash'           => '',
             'cb_profile_conflict' => [
@@ -593,18 +846,124 @@ class AdminController
             if ($derived['os'] !== '')     { $os = $derived['os']; }
             if ($derived['region'] !== '') { $region = $derived['region']; }
         }
+
+        // v8: published cycles → derived period_months. Only patch them when the
+        // form actually posted the mask (so a partial save can't reset cycles).
+        $publishedMask = null;
+        $periodMonths  = null;
+        if (isset($req['published_cycles_mask'])) {
+            $publishedMask = $this->coercePublishedMask($req['published_cycles_mask']);
+            $periodMonths  = $this->longestPublishedMonths($publishedMask);
+        }
+
+        // Fixed-mode completeness: validate when this save sets/keeps fixed mode
+        // AND submits selections. (When the form doesn't post mode/options we
+        // can't re-validate here; the create path is the primary gate.)
+        $mode = isset($req['profile_mode']) ? $this->normalizeProfileMode($req['profile_mode']) : null;
+        if ($mode === ProfileIdentityResolver::MODE_FIXED && $optionsPayload !== null) {
+            $err = $this->fixedCompletenessError((string) ($req['plan_slug'] ?? ''), $optionsPayload);
+            if ($err !== null) {
+                $this->redirect('profiles', ['flash' => 'Cannot save fixed profile — ' . $err]);
+                return;
+            }
+        }
+
         $patch = array_filter([
             'name'          => $req['name'] ?? null,
             'plan_slug'     => $req['plan_slug'] ?? null,
-            'period_months' => isset($req['period_months']) ? (int) $req['period_months'] : null,
+            'period_months' => $periodMonths,
+            'published_cycles_mask' => $publishedMask,
             'region'        => $region,
             'os'            => $os,
             'tags'          => $req['tags'] ?? null,
             'sync_strategy' => $req['sync_strategy'] ?? null,
             'options'       => $optionsPayload,
+            // Only patch mode/exposure when the form actually submitted them, so a
+            // partial save never silently flips an existing profile's mode or gate.
+            'profile_mode'  => $mode,
+            'expose_configurable_options' => isset($req['expose_configurable_options'])
+                ? $this->normalizeExposeFlag($req['expose_configurable_options']) : null,
         ], static fn ($v) => $v !== null);
         $pm->update($id, $patch);
         $this->redirect('profiles', ['flash' => "Updated profile #{$id}"]);
+    }
+
+    /**
+     * Coerce a posted published_cycles_mask to [0, CycleSet::MASK_MAX]. Empty /
+     * absent defaults to 63 (all six cycles offered).
+     *
+     * @param mixed $raw
+     */
+    private function coercePublishedMask($raw): int
+    {
+        if ($raw === null || $raw === '') {
+            return CycleSet::MASK_MAX;
+        }
+        $mask = $this->coerceMask($raw);
+        // A genuinely-empty selection is almost always a JS glitch; fall back to
+        // all-offered rather than silently sourcing nothing.
+        return $mask === 0 ? CycleSet::MASK_MAX : $mask;
+    }
+
+    /**
+     * Longest (max-months) cycle enabled in a published mask, used to derive the
+     * profile's primary period_months for slug + identity. Falls back to 1.
+     */
+    private function longestPublishedMonths(int $mask): int
+    {
+        $set = CycleSet::fromMask($mask);
+        $max = 0;
+        foreach ($set->enabledCycles() as $cycle) {
+            $m = (int) CycleNormalizer::monthsForCycle($cycle);
+            if ($m > $max) { $max = $m; }
+        }
+        return $max > 0 ? $max : 1;
+    }
+
+    /**
+     * Validate that a FIXED (pre-packaged) profile pins every required
+     * configurator dimension. Returns an error string, or null when complete.
+     *
+     * Best-effort on the API: if the configurator can't be fetched (API down),
+     * we DON'T block the save — we log and allow — so an outage can't wedge admin
+     * work. The create path is the primary gate; sync/provision re-validate.
+     *
+     * @param array<string,mixed>|null $selections control_key => {label,...}
+     */
+    private function fixedCompletenessError(string $planSlug, ?array $selections): ?string
+    {
+        if ($planSlug === '') {
+            return 'pick a plan first.';
+        }
+        $selections = is_array($selections) ? $selections : [];
+
+        try {
+            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing: fixed-completeness check skipped (configurator fetch failed) for '
+                    . $planSlug . ' — ' . $e->getMessage());
+            }
+            return null; // don't block on API outage
+        }
+
+        $controls = $this->buildConfiguratorControls(is_array($cfg) ? $cfg : []);
+        $missing = [];
+        foreach ($controls as $control) {
+            if (!empty($control['optional'])) {
+                continue; // optional dimension (e.g. Apps/Panels/Data Protection)
+            }
+            $key = (string) ($control['key'] ?? '');
+            $sel = $selections[$key] ?? null;
+            $label = is_array($sel) ? (string) ($sel['label'] ?? '') : '';
+            if ($label === '' || $label === 'None') {
+                $missing[] = (string) ($control['label'] ?? $key);
+            }
+        }
+        if ($missing !== []) {
+            return 'select a value for every required option: ' . implode(', ', $missing) . '.';
+        }
+        return null;
     }
 
     /**
@@ -643,6 +1002,34 @@ class AdminController
             $out['region'] = (string) $sel['Region']['label'];
         }
         return $out;
+    }
+
+    /**
+     * Whitelist the posted profile_mode to one of the two known modes. Anything
+     * unexpected (or absent) collapses to the backward-compatible fixed mode.
+     *
+     * @param mixed $raw
+     */
+    private function normalizeProfileMode($raw): string
+    {
+        return ((string) $raw) === ProfileIdentityResolver::MODE_CONFIGURABLE
+            ? ProfileIdentityResolver::MODE_CONFIGURABLE
+            : ProfileIdentityResolver::MODE_FIXED;
+    }
+
+    /**
+     * Normalize the expose_configurable_options checkbox to 0/1. Absent (null)
+     * defaults to 1 to match the column default + preserve pre-existing behavior;
+     * the explicit hidden "0" the form posts when unchecked turns it off.
+     *
+     * @param mixed $raw
+     */
+    private function normalizeExposeFlag($raw): int
+    {
+        if ($raw === null) {
+            return 1;
+        }
+        return in_array((string) $raw, ['1', 'yes', 'true', 'on'], true) ? 1 : 0;
     }
 
     private function profileToggle(array $req): void
@@ -1111,6 +1498,256 @@ class AdminController
         ]);
     }
 
+    // ── A.6.3 — capability + compatibility editors ─────────────────────────────
+
+    /**
+     * Resolve a profile + its plan's dimension/value specs from the live
+     * configurator (same prep as configPreview). Shared by the capability +
+     * compatibility editors so an admin can author rows for ANY of the plan's
+     * options, not only ones a prior Apply happened to seed.
+     *
+     * @return array{profile: array<string,mixed>|null, plan_slug: string, specs: list<array<string,mixed>>, api_error: string}
+     */
+    private function profilePlanSpecs(int $id): array
+    {
+        $profile = (new ProfileManager($this->settings))->find($id);
+        if ($profile === null) {
+            return ['profile' => null, 'plan_slug' => '', 'specs' => [], 'api_error' => ''];
+        }
+        $planSlug = (string) ($profile['plan_slug'] ?? '');
+        $specs    = [];
+        $apiError = '';
+        try {
+            $cfg        = (new ApiClient($this->settings))->configurator($planSlug);
+            $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
+            $parsed     = DimensionParser::parse($optionsMap);
+            $specs      = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
+        } catch (\Throwable $e) {
+            $apiError = $e->getMessage();
+        }
+        return ['profile' => $profile, 'plan_slug' => $planSlug, 'specs' => $specs, 'api_error' => $apiError];
+    }
+
+    /**
+     * Flatten DimensionParser specs into {dimension_key, value_key, label, row}
+     * rows, overlaying each with a saved matrix row keyed by
+     * "dimension_key\x1Fvalue_key" from $existingByKey ([] when none saved yet).
+     *
+     * @param list<array<string,mixed>>          $specs
+     * @param array<string,array<string,mixed>>  $existingByKey
+     * @return list<array{dimension_key:string,value_key:string,label:string,row:array<string,mixed>}>
+     */
+    private function mergeSpecRows(array $specs, array $existingByKey): array
+    {
+        $out = [];
+        foreach ($specs as $spec) {
+            if (!is_array($spec) || !isset($spec['dimension_key'])) { continue; }
+            $dim    = (string) $spec['dimension_key'];
+            $values = isset($spec['values']) && is_array($spec['values']) ? $spec['values'] : [];
+            foreach ($values as $value) {
+                if (!is_array($value) || !isset($value['value_key'])) { continue; }
+                $val = (string) $value['value_key'];
+                $k   = $dim . "\x1F" . $val;
+                $out[] = [
+                    'dimension_key' => $dim,
+                    'value_key'     => $val,
+                    'label'         => (string) ($value['label'] ?? $val),
+                    'row'           => isset($existingByKey[$k]) ? $existingByKey[$k] : [],
+                ];
+            }
+        }
+        return $out;
+    }
+
+    /** Profile-not-found errorbox shared by the editors. */
+    private function editorProfileMissing(): void
+    {
+        echo '<div class="errorbox">Profile not found. <a href="'
+            . htmlspecialchars($this->settings->moduleLink, ENT_QUOTES, 'UTF-8')
+            . '&action=profiles">Back to profiles</a>.</div>';
+    }
+
+    /**
+     * Capability editor — GET. Shows the §4 capability matrix for the profile's
+     * plan (one row per dimension/value), overlaying any saved
+     * mod_contabo_option_capability rows. Editing here records intent; the
+     * amendment-6 auto-apply gate reads capability_source.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function capabilityEditor(array $req): void
+    {
+        $id  = (int) ($req['id'] ?? 0);
+        $ctx = $this->profilePlanSpecs($id);
+        if ($ctx['profile'] === null) { $this->editorProfileMissing(); return; }
+
+        $existing = [];
+        foreach ((new ConfigOptionCapabilityRepository())->listForPlan($ctx['plan_slug']) as $r) {
+            $existing[((string) ($r['dimension_key'] ?? '')) . "\x1F" . ((string) ($r['value_key'] ?? ''))] = $r;
+        }
+        $this->render('capability_editor.tpl', [
+            'profile'       => $ctx['profile'],
+            'plan_slug'     => $ctx['plan_slug'],
+            'rows'          => $this->mergeSpecRows($ctx['specs'], $existing),
+            'api_error'     => $ctx['api_error'],
+            'boolean_flags' => ConfigOptionCapabilityRepository::BOOLEAN_FLAGS,
+            'valid_sources' => ConfigOptionCapabilityRepository::VALID_SOURCES,
+            'flash'         => (string) ($req['flash'] ?? ''),
+        ]);
+    }
+
+    /**
+     * Capability editor — POST. Upserts one capability row per posted
+     * row[]{dimension_key,value_key,<flags>,provisioning_action,capability_source}
+     * through the repository chokepoint (which re-whitelists every column).
+     *
+     * @param array<string,mixed> $req
+     */
+    private function capabilityEditorSave(array $req): void
+    {
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $id      = (int) ($req['id'] ?? 0);
+        $profile = (new ProfileManager($this->settings))->find($id);
+        if ($profile === null) { $this->redirect('profiles', ['flash' => 'Profile not found.']); return; }
+
+        $planSlug = (string) ($profile['plan_slug'] ?? '');
+        $rows     = isset($req['row']) && is_array($req['row']) ? $req['row'] : [];
+        $repo     = new ConfigOptionCapabilityRepository();
+        $saved    = 0;
+        foreach ($rows as $row) {
+            if (!is_array($row)) { continue; }
+            $dim = (string) ($row['dimension_key'] ?? '');
+            $val = (string) ($row['value_key'] ?? '');
+            if ($dim === '' || $val === '') { continue; }
+            $flags = [];
+            foreach (ConfigOptionCapabilityRepository::BOOLEAN_FLAGS as $flag) {
+                $flags[$flag] = !empty($row[$flag]) ? 1 : 0; // absent checkbox → explicit 0
+            }
+            if (isset($row['provisioning_action'])) {
+                $pa = trim((string) $row['provisioning_action']);
+                $flags['provisioning_action'] = $pa === '' ? null : $pa;
+            }
+            if (isset($row['capability_source']) && (string) $row['capability_source'] !== '') {
+                $flags['capability_source'] = (string) $row['capability_source'];
+            }
+            $repo->upsertCapability($planSlug, $dim, $val, $flags);
+            $saved++;
+        }
+        if (function_exists('logActivity')) {
+            $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+            logActivity('Contabo Pricing: capability-editor save by admin #' . $adminId . ' (profile #' . $id . ', ' . $saved . ' rows)');
+        }
+        $this->redirect('capability-editor', [
+            'id'    => $id,
+            'flash' => sprintf('Saved %d capability row%s.', $saved, $saved === 1 ? '' : 's'),
+        ]);
+    }
+
+    /**
+     * Compatibility editor — GET. Shows the §5 compatibility matrix for the
+     * profile's plan (one row per dimension/value), overlaying any saved
+     * mod_contabo_option_compatibility rules. Feeds SelectionValidator.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function compatibilityEditor(array $req): void
+    {
+        $id  = (int) ($req['id'] ?? 0);
+        $ctx = $this->profilePlanSpecs($id);
+        if ($ctx['profile'] === null) { $this->editorProfileMissing(); return; }
+
+        $existing = [];
+        foreach ((new ConfigOptionCompatibilityRepository())->listForPlan($ctx['plan_slug']) as $r) {
+            $existing[((string) ($r['dimension_key'] ?? '')) . "\x1F" . ((string) ($r['value_key'] ?? ''))] = $r;
+        }
+        $this->render('compatibility_editor.tpl', [
+            'profile'   => $ctx['profile'],
+            'plan_slug' => $ctx['plan_slug'],
+            'rows'      => $this->mergeSpecRows($ctx['specs'], $existing),
+            'api_error' => $ctx['api_error'],
+            'flash'     => (string) ($req['flash'] ?? ''),
+        ]);
+    }
+
+    /**
+     * Compatibility editor — POST. Upserts a rule per posted row, parsing the
+     * incompatible_with / required_values textareas (one value-key per line or
+     * comma-separated) and the optional min/max qty bounds. Untouched + never-saved
+     * rows are skipped so the table isn't polluted with empty rules; an existing
+     * rule the admin blanked out IS written (cleared).
+     *
+     * @param array<string,mixed> $req
+     */
+    private function compatibilityEditorSave(array $req): void
+    {
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $id      = (int) ($req['id'] ?? 0);
+        $profile = (new ProfileManager($this->settings))->find($id);
+        if ($profile === null) { $this->redirect('profiles', ['flash' => 'Profile not found.']); return; }
+
+        $planSlug = (string) ($profile['plan_slug'] ?? '');
+        $repo     = new ConfigOptionCompatibilityRepository();
+
+        $existingKeys = [];
+        foreach ($repo->listForPlan($planSlug) as $r) {
+            $existingKeys[((string) ($r['dimension_key'] ?? '')) . "\x1F" . ((string) ($r['value_key'] ?? ''))] = true;
+        }
+
+        $rows  = isset($req['row']) && is_array($req['row']) ? $req['row'] : [];
+        $saved = 0;
+        foreach ($rows as $row) {
+            if (!is_array($row)) { continue; }
+            $dim = (string) ($row['dimension_key'] ?? '');
+            $val = (string) ($row['value_key'] ?? '');
+            if ($dim === '' || $val === '') { continue; }
+
+            $incompatible = $this->splitValueList((string) ($row['incompatible_with'] ?? ''));
+            $required     = $this->splitValueList((string) ($row['required_values'] ?? ''));
+            $minRaw       = trim((string) ($row['min_value'] ?? ''));
+            $maxRaw       = trim((string) ($row['max_value'] ?? ''));
+
+            $hasContent = $incompatible !== [] || $required !== [] || $minRaw !== '' || $maxRaw !== '';
+            $k = $dim . "\x1F" . $val;
+            if (!$hasContent && !isset($existingKeys[$k])) { continue; } // never-saved + blank → skip
+
+            $repo->upsertRule($planSlug, $dim, $val, [
+                'incompatible_with' => $incompatible,
+                'required_values'   => $required,
+                'min_value'         => $minRaw === '' ? null : (int) $minRaw,
+                'max_value'         => $maxRaw === '' ? null : (int) $maxRaw,
+            ]);
+            $saved++;
+        }
+        if (function_exists('logActivity')) {
+            $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+            logActivity('Contabo Pricing: compatibility-editor save by admin #' . $adminId . ' (profile #' . $id . ', ' . $saved . ' rules)');
+        }
+        $this->redirect('compatibility-editor', [
+            'id'    => $id,
+            'flash' => sprintf('Saved %d compatibility rule%s.', $saved, $saved === 1 ? '' : 's'),
+        ]);
+    }
+
+    /**
+     * Split a textarea of value-keys (one per line or comma-separated) into a
+     * de-duplicated list. Only newline + comma are separators — value-keys may
+     * themselves contain spaces / slashes / parens (e.g. "Panels:cPanel/WHM").
+     *
+     * @return list<string>
+     */
+    private function splitValueList(string $raw): array
+    {
+        $parts = preg_split('/[\r\n,]+/', trim($raw));
+        $out   = [];
+        foreach (($parts ?: []) as $p) {
+            $p = trim((string) $p);
+            if ($p !== '') { $out[] = $p; }
+        }
+        return array_values(array_unique($out));
+    }
+
     private function mappings(array $req): void
     {
         $pm = new ProfileManager($this->settings);
@@ -1179,6 +1816,7 @@ class AdminController
 
         $markupOverrides = $this->coerceJsonObject($req['markup_overrides_json'] ?? null);
         $setupOverrides  = $this->coerceJsonObject($req['setup_fee_overrides_json'] ?? null);
+        $sourceOverrides = $this->coerceJsonObject($req['source_overrides_json'] ?? null);
 
         $respectDisabled = array_key_exists('respect_disabled_cycles', $req)
             ? !empty($req['respect_disabled_cycles'])
@@ -1203,6 +1841,7 @@ class AdminController
                 'renewal_cycles_mask'      => $renewalMask,
                 'markup_overrides_json'    => $markupOverrides,
                 'setup_fee_overrides_json' => $setupOverrides,
+                'source_overrides_json'    => $sourceOverrides,
                 'respect_disabled_cycles'  => $respectDisabled,
                 'overwrite_free_cycles'    => $overwriteFree,
                 'sync_setup_fees'          => $syncSetupFees,
@@ -1346,15 +1985,59 @@ class AdminController
                 ];
             }
 
+            // v8: when a profile is in context, surface its per-cycle SOURCE
+            // (cost) vector so the mapping cycle table can show source → customer
+            // price side by side. EUR/mo by cycle months, with the same nearest-≤
+            // fallback the engine uses (24/36 → 12-mo, etc.).
+            $source = [];
+            $profileId = (int) ($req['profile_id'] ?? 0);
+            if ($profileId > 0) {
+                $source = $this->profileSourceVector($profileId);
+            }
+
             $this->jsonOk([
                 'product_id'    => $productId,
                 'currency_id'   => $currencyId,
                 'currency_code' => $currencyCode,
                 'cycles'        => $cycles,
+                'profile_id'    => $profileId,
+                'source_eur'    => (object) $source,
             ]);
         } catch (\Throwable $e) {
             $this->jsonFail($e->getMessage());
         }
+    }
+
+    /**
+     * The profile's latest per-cycle SOURCE vector (months => EUR/mo). Reads the
+     * latest version's period_prices_json; empty for legacy/unsynced profiles.
+     *
+     * @return array<int,float>
+     */
+    private function profileSourceVector(int $profileId): array
+    {
+        $version = (new ProfileManager($this->settings))->latestVersion($profileId);
+        if ($version === null) {
+            return [];
+        }
+        $raw = $version['period_prices_json'] ?? null;
+        $vector = [];
+        if (is_array($raw)) {
+            $vector = $raw;
+        } elseif (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) {
+                $vector = $decoded;
+            }
+        }
+        $out = [];
+        foreach ($vector as $m => $eur) {
+            $mi = (int) $m;
+            if ($mi > 0) {
+                $out[$mi] = (float) $eur;
+            }
+        }
+        return $out;
     }
 
     private function syncHistory(): void

@@ -1,5 +1,96 @@
 # Changelog
 
+## 0.7.0 — 2026-05-29 (Phase D — two-layer pricing, mode-aware profiles, recoverable delete)
+
+Schema **v8** (additive + idempotent). The profile becomes the SOURCE authority and
+the mapping the CUSTOMER pricing layer; per-cycle pricing is fixed; profiles are
+deletable with undo. See `docs/PHASE_D_PRICING_SPEC.md`.
+
+### Pricing — per-cycle source, corrected
+- Each published cycle now prices off **its own** scraped discount tier, not the
+  single profile period. `profile_version.period_prices_json` stores the EUR source
+  vector ({1,3,6,12} scraped + {24,36} projected).
+- **Fallback rule:** `Source(M)` = `effective_monthly` of the longest scraped period
+  whose months ≤ M. 24/36 → the 12-mo rate; a *missing* quarterly → the 1-mo rate.
+  `SyncEngine::periodPriceVectorFromPlan()` / `nearestSourceRate()`.
+- EUR→local extracted to the single shared `ProfileVersionInput::toLocalMonthly()`
+  (GST then FX), used by both `computed()` and the engine. GST placement documented
+  + commented for a future move (kept on the cost basis per owner decision).
+- `RenewalEngine` uses the same per-cycle source basis (`resolveCycleEurMonthly`),
+  keeping catalog and renewal consistent; markup still read from the mapping.
+
+### Profile = SOURCE
+- `mod_contabo_profile.published_cycles_mask` (default 63 = all six) — offered
+  cycles; the mapping narrows to customer-facing.
+- Create/edit form: **Publish cycles** control + per-cycle source-price preview
+  replaces the single Period dropdown; `period_months` is derived server-side from
+  the longest published cycle (slug/identity unchanged).
+- **Fixed mode** = pre-packaged SKU: server rejects save unless every required
+  configurator dimension is pinned (`fixedCompletenessError`). Mode-aware form
+  (fixed hides the exposure control; configurable shows it).
+
+### Mapping = CUSTOMER
+- New `mod_contabo_mapping.source_overrides_json` — optional per-product per-cycle
+  cost-basis pin (falls back to the profile vector); whitelisted in
+  `MappingRepository`.
+- Mapping cycle table gains a **Source (from profile)** column; `ajax-product-cycles`
+  returns the profile's source vector.
+
+### Recoverable delete
+- Profiles **soft-delete** (`deleted_at`) → Trash → Restore (Undo); default listings
+  exclude trashed rows.
+- New `ProfilePurgeService`: guarded permanent purge (blocked by active mapping or
+  live service; typed phrase; **per-profile** cascade of addon rows + addon-created
+  WHMCS config objects; audited). New `profile-delete` / `profile-restore` /
+  `profile-purge` / `profiles-trash` actions.
+
+### Schema v8 (idempotent)
+- `+profile.published_cycles_mask`, `+profile.deleted_at`,
+  `+profile_version.period_prices_json`, `+mapping.source_overrides_json`.
+- `SchemaHealth` required-column set updated; `SCHEMA_VERSION = 8`.
+
+### Tests
+- `PerCycleSourcePricingTest` (fallback rule incl. 24/36→12-mo and missing-3→1-mo,
+  per-cycle pricing, publish gate, source override, legacy fallback),
+  `ProfilePurgeServiceTest` (soft-delete lifecycle + guard + scoped cascade),
+  renewal per-cycle-basis cases, mapping source-override persistence. FakeCapsule
+  gains `whereNull`/`whereNotNull`.
+
+## 0.6.1 — 2026-05-29 (A.6.3 admin UI — mode, exposure gate, capability/compat editors)
+
+Wires the create/edit profile form and admin UI up to features whose backend
+already shipped in 0.6.0. **No schema change** (`SCHEMA_VERSION` stays 7).
+
+### Added — profile create/edit form
+- **Profile mode selector** (`fixed_admin_profile` | `customer_configurable_product`).
+  `profile_mode` now flows through `profileCreate`/`profileSave` →
+  `ProfileRepository`/`ProfileManager` and feeds the identity fingerprint
+  (fixed vs configurable hash differently). Defaults to fixed — fully
+  backward-compatible.
+- **“Expose configurable options” switch** (`expose_configurable_options`). Wired
+  through the form, handlers and `ProfileRepository::insert` (default on = prior
+  behavior). Closes the dead-end where `config-apply` told admins to “enable it on
+  the profile” with no UI control to do so.
+
+### Added — A.6.3 capability + compatibility editors
+- `capability-editor` / `capability-editor-save` — edit the per-(plan,dimension,
+  value) capability matrix (allowed-on-*, destructive, `capability_source`).
+- `compatibility-editor` / `compatibility-editor-save` — author
+  incompatible/required/min-max rules feeding `validateCombination()`.
+- Both enumerate the plan's dimensions from the live configurator and overlay
+  saved rows; reachable from `config-preview` and the profile row actions. New
+  `ConfigOptionCompatibilityRepository::listForPlan()`.
+
+### Fixed / hardened
+- **Drift indicator now works**: the profiles list computes `drifted` server-side
+  (orphaned-plan or stored-vs-current price mismatch) — previously dead UI.
+- **`ProfileManager::update()` column whitelist** — drops unknown keys
+  (mass-assignment guard).
+- **Region/OS dedupe** — removed the redundant JS-mirrored hidden inputs; OS/Region
+  are now derived server-side from the options selection only.
+- Refreshed `docs/UI_ARCHITECTURE.md` (0.2.0 → 0.6.1; the 5 missing AJAX
+  endpoints; the new pages, mode selector and expose switch).
+
 ## 0.6.0 — 2026-05-28 (Phase C — approval workflow, true revenue, multi-currency, provisioning)
 
 Phase C closes the remaining gaps after Phase B (price-write activation): an

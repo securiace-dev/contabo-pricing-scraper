@@ -23,3 +23,10 @@ deploy/proxy.env
 # Tool state directories
 .claude-flow/
 .kilo/
+.swarm/
+ruvector.db
+ruvector.db-*
+.claude/memory.db
+.claude/memory.db-*
+.claude/schema.sql
+.claude/state.json

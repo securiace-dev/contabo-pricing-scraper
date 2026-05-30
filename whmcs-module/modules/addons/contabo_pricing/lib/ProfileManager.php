@@ -57,15 +57,65 @@ class ProfileManager
     }
 
     /**
+     * Soft-deleted (trashed) profiles are EXCLUDED by default — they live in the
+     * Trash until restored or purged. Pass $includeTrashed=true only for the
+     * Trash view / admin tooling.
+     *
      * @return list<array<string, mixed>>
      */
-    public function listProfiles(bool $activeOnly = true): array
+    public function listProfiles(bool $activeOnly = true, bool $includeTrashed = false): array
     {
         $q = Capsule::table('mod_contabo_profile');
         if ($activeOnly) {
             $q->where('active', true);
         }
-        return $q->orderBy('plan_slug')->orderBy('period_months')->get()->map(static fn ($r) => (array) $r)->all();
+        if (!$includeTrashed) {
+            $q->whereNull('deleted_at');
+        }
+        $rows = $q->orderBy('plan_slug')->orderBy('period_months')->get();
+        $out = [];
+        foreach ($rows as $r) {
+            $out[] = (array) $r;
+        }
+        return $out;
+    }
+
+    /**
+     * Profiles currently in the Trash (soft-deleted), newest-deleted first.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function listTrashed(): array
+    {
+        $rows = Capsule::table('mod_contabo_profile')
+            ->whereNotNull('deleted_at')
+            ->orderByDesc('deleted_at')
+            ->get();
+        $out = [];
+        foreach ($rows as $r) {
+            $out[] = (array) $r;
+        }
+        return $out;
+    }
+
+    /**
+     * Soft-delete (Trash) a profile: stamp deleted_at. Reversible via restore().
+     * Writes the column directly (it is intentionally outside the generic
+     * update() whitelist so a normal edit can never trash/untrash a profile).
+     */
+    public function softDelete(int $id): void
+    {
+        Capsule::table('mod_contabo_profile')
+            ->where('id', $id)
+            ->update(['deleted_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')]);
+    }
+
+    /** Restore a trashed profile (the Undo): clear deleted_at. */
+    public function restore(int $id): void
+    {
+        Capsule::table('mod_contabo_profile')
+            ->where('id', $id)
+            ->update(['deleted_at' => null, 'updated_at' => date('Y-m-d H:i:s')]);
     }
 
     /**
@@ -117,14 +167,33 @@ class ProfileManager
         return (int) ($result['profile_id'] ?? 0);
     }
 
+    /**
+     * Updatable columns for a profile row. Anything outside this set is dropped
+     * by update() so a malformed or hostile $patch can never mass-assign
+     * arbitrary columns. `slug` is intentionally excluded — it is identity and
+     * must not change through the generic edit path.
+     *
+     * @var list<string>
+     */
+    private const UPDATABLE_COLUMNS = [
+        'name', 'plan_slug', 'period_months', 'published_cycles_mask',
+        'region', 'os', 'options', 'tags',
+        'sync_strategy', 'active', 'profile_mode', 'expose_configurable_options',
+        'profile_fingerprint_hash', 'profile_identity_json', 'latest_version_id',
+        'default_policy', 'margin_floor_pct', 'fx_buffer_pct',
+        'large_increase_threshold_pct', 'max_increase_pct', 'notice_days_default',
+        'allow_auto_decrease',
+    ];
+
     /** @param array<string, mixed> $patch */
     public function update(int $id, array $patch): void
     {
-        $patch['updated_at'] = date('Y-m-d H:i:s');
-        if (isset($patch['options']) && is_array($patch['options'])) {
-            $patch['options'] = json_encode($patch['options']);
+        $clean = array_intersect_key($patch, array_flip(self::UPDATABLE_COLUMNS));
+        if (isset($clean['options']) && is_array($clean['options'])) {
+            $clean['options'] = json_encode($clean['options']);
         }
-        Capsule::table('mod_contabo_profile')->where('id', $id)->update($patch);
+        $clean['updated_at'] = date('Y-m-d H:i:s');
+        Capsule::table('mod_contabo_profile')->where('id', $id)->update($clean);
     }
 
     public function setActive(int $id, bool $active): void
@@ -157,6 +226,7 @@ class ProfileManager
                 'currency_iso'           => $v->currencyIso,
                 'final_monthly'          => $v->finalMonthly,
                 'final_setup'            => $v->finalSetup,
+                'period_prices_json'     => $v->periodPricesEur === [] ? null : json_encode($v->periodPricesEur),
                 'snapshot_generated_at'  => $v->snapshotGeneratedAt,
                 'created_at'             => $now,
                 'updated_at'             => $now,
