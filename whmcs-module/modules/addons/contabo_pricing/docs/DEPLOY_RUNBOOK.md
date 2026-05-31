@@ -2,14 +2,15 @@
 
 Production target: **my.securiace.com** — addon at
 `/var/www/my_securiace_usr/data/www/my.securiace.com/modules/addons/contabo_pricing`,
+provisioning module at `…/modules/servers/contabo_vps/`,
 owned by `my_securiace_usr:my_securiace_usr`, served on PHP 8.1.x.
 
 > **Scope rule (hard):** every production action is confined to the
-> `contabo_pricing` module directory. Never touch other admin pages, clients,
-> invoices, services, products, or server config. Prod deploy is a **manual
-> addon-scoped rsync** — there is intentionally **no CI/CD workflow that deploys
-> the WHMCS addon** (the GitHub `Release` workflow only builds the Rust scraper's
-> Docker image on `v*` tags).
+> `contabo_pricing` and `contabo_vps` module directories. Never touch other
+> admin pages, clients, invoices, services, products, or server config. Prod
+> deploy is a **manual rsync** — there is intentionally **no CI/CD workflow
+> that deploys WHMCS modules** (the GitHub `Release` workflow only builds the
+> Rust scraper's Docker image on `v*` tags).
 
 ---
 
@@ -39,33 +40,53 @@ The smoke scripts live at **repo-root `scripts/`** (alongside `local-whmcs.sh`),
 
 ---
 
-## 2. Production deploy (manual, addon-scoped)
+## 2. Production deploy
 
-Only after the gate is green **and** deployment is explicitly approved.
+**Normal workflow — use `deploy.sh`** (runs the gate, detects changes, deploys
+both modules, chowns, verifies):
 
-### 2.1 Dry-run the rsync first (no writes)
+```bash
+bash scripts/deploy.sh        # run from the repo root
+```
+
+`deploy.sh` covers both the addon and the provisioning module automatically:
+- Runs `predeploy-check.sh` first — aborts on failure.
+- Detects per-module changes via `rsync --dry-run`; skips a module if nothing changed.
+- Deploys only what changed, then chowns both destinations.
+- Verifies `AdminController::VERSION` and PHP lint on prod for both modules.
+
+After the script finishes, **load the addon admin page once** so
+`SchemaHealth::assertOrMigrate()` runs the schema migration (if any).
+
+### Manual rsync (fallback / reference)
+
+Use this only if `deploy.sh` is unavailable or you need to deploy a single
+module in isolation.
+
+**Addon (`contabo_pricing`):**
 ```bash
 ADDON=whmcs-module/modules/addons/contabo_pricing
 DEST='root@195.7.4.219:/var/www/my_securiace_usr/data/www/my.securiace.com/modules/addons/contabo_pricing/'
-rsync -rlptzc -i --dry-run --no-owner --no-group \
-  --exclude vendor/ --exclude tests/ --exclude phpunit.xml \
-  --exclude '.phpunit.cache' --exclude '.phpunit.result.cache' --exclude composer.lock --exclude '.git*' \
-  -e 'ssh -o BatchMode=yes -o ConnectTimeout=15' \
-  "$ADDON/" "$DEST"
-```
-Review the itemized list — only genuinely-changed files should transfer.
-
-### 2.2 Real rsync (drop `--dry-run`), then chown
-```bash
 rsync -rlptzc -i --no-owner --no-group \
   --exclude vendor/ --exclude tests/ --exclude phpunit.xml \
-  --exclude '.phpunit.cache' --exclude '.phpunit.result.cache' --exclude composer.lock --exclude '.git*' \
+  --exclude '.phpunit.cache' --exclude '.phpunit.result.cache' \
+  --exclude composer.lock --exclude '.git*' --exclude '.claude-flow/' \
   -e 'ssh -o BatchMode=yes -o ConnectTimeout=15' \
   "$ADDON/" "$DEST"
-
-# MANDATORY — rsync --no-owner leaves files root-owned → the site 500s until fixed:
 ssh -o BatchMode=yes root@195.7.4.219 \
-  "chown -R my_securiace_usr:my_securiace_usr /var/www/my_securiace_usr/data/www/my.securiace.com/modules/addons/contabo_pricing"
+  "chown -R my_securiace_usr:my_securiace_usr ${DEST#*:}"
+```
+
+**Provisioning module (`contabo_vps`):**
+```bash
+VPS=whmcs-module/modules/servers/contabo_vps
+VDEST='root@195.7.4.219:/var/www/my_securiace_usr/data/www/my.securiace.com/modules/servers/contabo_vps/'
+rsync -rlptzc -i --no-owner --no-group \
+  --exclude '.git*' --exclude '.claude-flow/' \
+  -e 'ssh -o BatchMode=yes -o ConnectTimeout=15' \
+  "$VPS/" "$VDEST"
+ssh -o BatchMode=yes root@195.7.4.219 \
+  "chown -R my_securiace_usr:my_securiace_usr ${VDEST#*:}"
 ```
 
 **Gotchas (learned the hard way):**
@@ -75,16 +96,20 @@ ssh -o BatchMode=yes root@195.7.4.219 \
   stub autoloader (`ContaboPricing\` → `lib/`) loads every class, so new `lib/`
   files work with no `composer dump-autoload`.
 - **`tests/` excluded** — never ship tests to prod.
+- **`.claude-flow/` excluded** — local tool-state directory; must never reach prod.
 - **zsh word-splitting** — an unquoted `$SSH` variable is NOT word-split in zsh
   (`command not found: ssh -o …`). Write the `ssh` command **inline**, not via a
   variable, or run the deploy steps under bash.
 - **No `--delete`** — never remove prod files not in the source.
 
-### 2.3 Post-deploy verification (read-only, addon-scoped)
+### Post-deploy verification (manual)
 ```bash
-ssh root@195.7.4.219 "D=/var/www/my_securiace_usr/data/www/my.securiace.com/modules/addons/contabo_pricing; \
-  grep -m1 'const VERSION' \$D/lib/AdminController.php; \
-  for f in \$D/lib/*.php; do php -l \"\$f\" >/dev/null || echo LINT_FAIL \$f; done; echo lint_ok"
+ssh root@195.7.4.219 "D=/var/www/my_securiace_usr/data/www/my.securiace.com; \
+  grep -m1 'const VERSION' \$D/modules/addons/contabo_pricing/lib/AdminController.php; \
+  for f in \$D/modules/addons/contabo_pricing/lib/*.php \
+            \$D/modules/servers/contabo_vps/lib/*.php \
+            \$D/modules/servers/contabo_vps/contabo_vps.php; do \
+    php -l \"\$f\" >/dev/null || echo LINT_FAIL \$f; done; echo lint_ok"
 ```
 Then load the addon admin page once so `SchemaHealth::assertOrMigrate()` runs.
 
@@ -117,17 +142,15 @@ Then load the addon admin page once so `SchemaHealth::assertOrMigrate()` runs.
 2. CHANGELOG entry finalized; version bumped in `AdminController::VERSION` (+ the
    `Installer::SCHEMA_VERSION` only if the schema changed).
 3. Commit + push to `origin/main`.
-4. Deploy per §2 (explicit approval).
-5. Post-deploy verification per §2.3.
+4. `bash scripts/deploy.sh` (explicit approval required). Deploys both modules if changed.
+5. Load the addon admin page once — `SchemaHealth::assertOrMigrate()` runs the migration.
 
 ## 6. Contabo VPS provisioning module (`modules/servers/contabo_vps/`)
 
-Phase C added a **separate** WHMCS server/provisioning module — it is *not* part
-of this addon and is **not** covered by `predeploy-check.sh` (which is
-addon-scoped). Notes:
+A separate WHMCS server/provisioning module. `deploy.sh` deploys it automatically
+alongside the addon whenever it has local changes — no separate step needed.
+`predeploy-check.sh` remains addon-scoped (no provisioning-module unit tests).
 
-- **Deploy path:** rsync `whmcs-module/modules/servers/contabo_vps/` →
-  `<whmcs>/modules/servers/contabo_vps/` (same `--no-owner` + chown discipline as §2).
 - **No DB schema.** It stores the created instance id in a service custom field
   named `contabo_instance_id` (create it on the product's Custom Fields tab).
 - **Credentials** live in WHMCS server config (Setup → Servers), encrypted at
