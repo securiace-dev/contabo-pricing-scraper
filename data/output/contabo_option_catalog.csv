@@ -620,6 +620,7 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Arch Linux,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Debian 12,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Debian 13,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -691,7 +692,6 @@ vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2019 Standard,50,50,,,
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2022 Standard,50,50,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Webmin,0,0,,,,,,EUR
@@ -762,7 +762,6 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,80 TB Out + Unlimited In,
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,Unlimited and Unmetered Traffic,258.79,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (Central),10.4,0,America,United States (Central),US,Central,,EUR

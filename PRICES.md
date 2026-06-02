@@ -1,6 +1,6 @@
 # Contabo Pricing
 
-> **Last updated:** 2026-06-01T21:20:35.777Z  
+> **Last updated:** 2026-06-02T10:48:37.216Z  
 > Auto-refreshed twice daily · data from [contabo.com](https://contabo.com)  
 > 📊 **[Interactive view → report.html](report.html)** — sort, filter & compare plans
 
@@ -282,7 +282,7 @@
 | **Monthly** | €34.40 | €32.68 | **€27.52** |
 | Billed total | €34.40 | €196.08 | €330.24 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2012R2 Standard `+€50.00` · Windows Server 2016 Standard `+€50.00` · Windows Server 2019 Standard `+€50.00` · Windows Server 2022 Standard `+€50.00` · Windows Server 2025 Standard `+€50.00`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2012R2 Standard `+€50.00` · Windows Server 2016 Standard `+€50.00` · Windows Server 2019 Standard `+€50.00` · Windows Server 2022 Standard `+€50.00` · Windows Server 2025 Standard `+€50.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Bitcoin Node, Ethereum Staking Node, Flux Node, Horizen Node, IPFS Node
@@ -306,7 +306,7 @@
 
 **OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2012R2 Standard `+€50.00` · Windows Server 2016 Standard `+€50.00` · Windows Server 2019 Standard `+€50.00` · Windows Server 2022 Standard `+€50.00` · Windows Server 2025 Standard `+€50.00`
 **Apps** — Coolify Server, DeepSeek, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
-**Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
+**Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Bitcoin Node, Ethereum Staking Node, Flux Node, Horizen Node, IPFS Node
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
@@ -335,7 +335,7 @@
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | free | +€10.40 | +€10.40 | +€11.50 | +€12.70 | +€26.20 | +€27.60 | +€28.50 | +€23.60 |
 
-**Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · Unlimited and Unmetered Traffic `+€258.79` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€5.79`
+**Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · Unlimited and Unmetered Traffic `+€258.79` · Private Network: Private Networking Enabled `+€5.79`
 **Storage** — 360 GB NVMe *(included)* · Upgrades: 1 TB SSD `+€24.99` · 2 TB SSD `+€39.09` · 4 TB SSD `+€103.49`
 
 ---
