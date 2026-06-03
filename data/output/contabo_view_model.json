@@ -2,7 +2,7 @@
   "dimension_schema": {
     "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
     "schema_version": "1.1",
-    "generated_at": "2026-06-02T20:34:08.671Z",
+    "generated_at": "2026-06-03T11:13:52.538Z",
     "dimensions": {
       "Data Protection": {
         "required": false,
@@ -45,7 +45,7 @@
     }
   },
   "meta": {
-    "generated_at": "2026-06-02T20:34:08.671Z",
+    "generated_at": "2026-06-03T11:13:52.539Z",
     "plan_count": 16,
     "row_count": 64,
     "schema_version": "1.1",
@@ -98,14 +98,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 2.35,
+          "max_delta": 2.55,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "75 GB NVMe",
-          "max_delta": 1.85,
+          "max_delta": 2.3,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -158,14 +158,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 2.35,
+          "max_delta": 2.55,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "75 GB NVMe",
-          "max_delta": 1.85,
+          "max_delta": 2.3,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -218,14 +218,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 2.35,
+          "max_delta": 2.55,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "75 GB NVMe",
-          "max_delta": 1.85,
+          "max_delta": 2.3,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -278,14 +278,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 2.35,
+          "max_delta": 2.55,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "75 GB NVMe",
-          "max_delta": 1.85,
+          "max_delta": 2.3,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -338,14 +338,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 3.65,
+          "max_delta": 4,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "100 GB NVMe",
-          "max_delta": 2.55,
+          "max_delta": 3.2,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -398,14 +398,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 3.65,
+          "max_delta": 4,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "100 GB NVMe",
-          "max_delta": 2.55,
+          "max_delta": 3.2,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -458,14 +458,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 3.65,
+          "max_delta": 4,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "100 GB NVMe",
-          "max_delta": 2.55,
+          "max_delta": 3.2,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -518,14 +518,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 3.65,
+          "max_delta": 4,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "100 GB NVMe",
-          "max_delta": 2.55,
+          "max_delta": 3.2,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -578,14 +578,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 7.3,
+          "max_delta": 8,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "200 GB NVMe",
-          "max_delta": 3.85,
+          "max_delta": 4.8,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -638,14 +638,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 7.3,
+          "max_delta": 8,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "200 GB NVMe",
-          "max_delta": 3.85,
+          "max_delta": 4.8,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -698,14 +698,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 7.3,
+          "max_delta": 8,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "200 GB NVMe",
-          "max_delta": 3.85,
+          "max_delta": 4.8,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -758,14 +758,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 7.3,
+          "max_delta": 8,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "200 GB NVMe",
-          "max_delta": 3.85,
+          "max_delta": 4.8,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -804,7 +804,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 49,
+          "max_delta": 53,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -818,14 +818,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 13,
+          "max_delta": 14.3,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "250 GB NVMe",
-          "max_delta": 4.95,
+          "max_delta": 6.2,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -864,7 +864,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 49,
+          "max_delta": 53,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -878,14 +878,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 13,
+          "max_delta": 14.3,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "250 GB NVMe",
-          "max_delta": 4.95,
+          "max_delta": 6.2,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -924,7 +924,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 49,
+          "max_delta": 53,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -938,14 +938,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 13,
+          "max_delta": 14.3,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "250 GB NVMe",
-          "max_delta": 4.95,
+          "max_delta": 6.2,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -984,7 +984,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 49,
+          "max_delta": 53,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -998,14 +998,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 13,
+          "max_delta": 14.3,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "250 GB NVMe",
-          "max_delta": 4.95,
+          "max_delta": 6.2,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -1044,7 +1044,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 58.5,
+          "max_delta": 64.15,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -1058,14 +1058,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 19.25,
+          "max_delta": 20.75,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "300 GB NVMe",
-          "max_delta": 6.15,
+          "max_delta": 7.7,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -1104,7 +1104,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 58.5,
+          "max_delta": 64.15,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -1118,14 +1118,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 19.25,
+          "max_delta": 20.75,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "300 GB NVMe",
-          "max_delta": 6.15,
+          "max_delta": 7.7,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -1164,7 +1164,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 58.5,
+          "max_delta": 64.15,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -1178,14 +1178,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 19.25,
+          "max_delta": 20.75,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "300 GB NVMe",
-          "max_delta": 6.15,
+          "max_delta": 7.7,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -1224,7 +1224,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 58.5,
+          "max_delta": 64.15,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -1238,14 +1238,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 19.25,
+          "max_delta": 20.75,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "300 GB NVMe",
-          "max_delta": 6.15,
+          "max_delta": 7.7,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -1284,7 +1284,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 70,
+          "max_delta": 77,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -1298,14 +1298,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 25.5,
+          "max_delta": 27.5,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "350 GB NVMe",
-          "max_delta": 6.95,
+          "max_delta": 8.7,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -1344,7 +1344,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 70,
+          "max_delta": 77,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -1358,14 +1358,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 25.5,
+          "max_delta": 27.5,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "350 GB NVMe",
-          "max_delta": 6.95,
+          "max_delta": 8.7,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -1404,7 +1404,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 70,
+          "max_delta": 77,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -1418,14 +1418,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 25.5,
+          "max_delta": 27.5,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "350 GB NVMe",
-          "max_delta": 6.95,
+          "max_delta": 8.7,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -1464,7 +1464,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 70,
+          "max_delta": 77,
           "min_delta": 0,
           "option_count": 34,
           "paid_count": 8
@@ -1478,14 +1478,14 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 25.5,
+          "max_delta": 27.5,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
         },
         "Storage Type": {
           "default_label": "350 GB NVMe",
-          "max_delta": 6.95,
+          "max_delta": 8.7,
           "min_delta": 0,
           "option_count": 4,
           "paid_count": 2
@@ -1538,7 +1538,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 2.35,
+          "max_delta": 2.55,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -1598,7 +1598,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 2.35,
+          "max_delta": 2.55,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -1658,7 +1658,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 2.35,
+          "max_delta": 2.55,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -1718,7 +1718,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 2.35,
+          "max_delta": 2.55,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -1778,7 +1778,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 3.65,
+          "max_delta": 4,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -1838,7 +1838,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 3.65,
+          "max_delta": 4,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -1898,7 +1898,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 3.65,
+          "max_delta": 4,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -1958,7 +1958,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 3.65,
+          "max_delta": 4,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2018,7 +2018,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 7.3,
+          "max_delta": 8,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2078,7 +2078,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 7.3,
+          "max_delta": 8,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2138,7 +2138,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 7.3,
+          "max_delta": 8,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2198,7 +2198,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 7.3,
+          "max_delta": 8,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2258,7 +2258,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 13,
+          "max_delta": 14.3,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2318,7 +2318,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 13,
+          "max_delta": 14.3,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2378,7 +2378,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 13,
+          "max_delta": 14.3,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2438,7 +2438,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 13,
+          "max_delta": 14.3,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2484,7 +2484,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 49,
+          "max_delta": 53,
           "min_delta": 0,
           "option_count": 36,
           "paid_count": 8
@@ -2498,7 +2498,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 19.25,
+          "max_delta": 20.75,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2544,7 +2544,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 49,
+          "max_delta": 53,
           "min_delta": 0,
           "option_count": 36,
           "paid_count": 8
@@ -2558,7 +2558,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 19.25,
+          "max_delta": 20.75,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2604,7 +2604,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 49,
+          "max_delta": 53,
           "min_delta": 0,
           "option_count": 36,
           "paid_count": 8
@@ -2618,7 +2618,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 19.25,
+          "max_delta": 20.75,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2664,7 +2664,7 @@
         },
         "Image": {
           "default_label": "Ubuntu 24.04",
-          "max_delta": 49,
+          "max_delta": 53,
           "min_delta": 0,
           "option_count": 36,
           "paid_count": 8
@@ -2678,7 +2678,7 @@
         },
         "Region": {
           "default_label": "European Union",
-          "max_delta": 19.25,
+          "max_delta": 20.75,
           "min_delta": 0,
           "option_count": 9,
           "paid_count": 8
@@ -2726,7 +2726,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 9
         },
         "Networking": {
@@ -2786,7 +2786,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 9
         },
         "Networking": {
@@ -2846,7 +2846,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 9
         },
         "Networking": {
@@ -2906,7 +2906,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 9
         },
         "Networking": {
@@ -3213,8 +3213,8 @@
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 258.79,
           "min_delta": 0,
-          "option_count": 9,
-          "paid_count": 4
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3273,8 +3273,8 @@
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 258.79,
           "min_delta": 0,
-          "option_count": 9,
-          "paid_count": 4
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3333,8 +3333,8 @@
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 258.79,
           "min_delta": 0,
-          "option_count": 9,
-          "paid_count": 4
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",
@@ -3393,8 +3393,8 @@
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 258.79,
           "min_delta": 0,
-          "option_count": 9,
-          "paid_count": 4
+          "option_count": 10,
+          "paid_count": 5
         },
         "Region": {
           "default_label": "European Union",

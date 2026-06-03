@@ -1,6 +1,6 @@
 # Contabo Pricing
 
-> **Last updated:** 2026-06-02T20:34:08.586Z  
+> **Last updated:** 2026-06-03T11:13:52.450Z  
 > Auto-refreshed twice daily · data from [contabo.com](https://contabo.com)  
 > 📊 **[Interactive view → report.html](report.html)** — sort, filter & compare plans
 
@@ -24,14 +24,14 @@
 | Setup fee | €4.50 | €2.25 | — |
 | Billed total | €9.00 | €26.55 | €43.20 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€6.25` · Windows Server 2019 Datacenter `+€7.50` · Windows Server 2022 Datacenter `+€7.50` · Windows Server 2025 Datacenter `+€7.50`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€6.85` · Windows Server 2019 Datacenter `+€8.00` · Windows Server 2022 Datacenter `+€8.00` · Windows Server 2025 Datacenter `+€8.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Flux Node, Horizen Node, IPFS Node
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€0.95 | +€0.95 | +€1.15 | +€1.40 | +€2.15 | +€2.30 | +€2.35 | +€1.95 |
+| free | +€1.05 | +€1.05 | +€1.30 | +€1.55 | +€2.40 | +€2.50 | +€2.55 | +€2.15 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€1.50`
@@ -46,14 +46,14 @@
 | **Monthly** | €7.00 | €6.30 | **€5.60** |
 | Billed total | €7.00 | €37.80 | €67.20 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€12.60` · Windows Server 2019 Datacenter `+€15.50` · Windows Server 2022 Datacenter `+€15.50` · Windows Server 2025 Datacenter `+€15.50`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€13.80` · Windows Server 2019 Datacenter `+€17.00` · Windows Server 2022 Datacenter `+€17.00` · Windows Server 2025 Datacenter `+€17.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Flux Node, Horizen Node, IPFS Node
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€1.45 | +€1.45 | +€1.85 | +€2.20 | +€3.35 | +€3.55 | +€3.65 | +€3.00 |
+| free | +€1.60 | +€1.60 | +€2.00 | +€2.40 | +€3.70 | +€3.95 | +€4.00 | +€3.30 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€2.00`
@@ -68,14 +68,14 @@
 | **Monthly** | €14.00 | €12.60 | **€11.20** |
 | Billed total | €14.00 | €75.60 | €134.40 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€23.10` · Windows Server 2019 Datacenter `+€26.00` · Windows Server 2022 Datacenter `+€26.00` · Windows Server 2025 Datacenter `+€26.00`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€25.35` · Windows Server 2019 Datacenter `+€28.00` · Windows Server 2022 Datacenter `+€28.00` · Windows Server 2025 Datacenter `+€28.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Flux Node, Horizen Node, IPFS Node
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€2.95 | +€2.95 | +€3.65 | +€4.40 | +€6.70 | +€7.10 | +€7.30 | +€6.05 |
+| free | +€3.25 | +€3.25 | +€4.00 | +€4.75 | +€7.40 | +€7.85 | +€8.00 | +€6.60 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€3.50`
@@ -90,14 +90,14 @@
 | **Monthly** | €25.00 | €22.50 | **€20.00** |
 | Billed total | €25.00 | €135.00 | €240.00 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€45.60` · Windows Server 2019 Datacenter `+€49.00` · Windows Server 2022 Datacenter `+€49.00` · Windows Server 2025 Datacenter `+€49.00`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€50.00` · Windows Server 2019 Datacenter `+€53.00` · Windows Server 2022 Datacenter `+€53.00` · Windows Server 2025 Datacenter `+€53.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Flux Node, Horizen Node, IPFS Node
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€5.25 | +€5.25 | +€6.55 | +€7.85 | +€11.90 | +€12.70 | +€13.00 | +€10.80 |
+| free | +€5.80 | +€5.80 | +€7.15 | +€8.55 | +€13.20 | +€14.05 | +€14.30 | +€11.85 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€6.00`
@@ -112,14 +112,14 @@
 | **Monthly** | €37.00 | €33.30 | **€29.60** |
 | Billed total | €37.00 | €199.80 | €355.20 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€55.70` · Windows Server 2019 Datacenter `+€58.50` · Windows Server 2022 Datacenter `+€58.50` · Windows Server 2025 Datacenter `+€58.50`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€61.10` · Windows Server 2019 Datacenter `+€64.15` · Windows Server 2022 Datacenter `+€64.15` · Windows Server 2025 Datacenter `+€64.15`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Flux Node, Horizen Node, IPFS Node
 
-| EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
+| EU *(def.)* | UK | US-Central | US-West | US-East | India | Japan | Singapore | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€7.80 | +€7.80 | +€9.65 | +€11.60 | +€17.65 | +€18.80 | +€19.25 | +€15.95 |
+| free | +€8.55 | +€8.55 | +€10.60 | +€12.60 | +€19.55 | +€20.75 | +€20.75 | +€17.50 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€7.50`
@@ -134,14 +134,14 @@
 | **Monthly** | €49.00 | €44.10 | **€39.20** |
 | Billed total | €49.00 | €264.60 | €470.40 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€65.00` · Windows Server 2019 Datacenter `+€70.00` · Windows Server 2022 Datacenter `+€70.00` · Windows Server 2025 Datacenter `+€70.00`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€71.30` · Windows Server 2019 Datacenter `+€77.00` · Windows Server 2022 Datacenter `+€77.00` · Windows Server 2025 Datacenter `+€77.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Flux Node, Horizen Node, IPFS Node
 
-| EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
+| EU *(def.)* | UK | US-Central | US-West | US-East | India | Japan | Singapore | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€10.30 | +€10.30 | +€12.80 | +€15.35 | +€23.35 | +€24.90 | +€25.50 | +€21.15 |
+| free | +€11.30 | +€11.30 | +€14.00 | +€16.70 | +€25.85 | +€27.50 | +€27.50 | +€23.20 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€9.50`
@@ -167,14 +167,14 @@
 | Setup fee | €4.50 | €2.25 | — |
 | Billed total | €9.00 | €26.55 | €43.20 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€4.00` · Windows Server 2022 Datacenter `+€4.75` · Windows Server 2025 Datacenter `+€4.75`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€4.40` · Windows Server 2022 Datacenter `+€5.20` · Windows Server 2025 Datacenter `+€5.20`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Flux Node, Horizen Node, IPFS Node
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€0.95 | +€0.95 | +€1.15 | +€1.40 | +€2.15 | +€2.30 | +€2.35 | +€1.95 |
+| free | +€1.05 | +€1.05 | +€1.30 | +€1.55 | +€2.40 | +€2.50 | +€2.55 | +€2.15 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 
@@ -188,14 +188,14 @@
 | **Monthly** | €7.00 | €6.30 | **€5.60** |
 | Billed total | €7.00 | €37.80 | €67.20 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€6.25` · Windows Server 2019 Datacenter `+€7.50` · Windows Server 2022 Datacenter `+€7.50` · Windows Server 2025 Datacenter `+€7.50`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€6.85` · Windows Server 2019 Datacenter `+€8.00` · Windows Server 2022 Datacenter `+€8.00` · Windows Server 2025 Datacenter `+€8.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Flux Node, Horizen Node, IPFS Node
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€1.45 | +€1.45 | +€1.85 | +€2.20 | +€3.35 | +€3.55 | +€3.65 | +€3.00 |
+| free | +€1.60 | +€1.60 | +€2.00 | +€2.40 | +€3.70 | +€3.95 | +€4.00 | +€3.30 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 
@@ -209,14 +209,14 @@
 | **Monthly** | €14.00 | €12.60 | **€11.20** |
 | Billed total | €14.00 | €75.60 | €134.40 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€12.60` · Windows Server 2019 Datacenter `+€15.50` · Windows Server 2022 Datacenter `+€15.50` · Windows Server 2025 Datacenter `+€15.50`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€13.80` · Windows Server 2019 Datacenter `+€17.00` · Windows Server 2022 Datacenter `+€17.00` · Windows Server 2025 Datacenter `+€17.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Bitcoin Node, Ethereum Staking Node, Flux Node, Horizen Node, IPFS Node
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€2.95 | +€2.95 | +€3.65 | +€4.40 | +€6.70 | +€7.10 | +€7.30 | +€6.05 |
+| free | +€3.25 | +€3.25 | +€4.00 | +€4.75 | +€7.40 | +€7.85 | +€8.00 | +€6.60 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 
@@ -230,14 +230,14 @@
 | **Monthly** | €25.00 | €22.50 | **€20.00** |
 | Billed total | €25.00 | €135.00 | €240.00 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€23.10` · Windows Server 2019 Datacenter `+€26.00` · Windows Server 2022 Datacenter `+€26.00` · Windows Server 2025 Datacenter `+€26.00`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€25.35` · Windows Server 2019 Datacenter `+€28.00` · Windows Server 2022 Datacenter `+€28.00` · Windows Server 2025 Datacenter `+€28.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Bitcoin Node, Ethereum Staking Node, Flux Node, Horizen Node, IPFS Node
 
 | EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€5.25 | +€5.25 | +€6.55 | +€7.85 | +€11.90 | +€12.70 | +€13.00 | +€10.80 |
+| free | +€5.80 | +€5.80 | +€7.15 | +€8.55 | +€13.20 | +€14.05 | +€14.30 | +€11.85 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 
@@ -251,14 +251,14 @@
 | **Monthly** | €37.00 | €33.30 | **€29.60** |
 | Billed total | €37.00 | €199.80 | €355.20 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€45.60` · Windows Server 2019 Datacenter `+€49.00` · Windows Server 2022 Datacenter `+€49.00` · Windows Server 2025 Datacenter `+€49.00`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€50.00` · Windows Server 2019 Datacenter `+€53.00` · Windows Server 2022 Datacenter `+€53.00` · Windows Server 2025 Datacenter `+€53.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Bitcoin Node, Ethereum Staking Node, Flux Node, Horizen Node, IPFS Node
 
-| EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
+| EU *(def.)* | UK | US-Central | US-West | US-East | India | Japan | Singapore | Australia |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€7.80 | +€7.80 | +€9.65 | +€11.60 | +€17.65 | +€18.80 | +€19.25 | +€15.95 |
+| free | +€8.55 | +€8.55 | +€10.60 | +€12.60 | +€19.55 | +€20.75 | +€20.75 | +€17.50 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 
@@ -282,7 +282,7 @@
 | **Monthly** | €34.40 | €32.68 | **€27.52** |
 | Billed total | €34.40 | €196.08 | €330.24 |
 
-**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 10, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2012R2 Standard `+€50.00` · Windows Server 2016 Standard `+€50.00` · Windows Server 2019 Standard `+€50.00` · Windows Server 2022 Standard `+€50.00` · Windows Server 2025 Standard `+€50.00`
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, Debian 13, FreeBSD 12.2, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2012R2 Standard `+€50.00` · Windows Server 2016 Standard `+€50.00` · Windows Server 2019 Standard `+€50.00` · Windows Server 2022 Standard `+€50.00` · Windows Server 2025 Standard `+€50.00`
 **Apps** — Coolify Server, Docker, GitLab Server, LAMP, n8n Server, Nextcloud Server, OpenClaw Server, WireGuard Server
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Bitcoin Node, Ethereum Staking Node, Flux Node, Horizen Node, IPFS Node
@@ -335,7 +335,7 @@
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | free | +€10.40 | +€10.40 | +€11.50 | +€12.70 | +€26.20 | +€27.60 | +€28.50 | +€23.60 |
 
-**Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · Unlimited and Unmetered Traffic `+€258.79` · Private Network: Private Networking Enabled `+€5.79`
+**Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · Unlimited and Unmetered Traffic `+€258.79` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€5.79`
 **Storage** — 360 GB NVMe *(included)* · Upgrades: 1 TB SSD `+€24.99` · 2 TB SSD `+€39.09` · 4 TB SSD `+€103.49`
 
 ---

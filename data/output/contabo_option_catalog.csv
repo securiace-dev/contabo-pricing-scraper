@@ -25,10 +25,10 @@ cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 19.10 (64 Bit),
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2025 Datacenter,7.5,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2016 Datacenter,6.85,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2019 Datacenter,8,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2022 Datacenter,8,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Windows Server 2025 Datacenter,8,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -42,19 +42,19 @@ cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,IPv4,1 IP Address,0,
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (Central),0.95,0,America,United States (Central),US,Central,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (East),1.4,0,America,United States (East),US,East,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (West),1.15,0,America,United States (West),US,West,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,India,2.15,0,Asia,India,IN,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Japan,2.35,0,Asia,Japan,JP,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Singapore,2.3,0,Asia,Singapore,SG,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Australia,Australia,1.95,0,Australia,Australia,AU,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (Central),1.05,0,America,United States (Central),US,Central,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (East),1.55,0,America,United States (East),US,East,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (West),1.3,0,America,United States (West),US,West,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,India,2.4,0,Asia,India,IN,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Japan,2.55,0,Asia,Japan,JP,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,Singapore,2.5,0,Asia,Singapore,SG,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Australia,Australia,2.15,0,Australia,Australia,AU,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Europe,United Kingdom,0.95,0,Europe,United Kingdom,UK,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,NVMe,150 GB NVMe,1.85,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Europe,United Kingdom,1.05,0,Europe,United Kingdom,UK,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,NVMe,150 GB NVMe,2.3,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,NVMe,75 GB NVMe,0,0,,,,,true,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,SSD,150 GB SSD,0,0,,,,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,SSD,300 GB SSD,1.55,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Storage Type,SSD,300 GB SSD,1.95,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Data Protection,Auto Backup,Auto Backup,2,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Coolify Server,0,0,,,,,,EUR
@@ -81,10 +81,10 @@ cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 19.10 (64 Bit),
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2016 Datacenter,12.6,0,,,,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2019 Datacenter,15.5,0,,,,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2022 Datacenter,15.5,0,,,,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2025 Datacenter,15.5,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2016 Datacenter,13.8,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2019 Datacenter,17,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2022 Datacenter,17,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Windows Server 2025 Datacenter,17,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -98,19 +98,19 @@ cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,IPv4,1 IP Address,0,
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (Central),1.45,0,America,United States (Central),US,Central,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (East),2.2,0,America,United States (East),US,East,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (West),1.85,0,America,United States (West),US,West,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,India,3.35,0,Asia,India,IN,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Australia,Australia,3,0,Australia,Australia,AU,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (Central),1.6,0,America,United States (Central),US,Central,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (East),2.4,0,America,United States (East),US,East,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,America,United States (West),2,0,America,United States (West),US,West,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,India,3.7,0,Asia,India,IN,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Japan,4,0,Asia,Japan,JP,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Asia,Singapore,3.95,0,Asia,Singapore,SG,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Australia,Australia,3.3,0,Australia,Australia,AU,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Europe,United Kingdom,1.45,0,Europe,United Kingdom,UK,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Region,Europe,United Kingdom,1.6,0,Europe,United Kingdom,UK,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,NVMe,100 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,NVMe,200 GB NVMe,2.55,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,NVMe,200 GB NVMe,3.2,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,SSD,200 GB SSD,0,0,,,,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,SSD,400 GB SSD,1.95,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Storage Type,SSD,400 GB SSD,2.45,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Data Protection,Auto Backup,Auto Backup,3.5,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Coolify Server,0,0,,,,,,EUR
@@ -137,10 +137,10 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 19.10 (64 Bit),
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2016 Datacenter,23.1,0,,,,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2019 Datacenter,26,0,,,,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2022 Datacenter,26,0,,,,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2025 Datacenter,26,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2016 Datacenter,25.35,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2019 Datacenter,28,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2022 Datacenter,28,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2025 Datacenter,28,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -154,19 +154,19 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,IPv4,1 IP Address,0,
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (Central),2.95,0,America,United States (Central),US,Central,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (East),4.4,0,America,United States (East),US,East,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (West),3.65,0,America,United States (West),US,West,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,India,6.7,0,Asia,India,IN,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Japan,7.3,0,Asia,Japan,JP,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Singapore,7.1,0,Asia,Singapore,SG,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Australia,Australia,6.05,0,Australia,Australia,AU,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (Central),3.25,0,America,United States (Central),US,Central,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (East),4.75,0,America,United States (East),US,East,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (West),4,0,America,United States (West),US,West,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,India,7.4,0,Asia,India,IN,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Japan,8,0,Asia,Japan,JP,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Singapore,7.85,0,Asia,Singapore,SG,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Australia,Australia,6.6,0,Australia,Australia,AU,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Europe,United Kingdom,2.95,0,Europe,United Kingdom,UK,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Europe,United Kingdom,3.25,0,Europe,United Kingdom,UK,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,NVMe,200 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,NVMe,400 GB NVMe,3.25,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,NVMe,400 GB NVMe,4.05,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,SSD,400 GB SSD,0,0,,,,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,SSD,800 GB SSD,3.85,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Storage Type,SSD,800 GB SSD,4.8,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Data Protection,Auto Backup,Auto Backup,6,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Coolify Server,0,0,,,,,,EUR
@@ -193,10 +193,10 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 19.10 (64 Bit),
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2016 Datacenter,45.6,0,,,,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2019 Datacenter,49,0,,,,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2022 Datacenter,49,0,,,,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2025 Datacenter,49,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2016 Datacenter,50,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2019 Datacenter,53,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2022 Datacenter,53,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2025 Datacenter,53,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -210,18 +210,18 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,IPv4,1 IP Address,0,
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (Central),5.25,0,America,United States (Central),US,Central,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (East),7.85,0,America,United States (East),US,East,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (West),6.55,0,America,United States (West),US,West,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,India,11.9,0,Asia,India,IN,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Japan,13,0,Asia,Japan,JP,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Singapore,12.7,0,Asia,Singapore,SG,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Australia,Australia,10.8,0,Australia,Australia,AU,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (Central),5.8,0,America,United States (Central),US,Central,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (East),8.55,0,America,United States (East),US,East,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,America,United States (West),7.15,0,America,United States (West),US,West,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,India,13.2,0,Asia,India,IN,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Japan,14.3,0,Asia,Japan,JP,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Asia,Singapore,14.05,0,Asia,Singapore,SG,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Australia,Australia,11.85,0,Australia,Australia,AU,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Europe,United Kingdom,5.25,0,Europe,United Kingdom,UK,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Region,Europe,United Kingdom,5.8,0,Europe,United Kingdom,UK,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,NVMe,250 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,NVMe,500 GB NVMe,3.85,0,,,,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,SSD,1 TB SSD,4.95,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,NVMe,500 GB NVMe,4.8,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,SSD,1 TB SSD,6.2,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,SSD,500 GB SSD,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Data Protection,Auto Backup,Auto Backup,7.5,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
@@ -249,10 +249,10 @@ cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 19.10 (64 Bit),
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2016 Datacenter,55.7,0,,,,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2019 Datacenter,58.5,0,,,,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2022 Datacenter,58.5,0,,,,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2025 Datacenter,58.5,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2016 Datacenter,61.1,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2019 Datacenter,64.15,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2022 Datacenter,64.15,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2025 Datacenter,64.15,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -266,18 +266,18 @@ cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,IPv4,1 IP Address,0,
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (Central),7.8,0,America,United States (Central),US,Central,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (East),11.6,0,America,United States (East),US,East,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (West),9.65,0,America,United States (West),US,West,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,India,17.65,0,Asia,India,IN,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Japan,19.25,0,Asia,Japan,JP,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Singapore,18.8,0,Asia,Singapore,SG,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Australia,Australia,15.95,0,Australia,Australia,AU,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (Central),8.55,0,America,United States (Central),US,Central,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (East),12.6,0,America,United States (East),US,East,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (West),10.6,0,America,United States (West),US,West,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,India,19.55,0,Asia,India,IN,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Japan,20.75,0,Asia,Japan,JP,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Singapore,20.75,0,Asia,Singapore,SG,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Australia,Australia,17.5,0,Australia,Australia,AU,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,United Kingdom,7.8,0,Europe,United Kingdom,UK,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,United Kingdom,8.55,0,Europe,United Kingdom,UK,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,NVMe,300 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,NVMe,600 GB NVMe,4.75,0,,,,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,SSD,1.2 TB SSD,6.15,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,NVMe,600 GB NVMe,5.95,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,SSD,1.2 TB SSD,7.7,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,SSD,600 GB SSD,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Data Protection,Auto Backup,Auto Backup,9.5,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
@@ -305,10 +305,10 @@ cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 19.10 (64 Bit),
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2016 Datacenter,65,0,,,,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2019 Datacenter,70,0,,,,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2022 Datacenter,70,0,,,,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2025 Datacenter,70,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2016 Datacenter,71.3,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2019 Datacenter,77,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2022 Datacenter,77,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2025 Datacenter,77,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -322,18 +322,18 @@ cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,IPv4,1 IP Address,0,
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (Central),10.3,0,America,United States (Central),US,Central,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (East),15.35,0,America,United States (East),US,East,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (West),12.8,0,America,United States (West),US,West,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,India,23.35,0,Asia,India,IN,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Japan,25.5,0,Asia,Japan,JP,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Singapore,24.9,0,Asia,Singapore,SG,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Australia,Australia,21.15,0,Australia,Australia,AU,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (Central),11.3,0,America,United States (Central),US,Central,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (East),16.7,0,America,United States (East),US,East,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (West),14,0,America,United States (West),US,West,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,India,25.85,0,Asia,India,IN,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Japan,27.5,0,Asia,Japan,JP,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Singapore,27.5,0,Asia,Singapore,SG,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Australia,Australia,23.2,0,Australia,Australia,AU,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,United Kingdom,10.3,0,Europe,United Kingdom,UK,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,United Kingdom,11.3,0,Europe,United Kingdom,UK,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,NVMe,350 GB NVMe,0,0,,,,,true,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,NVMe,700 GB NVMe,5.75,0,,,,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,SSD,1.4 TB SSD,6.95,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,NVMe,700 GB NVMe,7.2,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,SSD,1.4 TB SSD,8.7,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,SSD,700 GB SSD,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Coolify Server,0,0,,,,,,EUR
@@ -360,9 +360,9 @@ storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 19.10 (
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2016 Datacenter,4,0,,,,,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2022 Datacenter,4.75,0,,,,,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2025 Datacenter,4.75,0,,,,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2016 Datacenter,4.4,0,,,,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2022 Datacenter,5.2,0,,,,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,OS,Windows Server 2025 Datacenter,5.2,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -376,15 +376,15 @@ storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,IPv4,1 IP Ad
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,America,United States (Central),0.95,0,America,United States (Central),US,Central,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,America,United States (East),1.4,0,America,United States (East),US,East,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,America,United States (West),1.15,0,America,United States (West),US,West,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Asia,India,2.15,0,Asia,India,IN,,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Asia,Japan,2.35,0,Asia,Japan,JP,,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Asia,Singapore,2.3,0,Asia,Singapore,SG,,,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Australia,Australia,1.95,0,Australia,Australia,AU,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,America,United States (Central),1.05,0,America,United States (Central),US,Central,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,America,United States (East),1.55,0,America,United States (East),US,East,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,America,United States (West),1.3,0,America,United States (West),US,West,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Asia,India,2.4,0,Asia,India,IN,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Asia,Japan,2.55,0,Asia,Japan,JP,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Asia,Singapore,2.5,0,Asia,Singapore,SG,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Australia,Australia,2.15,0,Australia,Australia,AU,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Europe,United Kingdom,0.95,0,Europe,United Kingdom,UK,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Region,Europe,United Kingdom,1.05,0,Europe,United Kingdom,UK,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Storage Type,SSD,300 GB SSD,0,0,,,,,true,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Coolify Server,0,0,,,,,,EUR
@@ -411,10 +411,10 @@ storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 19.10 (
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2016 Datacenter,6.25,0,,,,,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2019 Datacenter,7.5,0,,,,,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2022 Datacenter,7.5,0,,,,,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2025 Datacenter,7.5,0,,,,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2016 Datacenter,6.85,0,,,,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2019 Datacenter,8,0,,,,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2022 Datacenter,8,0,,,,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,OS,Windows Server 2025 Datacenter,8,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -428,15 +428,15 @@ storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,IPv4,1 IP Ad
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (Central),1.45,0,America,United States (Central),US,Central,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (East),2.2,0,America,United States (East),US,East,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (West),1.85,0,America,United States (West),US,West,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,India,3.35,0,Asia,India,IN,,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Japan,3.65,0,Asia,Japan,JP,,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Singapore,3.55,0,Asia,Singapore,SG,,,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Australia,Australia,3,0,Australia,Australia,AU,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (Central),1.6,0,America,United States (Central),US,Central,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (East),2.4,0,America,United States (East),US,East,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,America,United States (West),2,0,America,United States (West),US,West,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,India,3.7,0,Asia,India,IN,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Japan,4,0,Asia,Japan,JP,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Asia,Singapore,3.95,0,Asia,Singapore,SG,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Australia,Australia,3.3,0,Australia,Australia,AU,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Europe,United Kingdom,1.45,0,Europe,United Kingdom,UK,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Region,Europe,United Kingdom,1.6,0,Europe,United Kingdom,UK,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Storage Type,SSD,400 GB SSD,0,0,,,,,true,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Coolify Server,0,0,,,,,,EUR
@@ -465,10 +465,10 @@ storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 19.10 (
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2016 Datacenter,12.6,0,,,,,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2019 Datacenter,15.5,0,,,,,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2022 Datacenter,15.5,0,,,,,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2025 Datacenter,15.5,0,,,,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2016 Datacenter,13.8,0,,,,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2019 Datacenter,17,0,,,,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2022 Datacenter,17,0,,,,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,OS,Windows Server 2025 Datacenter,17,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -482,15 +482,15 @@ storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,IPv4,1 IP Ad
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (Central),2.95,0,America,United States (Central),US,Central,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (East),4.4,0,America,United States (East),US,East,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (West),3.65,0,America,United States (West),US,West,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,India,6.7,0,Asia,India,IN,,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Japan,7.3,0,Asia,Japan,JP,,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Singapore,7.1,0,Asia,Singapore,SG,,,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Australia,Australia,6.05,0,Australia,Australia,AU,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (Central),3.25,0,America,United States (Central),US,Central,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (East),4.75,0,America,United States (East),US,East,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,America,United States (West),4,0,America,United States (West),US,West,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,India,7.4,0,Asia,India,IN,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Japan,8,0,Asia,Japan,JP,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Asia,Singapore,7.85,0,Asia,Singapore,SG,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Australia,Australia,6.6,0,Australia,Australia,AU,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Europe,United Kingdom,2.95,0,Europe,United Kingdom,UK,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Region,Europe,United Kingdom,3.25,0,Europe,United Kingdom,UK,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Storage Type,SSD,1 TB SSD,0,0,,,,,true,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Coolify Server,0,0,,,,,,EUR
@@ -519,10 +519,10 @@ storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 19.10 (
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2016 Datacenter,23.1,0,,,,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2019 Datacenter,26,0,,,,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2022 Datacenter,26,0,,,,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2025 Datacenter,26,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2016 Datacenter,25.35,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2019 Datacenter,28,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2022 Datacenter,28,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Windows Server 2025 Datacenter,28,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -536,15 +536,15 @@ storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,IPv4,1 IP Ad
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (Central),5.25,0,America,United States (Central),US,Central,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (East),7.85,0,America,United States (East),US,East,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (West),6.55,0,America,United States (West),US,West,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,India,11.9,0,Asia,India,IN,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Japan,13,0,Asia,Japan,JP,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Singapore,12.7,0,Asia,Singapore,SG,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Australia,Australia,10.8,0,Australia,Australia,AU,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (Central),5.8,0,America,United States (Central),US,Central,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (East),8.55,0,America,United States (East),US,East,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,America,United States (West),7.15,0,America,United States (West),US,West,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,India,13.2,0,Asia,India,IN,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Japan,14.3,0,Asia,Japan,JP,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Asia,Singapore,14.05,0,Asia,Singapore,SG,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Australia,Australia,11.85,0,Australia,Australia,AU,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Europe,United Kingdom,5.25,0,Europe,United Kingdom,UK,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Region,Europe,United Kingdom,5.8,0,Europe,United Kingdom,UK,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Storage Type,SSD,1.2 TB SSD,0,0,,,,,true,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Coolify Server,0,0,,,,,,EUR
@@ -573,10 +573,10 @@ storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 19.10 (
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2016 Datacenter,45.6,0,,,,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2019 Datacenter,49,0,,,,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2022 Datacenter,49,0,,,,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2025 Datacenter,49,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2016 Datacenter,50,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2019 Datacenter,53,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2022 Datacenter,53,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Windows Server 2025 Datacenter,53,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
@@ -590,15 +590,15 @@ storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,IPv4,1 IP Ad
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (Central),7.8,0,America,United States (Central),US,Central,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (East),11.6,0,America,United States (East),US,East,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (West),9.65,0,America,United States (West),US,West,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,India,17.65,0,Asia,India,IN,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Japan,19.25,0,Asia,Japan,JP,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Singapore,18.8,0,Asia,Singapore,SG,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Australia,Australia,15.95,0,Australia,Australia,AU,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (Central),8.55,0,America,United States (Central),US,Central,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (East),12.6,0,America,United States (East),US,East,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,America,United States (West),10.6,0,America,United States (West),US,West,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,India,19.55,0,Asia,India,IN,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Japan,20.75,0,Asia,Japan,JP,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Asia,Singapore,20.75,0,Asia,Singapore,SG,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Australia,Australia,17.5,0,Australia,Australia,AU,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Europe,United Kingdom,7.8,0,Europe,United Kingdom,UK,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Region,Europe,United Kingdom,8.55,0,Europe,United Kingdom,UK,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Storage Type,SSD,1.4 TB SSD,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Coolify Server,0,0,,,,,,EUR
@@ -620,7 +620,6 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Arch Linux,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Debian 12,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Debian 13,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -762,6 +761,7 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,80 TB Out + Unlimited In,
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,Unlimited and Unmetered Traffic,258.79,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (Central),10.4,0,America,United States (Central),US,Central,,EUR
