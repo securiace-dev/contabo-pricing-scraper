@@ -1,0 +1,32 @@
+# Build artifacts
+target/
+**/vendor/
+node_modules/
+**/node_modules/
+*.lock
+Cargo.lock
+package-lock.json
+composer.lock
+
+# Tooling / agent scratch
+.git/
+.claude/
+.claude-flow/
+.kilo/
+.githooks/
+.github/
+
+# Large generated/scraped outputs
+data/output/
+archive/
+report.html
+graphify-out/
+
+# Binaries & media
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.mp3
+*.zip
+*.tar.gz
