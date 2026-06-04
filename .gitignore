@@ -30,3 +30,13 @@ ruvector.db-*
 .claude/memory.db-*
 .claude/schema.sql
 .claude/state.json
+
+# MemPalace per-project files — SHARED with team (now tracked: mempalace.yaml,
+# entities.json). The palace database itself stays local to each machine.
+
+# graphify knowledge graph — SHARED artifacts are committed (graph.json,
+# graph.html, GRAPH_REPORT.md, manifest.json, memory/). Ignore only the
+# machine-local interpreter pin, the bulky regenerable cache, and token tally.
+graphify-out/.graphify_python
+graphify-out/cache/
+graphify-out/cost.json

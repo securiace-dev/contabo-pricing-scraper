@@ -1,0 +1,50 @@
+wing: contabo_pricing_scraper
+rooms:
+- name: archive
+  description: Files from archive/
+  keywords:
+  - archive
+  - archive
+- name: target
+  description: Files from target/
+  keywords:
+  - target
+  - target
+- name: configuration
+  description: Files from deploy/
+  keywords:
+  - configuration
+  - deploy
+- name: testing
+  description: Files from tests/
+  keywords:
+  - testing
+  - tests
+- name: scripts
+  description: Files from scripts/
+  keywords:
+  - scripts
+  - scripts
+- name: whmcs_module
+  description: Files from whmcs-module/
+  keywords:
+  - whmcs_module
+  - whmcs-module
+- name: data
+  description: Files from data/
+  keywords:
+  - data
+  - data
+- name: src
+  description: Files from src/
+  keywords:
+  - src
+  - src
+- name: backend
+  description: Files from api/
+  keywords:
+  - backend
+  - api
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []

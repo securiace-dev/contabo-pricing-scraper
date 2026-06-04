@@ -118,3 +118,12 @@ disjoint.
 - Commit/push only when asked. Branch off if on the default branch.
 - Do not add a `Co-Authored-By` trailer unless `.claude/settings.json` enables it.
 - Do not put model identifiers in commits, PRs, code, or comments.
+
+## graphify
+
+This project has a graphify knowledge graph at graphify-out/.
+
+Rules:
+- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
+- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
+- After modifying code files in this session, run `/opt/homebrew/opt/python@3.14/bin/python3.14 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` to keep the graph current (system python3 is 3.10 and lacks the graphify module)
