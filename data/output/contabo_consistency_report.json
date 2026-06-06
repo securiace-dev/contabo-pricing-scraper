@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-06T08:42:56.154Z",
-  "view_model_generated_at": "2026-06-06T08:42:56.026Z",
+  "generated_at": "2026-06-06T19:03:44.203Z",
+  "view_model_generated_at": "2026-06-06T19:03:44.056Z",
   "source": "contabo_view_model.json vs contabo_pricing_dataset.json + contabo_configs.json default-config arithmetic",
   "checked": 64,
   "default_config_checks": 128,
