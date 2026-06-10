@@ -91,3 +91,11 @@ Tables created by the original `Installer::install()` (v1 shape):
 4. **Reusing a field name for a different type or meaning**: forbidden. Pick a new name.
 5. **Bumping `Cargo.toml` version**: does NOT imply a schema bump. Schema bumps are independent of project version, but schema majors should be timed to coincide with project majors.
 6. **WHMCS DB schema changes** must also add a `migrateToN()` method on `Installer` so upgrades from older addon versions apply cleanly.
+7. **Golden fixture tests must pass** before schema-version bumps. Run `cargo test --test golden` and `phpunit tests/GoldenApiContractTest.php`.
+8. **API response shape changes** require: (a) schema-version bump, (b) golden fixture update (`tests/fixtures/*.golden.json`), (c) WHMCS `ApiClient` compatibility check.
+9. **Pricing invariants enforced** at write boundaries:
+   - No negative prices (SyncEngine::writeTblpricingCell) — `-1.00` sentinel is exempt (disabled cycle marker).
+   - No zero prices without explicit free-cycle annotation (recognised tblpricing columns only).
+   - Source price missing → fail closed (skip, don't fallback). RenewalEngine: `missing_source_price` skip reason.
+   - Margin must be > 0 for any price write. RenewalEngine: `margin_zero_or_negative` skip reason.
+   - Debug-only invariant checks in Rust `quote()` handler via `#[cfg(debug_assertions)]`.

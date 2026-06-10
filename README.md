@@ -807,3 +807,39 @@ configuration shown is anchored to the scraper's own `default_monthly_by_period`
 ## License
 
 MIT
+
+## Safety Model
+
+The project uses a tiered safety model for write operations that affect WHMCS pricing data:
+
+### Observe / Dry-Run / Apply Pattern
+
+| Tier | Colour | Description |
+|------|--------|-------------|
+| Green | Read-only | Read operations, tests, fixtures — no side effects. |
+| Yellow | Observe-only | Inspects state without mutation; returns what WOULD happen. |
+| Orange | Guarded write | Writes with assertions — stops on invalid data. |
+| Red | Full write | Production DB mutations. Gated by phase (observe → opt_in → enforce). |
+| Black | Irreversible | Termination, deletion — requires explicit admin confirmation. |
+
+### Existing Observe/Dry-Run Coverage
+
+| Component | Observe/Dry-Run | Status |
+|-----------|----------------|--------|
+| RenewalEngine → ServicePriceWriter | `repricing_phase: observe` | Implemented |
+| SyncEngine catalog writes | `setDryRun(true)` / `preview()` | Phase 3.1 |
+| Installer migrations | `setDryRun(true)` / `getDryRunPlan()` | Phase 3.2 |
+| ConfigurableOptionsSyncer (configApply) | `WhmcsConfigOptionsAdapter(true)` | Phase 3.3 |
+
+### Pricing Invariants
+
+- **No negative prices**: `SyncEngine::writeTblpricingCell` rejects values < 0 (except `-1.00` disabled-cycle sentinel)
+- **No zero prices without annotation**: Unexpected `0.00` values emit `logActivity` warnings
+- **Source price must be positive**: `RenewalEngine::decideInternal` returns `missing_source_price` skip when `resolveCycleEurMonthly <= 0`
+- **Margin must be > 0**: `RenewalEngine::decideInternal` returns `margin_zero_or_negative` skip when candidate <= 0
+- **Debug-only API guards**: `quote()` handler asserts `period_months` ∈ {1,3,6,12,24,36} and positive prices in debug builds
+
+### Golden Fixtures
+
+API response shape contracts are captured in `tests/fixtures/*.golden.json`.  
+Any schema change must update these files. CI validates shape on every PR touching `src/api/**`.
