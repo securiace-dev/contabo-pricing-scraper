@@ -1179,7 +1179,7 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     }
     // Match Node's String.localeCompare (case-insensitive) so parity_check.sh
     // doesn't flag pure-ordering differences in the Image:Apps array etc.
-    deduped.sort_by(|a, b| a.sort_key().to_lowercase().cmp(&b.sort_key().to_lowercase()));
+    deduped.sort_by_key(|a| a.sort_key().to_lowercase());
     let final_options = deduped;
 
     // Default config monthly cost per period
@@ -2314,7 +2314,7 @@ mod tests {
         assert_eq!(back.country, None);
         assert_eq!(back.country_code, None);
         assert_eq!(back.subregion, None);
-        assert_eq!(back.is_default, true);
+        assert!(back.is_default);
         assert_eq!(back.plan_sku, bare.plan_sku);
     }
 

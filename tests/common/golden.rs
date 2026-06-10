@@ -41,8 +41,8 @@ pub fn all_fixtures_present() -> bool {
 pub fn has_negative_prices(v: &Value) -> bool {
     match v {
         Value::Number(n) => n.as_f64().map(|f| f < 0.0).unwrap_or(false),
-        Value::Array(a) => a.iter().any(|e| has_negative_prices(e)),
-        Value::Object(o) => o.values().any(|e| has_negative_prices(e)),
+        Value::Array(a) => a.iter().any(has_negative_prices),
+        Value::Object(o) => o.values().any(has_negative_prices),
         _ => false,
     }
 }
