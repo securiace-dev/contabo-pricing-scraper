@@ -1,0 +1,617 @@
+{
+  "base_monthly_price": 4.5,
+  "contract_periods": [
+    {
+      "discount_total": 0,
+      "effective_monthly": 4.5,
+      "is_hidden_from_ui": false,
+      "months": 1,
+      "setup_fee": 4.5,
+      "total_period_cost": 9
+    },
+    {
+      "discount_total": 0,
+      "effective_monthly": 4.5,
+      "is_hidden_from_ui": true,
+      "months": 3,
+      "setup_fee": 0,
+      "total_period_cost": 13.5
+    },
+    {
+      "discount_total": 2.7,
+      "effective_monthly": 4.05,
+      "is_hidden_from_ui": false,
+      "months": 6,
+      "setup_fee": 2.25,
+      "total_period_cost": 26.55
+    },
+    {
+      "discount_total": 10.8,
+      "effective_monthly": 3.6,
+      "is_hidden_from_ui": false,
+      "months": 12,
+      "setup_fee": 0,
+      "total_period_cost": 43.2
+    }
+  ],
+  "default_monthly_by_period": {
+    "1": 4.5,
+    "12": 3.6,
+    "3": 4.5,
+    "6": 4.05
+  },
+  "default_setup_by_period": {
+    "1": 4.5,
+    "12": 0,
+    "3": 0,
+    "6": 2.25
+  },
+  "family": "Cloud VPS",
+  "fetched_at": "2026-06-04T10:07:15.533Z",
+  "options": {
+    "Data Protection": [
+      {
+        "category": "Auto Backup",
+        "currency": "EUR",
+        "dimension": "Data Protection",
+        "monthly_price_delta": 1.5,
+        "option_label": "Auto Backup",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "None",
+        "currency": "EUR",
+        "dimension": "Data Protection",
+        "is_default": true,
+        "monthly_price_delta": 0,
+        "option_label": "No Data Protection",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      }
+    ],
+    "Image": [
+      {
+        "category": "Apps",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Coolify Server",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Apps",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Docker",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Apps",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "GitLab Server",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Apps",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "LAMP",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Apps",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "n8n Server",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Apps",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Nextcloud Server",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Apps",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "OpenClaw Server",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Apps",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "WireGuard Server",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Blockchain",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Flux Node",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Blockchain",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Horizen Node",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Blockchain",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "IPFS Node",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "AlmaLinux 10",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "AlmaLinux 9",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Arch Linux",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Debian 12",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Debian 13",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "FreeBSD 12.2",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Rocky Linux 10",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Rocky Linux 8",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Rocky Linux 9",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Ubuntu 19.10 (64 Bit)",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Ubuntu 22.04",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "is_default": true,
+        "monthly_price_delta": 0,
+        "option_label": "Ubuntu 24.04",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Ubuntu 26.04",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 6.85,
+        "option_label": "Windows Server 2016 Datacenter",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 8,
+        "option_label": "Windows Server 2019 Datacenter",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 8,
+        "option_label": "Windows Server 2022 Datacenter",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "OS",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 8,
+        "option_label": "Windows Server 2025 Datacenter",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Panels",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 21.75,
+        "option_label": "cPanel/WHM (5 accounts)",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Panels",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 12,
+        "option_label": "Plesk Admin Edition",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Panels",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 36.5,
+        "option_label": "Plesk Host Edition",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Panels",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 19,
+        "option_label": "Plesk Pro Edition",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Panels",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Webmin",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Panels",
+        "currency": "EUR",
+        "dimension": "Image",
+        "monthly_price_delta": 0,
+        "option_label": "Webmin + LAMP",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      }
+    ],
+    "Networking": [
+      {
+        "category": "Bandwidth",
+        "currency": "EUR",
+        "dimension": "Networking",
+        "monthly_price_delta": 0,
+        "option_label": "10 TB Out + Unlimited In",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Bandwidth",
+        "currency": "EUR",
+        "dimension": "Networking",
+        "monthly_price_delta": 0,
+        "option_label": "32 TB Out + Unlimited In",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Bandwidth",
+        "currency": "EUR",
+        "dimension": "Networking",
+        "is_default": true,
+        "monthly_price_delta": 0,
+        "option_label": "Unlimited Traffic",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "IPv4",
+        "currency": "EUR",
+        "dimension": "Networking",
+        "is_default": true,
+        "monthly_price_delta": 0,
+        "option_label": "1 IP Address",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "IPv4",
+        "currency": "EUR",
+        "dimension": "Networking",
+        "monthly_price_delta": 3.5,
+        "option_label": "Additional IP Address",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Private Networking",
+        "currency": "EUR",
+        "dimension": "Networking",
+        "is_default": true,
+        "monthly_price_delta": 0,
+        "option_label": "No Private Networking",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Private Networking",
+        "currency": "EUR",
+        "dimension": "Networking",
+        "monthly_price_delta": 2.29,
+        "option_label": "Private Networking Enabled",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      }
+    ],
+    "Region": [
+      {
+        "category": "America",
+        "country": "United States (Central)",
+        "country_code": "US",
+        "currency": "EUR",
+        "dimension": "Region",
+        "monthly_price_delta": 1.05,
+        "option_label": "United States (Central)",
+        "plan_sku": "cloud-vps-10",
+        "region_group": "America",
+        "setup_fee_delta": 0,
+        "subregion": "Central"
+      },
+      {
+        "category": "America",
+        "country": "United States (East)",
+        "country_code": "US",
+        "currency": "EUR",
+        "dimension": "Region",
+        "monthly_price_delta": 1.55,
+        "option_label": "United States (East)",
+        "plan_sku": "cloud-vps-10",
+        "region_group": "America",
+        "setup_fee_delta": 0,
+        "subregion": "East"
+      },
+      {
+        "category": "America",
+        "country": "United States (West)",
+        "country_code": "US",
+        "currency": "EUR",
+        "dimension": "Region",
+        "monthly_price_delta": 1.3,
+        "option_label": "United States (West)",
+        "plan_sku": "cloud-vps-10",
+        "region_group": "America",
+        "setup_fee_delta": 0,
+        "subregion": "West"
+      },
+      {
+        "category": "Asia",
+        "country": "India",
+        "country_code": "IN",
+        "currency": "EUR",
+        "dimension": "Region",
+        "monthly_price_delta": 2.4,
+        "option_label": "India",
+        "plan_sku": "cloud-vps-10",
+        "region_group": "Asia",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Asia",
+        "country": "Japan",
+        "country_code": "JP",
+        "currency": "EUR",
+        "dimension": "Region",
+        "monthly_price_delta": 2.55,
+        "option_label": "Japan",
+        "plan_sku": "cloud-vps-10",
+        "region_group": "Asia",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Asia",
+        "country": "Singapore",
+        "country_code": "SG",
+        "currency": "EUR",
+        "dimension": "Region",
+        "monthly_price_delta": 2.5,
+        "option_label": "Singapore",
+        "plan_sku": "cloud-vps-10",
+        "region_group": "Asia",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Australia",
+        "country": "Australia",
+        "country_code": "AU",
+        "currency": "EUR",
+        "dimension": "Region",
+        "monthly_price_delta": 2.15,
+        "option_label": "Australia",
+        "plan_sku": "cloud-vps-10",
+        "region_group": "Australia",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Europe",
+        "country": "European Union",
+        "country_code": "EU",
+        "currency": "EUR",
+        "dimension": "Region",
+        "is_default": true,
+        "monthly_price_delta": 0,
+        "option_label": "European Union",
+        "plan_sku": "cloud-vps-10",
+        "region_group": "Europe",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "Europe",
+        "country": "United Kingdom",
+        "country_code": "UK",
+        "currency": "EUR",
+        "dimension": "Region",
+        "monthly_price_delta": 1.05,
+        "option_label": "United Kingdom",
+        "plan_sku": "cloud-vps-10",
+        "region_group": "Europe",
+        "setup_fee_delta": 0
+      }
+    ],
+    "Storage Type": [
+      {
+        "category": "NVMe",
+        "currency": "EUR",
+        "dimension": "Storage Type",
+        "monthly_price_delta": 2.3,
+        "option_label": "150 GB NVMe",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "NVMe",
+        "currency": "EUR",
+        "dimension": "Storage Type",
+        "is_default": true,
+        "monthly_price_delta": 0,
+        "option_label": "75 GB NVMe",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "SSD",
+        "currency": "EUR",
+        "dimension": "Storage Type",
+        "monthly_price_delta": 0,
+        "option_label": "150 GB SSD",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      },
+      {
+        "category": "SSD",
+        "currency": "EUR",
+        "dimension": "Storage Type",
+        "monthly_price_delta": 1.95,
+        "option_label": "300 GB SSD",
+        "plan_sku": "cloud-vps-10",
+        "setup_fee_delta": 0
+      }
+    ]
+  },
+  "order_summary_default": {
+    "due_today": 9,
+    "monthly": 4.5,
+    "one_time": 4.5
+  },
+  "password_rules": {
+    "alphanumeric_only": true,
+    "max_length": 30,
+    "min_length": 8,
+    "no_special_chars": true
+  },
+  "slug": "cloud-vps-10",
+  "title": "Cloud VPS 10"
+}

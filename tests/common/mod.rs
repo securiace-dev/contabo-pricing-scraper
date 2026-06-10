@@ -5,6 +5,8 @@
 
 #![allow(dead_code)]
 
+pub mod golden;
+
 use std::net::SocketAddr;
 use std::path::PathBuf;
 use std::time::Duration;

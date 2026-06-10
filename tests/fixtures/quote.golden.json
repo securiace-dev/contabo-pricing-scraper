@@ -1,0 +1,16 @@
+{
+  "base_monthly_eur": 4.5,
+  "breakdown": [
+    "base €4.50/mo"
+  ],
+  "configured_monthly_eur": 4.5,
+  "currency": "EUR",
+  "final_monthly": 4.5,
+  "final_total": 9.0,
+  "fx_markup": 0.0,
+  "fx_rate": null,
+  "gst_amount_eur": 0.0,
+  "period_months": 1,
+  "plan_slug": "cloud-vps-10",
+  "setup_fee_eur": 4.5
+}
