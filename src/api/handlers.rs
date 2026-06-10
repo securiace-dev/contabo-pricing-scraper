@@ -187,6 +187,21 @@ pub async fn quote(
     State(s): State<AppState>,
     Json(req): Json<QuoteRequest>,
 ) -> Result<Json<QuoteResponse>, StatusCode> {
+    // Pricing invariant guards — debug-only, zero prod overhead.
+    #[cfg(debug_assertions)]
+    {
+        debug_assert!(
+            [1, 3, 6, 12, 24, 36].contains(&(req.period_months as i32)),
+            "quote: period_months {} not in valid set",
+            req.period_months
+        );
+        debug_assert!(
+            req.currency.len() == 3 && req.currency.chars().all(|c| c.is_ascii_uppercase()),
+            "quote: currency must be 3-char uppercase, got {}",
+            req.currency
+        );
+    }
+
     let snap = s.snapshot.read().await;
     let vm = snap
         .view_model
@@ -235,6 +250,16 @@ pub async fn quote(
     };
 
     let final_total = final_monthly * req.period_months as f64 + setup * fx_rate.unwrap_or(1.0);
+
+    // Debug invariant: response must contain no negative prices.
+    #[cfg(debug_assertions)]
+    {
+        debug_assert!(final_monthly >= 0.0, "quote: negative final_monthly {final_monthly}");
+        debug_assert!(final_total >= 0.0, "quote: negative final_total {final_total}");
+        debug_assert!(base >= 0.0, "quote: negative base_monthly_eur {base}");
+        debug_assert!(configured >= 0.0, "quote: negative configured_monthly_eur {configured}");
+        debug_assert!(gst_amt >= 0.0, "quote: negative gst_amount_eur {gst_amt}");
+    }
 
     Ok(Json(QuoteResponse {
         plan_slug: req.plan_slug,

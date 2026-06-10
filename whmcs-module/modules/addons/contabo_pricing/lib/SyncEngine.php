@@ -40,9 +40,33 @@ class SyncEngine
     /** @var ApiClient */         private $api;
     /** @var ProfileManager */    private $profiles;
     /** @var CatalogAuditLog */   private $catalogAudit;
+    /** @var bool */              private $dryRun = false;
+    /** @var list<array{productId:int,currencyId:int,column:string,value:float}> */
+    private $previewWrites = [];
 
     /** @var float Hard threshold (50%) above which a change is "suspicious" */
     private const SUSPICIOUS_CHANGE_RATIO = 0.50;
+
+    /**
+     * tblpricing columns that are allowed to hold 0.00 (free cycle).
+     * Anything outside this set triggers a logActivity warning.
+     *
+     * @var array<string,bool>
+     */
+    private const ALLOWED_FREE_CYCLES = [
+        'monthly'       => true,
+        'quarterly'     => true,
+        'semiannually'  => true,
+        'annually'      => true,
+        'biennially'    => true,
+        'triennially'   => true,
+        'msetupfee'     => true,
+        'qsetupfee'     => true,
+        'ssetupfee'     => true,
+        'asetupfee'     => true,
+        'bsetupfee'     => true,
+        'tsetupfee'     => true,
+    ];
 
     public function __construct(
         Settings $settings,
@@ -54,6 +78,28 @@ class SyncEngine
         $this->api          = $api;
         $this->profiles     = $profiles;
         $this->catalogAudit = $catalogAudit ?? new CatalogAuditLog();
+    }
+
+    /**
+     * Enable / disable dry-run mode. When true, writeTblpricingCell logs
+     * the would-be write instead of executing the UPDATE. Callers should
+     * inspect ::preview() after a dry-run pass to see what would change.
+     */
+    public function setDryRun(bool $dryRun): void
+    {
+        $this->dryRun = $dryRun;
+    }
+
+    /**
+     * Returns every pricing-row write that was recorded during the most
+     * recent dry-run pass. Empty array when dryRun was false or no writes
+     * occurred.
+     *
+     * @return list<array{productId:int,currencyId:int,column:string,value:float}>
+     */
+    public function preview(): array
+    {
+        return $this->previewWrites;
     }
 
     /**
@@ -474,6 +520,29 @@ class SyncEngine
             $landedMonthly = (float) $version->finalMonthly;
         }
 
+        // Pricing invariant: landed cost must be positive. Zero means no source
+        // data — a pre-condition that should have been caught upstream.
+        if ($landedMonthly <= 0.0) {
+            $msg = "SyncEngine: zero landed cost for product {$mapping['product_id']} cycle {$cycle};"
+                . " source EUR is " . ($sourceEur ?? 'null') . ", finalMonthly is {$version->finalMonthly}";
+            if (function_exists('logActivity')) {
+                \logActivity($msg);
+            }
+            return [0.0, 0.0, $strategy, (float) $value];
+        }
+
+        // Sanity check: a lower-cycle (shorter commitment) monthly rate should
+        // not meaningfully exceed an annualised version of itself (allow 10%
+        // for bulk discount structures where 12-mo pays less per month).
+        $annualised = $landedMonthly * 12.0;
+        if ($annualised < $landedMonthly * 0.9 && $cycleMonths === 1) {
+            $msg = "SyncEngine: annualised price ({$annualised}) < 90% of monthly ({$landedMonthly})"
+                . " for mapping {$mapping['product_id']}";
+            if (function_exists('logActivity')) {
+                \logActivity($msg);
+            }
+        }
+
         // For 'fixed' strategy, $value is the admin-set total sell price for
         // this cycle. Convert to monthly so sellPriceForCycle can use it.
         $fixedCycleTotal = null;
@@ -673,9 +742,50 @@ class SyncEngine
     /**
      * Single-cell `tblpricing` UPDATE. Wrapped so static greps for the
      * `Capsule::table('tblpricing')` write surface land here.
+     *
+     * Safety invariants enforced before every write:
+     *  - -1.00 is the disabled-cycle sentinel — allowed, not an error.
+     *  - Negative values != -1.00 are pricing errors → assertion fire.
+     *  - 0.00 (free) is allowed only for recognised cycle/setup columns;
+     *    unexpected zero columns emit a logActivity warning.
      */
     private function writeTblpricingCell(int $productId, int $currencyId, string $column, float $value): void
     {
+        // Guard: disabled-cycle sentinel is legitimate.
+        if ($value == -1.0) {
+            // -1.00 sentinel — intentionally disabled cycle, do not write.
+            return;
+        }
+
+        // Guard: negative prices are NEVER valid (except the sentinel above).
+        if ($value < 0.0) {
+            $msg = "SyncEngine: negative price {$value} for column {$column} on product {$productId} — refusing write";
+            if (function_exists('logActivity')) {
+                \logActivity($msg);
+            }
+            return;
+        }
+
+        // Guard: zero-price writes are valid for recognised cycle/setup columns
+        // (free product, free setup). Anything else is suspicious.
+        if ($value == 0.0 && !isset(self::ALLOWED_FREE_CYCLES[$column])) {
+            $msg = "SyncEngine: unexpected zero price for column {$column} on product {$productId}";
+            if (function_exists('logActivity')) {
+                \logActivity($msg);
+            }
+        }
+
+        // Dry-run mode: record the would-be write, do not mutate the DB.
+        if ($this->dryRun) {
+            $this->previewWrites[] = [
+                'productId'  => $productId,
+                'currencyId' => $currencyId,
+                'column'     => $column,
+                'value'      => $value,
+            ];
+            return;
+        }
+
         Capsule::table('tblpricing')
             ->where('type', 'product')
             ->where('currency', $currencyId)

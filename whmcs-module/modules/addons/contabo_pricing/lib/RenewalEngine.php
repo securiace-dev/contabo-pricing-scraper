@@ -369,6 +369,20 @@ class RenewalEngine
         // the quarterly source, not a single base monthly. Falls back to
         // base_monthly_eur for legacy versions with no vector.
         $eurMonthly    = self::resolveCycleEurMonthly($version, $cycleMonths);
+
+        // Pricing invariant: source price must be positive. Missing / zero source
+        // means we cannot compute a valid candidate — fail closed (skip, do not
+        // silently write a stale price).
+        if ($eurMonthly <= 0.0) {
+            return $this->buildDecision(
+                $service, $now, $oldPrice, $oldPrice, $cycle, $cycleMonths,
+                'unknown', false, 'missing_source_price',
+                false, false,
+                null, null, null, null, null,
+                null, null, null, null, null, null, null,
+                $meta
+            );
+        }
         $landedMonthly = MarginCalculator::landedCostMonthly(
             $eurMonthly, $fxRate, $fxBufferPct, $paymentBufferPct,
             $vendorTaxRatePct, $vendorTaxRecoverable
@@ -449,6 +463,20 @@ class RenewalEngine
             $meta['computed_candidate_pre_force'] = round($candidate, 4);
             $candidate = Rounding::apply($forcedCandidate, $roundingMode);
             $meta['rounded_price'] = round($candidate, 4);
+        }
+
+        // Pricing invariant: margin must produce a positive sell price.
+        // Zero/negative means either landed cost was zero or markup was
+        // misconfigured — fail closed rather than writing a nonsense price.
+        if ($candidate <= 0.0) {
+            return $this->buildDecision(
+                $service, $now, $oldPrice, $oldPrice, $cycle, $cycleMonths,
+                'unknown', false, 'margin_zero_or_negative',
+                false, false,
+                $landedForCycle, $landedMonthly, $eurMonthly, $fxRate, $fxBufferPct,
+                null, null, null, null, null, null, null,
+                $meta
+            );
         }
 
         $netRevenue   = MarginCalculator::netRevenueForCycle($oldPrice, $pricesIncludeOutput, $outputTaxRatePct);
@@ -784,6 +812,27 @@ class RenewalEngine
         array $profile,
         array $meta
     ): array {
+        // Safety invariant: only positive prices reach the write path.
+        // Zero/negative should have been caught as margin_zero_or_negative
+        // or missing_source_price in decideInternal before we get here.
+        $serviceId = (int) ($service['id'] ?? 0);
+        if ($newPrice <= 0.0) {
+            $msg = "RenewalEngine: refusing zero/negative price {$newPrice} for service {$serviceId} cycle {$cycle}";
+            if (function_exists('logActivity')) {
+                \logActivity($msg);
+            }
+            return $this->buildDecision(
+                $service, $now, $oldPrice, $newPrice, $cycle, $cycleMonths,
+                $policy, false, 'price_invariant_violation',
+                $requiresNotice, false,
+                $landedForCycle, $landedMonthly, $eurMonthly, $fxRate, $fxBufferPct,
+                $taxMode, $vendorTaxRatePct, $vendorTaxRecoverable,
+                $pricesIncludeOutput, $outputTaxRatePct,
+                $netRevenue, $currentRatio,
+                $meta
+            );
+        }
+
         $allowDecrease = (bool) $sp['allow_auto_decrease'];
 
         // Decrease-without-permission guard.
