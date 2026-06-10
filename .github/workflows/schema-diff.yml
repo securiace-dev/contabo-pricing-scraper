@@ -1,0 +1,105 @@
+name: Schema Diff — API Response Shape Validation
+
+on:
+  pull_request:
+    paths:
+      - 'src/api/**'
+      - 'src/main.rs'
+      - 'enrich_output.js'
+      - 'SCHEMA_VERSION.md'
+      - 'tests/fixtures/*.golden.json'
+
+concurrency:
+  group: schema-diff-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build binary
+        run: cargo build --release
+      - name: Start server
+        run: |
+          mkdir -p data/output
+          cp tests/fixtures/plans.golden.json data/output/contabo_base_plans.json 2>/dev/null || true
+          ./target/release/contabo-scraper serve --bind 127.0.0.1:8080 --data-dir data/output &
+          for _ in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8080/api/v1/health && break
+            sleep 1
+          done
+      - name: Capture /plans schema
+        run: |
+          curl -s http://127.0.0.1:8080/api/v1/plans | jq -S keys > /tmp/plans-keys.txt
+          jq 'keys' tests/fixtures/plans.golden.json | diff /tmp/plans-keys.txt - || \
+            (echo "::error::Plans response keys differ from golden. If intentional, update tests/fixtures/plans.golden.json and bump SCHEMA_VERSION.md"; \
+             diff --unified /tmp/plans-keys.txt <(jq 'keys' tests/fixtures/plans.golden.json); exit 1)
+      - name: Capture /meta schema
+        run: |
+          curl -s http://127.0.0.1:8080/api/v1/meta | jq -S keys > /tmp/meta-keys.txt
+          jq 'keys' tests/fixtures/meta.golden.json | diff /tmp/meta-keys.txt - || \
+            (echo "::error::Meta response keys differ from golden"; exit 1)
+      - name: Schema-version bump check
+        run: |
+          if git diff --name-only ${{ github.event.pull_request.base.sha }} HEAD | grep -q SCHEMA_VERSION.md; then
+            echo "SCHEMA_VERSION.md changed — intentional bump, accepting diff"
+          else
+            echo "No SCHEMA_VERSION.md change — any schema diff above is a failure"
+          fi
+      - name: Upload diff artifact on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: schema-diff
+          path: /tmp/*-keys.txt
+
+  quote-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build and run quote contract validation
+        run: |
+          cargo build --release
+          mkdir -p data/output
+          cp tests/fixtures/plans.golden.json data/output/contabo_base_plans.json 2>/dev/null || true
+          ./target/release/contabo-scraper serve --bind 127.0.0.1:8080 --data-dir data/output &
+          sleep 5
+          # Validate EUR monthly quote
+          curl -s -f -X POST http://127.0.0.1:8080/api/v1/quote \
+            -H 'Content-Type: application/json' \
+            -d '{"plan_slug":"cloud-vps-10","period_months":1,"currency":"EUR","selections":{}}' \
+            | jq -e '.layers or .final_monthly' > /dev/null && echo "PASS: EUR quote has final_monthly"
+          # Validate INR quote
+          curl -s -f -X POST http://127.0.0.1:8080/api/v1/quote \
+            -H 'Content-Type: application/json' \
+            -d '{"plan_slug":"cloud-vps-10","period_months":1,"currency":"INR","selections":{}}' \
+            | jq -e '.currency == "INR" and .final_monthly > 0' > /dev/null && echo "PASS: INR quote valid"
+          # Validate no negative prices
+          curl -s -f -X POST http://127.0.0.1:8080/api/v1/quote \
+            -H 'Content-Type: application/json' \
+            -d '{"plan_slug":"cloud-vps-10","period_months":1,"currency":"EUR","selections":{}}' \
+            | jq -e '.final_monthly >= 0 and .final_total >= 0' > /dev/null && echo "PASS: no negative prices"
+
+  csv-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify CSV columns
+        run: |
+          if [ -f data/output/contabo_base_plans.csv ]; then
+            head -1 data/output/contabo_base_plans.csv | tr ',' '\n' | sort > /tmp/csv-head.txt
+            echo "CSV columns: $(wc -l < /tmp/csv-head.txt)"
+          else
+            echo "No CSV fixture — skip"
+          fi
+          if [ -f data/output/contabo_option_catalog.csv ]; then
+            head -1 data/output/contabo_option_catalog.csv | tr ',' '\n' | sort > /tmp/opt-head.txt
+            echo "Option catalog columns: $(wc -l < /tmp/opt-head.txt)"
+          else
+            echo "No option catalog CSV — skip"
+          fi

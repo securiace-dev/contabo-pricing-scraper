@@ -1,0 +1,52 @@
+name: Guard — Pricing Invariants & Rounding
+
+on:
+  pull_request:
+    paths:
+      - 'whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php'
+      - 'whmcs-module/modules/addons/contabo_pricing/lib/RenewalEngine.php'
+      - 'whmcs-module/modules/addons/contabo_pricing/lib/Rounding.php'
+      - 'whmcs-module/modules/addons/contabo_pricing/tests/RoundingTest.php'
+      - 'src/api/handlers.rs'
+
+concurrency:
+  group: guard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php-unit-guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+      - name: Install dev deps
+        run: composer install --no-interaction --no-progress
+        working-directory: whmcs-module/modules/addons/contabo_pricing
+      - name: PHP syntax lint (guard files)
+        run: |
+          php -l lib/SyncEngine.php
+          php -l lib/RenewalEngine.php
+          php -l lib/Rounding.php
+        working-directory: whmcs-module/modules/addons/contabo_pricing
+      - name: Rounding & engine tests
+        run: |
+          ./vendor/bin/phpunit tests/RoundingTest.php
+          ./vendor/bin/phpunit tests/SyncEngineTest.php
+          ./vendor/bin/phpunit tests/RenewalEngineCycleTest.php
+        working-directory: whmcs-module/modules/addons/contabo_pricing
+
+  rust-test-guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Clippy handlers
+        run: cargo clippy -- -D warnings
+      - name: Quote handler tests
+        run: cargo test --test api_smoke -- quote
+      - name: Golden fixture tests
+        run: cargo test --test golden

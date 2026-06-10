@@ -12,6 +12,7 @@
 #      admin templates + repo-root scripts.
 #   3. Live-schema smoke against dev WHMCS 8.13 + 9.0 (information_schema only).
 #   4. Real-WHMCS integration smoke (apply / drift / observe end-to-end on dev).
+#   5. Golden API contract test (phpunit tests/GoldenApiContractTest.php).
 #
 # Usage:  bash scripts/predeploy-check.sh
 # Exit:   0 = gate PASS (safe to deploy); non-zero = gate FAIL (do NOT deploy).
@@ -27,11 +28,11 @@ record() { if [ "$2" -eq 0 ]; then results+=("[PASS] $1"); else results+=("[FAIL
 stage()  { echo; echo "==================== $1 ===================="; }
 
 # ── 1) unit suite ────────────────────────────────────────────────────────────
-stage "1/4 unit suite (phpunit)"
+stage "1/5 unit suite (phpunit)"
 ( cd "$ADDON" && vendor/bin/phpunit ); record "unit suite" $?
 
 # ── 2) PHP 7.4 syntax lint ───────────────────────────────────────────────────
-stage "2/4 PHP 7.4 syntax lint"
+stage "2/5 PHP 7.4 syntax lint"
 lint_status=0
 files=$( { ls "$ADDON"/lib/*.php "$ADDON"/*.php "$ADDON"/templates/admin/*.tpl "$SCRIPT_DIR"/*.php ; } 2>/dev/null )
 if docker image inspect php:7.4-cli >/dev/null 2>&1 || docker pull php:7.4-cli >/dev/null 2>&1; then
@@ -52,14 +53,18 @@ fi
 record "PHP 7.4 lint" "$lint_status"
 
 # ── 3) live-schema smoke (dev 8.13 + 9.0) ────────────────────────────────────
-stage "3/4 live-schema smoke (dev 8.13 + 9.0)"
+stage "3/5 live-schema smoke (dev 8.13 + 9.0)"
 CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 8; s8=$?
 CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 9; s9=$?
 if [ "$s8" -eq 0 ] && [ "$s9" -eq 0 ]; then record "live-schema smoke 8.13+9.0" 0; else record "live-schema smoke 8.13+9.0" 1; fi
 
 # ── 4) real-WHMCS integration smoke (dev) ────────────────────────────────────
-stage "4/4 real-WHMCS integration smoke"
+stage "4/5 real-WHMCS integration smoke"
 bash "$SCRIPT_DIR/whmcs-integration-smoke.sh"; record "integration smoke" $?
+
+# ── 5) golden API contract test ──────────────────────────────────────────────
+stage "5/5 golden API contract test"
+( cd "$ADDON" && vendor/bin/phpunit tests/GoldenApiContractTest.php ); record "golden contract" $?
 
 # ── summary ──────────────────────────────────────────────────────────────────
 echo; echo "==================== predeploy gate summary ===================="
