@@ -14,9 +14,38 @@ class Installer
 {
     public const SCHEMA_VERSION = 8;
 
+    /** @var bool When true, upgrade() reports planned migrations without executing DDL. */
+    private $dryRun = false;
+
+    /** @var list<array{version:int,method:string,description:string}> */
+    private $dryRunPlan = [];
+
+    public function setDryRun(bool $dryRun): void
+    {
+        $this->dryRun = $dryRun;
+    }
+
+    /**
+     * Return the migration plan that was computed during the last dry-run
+     * upgrade() call. Each entry describes a migration that WOULD execute.
+     *
+     * @return list<array{version:int,method:string,description:string}>
+     */
+    public function getDryRunPlan(): array
+    {
+        return $this->dryRunPlan;
+    }
+
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
     {
+        if ($this->dryRun) {
+            if (function_exists('logActivity')) {
+                \logActivity('Contabo Pricing Installer dry-run: would install tables');
+            }
+            return;
+        }
+
         $schema = Capsule::schema();
 
         if (!$schema->hasTable('mod_contabo_profile')) {
@@ -132,11 +161,30 @@ class Installer
         for ($v = $current + 1; $v <= self::SCHEMA_VERSION; $v++) {
             $method = 'migrateTo' . $v;
             if (method_exists($this, $method)) {
+                if ($this->dryRun) {
+                    $this->dryRunPlan[] = [
+                        'version'     => $v,
+                        'method'      => $method,
+                        'description' => "Would run {$method}()",
+                    ];
+                    continue;
+                }
                 $this->{$method}();
                 Capsule::table('mod_contabo_settings')->updateOrInsert(
                     ['key' => 'schema_version'],
                     ['value' => (string) $v, 'updated_at' => date('Y-m-d H:i:s')],
                 );
+            }
+        }
+
+        if ($this->dryRun && $this->dryRunPlan !== []) {
+            $msg = sprintf(
+                'Contabo Pricing Installer dry-run: %d migration(s) would execute: %s',
+                count($this->dryRunPlan),
+                implode(', ', array_map(static fn (array $p): string => $p['method'], $this->dryRunPlan))
+            );
+            if (function_exists('logActivity')) {
+                \logActivity($msg);
             }
         }
     }

@@ -1305,6 +1305,7 @@ class AdminController
         $id        = (int) ($req['id'] ?? 0);
         $productId = (int) ($req['product_id'] ?? 0);
         $confirmed = !empty($req['confirm']);
+        $dryRun    = !empty($req['dry_run']); // observe/dry-run gate — no DB mutations
 
         $pm = new ProfileManager($this->settings);
         $profile = $pm->find($id);
@@ -1357,7 +1358,7 @@ class AdminController
             'exact_2_decimals'
         );
 
-        $adapter = new WhmcsConfigOptionsAdapter(false); // real write
+        $adapter = new WhmcsConfigOptionsAdapter($dryRun); // dryRun=true → observe only, no DB mutations
         $audit   = new OptionAuditLog($adapter->syncBatchId());
         $syncer  = new ConfigurableOptionsSyncer($adapter, $audit, new ConfigOptionLinkRepository());
 
@@ -2051,8 +2052,14 @@ class AdminController
     private function syncRun(array $req): void
     {
         if (!$this->verifyToken()) { return; }
+        $dryRun = !empty($req['dry_run']);
         $engine = new SyncEngine($this->settings, new ApiClient($this->settings), new ProfileManager($this->settings));
+        $engine->setDryRun($dryRun);
         $summary = $engine->run('manual');
+        if ($dryRun) {
+            $summary['dry_run'] = true;
+            $summary['preview_writes'] = count($engine->preview());
+        }
         $this->render('sync_run_result.tpl', ['summary' => $summary]);
     }
 
