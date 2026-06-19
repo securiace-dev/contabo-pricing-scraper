@@ -8,7 +8,7 @@
 # The provisioning module is deployed automatically whenever it has local
 # changes — no manual step required.
 #
-# Usage:  bash scripts/deploy.sh
+# Usage:  bash scripts/deploy.sh [--dry-run] [--yes] [--help]
 # Exit:   0 = deployed (or nothing to deploy); non-zero = gate fail or rsync error.
 set -uo pipefail
 
@@ -33,12 +33,53 @@ VPS_EXCLUDES=(--exclude '.git*' --exclude '.claude-flow/')
 stage() { echo; echo "==== $1 ===="; }
 die()   { echo "ERROR: $1" >&2; exit 1; }
 
+DRY_RUN=0
+ASSUME_YES=0
+usage() {
+  cat <<'EOF'
+Usage: bash scripts/deploy.sh [--dry-run] [--yes] [--help]
+
+  --dry-run   Run the gate and show exactly what each module would transfer,
+              then STOP without touching production.
+  --yes, -y   Skip the interactive confirmation prompt (for automation).
+  --help, -h  Show this help and exit.
+
+With no flags: runs the gate, previews changes, asks for confirmation, then
+deploys changed modules to production (my.securiace.com).
+EOF
+}
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run) DRY_RUN=1 ;;
+    --yes|-y)  ASSUME_YES=1 ;;
+    --help|-h) usage; exit 0 ;;
+    *) echo "ERROR: unknown argument: $1" >&2; usage >&2; exit 2 ;;
+  esac
+  shift
+done
+
 # ── 1) pre-deploy gate ────────────────────────────────────────────────────────
 stage "1/3 pre-deploy gate"
 bash "$SCRIPT_DIR/predeploy-check.sh" || die "gate FAILED — aborting deploy"
 
 # ── 2) rsync each module (skip if no changes) ─────────────────────────────────
 stage "2/3 rsync to prod"
+
+# SSH reachability preflight (rsync — even --dry-run — needs the remote).
+ssh $SSH_OPTS "$HOST" true 2>/dev/null \
+  || die "cannot reach $HOST over SSH (BatchMode); check your key/agent and network"
+
+if [ "$DRY_RUN" -ne 1 ] && [ "$ASSUME_YES" -ne 1 ]; then
+  if [ -t 0 ]; then
+    echo
+    echo "  About to deploy changed modules to PRODUCTION: $HOST"
+    printf "  Type 'deploy' to proceed: "
+    read -r reply
+    [ "$reply" = "deploy" ] || die "aborted by user (got '$reply')"
+  else
+    die "refusing to deploy non-interactively without --yes (no TTY for confirmation)"
+  fi
+fi
 
 rsync_module() {
   local label="$1" src="$2" dest="$3"
@@ -61,6 +102,11 @@ rsync_module() {
 
   echo "  $label: $file_lines file(s) to transfer:"
   echo "$changes" | grep '^[<>cdf]' | sed 's/^/    /'
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    echo "  $label: (dry-run) not transferring"
+    return 0
+  fi
 
   rsync -rlptzc -i --no-owner --no-group \
     "${excludes[@]}" -e "ssh $SSH_OPTS" "$src/" "$dest" \

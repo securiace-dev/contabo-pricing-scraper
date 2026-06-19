@@ -32,6 +32,15 @@ src_dir()  { echo "$PLATFORM/deploy/whmcs-test/source/$1"; }          # $1 = 8.1
 php_ctr()  { case "$1" in 8) echo "securiace-vps-platform-whmcs8-php-1";; 9) echo "securiace-vps-platform-whmcs9-php-1";; esac; }
 ver_dir()  { case "$1" in 8) echo "8.13";; 9) echo "9.0";; esac; }
 
+require_platform() {
+  [ -d "$PLATFORM" ] || { echo "ERROR: securiace-vps-platform dir not found at: $PLATFORM" >&2;
+    echo "       set SECVPS_PLATFORM_DIR to its location." >&2; exit 2; }
+  command -v rsync >/dev/null 2>&1 || { echo "ERROR: rsync not found on PATH" >&2; exit 2; }
+}
+require_docker() {
+  command -v docker >/dev/null 2>&1 || { echo "ERROR: docker not found on PATH" >&2; exit 2; }
+}
+
 sync_one() {
   local v="$1" dest; dest="$(src_dir "$(ver_dir "$v")")/modules/addons/contabo_pricing"
   rsync -a --delete \
@@ -44,10 +53,12 @@ sync_one() {
 cmd="${1:-status}"
 case "$cmd" in
   sync)
+    require_platform
     echo "==> syncing addon into local WHMCS source (8.13 + 9.0)"
     sync_one 8; sync_one 9
     ;;
   migrate)
+    require_docker
     v="${2:-8}"; ctr="$(php_ctr "$v")"
     echo "==> migrate (Installer::upgrade) in WHMCS $(ver_dir "$v") [$ctr]"
     docker exec -i "$ctr" php -r '
@@ -61,6 +72,7 @@ case "$cmd" in
     '
     ;;
   activate)
+    require_docker
     v="${2:-8}"; ctr="$(php_ctr "$v")"
     echo "==> activate addon (config rows + activate hook) in WHMCS $(ver_dir "$v")"
     docker exec -i "$ctr" php -r '
@@ -76,6 +88,7 @@ case "$cmd" in
     '
     ;;
   render)
+    require_docker
     v="${2:-8}"; ctr="$(php_ctr "$v")"; action="${3:-dashboard}"
     docker exec -e ACTION="$action" -i "$ctr" php -r '
       chdir("/var/www/html");
@@ -90,6 +103,7 @@ case "$cmd" in
     '
     ;;
   status)
+    require_docker
     echo "==> containers"; docker ps --format '{{.Names}}\t{{.Status}}' | grep -iE "securiace-vps-platform-whmcs|mariadb" || true
     echo "==> addon present in source?"
     for v in 8.13 9.0; do d="$(src_dir "$v")/modules/addons/contabo_pricing"; echo "  $v: $([ -d "$d" ] && echo present || echo absent)"; done

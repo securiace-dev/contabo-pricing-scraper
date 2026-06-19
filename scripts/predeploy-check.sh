@@ -4,7 +4,7 @@
 #
 # Runs the full LOCAL verification battery, fail-closed. It NEVER touches
 # production — only local files + the dockerised dev WHMCS (8.13 + 9.0). A prod
-# deploy MUST NOT proceed unless this script exits 0. See docs/DEPLOY_RUNBOOK.md.
+# deploy MUST NOT proceed unless this script exits 0. See whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md.
 #
 # Stages (all run; gate fails if ANY stage fails):
 #   1. Unit suite (PHPUnit, FakeCapsule).
@@ -26,6 +26,28 @@ declare -a results
 record() { if [ "$2" -eq 0 ]; then results+=("[PASS] $1"); else results+=("[FAIL] $1"); fail=1; fi; }
 stage()  { echo; echo "==================== $1 ===================="; }
 
+# ── 0) preflight — gate prerequisites ────────────────────────────────────────
+stage "0/4 preflight — verifying gate prerequisites"
+preflight_ok=1
+if [ ! -x "$ADDON/vendor/bin/phpunit" ]; then
+  echo "  MISSING: $ADDON/vendor/bin/phpunit"
+  echo "           fix: (cd \"$ADDON\" && composer install)"
+  preflight_ok=0
+fi
+if ! command -v docker >/dev/null 2>&1; then
+  echo "  MISSING: docker — the live-schema + integration smokes and the PHP 7.4 lint run inside docker."
+  echo "           Run this gate on a machine with the dockerised dev WHMCS stack."
+  echo "           See whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md"
+  preflight_ok=0
+fi
+if [ "$preflight_ok" -ne 1 ]; then
+  echo
+  echo "==================== predeploy gate summary ===================="
+  echo "  GATE: BLOCKED — prerequisites missing; cannot run the gate here."
+  echo "  This is NOT a code failure. Resolve the items above, then re-run. DO NOT DEPLOY."
+  exit 2
+fi
+
 # ── 1) unit suite ────────────────────────────────────────────────────────────
 stage "1/4 unit suite (phpunit)"
 ( cd "$ADDON" && vendor/bin/phpunit ); record "unit suite" $?
@@ -44,10 +66,9 @@ if docker image inspect php:7.4-cli >/dev/null 2>&1 || docker pull php:7.4-cli >
   lint_status=$?
   echo "  linted with php:7.4-cli"
 else
-  echo "  WARNING: php:7.4-cli (docker) unavailable — falling back to local php $(php -r 'echo PHP_VERSION;' 2>/dev/null); PHP 7.4 NOT verified"
-  for f in $files; do
-    php -l "$f" >/dev/null 2>&1 || { echo "  LINT FAIL: $f"; lint_status=1; }
-  done
+  echo "  ERROR: php:7.4-cli (docker) unavailable — cannot verify the PHP 7.4 polyglot floor."
+  echo "         The gate will FAIL closed rather than report an unverified PASS."
+  lint_status=1
 fi
 record "PHP 7.4 lint" "$lint_status"
 
@@ -65,7 +86,7 @@ bash "$SCRIPT_DIR/whmcs-integration-smoke.sh"; record "integration smoke" $?
 echo; echo "==================== predeploy gate summary ===================="
 for r in "${results[@]}"; do echo "  $r"; done
 if [ "$fail" -eq 0 ]; then
-  echo "  GATE: PASS — safe to proceed to deploy (see docs/DEPLOY_RUNBOOK.md)"
+  echo "  GATE: PASS — safe to proceed to deploy (see whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md)"
   exit 0
 fi
 echo "  GATE: FAIL — DO NOT DEPLOY"
