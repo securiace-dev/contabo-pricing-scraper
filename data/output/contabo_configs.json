@@ -1,47 +1,47 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.2",
-  "generated_at": "2026-06-07T19:04:50.235Z",
+  "generated_at": "2026-06-20T04:57:44.181Z",
   "plan_count": 16,
   "plans": {
     "https://contabo.com/en/vps/cloud-vps-10/": {
       "slug": "cloud-vps-10",
       "family": "Cloud VPS",
       "title": "Cloud VPS 10",
-      "fetched_at": "2026-06-07T19:04:47.293Z",
-      "base_monthly_price": 4.5,
+      "fetched_at": "2026-06-20T04:57:34.481Z",
+      "base_monthly_price": 5.5,
       "contract_periods": [
         {
           "months": 1,
           "is_hidden_from_ui": false,
-          "effective_monthly": 4.5,
-          "setup_fee": 4.5,
-          "total_period_cost": 9,
+          "effective_monthly": 5.5,
+          "setup_fee": 0,
+          "total_period_cost": 5.5,
           "discount_total": 0
         },
         {
           "months": 3,
           "is_hidden_from_ui": true,
-          "effective_monthly": 4.5,
+          "effective_monthly": 5.5,
           "setup_fee": 0,
-          "total_period_cost": 13.5,
+          "total_period_cost": 16.5,
           "discount_total": 0
         },
         {
           "months": 6,
           "is_hidden_from_ui": false,
-          "effective_monthly": 4.05,
-          "setup_fee": 2.25,
-          "total_period_cost": 26.55,
-          "discount_total": 2.7
+          "effective_monthly": 4.95,
+          "setup_fee": 0,
+          "total_period_cost": 29.7,
+          "discount_total": 3.3
         },
         {
           "months": 12,
           "is_hidden_from_ui": false,
-          "effective_monthly": 3.6,
+          "effective_monthly": 4.4,
           "setup_fee": 0,
-          "total_period_cost": 43.2,
-          "discount_total": 10.8
+          "total_period_cost": 52.8,
+          "discount_total": 13.2
         }
       ],
       "options": {
@@ -90,7 +90,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-10",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-10",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -135,7 +153,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-10",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-10",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -217,15 +253,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-10",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -604,61 +631,61 @@
         "no_special_chars": true
       },
       "default_monthly_by_period": {
-        "1": 4.5,
-        "3": 4.5,
-        "6": 4.05,
-        "12": 3.6
+        "1": 5.5,
+        "3": 5.5,
+        "6": 4.95,
+        "12": 4.4
       },
       "default_setup_by_period": {
-        "1": 4.5,
+        "1": 0,
         "3": 0,
-        "6": 2.25,
+        "6": 0,
         "12": 0
       },
       "order_summary_default": {
-        "monthly": 4.5,
-        "one_time": 4.5,
-        "due_today": 9
+        "monthly": 5.5,
+        "one_time": 0,
+        "due_today": 5.5
       }
     },
     "https://contabo.com/en/vps/cloud-vps-20/": {
       "slug": "cloud-vps-20",
       "family": "Cloud VPS",
       "title": "Cloud VPS 20",
-      "fetched_at": "2026-06-07T19:04:46.949Z",
-      "base_monthly_price": 7,
+      "fetched_at": "2026-06-20T04:57:35.294Z",
+      "base_monthly_price": 7.5,
       "contract_periods": [
         {
           "months": 1,
           "is_hidden_from_ui": false,
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period_cost": 7,
+          "total_period_cost": 7.5,
           "discount_total": 0
         },
         {
           "months": 3,
           "is_hidden_from_ui": true,
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period_cost": 21,
+          "total_period_cost": 22.5,
           "discount_total": 0
         },
         {
           "months": 6,
           "is_hidden_from_ui": false,
-          "effective_monthly": 6.3,
+          "effective_monthly": 6.75,
           "setup_fee": 0,
-          "total_period_cost": 37.8,
-          "discount_total": 4.2
+          "total_period_cost": 40.5,
+          "discount_total": 4.5
         },
         {
           "months": 12,
           "is_hidden_from_ui": false,
-          "effective_monthly": 5.6,
+          "effective_monthly": 6,
           "setup_fee": 0,
-          "total_period_cost": 67.2,
-          "discount_total": 16.8
+          "total_period_cost": 72,
+          "discount_total": 18
         }
       ],
       "options": {
@@ -707,7 +734,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-20",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-20",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -752,7 +797,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-20",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-20",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -834,15 +897,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-20",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -1221,10 +1275,10 @@
         "no_special_chars": true
       },
       "default_monthly_by_period": {
-        "1": 7,
-        "3": 7,
-        "6": 6.3,
-        "12": 5.6
+        "1": 7.5,
+        "3": 7.5,
+        "6": 6.75,
+        "12": 6
       },
       "default_setup_by_period": {
         "1": 0,
@@ -1233,16 +1287,16 @@
         "12": 0
       },
       "order_summary_default": {
-        "monthly": 7,
+        "monthly": 7.5,
         "one_time": 0,
-        "due_today": 7
+        "due_today": 7.5
       }
     },
     "https://contabo.com/en/vps/cloud-vps-30/": {
       "slug": "cloud-vps-30",
       "family": "Cloud VPS",
       "title": "Cloud VPS 30",
-      "fetched_at": "2026-06-07T19:04:46.394Z",
+      "fetched_at": "2026-06-20T04:57:36.639Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -1324,7 +1378,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-30",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-30",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -1360,6 +1432,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-30",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -1369,7 +1450,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-30",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-30",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -1451,15 +1550,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-30",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -1859,7 +1949,7 @@
       "slug": "cloud-vps-40",
       "family": "Cloud VPS",
       "title": "Cloud VPS 40",
-      "fetched_at": "2026-06-07T19:04:47.704Z",
+      "fetched_at": "2026-06-20T04:57:43.801Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -1941,7 +2031,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -1977,6 +2085,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -1986,7 +2103,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -2068,15 +2203,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-40",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -2178,15 +2304,6 @@
             "category": "Panels",
             "option_label": "cPanel/WHM (5 accounts)",
             "monthly_price_delta": 21.75,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-40",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
-            "option_label": "Plesk Admin Edition",
-            "monthly_price_delta": 12,
             "setup_fee_delta": 0
           },
           {
@@ -2476,7 +2593,7 @@
       "slug": "cloud-vps-50",
       "family": "Cloud VPS",
       "title": "Cloud VPS 50",
-      "fetched_at": "2026-06-07T19:04:48.907Z",
+      "fetched_at": "2026-06-20T04:57:36.146Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -2558,7 +2675,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -2594,6 +2729,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -2603,7 +2747,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -2685,15 +2847,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-50",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -2795,15 +2948,6 @@
             "category": "Panels",
             "option_label": "cPanel/WHM (5 accounts)",
             "monthly_price_delta": 21.75,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-50",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
-            "option_label": "Plesk Admin Edition",
-            "monthly_price_delta": 12,
             "setup_fee_delta": 0
           },
           {
@@ -3093,7 +3237,7 @@
       "slug": "cloud-vps-60",
       "family": "Cloud VPS",
       "title": "Cloud VPS 60",
-      "fetched_at": "2026-06-07T19:04:46.709Z",
+      "fetched_at": "2026-06-20T04:57:44.173Z",
       "base_monthly_price": 49,
       "contract_periods": [
         {
@@ -3175,7 +3319,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-60",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-60",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -3211,6 +3373,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-60",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -3220,7 +3391,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-60",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-60",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -3302,15 +3491,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-60",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -3412,15 +3592,6 @@
             "category": "Panels",
             "option_label": "cPanel/WHM (5 accounts)",
             "monthly_price_delta": 21.75,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-60",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
-            "option_label": "Plesk Admin Edition",
-            "monthly_price_delta": 12,
             "setup_fee_delta": 0
           },
           {
@@ -3710,40 +3881,40 @@
       "slug": "storage-vps-10",
       "family": "Storage VPS",
       "title": "Storage VPS 10",
-      "fetched_at": "2026-06-07T19:04:46.302Z",
-      "base_monthly_price": 4.5,
+      "fetched_at": "2026-06-20T04:57:36.330Z",
+      "base_monthly_price": 5.5,
       "contract_periods": [
         {
           "months": 1,
           "is_hidden_from_ui": false,
-          "effective_monthly": 4.5,
-          "setup_fee": 4.5,
-          "total_period_cost": 9,
+          "effective_monthly": 5.5,
+          "setup_fee": 0,
+          "total_period_cost": 5.5,
           "discount_total": 0
         },
         {
           "months": 3,
           "is_hidden_from_ui": true,
-          "effective_monthly": 4.5,
+          "effective_monthly": 5.5,
           "setup_fee": 0,
-          "total_period_cost": 13.5,
+          "total_period_cost": 16.5,
           "discount_total": 0
         },
         {
           "months": 6,
           "is_hidden_from_ui": false,
-          "effective_monthly": 4.05,
-          "setup_fee": 2.25,
-          "total_period_cost": 26.55,
-          "discount_total": 2.7
+          "effective_monthly": 4.95,
+          "setup_fee": 0,
+          "total_period_cost": 29.7,
+          "discount_total": 3.3
         },
         {
           "months": 12,
           "is_hidden_from_ui": false,
-          "effective_monthly": 3.6,
+          "effective_monthly": 4.4,
           "setup_fee": 0,
-          "total_period_cost": 43.2,
-          "discount_total": 10.8
+          "total_period_cost": 52.8,
+          "discount_total": 13.2
         }
       ],
       "options": {
@@ -3783,7 +3954,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-10",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-10",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -3828,7 +4017,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-10",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-10",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -4261,61 +4468,61 @@
         "no_special_chars": true
       },
       "default_monthly_by_period": {
-        "1": 4.5,
-        "3": 4.5,
-        "6": 4.05,
-        "12": 3.6
+        "1": 5.5,
+        "3": 5.5,
+        "6": 4.95,
+        "12": 4.4
       },
       "default_setup_by_period": {
-        "1": 4.5,
+        "1": 0,
         "3": 0,
-        "6": 2.25,
+        "6": 0,
         "12": 0
       },
       "order_summary_default": {
-        "monthly": 4.5,
-        "one_time": 4.5,
-        "due_today": 9
+        "monthly": 5.5,
+        "one_time": 0,
+        "due_today": 5.5
       }
     },
     "https://contabo.com/en/storage-vps/storage-vps-20/": {
       "slug": "storage-vps-20",
       "family": "Storage VPS",
       "title": "Storage VPS 20",
-      "fetched_at": "2026-06-07T19:04:46.943Z",
-      "base_monthly_price": 7,
+      "fetched_at": "2026-06-20T04:57:43.999Z",
+      "base_monthly_price": 7.5,
       "contract_periods": [
         {
           "months": 1,
           "is_hidden_from_ui": false,
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period_cost": 7,
+          "total_period_cost": 7.5,
           "discount_total": 0
         },
         {
           "months": 3,
           "is_hidden_from_ui": true,
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period_cost": 21,
+          "total_period_cost": 22.5,
           "discount_total": 0
         },
         {
           "months": 6,
           "is_hidden_from_ui": false,
-          "effective_monthly": 6.3,
+          "effective_monthly": 6.75,
           "setup_fee": 0,
-          "total_period_cost": 37.8,
-          "discount_total": 4.2
+          "total_period_cost": 40.5,
+          "discount_total": 4.5
         },
         {
           "months": 12,
           "is_hidden_from_ui": false,
-          "effective_monthly": 5.6,
+          "effective_monthly": 6,
           "setup_fee": 0,
-          "total_period_cost": 67.2,
-          "discount_total": 16.8
+          "total_period_cost": 72,
+          "discount_total": 18
         }
       ],
       "options": {
@@ -4355,7 +4562,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-20",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-20",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -4400,7 +4625,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-20",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-20",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -4842,10 +5085,10 @@
         "no_special_chars": true
       },
       "default_monthly_by_period": {
-        "1": 7,
-        "3": 7,
-        "6": 6.3,
-        "12": 5.6
+        "1": 7.5,
+        "3": 7.5,
+        "6": 6.75,
+        "12": 6
       },
       "default_setup_by_period": {
         "1": 0,
@@ -4854,16 +5097,16 @@
         "12": 0
       },
       "order_summary_default": {
-        "monthly": 7,
+        "monthly": 7.5,
         "one_time": 0,
-        "due_today": 7
+        "due_today": 7.5
       }
     },
     "https://contabo.com/en/storage-vps/storage-vps-30/": {
       "slug": "storage-vps-30",
       "family": "Storage VPS",
       "title": "Storage VPS 30",
-      "fetched_at": "2026-06-07T19:04:48.450Z",
+      "fetched_at": "2026-06-20T04:57:37.695Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -4936,7 +5179,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-30",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-30",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -4981,7 +5242,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-30",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-30",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -5462,7 +5741,7 @@
       "slug": "storage-vps-40",
       "family": "Storage VPS",
       "title": "Storage VPS 40",
-      "fetched_at": "2026-06-07T19:04:48.037Z",
+      "fetched_at": "2026-06-20T04:57:39.028Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -5535,7 +5814,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -5571,6 +5868,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -5580,7 +5886,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-40",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -5680,15 +6004,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "storage-vps-40",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -6061,7 +6376,7 @@
       "slug": "storage-vps-50",
       "family": "Storage VPS",
       "title": "Storage VPS 50",
-      "fetched_at": "2026-06-07T19:04:48.817Z",
+      "fetched_at": "2026-06-20T04:57:39.448Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -6134,7 +6449,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -6170,6 +6503,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -6179,7 +6521,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "storage-vps-50",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -6279,15 +6639,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "storage-vps-50",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -6660,7 +7011,7 @@
       "slug": "vds-s",
       "family": "Cloud VDS",
       "title": "Cloud VDS S",
-      "fetched_at": "2026-06-07T19:04:49.573Z",
+      "fetched_at": "2026-06-20T04:57:39.477Z",
       "base_monthly_price": 34.4,
       "contract_periods": [
         {
@@ -6733,7 +7084,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-s",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-s",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -6778,7 +7147,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-s",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-s",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -6995,15 +7382,6 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Panels",
-            "option_label": "Plesk Admin Edition",
-            "monthly_price_delta": 12,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-s",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
             "option_label": "Plesk Host Edition",
             "monthly_price_delta": 36.5,
             "setup_fee_delta": 0
@@ -7083,15 +7461,6 @@
             "monthly_price_delta": 0,
             "setup_fee_delta": 0,
             "is_default": true
-          },
-          {
-            "plan_sku": "vds-s",
-            "currency": "EUR",
-            "dimension": "Networking",
-            "category": "IPv4",
-            "option_label": "Additional IP Address",
-            "monthly_price_delta": 3.5,
-            "setup_fee_delta": 0
           },
           {
             "plan_sku": "vds-s",
@@ -7295,7 +7664,7 @@
       "slug": "vds-m",
       "family": "Cloud VDS",
       "title": "Cloud VDS M",
-      "fetched_at": "2026-06-07T19:04:48.925Z",
+      "fetched_at": "2026-06-20T04:57:40.649Z",
       "base_monthly_price": 44.8,
       "contract_periods": [
         {
@@ -7377,7 +7746,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-m",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-m",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -7413,6 +7800,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-m",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -7422,7 +7818,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-m",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-m",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -7450,15 +7864,6 @@
             "dimension": "Image",
             "category": "Blockchain",
             "option_label": "Flux Node",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-m",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Blockchain",
-            "option_label": "Horizen Node",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -7639,15 +8044,6 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Panels",
-            "option_label": "Plesk Host Edition",
-            "monthly_price_delta": 36.5,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-m",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
             "option_label": "Plesk Pro Edition",
             "monthly_price_delta": 19,
             "setup_fee_delta": 0
@@ -7732,15 +8128,6 @@
             "plan_sku": "vds-m",
             "currency": "EUR",
             "dimension": "Networking",
-            "category": "IPv4",
-            "option_label": "Additional IP Address",
-            "monthly_price_delta": 3.5,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-m",
-            "currency": "EUR",
-            "dimension": "Networking",
             "category": "Private Networking",
             "option_label": "No Private Networking",
             "monthly_price_delta": 0,
@@ -7782,19 +8169,6 @@
             "country_code": "US",
             "subregion": "East",
             "monthly_price_delta": 12.7,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-m",
-            "currency": "EUR",
-            "dimension": "Region",
-            "category": "America",
-            "option_label": "United States (West)",
-            "region_group": "America",
-            "country": "United States (West)",
-            "country_code": "US",
-            "subregion": "West",
-            "monthly_price_delta": 11.5,
             "setup_fee_delta": 0
           },
           {
@@ -7939,7 +8313,7 @@
       "slug": "vds-l",
       "family": "Cloud VDS",
       "title": "Cloud VDS L",
-      "fetched_at": "2026-06-07T19:04:49.824Z",
+      "fetched_at": "2026-06-20T04:57:40.793Z",
       "base_monthly_price": 64,
       "contract_periods": [
         {
@@ -8021,7 +8395,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-l",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-l",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8057,6 +8449,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-l",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -8066,7 +8467,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-l",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-l",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8094,15 +8513,6 @@
             "dimension": "Image",
             "category": "Blockchain",
             "option_label": "Flux Node",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-l",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Blockchain",
-            "option_label": "Horizen Node",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8385,15 +8795,6 @@
             "plan_sku": "vds-l",
             "currency": "EUR",
             "dimension": "Networking",
-            "category": "IPv4",
-            "option_label": "Additional IP Address",
-            "monthly_price_delta": 3.5,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-l",
-            "currency": "EUR",
-            "dimension": "Networking",
             "category": "Private Networking",
             "option_label": "No Private Networking",
             "monthly_price_delta": 0,
@@ -8429,19 +8830,6 @@
             "currency": "EUR",
             "dimension": "Region",
             "category": "America",
-            "option_label": "United States (East)",
-            "region_group": "America",
-            "country": "United States (East)",
-            "country_code": "US",
-            "subregion": "East",
-            "monthly_price_delta": 12.7,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-l",
-            "currency": "EUR",
-            "dimension": "Region",
-            "category": "America",
             "option_label": "United States (West)",
             "region_group": "America",
             "country": "United States (West)",
@@ -8455,35 +8843,11 @@
             "currency": "EUR",
             "dimension": "Region",
             "category": "Asia",
-            "option_label": "India",
-            "region_group": "Asia",
-            "country": "India",
-            "country_code": "IN",
-            "monthly_price_delta": 26.2,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-l",
-            "currency": "EUR",
-            "dimension": "Region",
-            "category": "Asia",
             "option_label": "Japan",
             "region_group": "Asia",
             "country": "Japan",
             "country_code": "JP",
             "monthly_price_delta": 28.5,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-l",
-            "currency": "EUR",
-            "dimension": "Region",
-            "category": "Asia",
-            "option_label": "Singapore",
-            "region_group": "Asia",
-            "country": "Singapore",
-            "country_code": "SG",
-            "monthly_price_delta": 27.6,
             "setup_fee_delta": 0
           },
           {
@@ -8592,7 +8956,7 @@
       "slug": "vds-xl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XL",
-      "fetched_at": "2026-06-07T19:04:49.386Z",
+      "fetched_at": "2026-06-20T04:57:42.506Z",
       "base_monthly_price": 82.4,
       "contract_periods": [
         {
@@ -8674,7 +9038,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8710,6 +9092,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -8719,7 +9110,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8747,15 +9156,6 @@
             "dimension": "Image",
             "category": "Blockchain",
             "option_label": "Flux Node",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xl",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Blockchain",
-            "option_label": "IPFS Node",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -8918,15 +9318,6 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Panels",
-            "option_label": "cPanel/WHM (5 accounts)",
-            "monthly_price_delta": 21.75,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xl",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
             "option_label": "Plesk Pro Edition",
             "monthly_price_delta": 19,
             "setup_fee_delta": 0
@@ -8951,15 +9342,6 @@
           }
         ],
         "Networking": [
-          {
-            "plan_sku": "vds-xl",
-            "currency": "EUR",
-            "dimension": "Networking",
-            "category": "Bandwidth",
-            "option_label": "10 TB Out + Unlimited In",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
           {
             "plan_sku": "vds-xl",
             "currency": "EUR",
@@ -9227,7 +9609,7 @@
       "slug": "vds-xxl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XXL",
-      "fetched_at": "2026-06-07T19:04:50.222Z",
+      "fetched_at": "2026-06-20T04:57:42.690Z",
       "base_monthly_price": 119,
       "contract_periods": [
         {
@@ -9309,7 +9691,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Dokploy Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "GitLab Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Hermes Agent Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -9345,6 +9745,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Ollama Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "OpenClaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -9354,7 +9763,25 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Apps",
+            "option_label": "Paperclip Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
             "option_label": "WireGuard Server",
+            "monthly_price_delta": 0,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Apps",
+            "option_label": "Zeroclaw Server",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -9382,24 +9809,6 @@
             "dimension": "Image",
             "category": "Blockchain",
             "option_label": "Flux Node",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xxl",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Blockchain",
-            "option_label": "Horizen Node",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xxl",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Blockchain",
-            "option_label": "IPFS Node",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -9571,15 +9980,6 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Panels",
-            "option_label": "Plesk Host Edition",
-            "monthly_price_delta": 36.5,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xxl",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
             "option_label": "Plesk Pro Edition",
             "monthly_price_delta": 19,
             "setup_fee_delta": 0
@@ -9736,18 +10136,6 @@
             "country_code": "US",
             "subregion": "West",
             "monthly_price_delta": 13.8,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xxl",
-            "currency": "EUR",
-            "dimension": "Region",
-            "category": "Asia",
-            "option_label": "India",
-            "region_group": "Asia",
-            "country": "India",
-            "country_code": "IN",
-            "monthly_price_delta": 50.25,
             "setup_fee_delta": 0
           },
           {

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.2",
-  "generated_at": "2026-06-07T19:04:50.235Z",
+  "generated_at": "2026-06-20T04:57:44.181Z",
   "plan_count": 16,
   "plans": [
     {
@@ -15,33 +15,33 @@
       "storage_primary_gb": 75,
       "storage_primary_type": "NVMe",
       "port_speed_mbps": 200,
-      "base_monthly_eur": 4.5,
-      "default_monthly_eur": 4.5,
+      "base_monthly_eur": 5.5,
+      "default_monthly_eur": 5.5,
       "pricing": {
         "1m": {
-          "effective_monthly": 4.5,
-          "setup_fee": 4.5,
-          "total_period": 9,
-          "total_period_cost": 9
+          "effective_monthly": 5.5,
+          "setup_fee": 0,
+          "total_period": 5.5,
+          "total_period_cost": 5.5
         },
         "6m": {
-          "effective_monthly": 4.05,
-          "setup_fee": 2.25,
-          "total_period": 26.55,
-          "total_period_cost": 26.55
+          "effective_monthly": 4.95,
+          "setup_fee": 0,
+          "total_period": 29.7,
+          "total_period_cost": 29.7
         },
         "12m": {
-          "effective_monthly": 3.6,
+          "effective_monthly": 4.4,
           "setup_fee": 0,
-          "total_period": 43.2,
-          "total_period_cost": 43.2
+          "total_period": 52.8,
+          "total_period_cost": 52.8
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-10/",
-      "fetched_at": "2026-06-07T19:04:47.293Z",
+      "fetched_at": "2026-06-20T04:57:34.481Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
-      "best_price_eur": 3.6,
+      "best_price_eur": 4.4,
       "best_price_period": "12m"
     },
     {
@@ -55,33 +55,33 @@
       "storage_primary_gb": 100,
       "storage_primary_type": "NVMe",
       "port_speed_mbps": 300,
-      "base_monthly_eur": 7,
-      "default_monthly_eur": 7,
+      "base_monthly_eur": 7.5,
+      "default_monthly_eur": 7.5,
       "pricing": {
         "1m": {
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period": 7,
-          "total_period_cost": 7
+          "total_period": 7.5,
+          "total_period_cost": 7.5
         },
         "6m": {
-          "effective_monthly": 6.3,
+          "effective_monthly": 6.75,
           "setup_fee": 0,
-          "total_period": 37.8,
-          "total_period_cost": 37.8
+          "total_period": 40.5,
+          "total_period_cost": 40.5
         },
         "12m": {
-          "effective_monthly": 5.6,
+          "effective_monthly": 6,
           "setup_fee": 0,
-          "total_period": 67.2,
-          "total_period_cost": 67.2
+          "total_period": 72,
+          "total_period_cost": 72
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-20/",
-      "fetched_at": "2026-06-07T19:04:46.949Z",
+      "fetched_at": "2026-06-20T04:57:35.294Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
-      "best_price_eur": 5.6,
+      "best_price_eur": 6,
       "best_price_period": "12m"
     },
     {
@@ -118,7 +118,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-30/",
-      "fetched_at": "2026-06-07T19:04:46.394Z",
+      "fetched_at": "2026-06-20T04:57:36.639Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 11.2,
@@ -158,7 +158,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-40/",
-      "fetched_at": "2026-06-07T19:04:47.704Z",
+      "fetched_at": "2026-06-20T04:57:43.801Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 20,
@@ -198,7 +198,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-50/",
-      "fetched_at": "2026-06-07T19:04:48.907Z",
+      "fetched_at": "2026-06-20T04:57:36.146Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 29.6,
@@ -238,7 +238,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-60/",
-      "fetched_at": "2026-06-07T19:04:46.709Z",
+      "fetched_at": "2026-06-20T04:57:44.173Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 39.2,
@@ -255,33 +255,33 @@
       "storage_primary_gb": 300,
       "storage_primary_type": "SSD",
       "port_speed_mbps": 200,
-      "base_monthly_eur": 4.5,
-      "default_monthly_eur": 4.5,
+      "base_monthly_eur": 5.5,
+      "default_monthly_eur": 5.5,
       "pricing": {
         "1m": {
-          "effective_monthly": 4.5,
-          "setup_fee": 4.5,
-          "total_period": 9,
-          "total_period_cost": 9
+          "effective_monthly": 5.5,
+          "setup_fee": 0,
+          "total_period": 5.5,
+          "total_period_cost": 5.5
         },
         "6m": {
-          "effective_monthly": 4.05,
-          "setup_fee": 2.25,
-          "total_period": 26.55,
-          "total_period_cost": 26.55
+          "effective_monthly": 4.95,
+          "setup_fee": 0,
+          "total_period": 29.7,
+          "total_period_cost": 29.7
         },
         "12m": {
-          "effective_monthly": 3.6,
+          "effective_monthly": 4.4,
           "setup_fee": 0,
-          "total_period": 43.2,
-          "total_period_cost": 43.2
+          "total_period": 52.8,
+          "total_period_cost": 52.8
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-10/",
-      "fetched_at": "2026-06-07T19:04:46.302Z",
+      "fetched_at": "2026-06-20T04:57:36.330Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
-      "best_price_eur": 3.6,
+      "best_price_eur": 4.4,
       "best_price_period": "12m"
     },
     {
@@ -295,33 +295,33 @@
       "storage_primary_gb": 400,
       "storage_primary_type": "SSD",
       "port_speed_mbps": 300,
-      "base_monthly_eur": 7,
-      "default_monthly_eur": 7,
+      "base_monthly_eur": 7.5,
+      "default_monthly_eur": 7.5,
       "pricing": {
         "1m": {
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period": 7,
-          "total_period_cost": 7
+          "total_period": 7.5,
+          "total_period_cost": 7.5
         },
         "6m": {
-          "effective_monthly": 6.3,
+          "effective_monthly": 6.75,
           "setup_fee": 0,
-          "total_period": 37.8,
-          "total_period_cost": 37.8
+          "total_period": 40.5,
+          "total_period_cost": 40.5
         },
         "12m": {
-          "effective_monthly": 5.6,
+          "effective_monthly": 6,
           "setup_fee": 0,
-          "total_period": 67.2,
-          "total_period_cost": 67.2
+          "total_period": 72,
+          "total_period_cost": 72
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-20/",
-      "fetched_at": "2026-06-07T19:04:46.943Z",
+      "fetched_at": "2026-06-20T04:57:43.999Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
-      "best_price_eur": 5.6,
+      "best_price_eur": 6,
       "best_price_period": "12m"
     },
     {
@@ -358,7 +358,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-30/",
-      "fetched_at": "2026-06-07T19:04:48.450Z",
+      "fetched_at": "2026-06-20T04:57:37.695Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 11.2,
@@ -398,7 +398,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-40/",
-      "fetched_at": "2026-06-07T19:04:48.037Z",
+      "fetched_at": "2026-06-20T04:57:39.028Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 20,
@@ -438,7 +438,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-50/",
-      "fetched_at": "2026-06-07T19:04:48.817Z",
+      "fetched_at": "2026-06-20T04:57:39.448Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 29.6,
@@ -478,7 +478,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-s/",
-      "fetched_at": "2026-06-07T19:04:49.573Z",
+      "fetched_at": "2026-06-20T04:57:39.477Z",
       "savings_6m_pct": 5,
       "savings_12m_pct": 20,
       "best_price_eur": 27.52,
@@ -518,7 +518,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-m/",
-      "fetched_at": "2026-06-07T19:04:48.925Z",
+      "fetched_at": "2026-06-20T04:57:40.649Z",
       "savings_6m_pct": 5,
       "savings_12m_pct": 20,
       "best_price_eur": 35.84,
@@ -558,7 +558,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-l/",
-      "fetched_at": "2026-06-07T19:04:49.824Z",
+      "fetched_at": "2026-06-20T04:57:40.793Z",
       "savings_6m_pct": 5,
       "savings_12m_pct": 20,
       "best_price_eur": 51.2,
@@ -598,7 +598,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-xl/",
-      "fetched_at": "2026-06-07T19:04:49.386Z",
+      "fetched_at": "2026-06-20T04:57:42.506Z",
       "savings_6m_pct": 5,
       "savings_12m_pct": 20,
       "best_price_eur": 65.92,
@@ -638,7 +638,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-xxl/",
-      "fetched_at": "2026-06-07T19:04:50.222Z",
+      "fetched_at": "2026-06-20T04:57:42.690Z",
       "savings_6m_pct": 5,
       "savings_12m_pct": 20,
       "best_price_eur": 95.2,

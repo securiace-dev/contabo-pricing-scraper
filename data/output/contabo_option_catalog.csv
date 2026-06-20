@@ -3,12 +3,16 @@ cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Data Protection,Auto Backup,Aut
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Coolify Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Docker,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,GitLab Server,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,LAMP,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
@@ -18,7 +22,6 @@ cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Arch Linux,0,0,,,,,,EU
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 12,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -59,12 +62,16 @@ cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Data Protection,Auto Backup,Aut
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Coolify Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Docker,0,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,GitLab Server,0,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,LAMP,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
@@ -74,7 +81,6 @@ cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Arch Linux,0,0,,,,,,EU
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Debian 12,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -115,12 +121,17 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Data Protection,Auto Backup,Aut
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Coolify Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Docker,0,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,GitLab Server,0,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,LAMP,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Ollama Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
@@ -130,7 +141,6 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Arch Linux,0,0,,,,,,EU
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Debian 12,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -171,12 +181,17 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Data Protection,Auto Backup,Aut
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Coolify Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Docker,0,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,GitLab Server,0,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,LAMP,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Ollama Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
@@ -186,7 +201,6 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Arch Linux,0,0,,,,,,EU
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Debian 12,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -198,7 +212,6 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2019 Da
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2022 Datacenter,53,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Windows Server 2025 Datacenter,53,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Panels,Webmin,0,0,,,,,,EUR
@@ -227,12 +240,17 @@ cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Data Protection,Auto Backup,Aut
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Coolify Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Docker,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,GitLab Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,LAMP,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Ollama Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
@@ -242,7 +260,6 @@ cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Arch Linux,0,0,,,,,,EU
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Debian 12,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -254,7 +271,6 @@ cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2019 Da
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2022 Datacenter,64.15,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2025 Datacenter,64.15,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Webmin,0,0,,,,,,EUR
@@ -283,12 +299,17 @@ cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Data Protection,Auto Backup,Aut
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Coolify Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Docker,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,GitLab Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,LAMP,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Ollama Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
@@ -298,7 +319,6 @@ cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Arch Linux,0,0,,,,,,EU
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Debian 12,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -310,7 +330,6 @@ cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2019 Da
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2022 Datacenter,77,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2025 Datacenter,77,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Webmin,0,0,,,,,,EUR
@@ -338,12 +357,16 @@ cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,SSD,700 GB SSD,0,0
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Coolify Server,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Docker,0,0,,,,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,GitLab Server,0,0,,,,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,LAMP,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,n8n Server,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
@@ -389,12 +412,16 @@ storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Storage Type,SSD,300 GB
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Coolify Server,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Docker,0,0,,,,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,GitLab Server,0,0,,,,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,LAMP,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,n8n Server,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Blockchain,Flux Node,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
@@ -441,12 +468,16 @@ storage-vps-20,storage-vps-20,Storage VPS,Storage VPS 20,Storage Type,SSD,400 GB
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Coolify Server,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Docker,0,0,,,,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,GitLab Server,0,0,,,,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,LAMP,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,n8n Server,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Image,Blockchain,Flux Node,0,0,,,,,,EUR
@@ -495,12 +526,17 @@ storage-vps-30,storage-vps-30,Storage VPS,Storage VPS 30,Storage Type,SSD,1 TB S
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Coolify Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Docker,0,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,GitLab Server,0,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,LAMP,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,n8n Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Ollama Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Blockchain,Flux Node,0,0,,,,,,EUR
@@ -512,7 +548,6 @@ storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Arch Linux,0,0
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Debian 12,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Debian 13,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -549,12 +584,17 @@ storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Storage Type,SSD,1.2 TB
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Coolify Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Docker,0,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,GitLab Server,0,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,LAMP,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,n8n Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Ollama Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Blockchain,Flux Node,0,0,,,,,,EUR
@@ -566,7 +606,6 @@ storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Arch Linux,0,0
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Debian 12,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Debian 13,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -603,12 +642,16 @@ storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Storage Type,SSD,1.4 TB
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Coolify Server,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Docker,0,0,,,,,,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,GitLab Server,0,0,,,,,,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,n8n Server,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Blockchain,Flux Node,0,0,,,,,,EUR
@@ -632,7 +675,6 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2019 Standard,50,50,,,
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2022 Standard,50,50,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Webmin,0,0,,,,,,EUR
@@ -642,7 +684,6 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,32 TB Out + Unlimited In,
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited and Unmetered Traffic,86.29,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (Central),8.1,0,America,United States (Central),US,Central,,EUR
@@ -662,16 +703,20 @@ vds-m,vds-m,Cloud VDS,Cloud VDS M,Data Protection,None,No Backup Space,0,0,,,,,t
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Coolify Server,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,DeepSeek,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Docker,0,0,,,,,,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,GitLab Server,0,0,,,,,,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,n8n Server,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Ollama Server,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Flux Node,0,0,,,,,,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
@@ -691,7 +736,6 @@ vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2019 Standard,50,50,,,
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2022 Standard,50,50,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Webmin,0,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
@@ -701,12 +745,10 @@ vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Bandwidth,80 TB Out + Unlimited In,
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Bandwidth,Unlimited and Unmetered Traffic,172.49,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (Central),10.4,0,America,United States (Central),US,Central,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (East),12.7,0,America,United States (East),US,East,,EUR
-vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,America,United States (West),11.5,0,America,United States (West),US,West,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,India,18.6,0,Asia,India,IN,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,Japan,20.25,0,Asia,Japan,JP,,,EUR
 vds-m,vds-m,Cloud VDS,Cloud VDS M,Region,Asia,Singapore,19.6,0,Asia,Singapore,SG,,,EUR
@@ -721,16 +763,20 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Data Protection,None,No Backup Space,0,0,,,,,t
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Coolify Server,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,DeepSeek,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Docker,0,0,,,,,,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,GitLab Server,0,0,,,,,,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,n8n Server,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Ollama Server,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Flux Node,0,0,,,,,,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
@@ -761,15 +807,11 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,80 TB Out + Unlimited In,
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,Unlimited and Unmetered Traffic,258.79,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (Central),10.4,0,America,United States (Central),US,Central,,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (East),12.7,0,America,United States (East),US,East,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,America,United States (West),11.5,0,America,United States (West),US,West,,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,India,26.2,0,Asia,India,IN,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,Japan,28.5,0,Asia,Japan,JP,,,EUR
-vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Asia,Singapore,27.6,0,Asia,Singapore,SG,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Australia,Australia,23.6,0,Australia,Australia,AU,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Region,Europe,United Kingdom,10.4,0,Europe,United Kingdom,UK,,,EUR
@@ -781,16 +823,20 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Data Protection,None,No Backup Space,0,0,,,
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Coolify Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,DeepSeek,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Docker,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,GitLab Server,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,n8n Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Ollama Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Flux Node,0,0,,,,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Arch Linux,0,0,,,,,,EUR
@@ -808,11 +854,9 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2016 Standard,50,50
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2019 Standard,50,50,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2022 Standard,50,50,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Webmin,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,243 TB Out + Unlimited In,258.79,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
@@ -839,17 +883,20 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Data Protection,None,No Backup Space,0,0
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Coolify Server,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,DeepSeek,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Docker,0,0,,,,,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,GitLab Server,0,0,,,,,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,n8n Server,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Ollama Server,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Flux Node,0,0,,,,,,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Arch Linux,0,0,,,,,,EUR
@@ -868,7 +915,6 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2019 Standard,50
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2022 Standard,50,50,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
@@ -885,7 +931,6 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Private Networking,Private Ne
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (Central),12.7,0,America,United States (Central),US,Central,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (East),15,0,America,United States (East),US,East,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (West),13.8,0,America,United States (West),US,West,,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,India,50.25,0,Asia,India,IN,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Japan,54.5,0,Asia,Japan,JP,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Singapore,52.9,0,Asia,Singapore,SG,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Australia,Australia,45.15,0,Australia,Australia,AU,,,EUR

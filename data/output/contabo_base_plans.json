@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.2",
-  "generated_at": "2026-06-07T19:04:50.235Z",
+  "generated_at": "2026-06-20T04:57:44.181Z",
   "plan_count": 16,
   "plans": [
     {
@@ -11,45 +11,45 @@
       "product_name": "Cloud VPS 10",
       "product_slug": "cloud-vps-10",
       "product_url": "https://contabo.com/en/vps/cloud-vps-10/",
-      "fetched_at": "2026-06-07T19:04:47.293Z",
+      "fetched_at": "2026-06-20T04:57:34.481Z",
       "cpu": "4 vCPU Cores",
       "ram": "8 GB RAM",
       "base_storage": "75 GB NVMe or 150 GB SSD",
       "snapshots": "1 Snapshot",
       "port": "200 Mbit/s Port",
-      "base_monthly_price": 4.5,
+      "base_monthly_price": 5.5,
       "periods": [
         {
           "months": 1,
           "is_hidden_from_ui": false,
-          "effective_monthly": 4.5,
-          "setup_fee": 4.5,
-          "total_period_cost": 9,
+          "effective_monthly": 5.5,
+          "setup_fee": 0,
+          "total_period_cost": 5.5,
           "discount_total": 0
         },
         {
           "months": 3,
           "is_hidden_from_ui": true,
-          "effective_monthly": 4.5,
+          "effective_monthly": 5.5,
           "setup_fee": 0,
-          "total_period_cost": 13.5,
+          "total_period_cost": 16.5,
           "discount_total": 0
         },
         {
           "months": 6,
           "is_hidden_from_ui": false,
-          "effective_monthly": 4.05,
-          "setup_fee": 2.25,
-          "total_period_cost": 26.55,
-          "discount_total": 2.7
+          "effective_monthly": 4.95,
+          "setup_fee": 0,
+          "total_period_cost": 29.7,
+          "discount_total": 3.3
         },
         {
           "months": 12,
           "is_hidden_from_ui": false,
-          "effective_monthly": 3.6,
+          "effective_monthly": 4.4,
           "setup_fee": 0,
-          "total_period_cost": 43.2,
-          "discount_total": 10.8
+          "total_period_cost": 52.8,
+          "discount_total": 13.2
         }
       ],
       "specs_parsed": {
@@ -74,45 +74,45 @@
       "product_name": "Cloud VPS 20",
       "product_slug": "cloud-vps-20",
       "product_url": "https://contabo.com/en/vps/cloud-vps-20/",
-      "fetched_at": "2026-06-07T19:04:46.949Z",
+      "fetched_at": "2026-06-20T04:57:35.294Z",
       "cpu": "6 vCPU Cores",
       "ram": "12 GB RAM",
       "base_storage": "100 GB NVMe or 200 GB SSD",
       "snapshots": "2 Snapshots",
       "port": "300 Mbit/s Port",
-      "base_monthly_price": 7,
+      "base_monthly_price": 7.5,
       "periods": [
         {
           "months": 1,
           "is_hidden_from_ui": false,
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period_cost": 7,
+          "total_period_cost": 7.5,
           "discount_total": 0
         },
         {
           "months": 3,
           "is_hidden_from_ui": true,
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period_cost": 21,
+          "total_period_cost": 22.5,
           "discount_total": 0
         },
         {
           "months": 6,
           "is_hidden_from_ui": false,
-          "effective_monthly": 6.3,
+          "effective_monthly": 6.75,
           "setup_fee": 0,
-          "total_period_cost": 37.8,
-          "discount_total": 4.2
+          "total_period_cost": 40.5,
+          "discount_total": 4.5
         },
         {
           "months": 12,
           "is_hidden_from_ui": false,
-          "effective_monthly": 5.6,
+          "effective_monthly": 6,
           "setup_fee": 0,
-          "total_period_cost": 67.2,
-          "discount_total": 16.8
+          "total_period_cost": 72,
+          "discount_total": 18
         }
       ],
       "specs_parsed": {
@@ -137,7 +137,7 @@
       "product_name": "Cloud VPS 30",
       "product_slug": "cloud-vps-30",
       "product_url": "https://contabo.com/en/vps/cloud-vps-30/",
-      "fetched_at": "2026-06-07T19:04:46.394Z",
+      "fetched_at": "2026-06-20T04:57:36.639Z",
       "cpu": "8 vCPU Cores",
       "ram": "24 GB RAM",
       "base_storage": "200 GB NVMe or 400 GB SSD",
@@ -200,7 +200,7 @@
       "product_name": "Cloud VPS 40",
       "product_slug": "cloud-vps-40",
       "product_url": "https://contabo.com/en/vps/cloud-vps-40/",
-      "fetched_at": "2026-06-07T19:04:47.704Z",
+      "fetched_at": "2026-06-20T04:57:43.801Z",
       "cpu": "12 vCPU Cores",
       "ram": "48 GB RAM",
       "base_storage": "250 GB NVMe or 500 GB SSD",
@@ -263,7 +263,7 @@
       "product_name": "Cloud VPS 50",
       "product_slug": "cloud-vps-50",
       "product_url": "https://contabo.com/en/vps/cloud-vps-50/",
-      "fetched_at": "2026-06-07T19:04:48.907Z",
+      "fetched_at": "2026-06-20T04:57:36.146Z",
       "cpu": "16 vCPU Cores",
       "ram": "64 GB RAM",
       "base_storage": "300 GB NVMe or 600 GB SSD",
@@ -326,7 +326,7 @@
       "product_name": "Cloud VPS 60",
       "product_slug": "cloud-vps-60",
       "product_url": "https://contabo.com/en/vps/cloud-vps-60/",
-      "fetched_at": "2026-06-07T19:04:46.709Z",
+      "fetched_at": "2026-06-20T04:57:44.173Z",
       "cpu": "18 vCPU Cores",
       "ram": "96 GB RAM",
       "base_storage": "350 GB NVMe or 700 GB SSD",
@@ -389,45 +389,45 @@
       "product_name": "Storage VPS 10",
       "product_slug": "storage-vps-10",
       "product_url": "https://contabo.com/en/storage-vps/storage-vps-10/",
-      "fetched_at": "2026-06-07T19:04:46.302Z",
+      "fetched_at": "2026-06-20T04:57:36.330Z",
       "cpu": "2 vCPU Cores",
       "ram": "4 GB RAM",
       "base_storage": "300 GB SSD",
       "snapshots": "",
       "port": "200 Mbit/s Port",
-      "base_monthly_price": 4.5,
+      "base_monthly_price": 5.5,
       "periods": [
         {
           "months": 1,
           "is_hidden_from_ui": false,
-          "effective_monthly": 4.5,
-          "setup_fee": 4.5,
-          "total_period_cost": 9,
+          "effective_monthly": 5.5,
+          "setup_fee": 0,
+          "total_period_cost": 5.5,
           "discount_total": 0
         },
         {
           "months": 3,
           "is_hidden_from_ui": true,
-          "effective_monthly": 4.5,
+          "effective_monthly": 5.5,
           "setup_fee": 0,
-          "total_period_cost": 13.5,
+          "total_period_cost": 16.5,
           "discount_total": 0
         },
         {
           "months": 6,
           "is_hidden_from_ui": false,
-          "effective_monthly": 4.05,
-          "setup_fee": 2.25,
-          "total_period_cost": 26.55,
-          "discount_total": 2.7
+          "effective_monthly": 4.95,
+          "setup_fee": 0,
+          "total_period_cost": 29.7,
+          "discount_total": 3.3
         },
         {
           "months": 12,
           "is_hidden_from_ui": false,
-          "effective_monthly": 3.6,
+          "effective_monthly": 4.4,
           "setup_fee": 0,
-          "total_period_cost": 43.2,
-          "discount_total": 10.8
+          "total_period_cost": 52.8,
+          "discount_total": 13.2
         }
       ],
       "specs_parsed": {
@@ -452,45 +452,45 @@
       "product_name": "Storage VPS 20",
       "product_slug": "storage-vps-20",
       "product_url": "https://contabo.com/en/storage-vps/storage-vps-20/",
-      "fetched_at": "2026-06-07T19:04:46.943Z",
+      "fetched_at": "2026-06-20T04:57:43.999Z",
       "cpu": "3 vCPU Cores",
       "ram": "8 GB RAM",
       "base_storage": "400 GB SSD",
       "snapshots": "",
       "port": "300 Mbit/s Port",
-      "base_monthly_price": 7,
+      "base_monthly_price": 7.5,
       "periods": [
         {
           "months": 1,
           "is_hidden_from_ui": false,
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period_cost": 7,
+          "total_period_cost": 7.5,
           "discount_total": 0
         },
         {
           "months": 3,
           "is_hidden_from_ui": true,
-          "effective_monthly": 7,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period_cost": 21,
+          "total_period_cost": 22.5,
           "discount_total": 0
         },
         {
           "months": 6,
           "is_hidden_from_ui": false,
-          "effective_monthly": 6.3,
+          "effective_monthly": 6.75,
           "setup_fee": 0,
-          "total_period_cost": 37.8,
-          "discount_total": 4.2
+          "total_period_cost": 40.5,
+          "discount_total": 4.5
         },
         {
           "months": 12,
           "is_hidden_from_ui": false,
-          "effective_monthly": 5.6,
+          "effective_monthly": 6,
           "setup_fee": 0,
-          "total_period_cost": 67.2,
-          "discount_total": 16.8
+          "total_period_cost": 72,
+          "discount_total": 18
         }
       ],
       "specs_parsed": {
@@ -515,7 +515,7 @@
       "product_name": "Storage VPS 30",
       "product_slug": "storage-vps-30",
       "product_url": "https://contabo.com/en/storage-vps/storage-vps-30/",
-      "fetched_at": "2026-06-07T19:04:48.450Z",
+      "fetched_at": "2026-06-20T04:57:37.695Z",
       "cpu": "6 vCPU Cores",
       "ram": "18 GB RAM",
       "base_storage": "1 TB SSD",
@@ -578,7 +578,7 @@
       "product_name": "Storage VPS 40",
       "product_slug": "storage-vps-40",
       "product_url": "https://contabo.com/en/storage-vps/storage-vps-40/",
-      "fetched_at": "2026-06-07T19:04:48.037Z",
+      "fetched_at": "2026-06-20T04:57:39.028Z",
       "cpu": "8 vCPU Cores",
       "ram": "30 GB RAM",
       "base_storage": "1.2 TB SSD",
@@ -641,7 +641,7 @@
       "product_name": "Storage VPS 50",
       "product_slug": "storage-vps-50",
       "product_url": "https://contabo.com/en/storage-vps/storage-vps-50/",
-      "fetched_at": "2026-06-07T19:04:48.817Z",
+      "fetched_at": "2026-06-20T04:57:39.448Z",
       "cpu": "14 vCPU Cores",
       "ram": "50 GB RAM",
       "base_storage": "1.4 TB SSD",
@@ -704,7 +704,7 @@
       "product_name": "Cloud VDS S",
       "product_slug": "vds-s",
       "product_url": "https://contabo.com/en/vds/vds-s/",
-      "fetched_at": "2026-06-07T19:04:49.573Z",
+      "fetched_at": "2026-06-20T04:57:39.477Z",
       "cpu": "3 Physical Cores",
       "ram": "24 GB RAM",
       "base_storage": "180 GB NVMe",
@@ -767,7 +767,7 @@
       "product_name": "Cloud VDS M",
       "product_slug": "vds-m",
       "product_url": "https://contabo.com/en/vds/vds-m/",
-      "fetched_at": "2026-06-07T19:04:48.925Z",
+      "fetched_at": "2026-06-20T04:57:40.649Z",
       "cpu": "4 Physical Cores",
       "ram": "32 GB RAM",
       "base_storage": "240 GB NVMe",
@@ -830,7 +830,7 @@
       "product_name": "Cloud VDS L",
       "product_slug": "vds-l",
       "product_url": "https://contabo.com/en/vds/vds-l/",
-      "fetched_at": "2026-06-07T19:04:49.824Z",
+      "fetched_at": "2026-06-20T04:57:40.793Z",
       "cpu": "6 Physical Cores",
       "ram": "48 GB RAM",
       "base_storage": "360 GB NVMe",
@@ -893,7 +893,7 @@
       "product_name": "Cloud VDS XL",
       "product_slug": "vds-xl",
       "product_url": "https://contabo.com/en/vds/vds-xl/",
-      "fetched_at": "2026-06-07T19:04:49.386Z",
+      "fetched_at": "2026-06-20T04:57:42.506Z",
       "cpu": "8 Physical Cores",
       "ram": "64 GB RAM",
       "base_storage": "480 GB NVMe",
@@ -956,7 +956,7 @@
       "product_name": "Cloud VDS XXL",
       "product_slug": "vds-xxl",
       "product_url": "https://contabo.com/en/vds/vds-xxl/",
-      "fetched_at": "2026-06-07T19:04:50.222Z",
+      "fetched_at": "2026-06-20T04:57:42.690Z",
       "cpu": "12 Physical Cores",
       "ram": "96 GB RAM",
       "base_storage": "720 GB NVMe",
