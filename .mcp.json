@@ -4,6 +4,16 @@
       "type": "stdio",
       "command": "mempalace-mcp",
       "env": {}
+    },
+    "repowise": {
+      "command": "repowise",
+      "args": [
+        "mcp",
+        "/Users/kritananda/Projects/contabo-pricing-scraper",
+        "--transport",
+        "stdio"
+      ],
+      "description": "repowise: codebase intelligence \u2014 docs, graph, git signals, dead code, decisions"
     }
   }
 }
