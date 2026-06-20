@@ -11,7 +11,7 @@
 > (documentation, ownership, history, decisions). **Always verify against
 > actual source files before making changes** — the index may be stale.
 
-Last indexed: 2026-06-20 (commit c699e3f). Confidence: 100%.
+Last indexed: 2026-06-20 (commit 9fa3627). Confidence: 100%.
 ### Key Modules
 | Module | Purpose |
 |--------|---------|
@@ -56,7 +56,7 @@ Last indexed: 2026-06-20 (commit c699e3f). Confidence: 100%.
 | `data/output/contabo_base_plans.csv` | 98.0th %ile | 92 | Sri Nithya Kritananda |
 
 ## Code health
-Hotspot health: 5.45/10 (stable) ·
+Hotspot health: 5.5/10 (stable) ·
 Average: 9.17/10 ·
 Worst: 2.0/10 (`src/main.rs`)
 
