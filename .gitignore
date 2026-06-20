@@ -30,6 +30,9 @@ ruvector.db-*
 .claude/memory.db-*
 .claude/schema.sql
 .claude/state.json
+.claude/worktrees/
+# repowise codebase-doc engine: regenerable wiki cache + local session state
+.repowise/
 
 # MemPalace per-project files — SHARED with team (now tracked: mempalace.yaml,
 # entities.json). The palace database itself stays local to each machine.
