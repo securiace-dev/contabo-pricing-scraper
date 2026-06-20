@@ -109,7 +109,11 @@ disjoint.
 
 1. `bash scripts/predeploy-check.sh` must be **GREEN** (unit + PHP 7.4 lint +
    live-schema smoke 8.13/9.0 + integration smoke). Fail-closed; no deploy on red.
-2. Dev render: `scripts/local-whmcs.sh render 8 profiles|mappings` (dockerised WHMCS).
+2. Dev render: the canonical local WHMCS stack is now **`~/Projects/whmcs-devbox`**
+   (`whmcs-devbox use contabo-pricing` → `up` → `render 8 dashboard`); it mounts
+   both modules live into WHMCS 8.13 + 9.0. `scripts/local-whmcs.sh render 8 …`
+   is the legacy in-repo equivalent (kept working). NOTE: a fresh devbox DB needs
+   the one-time WHMCS install wizard before the live-schema/integration smokes run.
 3. Follow `whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md`: rsync to `root@195.7.4.219`, `--exclude '.claude-flow/'`,
    chown, verify `AdminController::VERSION` + lint. Prod only on green gate + approval.
 
