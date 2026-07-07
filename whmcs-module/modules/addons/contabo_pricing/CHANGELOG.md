@@ -1,5 +1,60 @@
 # Changelog
 
+## contabo_vps 1.0.0 — 2026-07-07 (provisioning module production hardening)
+
+Full audit + rework of the `modules/servers/contabo_vps` provisioning module
+against the official Contabo REST API contract. No addon schema change. New
+contract doc: `docs/PROVISIONING_CONTRACT.md`.
+
+### Correctness (bugs fixed)
+- **Contract `period` now sent** (required by the create API): WHMCS billing
+  cycle maps Monthly→1 … Annually→12 (bi/triennial→12, logged). Previously every
+  order silently became a 1-month Contabo contract.
+- **Cancel body corrected** to the documented `{}` (was an undocumented
+  `terminationDate`); the returned `cancelDate` is logged. Empty bodies now
+  encode as JSON objects (`{}`), never `[]`.
+- **Root passwords work now**: the service password is vaulted as
+  `whmcs-svc-{id}-root` and passed as `rootPassword` secretId on create;
+  Reset Password (admin + new client button) rotates it and updates
+  `tblhosting.password` only after the API accepts. Previously the password
+  WHMCS displayed never matched the server.
+- **Create is idempotent**: instance-id custom field is auto-created *before*
+  the API call; a retry with a stored id is a verified no-op; an interrupted
+  create is recovered by displayName-tag adoption (exact single match only).
+- SSH secret id (config option 3) validated numeric (was silently cast to 0);
+  custom-field lookups tolerate the `name|Friendly` form.
+
+### Safety (wrong-server protection)
+- Instances are tagged `whmcs-{serviceid}` in their Contabo displayName;
+  destructive actions (terminate, reset password) refuse on tag mismatch, and a
+  different stored instance id is never silently overwritten. Sync restores a
+  drifted tag. Ambiguous tag matches always error — never guess.
+- Secret values and passwords are masked from `logModuleCall` by a recursive
+  sanitizer (enforced by `LogRedactionTest`).
+
+### UX / sync
+- Client area: live status panel (status badge, IPv4s, region/image/created,
+  graceful stale fallback) + Start/Stop/Restart/Reset Root Password client
+  buttons. Admin: Start/Stop/Restart/Reset Password/Sync from Contabo buttons.
+- `tblhosting.dedicatedip`/`assignedips` backfilled on admin/client views, the
+  Sync button, and a bounded `DailyCronJob` sweep (new `hooks.php`).
+- Configurable products provision what the customer picked: selections
+  round-trip via the addon link tables; Image resolves against
+  `GET /v1/compute/images` and Region via a label→slug map — both fail-closed;
+  unmappable dimensions are acknowledged in the activity log.
+- New config options 5 (cloud-init userData) and 6 (add-ons JSON);
+  TestConnection distinguishes auth vs API-reachability failures.
+
+### Engineering
+- HTTP transport extracted behind `HttpExecutor` (mirrors the addon's
+  RequestExecutor seam); PUT/DELETE added; 401 refresh no longer consumes the
+  retry budget; total backoff capped at 6s; 10s timeouts on view paths with
+  cached-IP degradation.
+- New PHPUnit suite (109 tests) under `modules/servers/contabo_vps/tests`
+  (FakeCapsule + scripted FakeHttpExecutor, real entry functions via a Runtime
+  factory seam). `scripts/predeploy-check.sh` now gates the server module
+  (unit suite + PHP 7.4 lint).
+
 ## 0.7.0 — 2026-05-29 (Phase D — two-layer pricing, mode-aware profiles, recoverable delete)
 
 Schema **v8** (additive + idempotent). The profile becomes the SOURCE authority and

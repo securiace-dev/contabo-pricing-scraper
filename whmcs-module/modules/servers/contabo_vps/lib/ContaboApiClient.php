@@ -4,26 +4,48 @@ declare(strict_types=1);
 namespace ContaboVps;
 
 /**
- * Thin curl wrapper around the Contabo REST API. Mirrors the addon's
- * CurlRequestExecutor pattern (no Guzzle, to avoid a dependency clash with
- * whatever WHMCS bundles). SSL verification is always on.
+ * Thin client for the Contabo REST API over the HttpExecutor seam (no Guzzle,
+ * to avoid a dependency clash with whatever WHMCS bundles). SSL verification
+ * is always on (enforced by CurlHttpExecutor).
  *
  * Resilience:
- *   - 401 → force-refresh the token once, then retry.
+ *   - 401 → force-refresh the token once (does NOT consume the retry budget),
+ *     then replay the request.
  *   - 429 → linear backoff, up to MAX_RETRIES.
  *   - 5xx → exponential backoff, up to MAX_RETRIES.
+ *   - Total backoff sleep is capped at MAX_TOTAL_SLEEP_SEC so a flapping API
+ *     can never stall a WHMCS admin/client page load for long.
  * Every request carries an x-request-id (UUID v4) for Contabo-side tracing.
  */
 class ContaboApiClient
 {
-    private const BASE_URL    = 'https://api.contabo.com';
-    private const MAX_RETRIES = 3;
+    private const BASE_URL            = 'https://api.contabo.com';
+    private const MAX_RETRIES         = 3;
+    private const MAX_TOTAL_SLEEP_SEC = 6;
+    private const DEFAULT_TIMEOUT_SEC = 30;
 
     /** @var ContaboAuth */ private $auth;
+    /** @var HttpExecutor */ private $executor;
+    /** @var callable */ private $sleeper;
+    /** @var int */ private $timeoutSec = self::DEFAULT_TIMEOUT_SEC;
 
-    public function __construct(ContaboAuth $auth)
+    public function __construct(ContaboAuth $auth, ?HttpExecutor $executor = null, ?callable $sleeper = null)
     {
-        $this->auth = $auth;
+        $this->auth     = $auth;
+        $this->executor = $executor !== null ? $executor : new CurlHttpExecutor();
+        $this->sleeper  = $sleeper !== null ? $sleeper : static function (int $seconds): void {
+            sleep($seconds);
+        };
+    }
+
+    /**
+     * Per-call timeout override. View paths (admin tab / client area render)
+     * use a short timeout so a slow API degrades the page instead of hanging
+     * it; provisioning keeps the default.
+     */
+    public function setTimeout(int $seconds): void
+    {
+        $this->timeoutSec = max(1, $seconds);
     }
 
     /** @return array<string,mixed> */
@@ -39,73 +61,86 @@ class ContaboApiClient
     }
 
     /** @param array<string,mixed> $body @return array<string,mixed> */
+    public function put(string $path, array $body): array
+    {
+        return $this->request('PUT', $path, $body);
+    }
+
+    /** @param array<string,mixed> $body @return array<string,mixed> */
     public function patch(string $path, array $body): array
     {
         return $this->request('PATCH', $path, $body);
+    }
+
+    /** @return array<string,mixed> */
+    public function delete(string $path): array
+    {
+        return $this->request('DELETE', $path, null);
     }
 
     /**
      * @param array<string,mixed>|null $body
      * @return array<string,mixed>
      */
-    private function request(string $method, string $path, ?array $body, int $attempt = 0): array
+    private function request(string $method, string $path, ?array $body): array
     {
         $url     = self::BASE_URL . $path;
-        $token   = $this->auth->getToken();
-        $headers = [
-            'Authorization: Bearer ' . $token,
-            'x-request-id: ' . $this->generateRequestId(),
-            'Content-Type: application/json',
-            'Accept: application/json',
-        ];
-
-        $ch   = curl_init($url);
-        $opts = [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_TIMEOUT        => 30,
-            CURLOPT_HTTPHEADER     => $headers,
-        ];
-
-        if ($method === 'POST') {
-            $opts[CURLOPT_POST]       = true;
-            $opts[CURLOPT_POSTFIELDS] = $body !== null ? (string) json_encode($body) : '{}';
-        } elseif ($method === 'PATCH') {
-            $opts[CURLOPT_CUSTOMREQUEST] = 'PATCH';
-            $opts[CURLOPT_POSTFIELDS]    = $body !== null ? (string) json_encode($body) : '{}';
+        $encoded = null;
+        if ($body !== null) {
+            // An empty PHP array must serialise as a JSON OBJECT ({}), not [] —
+            // Contabo's endpoints validate the body as an object.
+            $encoded = $body === [] ? '{}' : (string) json_encode($body);
+        } elseif ($method === 'POST' || $method === 'PUT' || $method === 'PATCH') {
+            $encoded = '{}';
         }
 
-        curl_setopt_array($ch, $opts);
-        $raw  = curl_exec($ch);
-        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $err  = curl_error($ch);
-        curl_close($ch);
+        $attempt   = 0;
+        $refreshed = false;
+        $slept     = 0;
 
-        if ($raw === false || $err !== '') {
-            throw new ContaboProvisioningException('API curl error: ' . $err);
-        }
+        while (true) {
+            $headers = [
+                'Authorization: Bearer ' . $this->auth->getToken(),
+                'x-request-id: ' . $this->generateRequestId(),
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ];
 
-        if ($code === 401 && $attempt === 0) {
-            $this->auth->forceRefresh();
-            return $this->request($method, $path, $body, 1);
-        }
-        if ($code === 429 && $attempt < self::MAX_RETRIES) {
-            sleep(1 + $attempt);
-            return $this->request($method, $path, $body, $attempt + 1);
-        }
-        if ($code >= 500 && $attempt < self::MAX_RETRIES) {
-            sleep((int) (2 ** $attempt));
-            return $this->request($method, $path, $body, $attempt + 1);
-        }
+            list($code, $raw, $errno, $err) = $this->executor->execute($method, $url, $headers, $encoded, $this->timeoutSec);
 
-        $data = json_decode((string) $raw, true);
-        if ($code >= 400) {
-            $msg = is_array($data) ? (string) ($data['message'] ?? json_encode($data)) : (string) $raw;
-            throw new ContaboProvisioningException('API error (HTTP ' . $code . '): ' . substr($msg, 0, 300));
-        }
+            if ($errno !== 0) {
+                throw new ContaboProvisioningException('API transport error: ' . ($err !== '' ? $err : ('curl errno ' . $errno)));
+            }
 
-        return is_array($data) ? $data : [];
+            if ($code === 401 && !$refreshed) {
+                // Stale/expired token — refresh once and replay. A second 401
+                // means the credentials themselves are bad; fall through to the
+                // error mapping below on the replay.
+                $this->auth->forceRefresh();
+                $refreshed = true;
+                continue;
+            }
+
+            $retryable = ($code === 429 || $code >= 500);
+            if ($retryable && $attempt < self::MAX_RETRIES) {
+                $delay = $code === 429 ? (1 + $attempt) : (2 ** $attempt);
+                $delay = (int) min($delay, max(0, self::MAX_TOTAL_SLEEP_SEC - $slept));
+                if ($delay > 0) {
+                    call_user_func($this->sleeper, $delay);
+                    $slept += $delay;
+                }
+                $attempt++;
+                continue;
+            }
+
+            $data = json_decode($raw, true);
+            if ($code >= 400) {
+                $msg = is_array($data) ? (string) ($data['message'] ?? json_encode($data)) : $raw;
+                throw new ContaboProvisioningException('API error (HTTP ' . $code . '): ' . substr($msg, 0, 300));
+            }
+
+            return is_array($data) ? $data : [];
+        }
     }
 
     /** UUID v4 without an extension dependency. */

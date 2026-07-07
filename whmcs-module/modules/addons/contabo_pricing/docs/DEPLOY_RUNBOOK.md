@@ -149,17 +149,32 @@ Then load the addon admin page once so `SchemaHealth::assertOrMigrate()` runs.
 
 A separate WHMCS server/provisioning module. `deploy.sh` deploys it automatically
 alongside the addon whenever it has local changes — no separate step needed.
-`predeploy-check.sh` remains addon-scoped (no provisioning-module unit tests).
+`predeploy-check.sh` covers it too: its PHPUnit suite (stage 2) and the PHP 7.4
+lint of its lib/entrypoints/tests (stage 3) gate every deploy. Full contract:
+`docs/PROVISIONING_CONTRACT.md`.
 
-- **No DB schema.** It stores the created instance id in a service custom field
-  named `contabo_instance_id` (create it on the product's Custom Fields tab).
+- **No DB schema of its own.** The created instance id lives in the service
+  custom field `contabo_instance_id` — **auto-created on the product at first
+  provision** (no manual step). The instance's Contabo displayName carries a
+  `whmcs-{serviceid}` tag; destructive actions verify it and sync restores it.
 - **Credentials** live in WHMCS server config (Setup → Servers), encrypted at
   rest by WHMCS: Username = OAuth2 `client_id`, Password = `client_secret`,
-  Access Hash = `apiUser:apiPassword`. They are redacted from `logModuleCall` and
-  never logged in plaintext; SSL verification is enforced on every call.
-- **Activation:** link a WHMCS product to the `contabo_vps` server module and set
-  config options 1–4 (image id, region, SSH secret id, product id). Use the
-  module's **Test Connection** before ordering.
+  Access Hash = `apiUser:apiPassword`. They are redacted from `logModuleCall`
+  (plus a recursive sanitizer for secret-bearing payload keys) and never logged
+  in plaintext; SSL verification is enforced on every call.
+- **Activation:** link a WHMCS product to the `contabo_vps` server module and
+  set config options 1–6 (image id + region fallbacks, SSH secret id, Contabo
+  product id, optional cloud-init, optional add-ons JSON). On configurable
+  products, curated customer selections (Image/Region/Private Networking)
+  override the fallbacks via the addon link tables. Use the module's
+  **Test Connection** before ordering.
+- **Passwords:** the service password is pushed to the Contabo vault
+  (`whmcs-svc-{id}-root`) and rides in as `rootPassword`, so what WHMCS shows
+  the customer works on the server. Reset Password (admin + client) rotates it.
+- **Billing:** the WHMCS cycle maps to Contabo's contract `period`
+  (Monthly→1 … Annually→12; bi/triennial→12, logged).
 - Lifecycle: Contabo has no native suspend — Suspend/Unsuspend map to power
-  stop/start; Terminate issues a cancel; ChangePackage is a manual-intervention
-  message (no live resize).
+  stop/start; Terminate issues a cancel (`{}` body, cancelDate logged) and
+  best-effort vault cleanup; ChangePackage is a manual-intervention message
+  (no live resize). IP/status sync happens on admin/client page views, the
+  "Sync from Contabo" admin button, and a bounded DailyCronJob sweep.
