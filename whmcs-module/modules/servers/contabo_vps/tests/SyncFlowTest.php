@@ -33,6 +33,27 @@ final class SyncFlowTest extends TestCase
         $this->assertSame('203.0.113.11', $row['assignedips']);
     }
 
+    public function testSyncWritesIpv6AlongsideIpv4(): void
+    {
+        $this->h->http->stub('GET /v1/compute/instances/9001', 200, ['data' => [[
+            'instanceId'  => 9001,
+            'displayName' => 'whmcs-300 vps.example.com',
+            'status'      => 'running',
+            'ipConfig'    => [
+                'v4' => [['ip' => '203.0.113.10']],
+                'v6' => [['ip' => '2a02:c207::1']],
+            ],
+        ]]]);
+
+        $out = contabo_vps_ClientArea(Harness::params());
+        $this->assertSame(['203.0.113.10'], $out['vars']['ipv4']);
+        $this->assertSame(['2a02:c207::1'], $out['vars']['ipv6']);
+
+        $row = Capsule::$tables['tblhosting'][0];
+        $this->assertSame('203.0.113.10', $row['dedicatedip']);
+        $this->assertSame('2a02:c207::1', $row['assignedips'], 'IPv6 must land in assignedips');
+    }
+
     public function testUnchangedIpsAreNotRewritten(): void
     {
         Capsule::$tables['tblhosting'][0]['dedicatedip'] = '203.0.113.10';

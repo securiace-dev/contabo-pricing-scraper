@@ -230,6 +230,54 @@ final class InstanceService
     }
 
     /**
+     * Rebuild the instance's OS via the reinstall endpoint (PUT), to the
+     * product/selection image, with a fresh vaulted root password. Destructive
+     * (wipes the disk), so it requires the displayName tag to match.
+     *
+     * @param array<string,mixed> $params
+     */
+    public function reinstall(array $params): string
+    {
+        $serviceId  = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->requireInstanceId($params);
+
+        $owned = $this->linker->verifyOwnership($this->client, $instanceId, $serviceId);
+        if (!$owned['exists']) {
+            return 'Contabo instance ' . $instanceId . ' no longer exists';
+        }
+        if (!$owned['tagMatches']) {
+            return 'Refusing to reinstall instance ' . $instanceId . ': its display name does not carry the tag "'
+                . InstanceLinker::tag($serviceId) . '". Run "Sync from Contabo" to verify the link first.';
+        }
+
+        // Image: the customer's selection wins, else the product's config option.
+        $resolved = $this->resolveSelections($params);
+        $imageId  = isset($resolved['imageId']) ? (string) $resolved['imageId'] : trim((string) ($params['configoption1'] ?? ''));
+        if ($imageId === '') {
+            return 'Cannot reinstall: no image resolved from the product or the customer selection';
+        }
+
+        $password = SecretManager::generatePassword();
+        $secretId = $this->secrets->ensureRootPasswordSecret($serviceId, $password);
+        $body = ['imageId' => $imageId, 'rootPassword' => $secretId];
+
+        $secretOpt = trim((string) ($params['configoption3'] ?? ''));
+        if ($secretOpt !== '' && ctype_digit($secretOpt)) {
+            $body['sshKeys'] = [(int) $secretOpt];
+        }
+        $userData = trim((string) ($params['configoption5'] ?? ''));
+        if ($userData !== '') {
+            $body['userData'] = $userData;
+        }
+
+        $resp = $this->client->put('/v1/compute/instances/' . rawurlencode($instanceId), $body);
+        // The rebuild resets the root password to the one we just vaulted.
+        $this->persistServicePassword($serviceId, $password);
+        $this->log('Reinstall', $instanceId, $resp);
+        return 'success';
+    }
+
+    /**
      * @param array<string,mixed> $params
      * @param string $action start|stop|restart|shutdown
      */
@@ -260,8 +308,8 @@ final class InstanceService
 
     /**
      * Pull the live instance state and reconcile WHMCS with it:
-     *   - tblhosting.dedicatedip ← first IPv4, assignedips ← the rest
-     *     (written only when changed);
+     *   - tblhosting.dedicatedip ← primary IPv4, assignedips ← extra IPv4s +
+     *     all IPv6s (written only when changed);
      *   - re-assert a drifted displayName tag (stored id is the anchor, so a
      *     rename in the Contabo panel cannot detach the service).
      *
@@ -284,8 +332,9 @@ final class InstanceService
             throw new ContaboProvisioningException('Instance ' . $instanceId . ' not found at Contabo');
         }
 
-        $ips = $this->extractIpv4($inst);
-        $this->writeServiceIps($serviceId, $ips);
+        $v4 = $this->extractIps($inst, 'v4');
+        $v6 = $this->extractIps($inst, 'v6');
+        $this->writeServiceIps($serviceId, $v4, $v6);
 
         $display = (string) ($inst['displayName'] ?? '');
         if (!InstanceLinker::displayNameMatchesTag($display, $serviceId)) {
@@ -311,7 +360,8 @@ final class InstanceService
             'status'      => (string) ($inst['status'] ?? 'unknown'),
             'region'      => (string) ($inst['region'] ?? ''),
             'image'       => (string) ($inst['imageId'] ?? ''),
-            'ipv4'        => $ips,
+            'ipv4'        => $v4,
+            'ipv6'        => $v6,
             'created'     => (string) ($inst['createdDate'] ?? ''),
             'display_name'=> $display,
             'synced_at'   => date('Y-m-d H:i:s'),
@@ -331,20 +381,23 @@ final class InstanceService
     }
 
     /**
+     * Extract the IPs of one family ('v4' or 'v6') from an instance's ipConfig.
+     * Contabo has used both a single object and a list of objects under each
+     * family key, so both shapes are handled.
+     *
      * @param array<string,mixed> $inst
      * @return list<string>
      */
-    private function extractIpv4(array $inst): array
+    private function extractIps(array $inst, string $family): array
     {
         $ips = [];
-        if (isset($inst['ipConfig']['v4'])) {
-            $v4 = $inst['ipConfig']['v4'];
-            // Single object or list of objects — Contabo has used both shapes.
-            if (isset($v4['ip'])) {
-                $v4 = [$v4];
+        if (isset($inst['ipConfig'][$family])) {
+            $entries = $inst['ipConfig'][$family];
+            if (isset($entries['ip'])) {
+                $entries = [$entries];
             }
-            if (is_array($v4)) {
-                foreach ($v4 as $entry) {
+            if (is_array($entries)) {
+                foreach ($entries as $entry) {
                     $ip = is_array($entry) ? trim((string) ($entry['ip'] ?? '')) : '';
                     if ($ip !== '') {
                         $ips[] = $ip;
@@ -355,10 +408,17 @@ final class InstanceService
         return $ips;
     }
 
-    /** @param list<string> $ips */
-    private function writeServiceIps(int $serviceId, array $ips): void
+    /**
+     * Reconcile WHMCS with the instance's IPs: dedicatedip = primary IPv4, and
+     * assignedips = any additional IPv4s followed by all IPv6s (newline-joined),
+     * so a dual-stack VPS surfaces its v6 addresses too. Writes only on change.
+     *
+     * @param list<string> $v4
+     * @param list<string> $v6
+     */
+    private function writeServiceIps(int $serviceId, array $v4, array $v6): void
     {
-        if ($serviceId <= 0 || $ips === []) {
+        if ($serviceId <= 0 || ($v4 === [] && $v6 === [])) {
             return;
         }
         try {
@@ -367,10 +427,10 @@ final class InstanceService
             if ($row === null) {
                 return;
             }
-            $dedicated = $ips[0];
-            $assigned  = implode("\n", array_slice($ips, 1));
+            $dedicated = $v4 !== [] ? $v4[0] : '';
+            $assigned  = implode("\n", array_merge(array_slice($v4, 1), $v6));
             $update = [];
-            if ((string) ($row['dedicatedip'] ?? '') !== $dedicated) {
+            if ($dedicated !== '' && (string) ($row['dedicatedip'] ?? '') !== $dedicated) {
                 $update['dedicatedip'] = $dedicated;
             }
             if ((string) ($row['assignedips'] ?? '') !== $assigned) {

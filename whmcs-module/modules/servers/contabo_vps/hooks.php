@@ -38,26 +38,38 @@ add_hook('DailyCronJob', 30, function () {
             ->limit($maxServices)
             ->get();
 
-        $synced = 0;
-        $failed = 0;
+        // Group by server so each server authenticates ONCE (one token) and its
+        // services reuse the same client — instead of a token fetch per service,
+        // which would double the call volume and risk Contabo's rate limit.
+        $byServer = [];
         foreach ($services as $svc) {
             $svc = (array) $svc;
-            $serviceId = (int) ($svc['id'] ?? 0);
-            if ($serviceId <= 0) {
+            $params = _contabo_vps_cron_params($svc);
+            if ($params === null) {
                 continue;
             }
-            try {
-                $params = _contabo_vps_cron_params($svc);
-                if ($params === null) {
-                    continue;
+            $byServer[(int) ($svc['server'] ?? 0)][] = $params;
+        }
+
+        $synced = 0;
+        $failed = 0;
+        foreach ($byServer as $serverParamsList) {
+            $client = null;
+            foreach ($serverParamsList as $params) {
+                try {
+                    if ($client === null) {
+                        $client = new \ContaboVps\ContaboApiClient(\ContaboVps\Runtime::auth($params));
+                    }
+                    \ContaboVps\Runtime::instanceServiceWithClient($client)->sync($params);
+                    $synced++;
+                } catch (\Throwable $e) {
+                    $failed++;
+                    // Unlinked services and transient API errors are expected here;
+                    // the per-service detail lives in the module debug log.
+                    _contabo_vps_log('CronSync', (int) ($params['serviceid'] ?? 0), $e->getMessage(), 'error');
                 }
-                \ContaboVps\Runtime::instanceService($params)->sync($params);
-                $synced++;
-            } catch (\Throwable $e) {
-                $failed++;
-                // Unlinked services and transient API errors are expected here;
-                // the per-service detail lives in the module debug log.
-                _contabo_vps_log('CronSync', $serviceId, $e->getMessage(), 'error');
+                // Small pause to stay well under Contabo's rate limit on big fleets.
+                usleep(150000);
             }
         }
 

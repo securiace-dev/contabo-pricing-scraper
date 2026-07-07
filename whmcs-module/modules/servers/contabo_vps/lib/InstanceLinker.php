@@ -212,29 +212,28 @@ final class InstanceLinker
     }
 
     /**
-     * Recovery path: search the account's instances for this service's
+     * Recovery path: find the account's instance carrying this service's
      * displayName tag. Exactly one match → that instance (safe to adopt);
      * zero → null; more than one → throw (never guess between candidates).
+     *
+     * Primary strategy is a server-side `search` filter on the tag, so this
+     * does not depend on scanning the whole account (important for large /
+     * reseller accounts that exceed the page cap). If the filtered query is
+     * unavailable it falls back to a bounded paginated scan, and logs a warning
+     * if that scan is truncated — silent truncation could otherwise let a
+     * duplicate tag slip through undetected.
      *
      * @return array<string,mixed>|null
      */
     public function findByTag(ContaboApiClient $client, int $serviceId): ?array
     {
-        $matches = [];
-        for ($page = 1; $page <= self::FIND_MAX_PAGES; $page++) {
-            $resp = $client->get('/v1/compute/instances?size=' . self::FIND_PAGE_SIZE . '&page=' . $page);
-            $rows = isset($resp['data']) && is_array($resp['data']) ? $resp['data'] : [];
-            foreach ($rows as $row) {
-                if (!is_array($row)) {
-                    continue;
-                }
-                if (self::displayNameMatchesTag((string) ($row['displayName'] ?? ''), $serviceId)) {
-                    $matches[] = $row;
-                }
-            }
-            if (count($rows) < self::FIND_PAGE_SIZE) {
-                break;
-            }
+        $tag = self::tag($serviceId);
+
+        // Primary: server-side full-text search on the tag (matches displayName).
+        $matches = $this->collectTagMatches($client, $serviceId, '&search=' . rawurlencode($tag), 2, false);
+        if ($matches === []) {
+            // Fallback: bounded unfiltered scan (search unsupported / proxied away).
+            $matches = $this->collectTagMatches($client, $serviceId, '', self::FIND_MAX_PAGES, true);
         }
 
         if (count($matches) > 1) {
@@ -243,11 +242,49 @@ final class InstanceLinker
                 $ids[] = (string) ($m['instanceId'] ?? '?');
             }
             throw new ContaboProvisioningException(
-                'Multiple Contabo instances carry the tag "' . self::tag($serviceId) . '" (' . implode(', ', $ids)
+                'Multiple Contabo instances carry the tag "' . $tag . '" (' . implode(', ', $ids)
                 . ') — refusing to guess. Resolve the duplicates in the Contabo panel, then retry.'
             );
         }
         return $matches !== [] ? $matches[0] : null;
+    }
+
+    /**
+     * Paginate the instances list (optionally filtered by $extraQuery),
+     * collecting rows whose displayName carries the service tag, deduped by
+     * instanceId. When $warnOnCap and the scan stops because it hit $maxPages
+     * (a still-full page), log a truncation warning.
+     *
+     * @return list<array<string,mixed>>
+     */
+    private function collectTagMatches(ContaboApiClient $client, int $serviceId, string $extraQuery, int $maxPages, bool $warnOnCap): array
+    {
+        $byId = [];
+        $truncated = false;
+        for ($page = 1; $page <= $maxPages; $page++) {
+            $resp = $client->get('/v1/compute/instances?size=' . self::FIND_PAGE_SIZE . '&page=' . $page . $extraQuery);
+            $rows = isset($resp['data']) && is_array($resp['data']) ? $resp['data'] : [];
+            foreach ($rows as $row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                if (self::displayNameMatchesTag((string) ($row['displayName'] ?? ''), $serviceId)) {
+                    $byId[(string) ($row['instanceId'] ?? count($byId))] = $row;
+                }
+            }
+            if (count($rows) < self::FIND_PAGE_SIZE) {
+                break;
+            }
+            if ($page === $maxPages) {
+                $truncated = true;
+            }
+        }
+        if ($truncated && $warnOnCap && function_exists('logActivity')) {
+            logActivity('Contabo VPS: instance search for tag "' . self::tag($serviceId) . '" hit the '
+                . ($maxPages * self::FIND_PAGE_SIZE) . '-instance scan cap — result may be incomplete. '
+                . 'If provisioning cannot find an existing instance, resolve it manually in the Contabo panel.');
+        }
+        return array_values($byId);
     }
 
     // ── internals ────────────────────────────────────────────────────────────

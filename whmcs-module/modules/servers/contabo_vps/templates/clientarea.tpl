@@ -42,6 +42,12 @@
             {/if}
           </td>
         </tr>
+        {if $ipv6}
+        <tr>
+          <th>IPv6 Address{if $ipv6|@count > 1}es{/if}</th>
+          <td>{foreach from=$ipv6 item=ip}<code>{$ip|escape}</code>{if !$ip@last}<br>{/if}{/foreach}</td>
+        </tr>
+        {/if}
         {if $region}<tr><th>Region</th><td>{$region|escape}</td></tr>{/if}
         {if $image}<tr><th>Image</th><td>{$image|escape}</td></tr>{/if}
         {if $created}<tr><th>Created</th><td>{$created|escape}</td></tr>{/if}
