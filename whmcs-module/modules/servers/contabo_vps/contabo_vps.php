@@ -2,9 +2,10 @@
 /**
  * Contabo VPS — WHMCS Server / Provisioning Module
  *
- * Automates Contabo VPS lifecycle through the official Contabo REST API.
- * OAuth2 password-grant auth (Keycloak). No external dependencies — pure
- * PHP/curl, mirroring the contabo_pricing addon's CurlRequestExecutor pattern.
+ * Automates the Contabo compute lifecycle (VPS / VDS / Storage VPS) through
+ * the official Contabo REST API — the same API the `cntb` CLI wraps. OAuth2
+ * password-grant auth (Keycloak). No external dependencies — pure PHP/curl
+ * behind an injectable HttpExecutor seam. WHMCS 8.x and 9.x, PHP 7.4+.
  *
  * ── Server config (WHMCS → Setup → Products/Services → Servers) ───────────────
  *   Username     (serverusername)   → Contabo OAuth2 client_id
@@ -14,13 +15,20 @@
  *                                      all three encrypted at rest.
  *
  * ── Per-product config options ───────────────────────────────────────────────
- *   configoption1 → Contabo imageId (OS image)
- *   configoption2 → region slug (e.g. EU1, US-central)
- *   configoption3 → SSH secret id (from the Contabo secrets vault; optional)
- *   configoption4 → Contabo productId (e.g. V1)
+ *   configoption1 → Contabo imageId (fallback when no Image selection)
+ *   configoption2 → region slug/label (fallback when no Region selection)
+ *   configoption3 → SSH secret id (Contabo vault; optional)
+ *   configoption4 → Contabo productId (e.g. V45)
+ *   configoption5 → cloud-init user data (optional)
+ *   configoption6 → add-ons JSON (optional, merged with selections)
  *
- * The created instance id is stored in a service custom field named
- * "contabo_instance_id" (create it on the product's Custom Fields tab).
+ * Customer selections on configurable products are round-tripped through the
+ * contabo_pricing addon's link tables and take precedence over the fallbacks.
+ *
+ * The created instance id lives in the service custom field
+ * "contabo_instance_id" (auto-created on first provision). The instance's
+ * Contabo displayName carries a "whmcs-{serviceid}" tag; destructive actions
+ * verify it. See docs/PROVISIONING_CONTRACT.md in the addon for the contract.
  */
 
 if (!defined('WHMCS')) {
@@ -28,9 +36,18 @@ if (!defined('WHMCS')) {
 }
 
 require_once __DIR__ . '/lib/ContaboProvisioningException.php';
+require_once __DIR__ . '/lib/HttpExecutor.php';
+require_once __DIR__ . '/lib/CurlHttpExecutor.php';
 require_once __DIR__ . '/lib/ContaboAuth.php';
 require_once __DIR__ . '/lib/ContaboApiClient.php';
+require_once __DIR__ . '/lib/BillingCycleMapper.php';
+require_once __DIR__ . '/lib/SecretManager.php';
+require_once __DIR__ . '/lib/InstanceLinker.php';
+require_once __DIR__ . '/lib/ConfigOptionResolver.php';
+require_once __DIR__ . '/lib/ImageResolver.php';
 require_once __DIR__ . '/lib/ContaboInstanceMapper.php';
+require_once __DIR__ . '/lib/InstanceService.php';
+require_once __DIR__ . '/lib/Runtime.php';
 
 /** @return array<string,mixed> */
 function contabo_vps_MetaData(): array
@@ -46,10 +63,12 @@ function contabo_vps_MetaData(): array
 function contabo_vps_ConfigOptions(): array
 {
     return [
-        1 => ['FriendlyName' => 'OS Image ID',  'Type' => 'text', 'Size' => '30', 'Default' => '', 'Description' => 'Contabo imageId'],
-        2 => ['FriendlyName' => 'Region',        'Type' => 'text', 'Size' => '20', 'Default' => 'EU1', 'Description' => 'e.g. EU1, US-central'],
-        3 => ['FriendlyName' => 'SSH Secret ID', 'Type' => 'text', 'Size' => '30', 'Default' => '', 'Description' => 'Optional — secret id from Contabo vault'],
-        4 => ['FriendlyName' => 'Product ID',    'Type' => 'text', 'Size' => '20', 'Default' => 'V1', 'Description' => 'Contabo productId'],
+        1 => ['FriendlyName' => 'OS Image ID',   'Type' => 'text',     'Size' => '40', 'Default' => '', 'Description' => 'Contabo imageId — fallback when no Image configurable option is exposed'],
+        2 => ['FriendlyName' => 'Region',         'Type' => 'text',     'Size' => '20', 'Default' => 'EU', 'Description' => 'Region slug (EU, US-central, US-east, US-west, SIN, UK, AUS, IND, JPN) — fallback when no Region option is exposed'],
+        3 => ['FriendlyName' => 'SSH Secret ID',  'Type' => 'text',     'Size' => '30', 'Default' => '', 'Description' => 'Optional — numeric secretId of an SSH public key in the Contabo vault'],
+        4 => ['FriendlyName' => 'Product ID',     'Type' => 'text',     'Size' => '20', 'Default' => '', 'Description' => 'Contabo productId (e.g. V45)'],
+        5 => ['FriendlyName' => 'Cloud-Init',     'Type' => 'textarea', 'Rows' => '4', 'Cols' => '50', 'Default' => '', 'Description' => 'Optional cloud-init user data applied at first boot'],
+        6 => ['FriendlyName' => 'Add-ons JSON',   'Type' => 'textarea', 'Rows' => '2', 'Cols' => '50', 'Default' => '', 'Description' => 'Optional Contabo addOns object as JSON, e.g. {"privateNetworking":{}}'],
     ];
 }
 
@@ -60,13 +79,19 @@ function contabo_vps_ConfigOptions(): array
 function contabo_vps_TestConnection(array $params): array
 {
     try {
-        $auth   = _contabo_vps_auth($params);
+        $auth = \ContaboVps\Runtime::auth($params);
+        $auth->getToken();
+    } catch (\Throwable $e) {
+        return ['success' => false, 'error' => 'Authentication failed: ' . $e->getMessage()];
+    }
+    try {
+        // Reuse the authenticated $auth so the token is fetched once.
         $client = new \ContaboVps\ContaboApiClient($auth);
-        // Lightweight authenticated read — verifies creds + API reachability.
+        $client->setTimeout(10);
         $client->get('/v1/compute/instances?size=1&page=1');
         return ['success' => true, 'error' => ''];
     } catch (\Throwable $e) {
-        return ['success' => false, 'error' => $e->getMessage()];
+        return ['success' => false, 'error' => 'API unreachable: ' . $e->getMessage()];
     }
 }
 
@@ -74,24 +99,7 @@ function contabo_vps_TestConnection(array $params): array
 function contabo_vps_CreateAccount(array $params): string
 {
     try {
-        $auth   = _contabo_vps_auth($params);
-        $client = new \ContaboVps\ContaboApiClient($auth);
-        $mapper = new \ContaboVps\ContaboInstanceMapper();
-
-        $body = $mapper->mapCreate($params);
-        $resp = $client->post('/v1/compute/instances', $body);
-
-        $instanceId = (string) ($resp['data'][0]['instanceId'] ?? '');
-        if ($instanceId === '') {
-            throw new \ContaboVps\ContaboProvisioningException('API returned no instanceId');
-        }
-
-        _contabo_vps_store_instance_id($params, $instanceId);
-        _contabo_vps_log('CreateAccount', $body, $resp);
-
-        // Provisioning is async; WHMCS marks the service Active immediately and
-        // the admin can watch the build via the Services tab.
-        return 'success';
+        return \ContaboVps\Runtime::instanceService($params)->create($params);
     } catch (\Throwable $e) {
         _contabo_vps_log('CreateAccount', $params['domain'] ?? '', $e->getMessage(), 'error');
         return $e->getMessage();
@@ -102,67 +110,92 @@ function contabo_vps_CreateAccount(array $params): string
 function contabo_vps_SuspendAccount(array $params): string
 {
     // Contabo has no suspend concept — map to a power-off.
-    return _contabo_vps_power_action($params, 'stop', 'SuspendAccount');
+    return _contabo_vps_run($params, 'SuspendAccount', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->powerAction($params, 'stop');
+    });
 }
 
 /** @param array<string,mixed> $params */
 function contabo_vps_UnsuspendAccount(array $params): string
 {
-    return _contabo_vps_power_action($params, 'start', 'UnsuspendAccount');
+    return _contabo_vps_run($params, 'UnsuspendAccount', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->powerAction($params, 'start');
+    });
 }
 
 /** @param array<string,mixed> $params */
 function contabo_vps_TerminateAccount(array $params): string
 {
-    try {
-        $instanceId = _contabo_vps_instance_id($params);
-        $auth       = _contabo_vps_auth($params);
-        $client     = new \ContaboVps\ContaboApiClient($auth);
-
-        // +1 day so Contabo's billing closes the current day cleanly.
-        $terminationDate = date('Y-m-d', strtotime('+1 day'));
-        $resp = $client->post(
-            '/v1/compute/instances/' . rawurlencode($instanceId) . '/cancel',
-            ['terminationDate' => $terminationDate]
-        );
-
-        _contabo_vps_log('TerminateAccount', $instanceId, $resp);
-        return 'success';
-    } catch (\Throwable $e) {
-        _contabo_vps_log('TerminateAccount', '', $e->getMessage(), 'error');
-        return $e->getMessage();
-    }
+    return _contabo_vps_run($params, 'TerminateAccount', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->terminate($params);
+    });
 }
 
 /** @param array<string,mixed> $params */
 function contabo_vps_ChangePackage(array $params): string
 {
+    // The official API cannot resize an instance (POST /{id}/upgrade covers
+    // add-ons only), so an honest error beats a fake success.
     if (function_exists('logActivity')) {
         logActivity('Contabo VPS: package change requested for service #' . (int) ($params['serviceid'] ?? 0)
-            . ' — Contabo does not support live resize; manual intervention required.');
+            . ' — Contabo does not support live resize; cancel and re-provision, or upgrade from the Contabo panel.');
     }
-    return 'Package change requires manual intervention: cancel and re-provision, or upgrade the instance from the Contabo control panel.';
+    return 'Package change requires manual intervention: Contabo has no resize API — cancel and re-provision, or upgrade the instance from the Contabo control panel.';
 }
+
+// ── Admin UI ──────────────────────────────────────────────────────────────────
 
 /** @return array<string,string> */
 function contabo_vps_AdminCustomButtonArray(): array
 {
     return [
-        'Restart'        => 'buttonRestart',
-        'Reset Password' => 'buttonResetPassword',
+        'Start'             => 'buttonStart',
+        'Stop'              => 'buttonStop',
+        'Restart'           => 'buttonRestart',
+        'Reset Password'    => 'buttonResetPassword',
+        'Sync from Contabo' => 'buttonSync',
     ];
+}
+
+/** @param array<string,mixed> $params */
+function contabo_vps_buttonStart(array $params): string
+{
+    return _contabo_vps_run($params, 'buttonStart', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->powerAction($params, 'start');
+    });
+}
+
+/** @param array<string,mixed> $params */
+function contabo_vps_buttonStop(array $params): string
+{
+    return _contabo_vps_run($params, 'buttonStop', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->powerAction($params, 'stop');
+    });
 }
 
 /** @param array<string,mixed> $params */
 function contabo_vps_buttonRestart(array $params): string
 {
-    return _contabo_vps_power_action($params, 'restart', 'buttonRestart');
+    return _contabo_vps_run($params, 'buttonRestart', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->powerAction($params, 'restart');
+    });
 }
 
 /** @param array<string,mixed> $params */
 function contabo_vps_buttonResetPassword(array $params): string
 {
-    return _contabo_vps_power_action($params, 'resetPassword', 'buttonResetPassword');
+    return _contabo_vps_run($params, 'buttonResetPassword', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->resetPassword($params);
+    });
+}
+
+/** @param array<string,mixed> $params */
+function contabo_vps_buttonSync(array $params): string
+{
+    return _contabo_vps_run($params, 'buttonSync', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        $svc->sync($params);
+        return 'success';
+    });
 }
 
 /**
@@ -172,33 +205,70 @@ function contabo_vps_buttonResetPassword(array $params): string
 function contabo_vps_AdminServicesTabFields(array $params): array
 {
     try {
-        $instanceId = _contabo_vps_instance_id($params);
-        $auth       = _contabo_vps_auth($params);
-        $client     = new \ContaboVps\ContaboApiClient($auth);
-        $resp       = $client->get('/v1/compute/instances/' . rawurlencode($instanceId));
-        $inst       = $resp['data'][0] ?? [];
-
-        $ipv4 = '';
-        if (isset($inst['ipConfig']['v4']) && is_array($inst['ipConfig']['v4'])) {
-            $ips  = [];
-            foreach ($inst['ipConfig']['v4'] as $ip) {
-                $ips[] = (string) ($ip['ip'] ?? '');
-            }
-            $ipv4 = implode(', ', array_filter($ips));
-        }
-
+        $snapshot = \ContaboVps\Runtime::instanceService($params)->sync($params, true);
         return [
-            'Instance ID' => htmlspecialchars($instanceId),
-            'Status'      => htmlspecialchars((string) ($inst['status'] ?? 'unknown')),
-            'Region'      => htmlspecialchars((string) ($inst['region'] ?? '')),
-            'IPv4'        => htmlspecialchars($ipv4),
-            'Image'       => htmlspecialchars((string) ($inst['imageId'] ?? '')),
-            'Created'     => htmlspecialchars((string) ($inst['createdDate'] ?? '')),
+            'Instance ID' => htmlspecialchars($snapshot['instance_id']),
+            'Status'      => htmlspecialchars($snapshot['status']),
+            'Region'      => htmlspecialchars($snapshot['region']),
+            'IPv4'        => htmlspecialchars(implode(', ', $snapshot['ipv4'])),
+            'Image'       => htmlspecialchars($snapshot['image']),
+            'Created'     => htmlspecialchars($snapshot['created']),
             'Panel'       => '<a href="https://my.contabo.com" target="_blank" rel="noopener">Open Contabo Panel &#8599;</a>',
         ];
     } catch (\Throwable $e) {
-        return ['Error' => htmlspecialchars($e->getMessage())];
+        // Degrade to the last-synced IP instead of a bare error row.
+        $cached = _contabo_vps_cached_ip($params);
+        return [
+            'Status' => htmlspecialchars('Live status unavailable: ' . $e->getMessage()),
+            'IPv4'   => htmlspecialchars($cached !== '' ? $cached . ' (last synced)' : '—'),
+            'Panel'  => '<a href="https://my.contabo.com" target="_blank" rel="noopener">Open Contabo Panel &#8599;</a>',
+        ];
     }
+}
+
+// ── Client area ───────────────────────────────────────────────────────────────
+
+/** @return array<string,string> */
+function contabo_vps_ClientAreaCustomButtonArray(): array
+{
+    return [
+        'Start'               => 'clientStart',
+        'Stop'                => 'clientStop',
+        'Restart'             => 'clientRestart',
+        'Reset Root Password' => 'clientResetPassword',
+    ];
+}
+
+/** @param array<string,mixed> $params */
+function contabo_vps_clientStart(array $params): string
+{
+    return _contabo_vps_run($params, 'clientStart', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->powerAction($params, 'start');
+    });
+}
+
+/** @param array<string,mixed> $params */
+function contabo_vps_clientStop(array $params): string
+{
+    return _contabo_vps_run($params, 'clientStop', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->powerAction($params, 'stop');
+    });
+}
+
+/** @param array<string,mixed> $params */
+function contabo_vps_clientRestart(array $params): string
+{
+    return _contabo_vps_run($params, 'clientRestart', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->powerAction($params, 'restart');
+    });
+}
+
+/** @param array<string,mixed> $params */
+function contabo_vps_clientResetPassword(array $params): string
+{
+    return _contabo_vps_run($params, 'clientResetPassword', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->resetPassword($params);
+    });
 }
 
 /**
@@ -208,25 +278,35 @@ function contabo_vps_AdminServicesTabFields(array $params): array
 function contabo_vps_ClientArea(array $params): array
 {
     try {
-        $instanceId = _contabo_vps_instance_id($params);
-        $auth       = _contabo_vps_auth($params);
-        $client     = new \ContaboVps\ContaboApiClient($auth);
-        $resp       = $client->get('/v1/compute/instances/' . rawurlencode($instanceId));
-        $inst       = $resp['data'][0] ?? [];
-
+        $snapshot = \ContaboVps\Runtime::instanceService($params)->sync($params, true);
         return [
             'templatefile' => 'clientarea',
             'vars' => [
-                'instance_id' => $instanceId,
-                'status'      => (string) ($inst['status'] ?? 'unknown'),
-                'region'      => (string) ($inst['region'] ?? ''),
-                'image'       => (string) ($inst['imageId'] ?? ''),
+                'instance_id' => $snapshot['instance_id'],
+                'status'      => $snapshot['status'],
+                'region'      => $snapshot['region'],
+                'image'       => $snapshot['image'],
+                'ipv4'        => $snapshot['ipv4'],
+                'created'     => $snapshot['created'],
+                'synced_at'   => $snapshot['synced_at'],
             ],
         ];
     } catch (\Throwable $e) {
+        // Degrade to last-known data instead of an error-only page.
+        $cached = _contabo_vps_cached_ip($params);
         return [
             'templatefile' => 'clientarea',
-            'vars' => ['error' => $e->getMessage()],
+            'vars' => [
+                'stale'       => true,
+                'stale_error' => $e->getMessage(),
+                'instance_id' => '',
+                'status'      => 'unavailable',
+                'region'      => '',
+                'image'       => '',
+                'ipv4'        => $cached !== '' ? [$cached] : [],
+                'created'     => '',
+                'synced_at'   => '',
+            ],
         ];
     }
 }
@@ -234,145 +314,94 @@ function contabo_vps_ClientArea(array $params): array
 // ── Internal helpers ──────────────────────────────────────────────────────────
 
 /**
- * @param array<string,mixed> $params
- * @throws \ContaboVps\ContaboProvisioningException
- */
-function _contabo_vps_auth(array $params): \ContaboVps\ContaboAuth
-{
-    $clientId     = (string) ($params['serverusername'] ?? '');
-    $clientSecret = (string) ($params['serverpassword'] ?? '');
-    $accessHash   = (string) ($params['serveraccesshash'] ?? '');
-
-    if ($clientId === '' || $clientSecret === '' || $accessHash === '') {
-        throw new \ContaboVps\ContaboProvisioningException('Server credentials not configured');
-    }
-
-    $parts = array_pad(explode(':', $accessHash, 2), 2, '');
-    $apiUser     = (string) $parts[0];
-    $apiPassword = (string) $parts[1];
-    if ($apiUser === '' || $apiPassword === '') {
-        throw new \ContaboVps\ContaboProvisioningException('Access Hash must be "apiUser:apiPassword"');
-    }
-
-    return new \ContaboVps\ContaboAuth($clientId, $clientSecret, $apiUser, $apiPassword);
-}
-
-/**
- * @param array<string,mixed> $params
- * @throws \ContaboVps\ContaboProvisioningException
- */
-function _contabo_vps_instance_id(array $params): string
-{
-    $fields = $params['customfields'] ?? [];
-    if (is_array($fields) && !empty($fields['contabo_instance_id'])) {
-        return (string) $fields['contabo_instance_id'];
-    }
-    // Fallback: read straight from the custom-field values table.
-    $serviceId = (int) ($params['serviceid'] ?? 0);
-    if ($serviceId > 0) {
-        $id = _contabo_vps_read_instance_id_from_db($serviceId);
-        if ($id !== '') {
-            return $id;
-        }
-    }
-    throw new \ContaboVps\ContaboProvisioningException('Service has no linked Contabo instance — may need manual provisioning');
-}
-
-/**
- * Persist the instance id into the "contabo_instance_id" service custom field.
- * The field must exist on the product (Products → Custom Fields). If it does
- * not, we log a warning so the admin can create it — provisioning itself still
- * succeeds.
+ * Shared wrapper: build the service, run the action, map any throwable to the
+ * human-readable error string WHMCS expects, and log the failure.
  *
  * @param array<string,mixed> $params
+ * @param callable(\ContaboVps\InstanceService):string $fn
  */
-function _contabo_vps_store_instance_id(array $params, string $instanceId): void
-{
-    $serviceId = (int) ($params['serviceid'] ?? 0);
-    $packageId = (int) ($params['pid'] ?? ($params['packageid'] ?? 0));
-    if ($serviceId <= 0) {
-        return;
-    }
-
-    try {
-        $fieldId = \WHMCS\Database\Capsule::table('tblcustomfields')
-            ->where('type', 'product')
-            ->where('relid', $packageId)
-            ->where('fieldname', 'contabo_instance_id')
-            ->value('id');
-
-        if ($fieldId === null) {
-            if (function_exists('logActivity')) {
-                logActivity('Contabo VPS: instance ' . $instanceId . ' created for service #' . $serviceId
-                    . ' but no "contabo_instance_id" custom field exists on the product — create it to enable lifecycle actions.');
-            }
-            return;
-        }
-
-        $existing = \WHMCS\Database\Capsule::table('tblcustomfieldsvalues')
-            ->where('fieldid', (int) $fieldId)
-            ->where('relid', $serviceId)
-            ->first();
-
-        if ($existing === null) {
-            \WHMCS\Database\Capsule::table('tblcustomfieldsvalues')->insert([
-                'fieldid' => (int) $fieldId,
-                'relid'   => $serviceId,
-                'value'   => $instanceId,
-            ]);
-        } else {
-            \WHMCS\Database\Capsule::table('tblcustomfieldsvalues')
-                ->where('fieldid', (int) $fieldId)
-                ->where('relid', $serviceId)
-                ->update(['value' => $instanceId]);
-        }
-    } catch (\Throwable $e) {
-        if (function_exists('logActivity')) {
-            logActivity('Contabo VPS: failed to store instance id for service #' . $serviceId . ' — ' . $e->getMessage());
-        }
-    }
-}
-
-function _contabo_vps_read_instance_id_from_db(int $serviceId): string
+function _contabo_vps_run(array $params, string $callName, callable $fn): string
 {
     try {
-        $row = \WHMCS\Database\Capsule::table('tblcustomfieldsvalues')
-            ->join('tblcustomfields', 'tblcustomfields.id', '=', 'tblcustomfieldsvalues.fieldid')
-            ->where('tblcustomfields.fieldname', 'contabo_instance_id')
-            ->where('tblcustomfieldsvalues.relid', $serviceId)
-            ->value('tblcustomfieldsvalues.value');
-        return $row === null ? '' : (string) $row;
+        return $fn(\ContaboVps\Runtime::instanceService($params));
     } catch (\Throwable $e) {
-        return '';
-    }
-}
-
-/**
- * @param array<string,mixed> $params
- */
-function _contabo_vps_power_action(array $params, string $action, string $callName): string
-{
-    try {
-        $instanceId = _contabo_vps_instance_id($params);
-        $auth       = _contabo_vps_auth($params);
-        $client     = new \ContaboVps\ContaboApiClient($auth);
-        $resp = $client->post('/v1/compute/instances/' . rawurlencode($instanceId) . '/actions/' . $action, []);
-        _contabo_vps_log($callName, $instanceId, $resp);
-        return 'success';
-    } catch (\Throwable $e) {
-        _contabo_vps_log($callName, '', $e->getMessage(), 'error');
+        _contabo_vps_log($callName, (int) ($params['serviceid'] ?? 0), $e->getMessage(), 'error');
         return $e->getMessage();
     }
 }
 
 /**
+ * Last-synced dedicated IP for graceful degradation when the live API is
+ * unreachable. Prefers the model param; falls back to tblhosting.
+ *
+ * @param array<string,mixed> $params
+ */
+function _contabo_vps_cached_ip(array $params): string
+{
+    if (isset($params['model']) && is_object($params['model'])) {
+        $ip = trim((string) ($params['model']->dedicatedip ?? ''));
+        if ($ip !== '') {
+            return $ip;
+        }
+    }
+    $serviceId = (int) ($params['serviceid'] ?? 0);
+    if ($serviceId > 0) {
+        try {
+            $row = \WHMCS\Database\Capsule::table('tblhosting')->where('id', $serviceId)->first();
+            $row = $row !== null ? (array) $row : [];
+            return trim((string) ($row['dedicatedip'] ?? ''));
+        } catch (\Throwable $e) {
+            return '';
+        }
+    }
+    return '';
+}
+
+/**
+ * Module-call logger with defence-in-depth secret redaction: WHMCS's
+ * replaceVars masks the server credentials, and _contabo_vps_sanitize masks
+ * any password-bearing keys inside logged request/response structures.
+ *
  * @param mixed $request
  * @param mixed $response
  */
 function _contabo_vps_log(string $action, $request, $response, string $status = 'success'): void
 {
     if (function_exists('logModuleCall')) {
-        // Redact the encrypted credential fields from the debug log.
-        logModuleCall('contabo_vps', $action, $request, $response, $status, ['serverpassword', 'serveraccesshash']);
+        logModuleCall(
+            'contabo_vps',
+            $action,
+            _contabo_vps_sanitize($request),
+            _contabo_vps_sanitize($response),
+            $status,
+            ['serverpassword', 'serveraccesshash']
+        );
     }
+}
+
+/**
+ * Recursively mask secret material in logged structures. Keys that carry
+ * credentials ("value" is the Contabo secret-vault payload key) are replaced;
+ * numeric rootPassword secretIds are safe and stay readable.
+ *
+ * @param mixed $data
+ * @return mixed
+ */
+function _contabo_vps_sanitize($data)
+{
+    if (!is_array($data)) {
+        return $data;
+    }
+    $masked = [];
+    foreach ($data as $key => $value) {
+        $lower = is_string($key) ? strtolower($key) : '';
+        if (in_array($lower, ['password', 'value', 'serverpassword', 'serveraccesshash', 'client_secret'], true)
+            && is_string($value)
+        ) {
+            $masked[$key] = '***REDACTED***';
+            continue;
+        }
+        $masked[$key] = is_array($value) ? _contabo_vps_sanitize($value) : $value;
+    }
+    return $masked;
 }

@@ -12,26 +12,35 @@ namespace ContaboVps;
  * trips an expiry mid-flight. The API client also force-refreshes on a 401.
  *
  * Credentials are passed in by the caller (decoded from WHMCS-encrypted server
- * settings) and are never logged or persisted by this class.
+ * settings) and are never logged or persisted by this class. Transport goes
+ * through the injectable HttpExecutor seam so tests never hit the network.
  */
 class ContaboAuth
 {
     private const TOKEN_URL = 'https://auth.contabo.com/auth/realms/contabo/protocol/openid-connect/token';
     private const REFRESH_BEFORE_EXPIRY_SEC = 60;
+    private const TIMEOUT_SEC = 15;
 
     /** @var string */ private $clientId;
     /** @var string */ private $clientSecret;
     /** @var string */ private $apiUser;
     /** @var string */ private $apiPassword;
+    /** @var HttpExecutor */ private $executor;
     /** @var string|null */ private $accessToken = null;
     /** @var int */ private $expiresAt = 0;
 
-    public function __construct(string $clientId, string $clientSecret, string $apiUser, string $apiPassword)
-    {
+    public function __construct(
+        string $clientId,
+        string $clientSecret,
+        string $apiUser,
+        string $apiPassword,
+        ?HttpExecutor $executor = null
+    ) {
         $this->clientId     = $clientId;
         $this->clientSecret = $clientSecret;
         $this->apiUser      = $apiUser;
         $this->apiPassword  = $apiPassword;
+        $this->executor     = $executor !== null ? $executor : new CurlHttpExecutor();
     }
 
     public function getToken(): string
@@ -60,29 +69,23 @@ class ContaboAuth
             'password'      => $this->apiPassword,
         ]);
 
-        $ch = curl_init(self::TOKEN_URL);
-        curl_setopt_array($ch, [
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => $body,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_TIMEOUT        => 15,
-            CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
-        ]);
+        list($code, $raw, $errno, $err) = $this->executor->execute(
+            'POST',
+            self::TOKEN_URL,
+            ['Content-Type: application/x-www-form-urlencoded'],
+            $body,
+            self::TIMEOUT_SEC
+        );
 
-        $raw  = curl_exec($ch);
-        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $err  = curl_error($ch);
-        curl_close($ch);
-
-        if ($raw === false || $err !== '') {
-            throw new ContaboProvisioningException('Token fetch curl error: ' . $err);
+        if ($errno !== 0 || ($raw === '' && $code === 0)) {
+            throw new ContaboProvisioningException('Token fetch transport error: ' . ($err !== '' ? $err : 'no response'));
         }
 
-        $data = json_decode((string) $raw, true);
+        $data = json_decode($raw, true);
         if (!is_array($data) || empty($data['access_token'])) {
-            throw new ContaboProvisioningException('Token fetch failed (HTTP ' . $code . ')');
+            // Deliberately terse: never echo the response body (it could carry
+            // credential hints) — the HTTP status is enough to diagnose.
+            throw new ContaboProvisioningException('Authentication with Contabo failed (HTTP ' . $code . ') — check client id/secret and API user credentials');
         }
 
         $this->accessToken = (string) $data['access_token'];
