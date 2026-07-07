@@ -1,0 +1,115 @@
+name: 'Publish WHMCS module release'
+description: >
+  Package a WHMCS module directory into an installable ZIP (runtime files only,
+  laid out to extract at the WHMCS root) and publish a versioned, idempotent
+  GitHub Release. Single source of truth shared by the per-module release
+  workflows — the module-specific setup/test steps stay in each workflow.
+
+inputs:
+  module_name:
+    description: 'Module directory name (e.g. contabo_pricing).'
+    required: true
+  module_path:
+    description: 'Repo-relative path to the module directory.'
+    required: true
+  dest_subdir:
+    description: 'WHMCS-relative parent inside the ZIP (modules/addons | modules/servers).'
+    required: true
+  version_file:
+    description: 'Version-bearing file, relative to module_path.'
+    required: true
+  version_pattern:
+    description: 'grep -oP pattern that captures the version string.'
+    required: true
+  tag_prefix:
+    description: 'Release tag prefix (e.g. contabo_pricing-v).'
+    required: true
+  changelog_file:
+    description: 'Repo-relative CHANGELOG.md to source the release body from.'
+    required: true
+  changelog_prefix:
+    description: 'Text between "## " and the version in this module''s heading (e.g. "" or "contabo_vps ").'
+    required: false
+    default: ''
+  exclude:
+    description: 'Space-separated tar --exclude patterns (no globs) — must mirror the workflow trigger scope.'
+    required: true
+  install_notes:
+    description: 'Markdown install steps appended to the release body.'
+    required: true
+  github_token:
+    description: 'Token with contents:write for publishing the release.'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        MODULE_NAME: ${{ inputs.module_name }}
+        MODULE_PATH: ${{ inputs.module_path }}
+        DEST_SUBDIR: ${{ inputs.dest_subdir }}
+        VERSION_FILE: ${{ inputs.version_file }}
+        VERSION_PATTERN: ${{ inputs.version_pattern }}
+        TAG_PREFIX: ${{ inputs.tag_prefix }}
+        CHANGELOG_FILE: ${{ inputs.changelog_file }}
+        CHANGELOG_PREFIX: ${{ inputs.changelog_prefix }}
+        EXCLUDE: ${{ inputs.exclude }}
+        INSTALL_NOTES: ${{ inputs.install_notes }}
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        set -euo pipefail
+
+        VERSION="$(grep -oP "$VERSION_PATTERN" "$MODULE_PATH/$VERSION_FILE" || true)"
+        if [ -z "$VERSION" ]; then
+          echo "::error::could not read a version from $MODULE_PATH/$VERSION_FILE"
+          exit 1
+        fi
+        TAG="${TAG_PREFIX}${VERSION}"
+        echo "$MODULE_NAME $VERSION → $TAG"
+
+        # Idempotent: only a version bump cuts a release. Re-runs on an
+        # already-published version are a clean no-op.
+        if gh release view "$TAG" >/dev/null 2>&1; then
+          echo "::notice::Release $TAG already exists — nothing to publish (bump the version to cut a new release)."
+          exit 0
+        fi
+
+        # ── package: runtime files only, laid out as <dest_subdir>/<module> ──
+        # tar --exclude prunes during archiving (vendor/ etc. never copied);
+        # excludes mirror the workflow's trigger scope exactly. `set -f` guards
+        # the word-split loop against any accidental glob expansion.
+        STAGE="$(mktemp -d)"
+        mkdir -p "$STAGE/$DEST_SUBDIR/$MODULE_NAME"
+        EX_ARGS=""
+        set -f
+        for p in $EXCLUDE; do EX_ARGS="$EX_ARGS --exclude=$p"; done
+        set +f
+        tar -C "$MODULE_PATH" $EX_ARGS -cf - . | tar -C "$STAGE/$DEST_SUBDIR/$MODULE_NAME" -xf -
+
+        ZIP="${MODULE_NAME}-v${VERSION}.zip"
+        ( cd "$STAGE" && zip -rq "$OLDPWD/$ZIP" "$DEST_SUBDIR" )
+        sha256sum "$ZIP" > "$ZIP.sha256"
+
+        # ── release body: this module's changelog section (ANCHORED so the
+        # shared CHANGELOG can't cross-match the other module's heading) ──
+        SECTION="$(awk -v h="^## ${CHANGELOG_PREFIX}${VERSION} " '
+          $0 ~ h {flag=1; print; next}
+          flag && /^## / {exit}
+          flag {print}
+        ' "$CHANGELOG_FILE" || true)"
+        {
+          if [ -n "$SECTION" ]; then printf '%s\n' "$SECTION"; else echo "See CHANGELOG.md for details."; fi
+          echo
+          echo "### Install"
+          printf '%s\n' "$INSTALL_NOTES"
+          echo
+          echo "Verify the download against \`.sha256\`."
+        } > "$RUNNER_TEMP/notes.md"
+
+        gh release create "$TAG" \
+          --target "$GITHUB_SHA" \
+          --title "${MODULE_NAME} ${VERSION}" \
+          --notes-file "$RUNNER_TEMP/notes.md" \
+          "$ZIP" "$ZIP.sha256"
+        echo "::notice::Published $TAG"

@@ -12,6 +12,9 @@ name: Release contabo_vps module
 # so bumping it triggers a real release; a shipped-code change WITHOUT a version
 # bump runs but skips publishing (already released — idempotent).
 #
+# The package/checksum/changelog/publish logic is shared with the sibling
+# workflow via .github/actions/publish-whmcs-module (single source of truth).
+#
 # Tag scheme: contabo_vps-v<version> (never matches the Rust scraper's `v*`
 # tags, so release.yml is not triggered).
 
@@ -23,6 +26,7 @@ on:
       - '!whmcs-module/modules/servers/contabo_vps/tests/**'
       - '!whmcs-module/modules/servers/contabo_vps/phpunit.xml'
       - '.github/workflows/release-contabo-vps.yml'
+      - '.github/actions/publish-whmcs-module/action.yml'
   workflow_dispatch:
 
 concurrency:
@@ -39,7 +43,6 @@ jobs:
     env:
       MODULE_DIR: whmcs-module/modules/servers/contabo_vps
       ADDON_DIR: whmcs-module/modules/addons/contabo_pricing
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -50,9 +53,8 @@ jobs:
           extensions: json, curl, mbstring
           tools: composer
 
-      # Quality gate. The server-module suite runs on the addon's PHPUnit and
-      # its FakeCapsule (both modules ship together), so install the addon's
-      # dev deps first, then run the server suite against them.
+      # The server-module suite runs on the addon's PHPUnit + FakeCapsule (both
+      # modules ship together), so install the addon's dev deps first.
       - name: Install PHPUnit (via addon dev deps)
         working-directory: ${{ env.ADDON_DIR }}
         run: composer install --no-interaction --no-progress
@@ -69,85 +71,19 @@ jobs:
         working-directory: ${{ env.MODULE_DIR }}
         run: ../../addons/contabo_pricing/vendor/bin/phpunit -c phpunit.xml
 
-      - name: Resolve version & release state
-        id: meta
-        run: |
-          set -euo pipefail
-          VERSION=$(grep -oP "define\('CONTABO_VPS_VERSION',\s*'\K[^']+" "$MODULE_DIR/contabo_vps.php")
-          if [ -z "$VERSION" ]; then echo "::error::could not read CONTABO_VPS_VERSION"; exit 1; fi
-          TAG="contabo_vps-v${VERSION}"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            EXISTS=true
-          else
-            EXISTS=false
-          fi
-          {
-            echo "version=$VERSION"
-            echo "tag=$TAG"
-            echo "exists=$EXISTS"
-          } >> "$GITHUB_OUTPUT"
-          echo "contabo_vps $VERSION → tag $TAG (already released: $EXISTS)"
-
-      - name: Skip note
-        if: steps.meta.outputs.exists == 'true'
-        run: echo "::notice::Release ${{ steps.meta.outputs.tag }} already exists — nothing to do. Bump CONTABO_VPS_VERSION to cut a new one."
-
-      - name: Build installable package
-        if: steps.meta.outputs.exists == 'false'
-        id: pkg
-        run: |
-          set -euo pipefail
-          VERSION="${{ steps.meta.outputs.version }}"
-          STAGE="$(mktemp -d)"
-          mkdir -p "$STAGE/modules/servers/contabo_vps"
-          # Runtime only — no Composer, no autoloader (require_once). Exclude the
-          # test harness and dev config. tar --exclude prunes during archiving.
-          tar -C "$MODULE_DIR" \
-            --exclude='./tests' \
-            --exclude='./.phpunit.cache' \
-            --exclude='./phpunit.xml' \
-            --exclude='./.git*' \
-            -cf - . | tar -C "$STAGE/modules/servers/contabo_vps" -xf -
-          ZIP="contabo_vps-v${VERSION}.zip"
-          ( cd "$STAGE" && zip -rq "$OLDPWD/$ZIP" modules )
-          sha256sum "$ZIP" > "$ZIP.sha256"
-          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
-
-      - name: Extract changelog section
-        if: steps.meta.outputs.exists == 'false'
-        id: notes
-        run: |
-          set -euo pipefail
-          VERSION="${{ steps.meta.outputs.version }}"
-          # The server module's changelog entries live in the addon CHANGELOG,
-          # headed "## contabo_vps <version> — …".
-          BODY="$(awk -v ver="contabo_vps ${VERSION}" '
-            $0 ~ "^## " && index($0, ver) {flag=1; print; next}
-            flag && /^## / {exit}
-            flag {print}
-          ' "$ADDON_DIR/CHANGELOG.md")"
-          {
-            echo "body<<EOF"
-            if [ -n "$BODY" ]; then echo "$BODY"; else echo "See CHANGELOG.md for details."; fi
-            echo ""
-            echo "### Install"
-            echo "1. Download and unzip \`contabo_vps-v${VERSION}.zip\` at your WHMCS root (it lays down \`modules/servers/contabo_vps/\`)."
-            echo "2. Add a server under **System Settings → Servers** using the **Contabo VPS** module, then assign it to a product. Run **Test Connection** before ordering."
-            echo ""
-            echo "Verify the download against \`.sha256\`."
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Publish release
-        if: steps.meta.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v2
+      - name: Package & publish (idempotent on version)
+        uses: ./.github/actions/publish-whmcs-module
         with:
-          tag_name: ${{ steps.meta.outputs.tag }}
-          target_commitish: ${{ github.sha }}
-          name: contabo_vps ${{ steps.meta.outputs.version }}
-          body: ${{ steps.notes.outputs.body }}
-          files: |
-            ${{ steps.pkg.outputs.zip }}
-            ${{ steps.pkg.outputs.zip }}.sha256
-          draft: false
-          prerelease: false
+          module_name: contabo_vps
+          module_path: whmcs-module/modules/servers/contabo_vps
+          dest_subdir: modules/servers
+          version_file: contabo_vps.php
+          version_pattern: "define\\('CONTABO_VPS_VERSION',\\s*'\\K[^']+"
+          tag_prefix: contabo_vps-v
+          changelog_file: whmcs-module/modules/addons/contabo_pricing/CHANGELOG.md
+          changelog_prefix: 'contabo_vps '
+          exclude: './tests ./.phpunit.cache ./phpunit.xml'
+          install_notes: |
+            1. Download and unzip the attached ZIP at your WHMCS root (it lays down `modules/servers/contabo_vps/`).
+            2. Add a server under **System Settings → Servers** using the **Contabo VPS** module, then assign it to a product. Run **Test Connection** before ordering.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
