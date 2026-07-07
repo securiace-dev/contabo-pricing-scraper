@@ -1,0 +1,143 @@
+name: Release contabo_pricing addon
+
+# Cuts a versioned GitHub Release + installable ZIP of the WHMCS addon
+# (modules/addons/contabo_pricing) whenever a change to it lands on main and
+# its version (AdminController::VERSION) has been bumped. Unrelated merges and
+# re-runs on an already-released version are no-ops. Manual runs supported.
+#
+# Tag scheme: contabo_pricing-v<version> (never matches the Rust scraper's
+# `v*` tags, so release.yml is not triggered).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'whmcs-module/modules/addons/contabo_pricing/**'
+  workflow_dispatch:
+
+concurrency:
+  group: release-contabo-pricing
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Package & release contabo_pricing
+    runs-on: ubuntu-latest
+    env:
+      MODULE_DIR: whmcs-module/modules/addons/contabo_pricing
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: json, curl, mbstring
+          tools: composer
+
+      # Quality gate — never ship a module whose suite is red. Uses the same
+      # FakeCapsule-backed suite the predeploy gate runs (no DB, no network).
+      - name: Install dev dependencies (PHPUnit)
+        working-directory: ${{ env.MODULE_DIR }}
+        run: composer install --no-interaction --no-progress
+
+      - name: Lint (php -l)
+        working-directory: ${{ env.MODULE_DIR }}
+        run: |
+          set -e
+          find lib -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null
+          for f in *.php; do php -l "$f" >/dev/null; done
+
+      - name: Unit tests
+        working-directory: ${{ env.MODULE_DIR }}
+        run: vendor/bin/phpunit
+
+      - name: Resolve version & release state
+        id: meta
+        run: |
+          set -euo pipefail
+          VERSION=$(grep -oP "const VERSION\s*=\s*'\K[^']+" "$MODULE_DIR/lib/AdminController.php")
+          if [ -z "$VERSION" ]; then echo "::error::could not read AdminController::VERSION"; exit 1; fi
+          TAG="contabo_pricing-v${VERSION}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            EXISTS=true
+          else
+            EXISTS=false
+          fi
+          {
+            echo "version=$VERSION"
+            echo "tag=$TAG"
+            echo "exists=$EXISTS"
+          } >> "$GITHUB_OUTPUT"
+          echo "contabo_pricing $VERSION → tag $TAG (already released: $EXISTS)"
+
+      - name: Skip note
+        if: steps.meta.outputs.exists == 'true'
+        run: echo "::notice::Release ${{ steps.meta.outputs.tag }} already exists — nothing to do. Bump AdminController::VERSION to cut a new one."
+
+      - name: Build installable package
+        if: steps.meta.outputs.exists == 'false'
+        id: pkg
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.meta.outputs.version }}"
+          STAGE="$(mktemp -d)"
+          mkdir -p "$STAGE/modules/addons/contabo_pricing"
+          # Ship runtime only: the addon falls back to a stub PSR-4 autoloader,
+          # so vendor/ is not needed; tests, dev config and internal design/deploy
+          # docs (which reference production infra) are excluded. tar --exclude
+          # prunes during archiving (vendor/ is never copied) — portable, no rsync.
+          tar -C "$MODULE_DIR" \
+            --exclude='./vendor' \
+            --exclude='./tests' \
+            --exclude='./docs' \
+            --exclude='./.phpunit.cache' \
+            --exclude='./phpunit.xml' \
+            --exclude='./composer.lock' \
+            --exclude='./.git*' \
+            -cf - . | tar -C "$STAGE/modules/addons/contabo_pricing" -xf -
+          ZIP="contabo_pricing-v${VERSION}.zip"
+          ( cd "$STAGE" && zip -rq "$OLDPWD/$ZIP" modules )
+          sha256sum "$ZIP" > "$ZIP.sha256"
+          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+
+      - name: Extract changelog section
+        if: steps.meta.outputs.exists == 'false'
+        id: notes
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.meta.outputs.version }}"
+          BODY="$(awk -v ver="$VERSION" '
+            $0 ~ "^## " && index($0, ver) {flag=1; print; next}
+            flag && /^## / {exit}
+            flag {print}
+          ' "$MODULE_DIR/CHANGELOG.md")"
+          {
+            echo "body<<EOF"
+            if [ -n "$BODY" ]; then echo "$BODY"; else echo "See CHANGELOG.md for details."; fi
+            echo ""
+            echo "### Install"
+            echo "1. Download and unzip \`contabo_pricing-v${VERSION}.zip\` at your WHMCS root (it lays down \`modules/addons/contabo_pricing/\`)."
+            echo "2. Activate under **Setup → Addon Modules**; the schema migrates on first admin page load."
+            echo ""
+            echo "Verify the download against \`.sha256\`."
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish release
+        if: steps.meta.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: contabo_pricing ${{ steps.meta.outputs.version }}
+          body: ${{ steps.notes.outputs.body }}
+          files: |
+            ${{ steps.pkg.outputs.zip }}
+            ${{ steps.pkg.outputs.zip }}.sha256
+          draft: false
+          prerelease: false

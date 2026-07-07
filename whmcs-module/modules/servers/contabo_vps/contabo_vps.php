@@ -35,6 +35,13 @@ if (!defined('WHMCS')) {
     die('This file cannot be accessed directly');
 }
 
+// Single source of truth for the module version — also read by the release
+// workflow (.github/workflows/release-contabo-vps.yml) to tag packages. Bump
+// this when cutting a new release.
+if (!defined('CONTABO_VPS_VERSION')) {
+    define('CONTABO_VPS_VERSION', '1.0.0');
+}
+
 require_once __DIR__ . '/lib/ContaboProvisioningException.php';
 require_once __DIR__ . '/lib/HttpExecutor.php';
 require_once __DIR__ . '/lib/CurlHttpExecutor.php';
