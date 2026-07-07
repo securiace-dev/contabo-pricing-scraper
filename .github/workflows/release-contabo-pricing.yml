@@ -1,9 +1,16 @@
 name: Release contabo_pricing addon
 
 # Cuts a versioned GitHub Release + installable ZIP of the WHMCS addon
-# (modules/addons/contabo_pricing) whenever a change to it lands on main and
-# its version (AdminController::VERSION) has been bumped. Unrelated merges and
-# re-runs on an already-released version are no-ops. Manual runs supported.
+# (modules/addons/contabo_pricing) when a change to its SHIPPED files lands on
+# main and its version (AdminController::VERSION) has been bumped.
+#
+# Trigger scope = exactly the files that go into the release ZIP (mirrors the
+# package's exclude list via `!` negations): docs/, tests/, CHANGELOG.md and dev
+# config are NOT shipped, so editing them never triggers a run — the two module
+# workflows stay independent and doc-only changes never cut a release. Because
+# the version constant lives in a shipped file (lib/AdminController.php), bumping
+# it is what triggers a real release; a shipped-code change WITHOUT a version
+# bump runs but skips publishing (the version is already released — idempotent).
 #
 # Tag scheme: contabo_pricing-v<version> (never matches the Rust scraper's
 # `v*` tags, so release.yml is not triggered).
@@ -13,6 +20,12 @@ on:
     branches: [main]
     paths:
       - 'whmcs-module/modules/addons/contabo_pricing/**'
+      - '!whmcs-module/modules/addons/contabo_pricing/docs/**'
+      - '!whmcs-module/modules/addons/contabo_pricing/tests/**'
+      - '!whmcs-module/modules/addons/contabo_pricing/CHANGELOG.md'
+      - '!whmcs-module/modules/addons/contabo_pricing/phpunit.xml'
+      - '!whmcs-module/modules/addons/contabo_pricing/composer.lock'
+      - '.github/workflows/release-contabo-pricing.yml'
   workflow_dispatch:
 
 concurrency:

@@ -1,10 +1,16 @@
 name: Release contabo_vps module
 
 # Cuts a versioned GitHub Release + installable ZIP of the WHMCS server /
-# provisioning module (modules/servers/contabo_vps) whenever a change to it
-# lands on main and its version (CONTABO_VPS_VERSION in contabo_vps.php) has
-# been bumped. Unrelated merges and re-runs on an already-released version are
-# no-ops. Manual runs supported.
+# provisioning module (modules/servers/contabo_vps) when a change to its SHIPPED
+# files lands on main and its version (CONTABO_VPS_VERSION in contabo_vps.php)
+# has been bumped.
+#
+# Trigger scope = exactly the files that go into the release ZIP (mirrors the
+# package's exclude list via `!` negations): tests/ and dev config are NOT
+# shipped, so editing them never triggers a run — the two module workflows stay
+# independent. The version constant lives in a shipped file (contabo_vps.php),
+# so bumping it triggers a real release; a shipped-code change WITHOUT a version
+# bump runs but skips publishing (already released — idempotent).
 #
 # Tag scheme: contabo_vps-v<version> (never matches the Rust scraper's `v*`
 # tags, so release.yml is not triggered).
@@ -14,6 +20,9 @@ on:
     branches: [main]
     paths:
       - 'whmcs-module/modules/servers/contabo_vps/**'
+      - '!whmcs-module/modules/servers/contabo_vps/tests/**'
+      - '!whmcs-module/modules/servers/contabo_vps/phpunit.xml'
+      - '.github/workflows/release-contabo-vps.yml'
   workflow_dispatch:
 
 concurrency:
