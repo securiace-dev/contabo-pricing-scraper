@@ -33,11 +33,15 @@ contract doc: `docs/PROVISIONING_CONTRACT.md`.
   sanitizer (enforced by `LogRedactionTest`).
 
 ### UX / sync
-- Client area: live status panel (status badge, IPv4s, region/image/created,
-  graceful stale fallback) + Start/Stop/Restart/Reset Root Password client
-  buttons. Admin: Start/Stop/Restart/Reset Password/Sync from Contabo buttons.
-- `tblhosting.dedicatedip`/`assignedips` backfilled on admin/client views, the
-  Sync button, and a bounded `DailyCronJob` sweep (new `hooks.php`).
+- Client area: live status panel (status badge, IPv4 **and IPv6**,
+  region/image/created, graceful stale fallback) + Start/Stop/Restart/Reset
+  Root Password client buttons. Admin: Start/Stop/Restart/Reset Password/
+  **Reinstall**/Sync from Contabo buttons.
+- **Reinstall** rebuilds the OS to the product/selection image with a fresh
+  vaulted root password (tag-verified, destructive — via the reinstall `PUT`).
+- Dual-stack aware: `tblhosting.dedicatedip` ← primary IPv4, `assignedips` ←
+  extra IPv4s + all IPv6s. Backfilled on admin/client views, the Sync button,
+  and a bounded `DailyCronJob` sweep (new `hooks.php`).
 - Configurable products provision what the customer picked: selections
   round-trip via the addon link tables; Image resolves against
   `GET /v1/compute/images` and Region via a label→slug map — both fail-closed;
@@ -45,15 +49,26 @@ contract doc: `docs/PROVISIONING_CONTRACT.md`.
 - New config options 5 (cloud-init userData) and 6 (add-ons JSON);
   TestConnection distinguishes auth vs API-reachability failures.
 
+### Reliability
+- Instance recovery/adoption (`findByTag`) uses Contabo's server-side `search`
+  filter first, so it no longer depends on scanning the whole account — safe
+  for large/reseller fleets. A truncated fallback scan is logged rather than
+  silently returning a partial result (which could let a duplicate tag slip
+  through). Matches are deduped by instance id.
+- The daily sync sweep authenticates **once per server** (grouped) and reuses
+  the client across that server's services, with a small inter-call pause —
+  roughly halving call volume and staying under Contabo's rate limit.
+
 ### Engineering
 - HTTP transport extracted behind `HttpExecutor` (mirrors the addon's
   RequestExecutor seam); PUT/DELETE added; 401 refresh no longer consumes the
   retry budget; total backoff capped at 6s; 10s timeouts on view paths with
   cached-IP degradation.
-- New PHPUnit suite (109 tests) under `modules/servers/contabo_vps/tests`
+- New PHPUnit suite (117 tests) under `modules/servers/contabo_vps/tests`
   (FakeCapsule + scripted FakeHttpExecutor, real entry functions via a Runtime
   factory seam). `scripts/predeploy-check.sh` now gates the server module
-  (unit suite + PHP 7.4 lint).
+  (unit suite + PHP 7.4 lint). Two per-module GitHub Actions release workflows
+  publish versioned, installable ZIPs on version bumps.
 
 ## 0.7.0 — 2026-05-29 (Phase D — two-layer pricing, mode-aware profiles, recoverable delete)
 

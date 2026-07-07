@@ -25,7 +25,16 @@ final class Runtime
         if (self::$factory !== null) {
             return call_user_func(self::$factory, $params);
         }
-        $client = new ContaboApiClient(self::auth($params));
+        return self::instanceServiceWithClient(new ContaboApiClient(self::auth($params)));
+    }
+
+    /**
+     * Build the object graph around an already-constructed client. Lets the
+     * cron sweep reuse ONE authenticated client (one token) across every
+     * service on the same server, instead of re-authenticating per service.
+     */
+    public static function instanceServiceWithClient(ContaboApiClient $client): InstanceService
+    {
         return new InstanceService(
             $client,
             new InstanceLinker(),

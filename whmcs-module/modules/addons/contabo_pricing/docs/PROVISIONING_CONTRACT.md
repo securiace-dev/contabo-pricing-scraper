@@ -135,8 +135,15 @@ Write-policy matrix:
 |---|---|
 | Status/read | stored id |
 | start / stop / restart | stored id + instance exists (tag drift logs a warning) |
-| terminate, resetPassword | stored id + **tag match** (mismatch blocks with guidance) |
+| terminate, resetPassword, **reinstall** | stored id + **tag match** (mismatch blocks with guidance) |
 | relink to a different id | never silent — explicit admin action only |
+
+Adoption/recovery (`findByTag`) queries Contabo's server-side `search` filter
+on the tag first — it does not scan the whole account, so it stays reliable on
+large/reseller fleets. If it must fall back to an unfiltered scan and that scan
+is truncated by the page cap, it logs a warning rather than returning a partial
+result. Candidates are deduped by instance id, and more than one distinct match
+still errors (never guess).
 
 `sync()` re-asserts a drifted displayName tag (the stored id is authoritative
 because it was written under the no-silent-overwrite policy).
@@ -148,10 +155,12 @@ because it was written under the no-silent-overwrite policy).
 | Admin service tab | every render (10 s timeout, degrades to cached IP) | `tblhosting.dedicatedip` / `assignedips`, displayName tag |
 | Client area page | every render (same degradation) | same |
 | "Sync from Contabo" admin button | on demand | same |
-| `DailyCronJob` hook | daily, ≤100 active/suspended services, per-service isolation | same |
+| `DailyCronJob` hook | daily, ≤100 active/suspended services, one auth per server, paced | same |
 
-`dedicatedip` gets the first IPv4; `assignedips` the rest (newline-joined);
-writes only when changed.
+`dedicatedip` gets the primary IPv4; `assignedips` gets any additional IPv4s
+followed by all IPv6s (newline-joined); writes only when changed. The admin tab
+and client panel display IPv6 when present. The cron sweep groups services by
+server so each server authenticates once and reuses its client across services.
 
 ## 8. Failure modes
 
@@ -169,8 +178,8 @@ writes only when changed.
 
 ## 9. Out of scope / follow-ups
 
-- Reinstall button (the client supports `PUT /v1/compute/instances/{id}`;
-  surfacing it in the UI is deferred — destructive).
+- Rescue-mode surfacing (`POST /{id}/actions/rescue`) — the temporary rescue
+  password needs a display path that doesn't clobber the real OS password.
 - Add-on-only upgrades via `POST /{id}/upgrade` from ChangePackage.
 - Object Storage / S3 product line (different API family).
-- VNC/rescue-mode surfacing.
+- VNC/console access.

@@ -199,8 +199,37 @@ final class InstanceLinkerTest extends TestCase
     public function testFindByTagReturnsNullWhenAbsent(): void
     {
         $http = new FakeHttpExecutor();
-        $http->queue('GET /v1/compute/instances?', 200, ['data' => []]);
+        $http->stub('GET /v1/compute/instances?', 200, ['data' => []]);
         $this->assertNull($this->linker->findByTag($this->apiClient($http), 300));
+    }
+
+    public function testFindByTagUsesServerSideSearchFilter(): void
+    {
+        $http = new FakeHttpExecutor();
+        $http->stub('GET /v1/compute/instances?', 200, ['data' => [
+            ['instanceId' => 2, 'displayName' => 'whmcs-300 mine'],
+        ]]);
+        $found = $this->linker->findByTag($this->apiClient($http), 300);
+        $this->assertNotNull($found);
+        $this->assertSame(2, $found['instanceId']);
+        // The very first list call must carry the tag as a server-side search
+        // filter, so recovery never depends on scanning the whole account.
+        $listCalls = $http->callsMatching('GET https://api.contabo.com/v1/compute/instances?');
+        $this->assertStringContainsString('search=whmcs-300', $listCalls[0]['url']);
+    }
+
+    public function testFindByTagDedupesRepeatedRows(): void
+    {
+        // Search + fallback could each surface the same instance — must not
+        // count as an ambiguous duplicate.
+        $http = new FakeHttpExecutor();
+        $http->stub('GET /v1/compute/instances?', 200, ['data' => [
+            ['instanceId' => 7, 'displayName' => 'whmcs-300 a'],
+            ['instanceId' => 7, 'displayName' => 'whmcs-300 a'],
+        ]]);
+        $found = $this->linker->findByTag($this->apiClient($http), 300);
+        $this->assertNotNull($found);
+        $this->assertSame(7, $found['instanceId']);
     }
 
     public function testFindByTagThrowsOnAmbiguity(): void

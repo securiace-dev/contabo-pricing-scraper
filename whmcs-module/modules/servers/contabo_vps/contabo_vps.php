@@ -160,6 +160,7 @@ function contabo_vps_AdminCustomButtonArray(): array
         'Stop'              => 'buttonStop',
         'Restart'           => 'buttonRestart',
         'Reset Password'    => 'buttonResetPassword',
+        'Reinstall'         => 'buttonReinstall',
         'Sync from Contabo' => 'buttonSync',
     ];
 }
@@ -197,6 +198,14 @@ function contabo_vps_buttonResetPassword(array $params): string
 }
 
 /** @param array<string,mixed> $params */
+function contabo_vps_buttonReinstall(array $params): string
+{
+    return _contabo_vps_run($params, 'buttonReinstall', static function (\ContaboVps\InstanceService $svc) use ($params) {
+        return $svc->reinstall($params);
+    });
+}
+
+/** @param array<string,mixed> $params */
 function contabo_vps_buttonSync(array $params): string
 {
     return _contabo_vps_run($params, 'buttonSync', static function (\ContaboVps\InstanceService $svc) use ($params) {
@@ -213,15 +222,19 @@ function contabo_vps_AdminServicesTabFields(array $params): array
 {
     try {
         $snapshot = \ContaboVps\Runtime::instanceService($params)->sync($params, true);
-        return [
+        $fields = [
             'Instance ID' => htmlspecialchars($snapshot['instance_id']),
             'Status'      => htmlspecialchars($snapshot['status']),
             'Region'      => htmlspecialchars($snapshot['region']),
             'IPv4'        => htmlspecialchars(implode(', ', $snapshot['ipv4'])),
-            'Image'       => htmlspecialchars($snapshot['image']),
-            'Created'     => htmlspecialchars($snapshot['created']),
-            'Panel'       => '<a href="https://my.contabo.com" target="_blank" rel="noopener">Open Contabo Panel &#8599;</a>',
         ];
+        if (!empty($snapshot['ipv6'])) {
+            $fields['IPv6'] = htmlspecialchars(implode(', ', $snapshot['ipv6']));
+        }
+        $fields['Image']   = htmlspecialchars($snapshot['image']);
+        $fields['Created'] = htmlspecialchars($snapshot['created']);
+        $fields['Panel']   = '<a href="https://my.contabo.com" target="_blank" rel="noopener">Open Contabo Panel &#8599;</a>';
+        return $fields;
     } catch (\Throwable $e) {
         // Degrade to the last-synced IP instead of a bare error row.
         $cached = _contabo_vps_cached_ip($params);
@@ -294,6 +307,7 @@ function contabo_vps_ClientArea(array $params): array
                 'region'      => $snapshot['region'],
                 'image'       => $snapshot['image'],
                 'ipv4'        => $snapshot['ipv4'],
+                'ipv6'        => $snapshot['ipv6'],
                 'created'     => $snapshot['created'],
                 'synced_at'   => $snapshot['synced_at'],
             ],
@@ -311,6 +325,7 @@ function contabo_vps_ClientArea(array $params): array
                 'region'      => '',
                 'image'       => '',
                 'ipv4'        => $cached !== '' ? [$cached] : [],
+                'ipv6'        => [],
                 'created'     => '',
                 'synced_at'   => '',
             ],
