@@ -7,6 +7,7 @@ use std::path::PathBuf;
 use clap::Args;
 
 pub mod auth;
+pub mod catalog;
 pub mod embed_assets;
 pub mod handlers;
 pub mod routes;

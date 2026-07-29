@@ -35,6 +35,7 @@ pub fn build_router(state: AppState, args: &ServeArgs) -> Router {
         .route("/plans/:slug", get(handlers::get_plan))
         .route("/plans/:slug/configurator", get(handlers::get_configurator))
         .route("/options", get(handlers::list_options))
+        .route("/catalog", get(handlers::catalog))
         .route("/fx", get(handlers::fx))
         .route("/quote", post(handlers::quote))
         .route("/jobs/:id", get(handlers::get_job))

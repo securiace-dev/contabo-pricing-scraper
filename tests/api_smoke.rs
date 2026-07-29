@@ -123,6 +123,33 @@ async fn plans_endpoint_returns_array() {
 }
 
 #[tokio::test]
+async fn catalog_endpoint_returns_versioned_items() {
+    if !common::fixture_present() {
+        eprintln!("skip catalog_endpoint_returns_versioned_items — data/output/ missing");
+        return;
+    }
+    let h = common::spawn_server(None).await;
+    let res = client()
+        .get(format!("{}/api/v1/catalog", h.base()))
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 200);
+    let body: serde_json::Value = res.json().await.unwrap();
+    assert!(body["catalog_version"].as_str().unwrap_or("").starts_with("catalog-"));
+    assert_eq!(body["payload_hash"].as_str().unwrap_or("").len(), 64);
+    let items = body["items"].as_array().expect("catalog items is array");
+    assert!(!items.is_empty(), "catalog must contain plan items");
+    for item in items {
+        assert!(item["machine_id"].is_string());
+        assert_eq!(item["catalog_version"], body["catalog_version"]);
+        assert!(item["source_observed_at"].is_string());
+        assert_eq!(item["payload_hash"].as_str().unwrap_or("").len(), 64);
+    }
+    h.shutdown().await;
+}
+
+#[tokio::test]
 async fn plans_endpoint_filters_by_family() {
     if !common::fixture_present() {
         eprintln!("skip plans_endpoint_filters_by_family — fixture missing");

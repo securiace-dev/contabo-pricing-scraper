@@ -38,6 +38,7 @@ thiserror       = "2"
 rust-embed      = { version = "8", features = ["compression", "include-exclude"] }
 notify          = "7"
 uuid            = { version = "1", features = ["v4"] }
+sha2            = "0.10"
 
 [dev-dependencies]
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }

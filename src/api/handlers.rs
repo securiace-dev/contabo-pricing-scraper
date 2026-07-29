@@ -103,6 +103,13 @@ pub async fn list_options(State(s): State<AppState>) -> Json<Value> {
     )
 }
 
+// ── GET /api/v1/catalog ──────────────────────────────────────────────────────
+// Versioned, read-only catalog contract for the WHMCS pricing addon.
+pub async fn catalog(State(s): State<AppState>) -> Json<Value> {
+    let snap = s.snapshot.read().await;
+    Json(super::catalog::build(&snap))
+}
+
 // ── GET /api/v1/fx ───────────────────────────────────────────────────────────
 pub async fn fx(State(s): State<AppState>) -> Json<Value> {
     const TTL_SECS: u64 = 300;
