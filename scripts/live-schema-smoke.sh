@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Read-only LIVE-SCHEMA smoke for the contabo_pricing addon (0.5.1).
+# Read-only LIVE-SCHEMA smoke for the WHMCS-native contabo_pricing addon.
 #
 # Runs scripts/live-schema-smoke.php inside a WHMCS php container so it can read
 # that install's configuration.php and SELECT from information_schema ONLY. It
@@ -18,8 +18,8 @@ set -euo pipefail
 
 v="${1:-8}"
 case "$v" in
-  8) ctr="securiace-vps-platform-whmcs8-php-1" ;;
-  9) ctr="securiace-vps-platform-whmcs9-php-1" ;;
+  8) ctr="whmcs-devbox-whmcs8-1" ;;
+  9) ctr="whmcs-devbox-whmcs9-1" ;;
   *) echo "usage: $0 [8|9]"; exit 2 ;;
 esac
 

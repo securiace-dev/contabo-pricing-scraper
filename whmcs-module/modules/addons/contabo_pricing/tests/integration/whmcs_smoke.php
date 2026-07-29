@@ -29,7 +29,7 @@ declare(strict_types=1);
 chdir('/var/www/html');
 require 'init.php';
 
-$contaboLibDir = '/var/www/html/modules/addons/contabo_pricing/lib';
+$contaboLibDir = getenv('CONTABO_ADDON_LIB_DIR') ?: '/var/www/html/modules/addons/contabo_pricing/lib';
 spl_autoload_register(static function (string $class) use ($contaboLibDir): void {
     if (strpos($class, 'ContaboPricing\\') === 0) {
         $rel  = str_replace(array('ContaboPricing\\', '\\'), array('', '/'), $class);
@@ -38,7 +38,7 @@ spl_autoload_register(static function (string $class) use ($contaboLibDir): void
             require_once $path;
         }
     }
-});
+}, true, true);
 
 use ContaboPricing\ConfigOptionLinkRepository;
 use ContaboPricing\ConfigOptionPricingContext;

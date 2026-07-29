@@ -1,6 +1,6 @@
 <?php
 /**
- * Read-only LIVE-SCHEMA smoke for the contabo_pricing addon (0.5.1).
+ * Read-only LIVE-SCHEMA smoke for the WHMCS-native contabo_pricing addon.
  *
  * Confirms the live WHMCS schema matches what the addon's code expects, so a
  * real-vs-FakeCapsule divergence (like the tblhosting.recurringamount→amount bug
@@ -69,6 +69,15 @@ $colExists = function (string $table, string $col) use ($pdo, $name): bool {
     $row = $st->fetch();
     return (int) ($row['n'] ?? 0) > 0;
 };
+$tableExists = function (string $table) use ($pdo, $name): bool {
+    $st = $pdo->prepare(
+        "SELECT COUNT(*) AS n FROM information_schema.tables
+         WHERE table_schema = ? AND table_name = ?"
+    );
+    $st->execute([$name, $table]);
+    $row = $st->fetch();
+    return (int) ($row['n'] ?? 0) > 0;
+};
 
 $fail  = 0;
 $lines = [];
@@ -92,6 +101,57 @@ $lines[] = '[INFO] tblhosting.recurringamount present=' . ($hasRecurring ? 'yes'
 foreach (['mod_contabo_config_group_link', 'mod_contabo_config_option_link', 'mod_contabo_config_option_value_link'] as $t) {
     $ok = $colExists($t, 'expected_hash');
     $lines[] = ($ok ? '[PASS]' : '[FAIL]') . " {$t}.expected_hash exists (drift baseline, schema v6)";
+    if (!$ok) { $fail++; }
+}
+
+// REQUIRED: WHMCS-native suite tables. This remains information_schema-only;
+// row content and credentials are never read.
+$suiteTables = [
+    'mod_securiacevps_schema',
+    'mod_securiacevps_order_snapshots',
+    'mod_securiacevps_resources',
+    'mod_securiacevps_operations',
+    'mod_securiacevps_operation_attempts',
+    'mod_securiacevps_provider_requests',
+    'mod_securiacevps_service_locks',
+    'mod_securiacevps_capabilities',
+    'mod_securiacevps_reconciliation',
+    'mod_securiacevps_adoption',
+    'mod_securiacevps_billing_sagas',
+    'mod_securiacevps_audit_events',
+    'mod_securiacevps_operator_commands',
+    'mod_securiacevps_secrets',
+    'mod_securiacevps_communications',
+    'mod_contabo_catalog_versions',
+    'mod_contabo_catalog_items',
+    'mod_contabo_mapping_publications',
+    'mod_contabo_publication_approvals',
+];
+foreach ($suiteTables as $table) {
+    $ok = $tableExists($table);
+    $lines[] = ($ok ? '[PASS]' : '[FAIL]') . " {$table} exists";
+    if (!$ok) { $fail++; }
+}
+
+$suiteColumns = [
+    ['mod_securiacevps_order_snapshots', 'cart_total_hash'],
+    ['mod_securiacevps_operations', 'fencing_token'],
+    ['mod_securiacevps_operations', 'operation_generation'],
+    ['mod_securiacevps_operations', 'payload_json'],
+    ['mod_securiacevps_provider_requests', 'unknown_outcome'],
+    ['mod_securiacevps_adoption', 'confidence'],
+    ['mod_securiacevps_billing_sagas', 'compensation_state'],
+    ['mod_securiacevps_secrets', 'operation_uuid'],
+    ['mod_securiacevps_secrets', 'reveal_token_ciphertext'],
+    ['mod_securiacevps_communications', 'safe_error_code'],
+    ['mod_contabo_catalog_versions', 'payload_hash'],
+    ['mod_contabo_catalog_items', 'machine_id'],
+    ['mod_contabo_mapping_publications', 'mapping_version'],
+];
+foreach ($suiteColumns as $definition) {
+    [$table, $column] = $definition;
+    $ok = $colExists($table, $column);
+    $lines[] = ($ok ? '[PASS]' : '[FAIL]') . " {$table}.{$column} exists";
     if (!$ok) { $fail++; }
 }
 
