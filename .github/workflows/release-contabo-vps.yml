@@ -1,23 +1,22 @@
-name: Release contabo_vps module
+name: Release SecuriAce VPS suite
 
-# Cuts a versioned GitHub Release + installable ZIP of the WHMCS server /
-# provisioning module (modules/servers/contabo_vps) whenever a change to it
-# lands on main and its version (CONTABO_VPS_VERSION in contabo_vps.php) has
-# been bumped. Unrelated merges and re-runs on an already-released version are
-# no-ops. Manual runs supported.
-#
-# Tag scheme: contabo_vps-v<version> (never matches the Rust scraper's `v*`
-# tags, so release.yml is not triggered).
+# Publishes the canonical WHMCS provisioning runtime as one installable archive:
+# securiacevps + contabo_vps compatibility shim + VPS Standard Cart child theme.
+# This workflow builds release artifacts only. It never deploys WHMCS.
 
 on:
   push:
     branches: [main]
     paths:
+      - 'whmcs-module/modules/servers/securiacevps/**'
       - 'whmcs-module/modules/servers/contabo_vps/**'
+      - 'whmcs-module/templates/orderforms/securiace-vps/**'
+      - 'scripts/package-whmcs-suite.sh'
+      - '.github/workflows/release-contabo-vps.yml'
   workflow_dispatch:
 
 concurrency:
-  group: release-contabo-vps
+  group: release-securiacevps
   cancel-in-progress: false
 
 permissions:
@@ -25,10 +24,11 @@ permissions:
 
 jobs:
   release:
-    name: Package & release contabo_vps
+    name: Package and release SecuriAce VPS
     runs-on: ubuntu-latest
     env:
-      MODULE_DIR: whmcs-module/modules/servers/contabo_vps
+      MODULE_DIR: whmcs-module/modules/servers/securiacevps
+      SHIM_DIR: whmcs-module/modules/servers/contabo_vps
       ADDON_DIR: whmcs-module/modules/addons/contabo_pricing
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -41,32 +41,31 @@ jobs:
           extensions: json, curl, mbstring
           tools: composer
 
-      # Quality gate. The server-module suite runs on the addon's PHPUnit and
-      # its FakeCapsule (both modules ship together), so install the addon's
-      # dev deps first, then run the server suite against them.
-      - name: Install PHPUnit (via addon dev deps)
+      - name: Install test dependencies
         working-directory: ${{ env.ADDON_DIR }}
         run: composer install --no-interaction --no-progress
 
-      - name: Lint (php -l)
-        working-directory: ${{ env.MODULE_DIR }}
+      - name: Lint canonical module and shim
         run: |
-          set -e
-          find lib -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null
-          php -l contabo_vps.php >/dev/null
-          php -l hooks.php >/dev/null
+          set -euo pipefail
+          find "$MODULE_DIR" "$SHIM_DIR" -type f -name '*.php' \
+            -not -path '*/tests/*' -print0 |
+            xargs -0 -n1 php -l >/dev/null
 
-      - name: Unit tests
+      - name: Unit and contract tests
         working-directory: ${{ env.MODULE_DIR }}
         run: ../../addons/contabo_pricing/vendor/bin/phpunit -c phpunit.xml
 
-      - name: Resolve version & release state
+      - name: Resolve version and release state
         id: meta
         run: |
           set -euo pipefail
-          VERSION=$(grep -oP "define\('CONTABO_VPS_VERSION',\s*'\K[^']+" "$MODULE_DIR/contabo_vps.php")
-          if [ -z "$VERSION" ]; then echo "::error::could not read CONTABO_VPS_VERSION"; exit 1; fi
-          TAG="contabo_vps-v${VERSION}"
+          VERSION="$(sed -n "s/.*SECURIACE_VPS_VERSION', '\\([^']*\\)'.*/\\1/p" "$MODULE_DIR/securiacevps.php" | head -n 1)"
+          if [ -z "$VERSION" ]; then
+            echo "::error::could not read SECURIACE_VPS_VERSION"
+            exit 1
+          fi
+          TAG="securiacevps-v${VERSION}"
           if gh release view "$TAG" >/dev/null 2>&1; then
             EXISTS=true
           else
@@ -77,55 +76,54 @@ jobs:
             echo "tag=$TAG"
             echo "exists=$EXISTS"
           } >> "$GITHUB_OUTPUT"
-          echo "contabo_vps $VERSION → tag $TAG (already released: $EXISTS)"
+          echo "SecuriAce VPS $VERSION -> $TAG (already released: $EXISTS)"
 
-      - name: Skip note
+      - name: Existing release notice
         if: steps.meta.outputs.exists == 'true'
-        run: echo "::notice::Release ${{ steps.meta.outputs.tag }} already exists — nothing to do. Bump CONTABO_VPS_VERSION to cut a new one."
+        run: echo "::notice::${{ steps.meta.outputs.tag }} already exists. Bump SECURIACE_VPS_VERSION for a new release."
 
-      - name: Build installable package
+      - name: Build and inspect installable package
         if: steps.meta.outputs.exists == 'false'
-        id: pkg
+        id: package
         run: |
           set -euo pipefail
-          VERSION="${{ steps.meta.outputs.version }}"
-          STAGE="$(mktemp -d)"
-          mkdir -p "$STAGE/modules/servers/contabo_vps"
-          # Runtime only — no Composer, no autoloader (require_once). Exclude the
-          # test harness and dev config. tar --exclude prunes during archiving.
-          tar -C "$MODULE_DIR" \
-            --exclude='./tests' \
-            --exclude='./.phpunit.cache' \
-            --exclude='./phpunit.xml' \
-            --exclude='./.git*' \
-            -cf - . | tar -C "$STAGE/modules/servers/contabo_vps" -xf -
-          ZIP="contabo_vps-v${VERSION}.zip"
-          ( cd "$STAGE" && zip -rq "$OLDPWD/$ZIP" modules )
-          sha256sum "$ZIP" > "$ZIP.sha256"
-          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+          bash scripts/package-whmcs-suite.sh
+          ZIP="dist/securiacevps-v${{ steps.meta.outputs.version }}.zip"
+          test -s "$ZIP"
+          test -s "$ZIP.sha256"
+          test -s "$ZIP.manifest"
+          unzip -t "$ZIP"
+          {
+            echo "zip=$ZIP"
+            echo "checksum=$ZIP.sha256"
+            echo "manifest=$ZIP.manifest"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Extract changelog section
+      - name: Extract release notes
         if: steps.meta.outputs.exists == 'false'
         id: notes
         run: |
           set -euo pipefail
           VERSION="${{ steps.meta.outputs.version }}"
-          # The server module's changelog entries live in the addon CHANGELOG,
-          # headed "## contabo_vps <version> — …".
-          BODY="$(awk -v ver="contabo_vps ${VERSION}" '
+          BODY="$(awk -v ver="securiacevps ${VERSION}" '
             $0 ~ "^## " && index($0, ver) {flag=1; print; next}
             flag && /^## / {exit}
             flag {print}
           ' "$ADDON_DIR/CHANGELOG.md")"
           {
             echo "body<<EOF"
-            if [ -n "$BODY" ]; then echo "$BODY"; else echo "See CHANGELOG.md for details."; fi
+            if [ -n "$BODY" ]; then
+              echo "$BODY"
+            else
+              echo "See the addon CHANGELOG for details."
+            fi
             echo ""
-            echo "### Install"
-            echo "1. Download and unzip \`contabo_vps-v${VERSION}.zip\` at your WHMCS root (it lays down \`modules/servers/contabo_vps/\`)."
-            echo "2. Add a server under **System Settings → Servers** using the **Contabo VPS** module, then assign it to a product. Run **Test Connection** before ordering."
+            echo "### Contents"
+            echo "- \`modules/servers/securiacevps/\` canonical module"
+            echo "- \`modules/servers/contabo_vps/\` staged migration shim"
+            echo "- \`templates/orderforms/securiace-vps/\` Standard Cart child"
             echo ""
-            echo "Verify the download against \`.sha256\`."
+            echo "Install or upgrade \`contabo_pricing\` first because it owns the shared schema. Follow the operator-controlled migration runbook; this release performs no deployment."
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -135,10 +133,11 @@ jobs:
         with:
           tag_name: ${{ steps.meta.outputs.tag }}
           target_commitish: ${{ github.sha }}
-          name: contabo_vps ${{ steps.meta.outputs.version }}
+          name: SecuriAce VPS ${{ steps.meta.outputs.version }}
           body: ${{ steps.notes.outputs.body }}
           files: |
-            ${{ steps.pkg.outputs.zip }}
-            ${{ steps.pkg.outputs.zip }}.sha256
+            ${{ steps.package.outputs.zip }}
+            ${{ steps.package.outputs.checksum }}
+            ${{ steps.package.outputs.manifest }}
           draft: false
           prerelease: false

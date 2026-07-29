@@ -136,7 +136,10 @@ async fn catalog_endpoint_returns_versioned_items() {
         .unwrap();
     assert_eq!(res.status(), 200);
     let body: serde_json::Value = res.json().await.unwrap();
-    assert!(body["catalog_version"].as_str().unwrap_or("").starts_with("catalog-"));
+    assert!(body["catalog_version"]
+        .as_str()
+        .unwrap_or("")
+        .starts_with("catalog-"));
     assert_eq!(body["payload_hash"].as_str().unwrap_or("").len(), 64);
     let items = body["items"].as_array().expect("catalog items is array");
     assert!(!items.is_empty(), "catalog must contain plan items");
@@ -424,7 +427,12 @@ async fn refresh_accepts_good_token_and_returns_job_id() {
         .unwrap();
     // 202 Accepted: the scrape runs asynchronously; the response only confirms
     // the job was queued, not that it has completed.
-    assert_eq!(res.status(), 202, "expected 202 Accepted, got {}", res.status());
+    assert_eq!(
+        res.status(),
+        202,
+        "expected 202 Accepted, got {}",
+        res.status()
+    );
     let body: serde_json::Value = res.json().await.unwrap();
     let job_id = body["job_id"].as_str().expect("job_id missing");
     assert!(!job_id.is_empty(), "job_id should be non-empty");

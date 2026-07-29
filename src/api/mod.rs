@@ -35,7 +35,6 @@ pub struct ServeArgs {
     /// CORS allow-origin (repeatable; defaults to none = same-origin only)
     #[arg(long = "cors-origin")]
     pub cors_origins: Vec<String>,
-
 }
 
 pub async fn run_serve(args: ServeArgs) -> i32 {

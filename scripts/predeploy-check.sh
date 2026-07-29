@@ -1,28 +1,29 @@
 #!/usr/bin/env bash
 #
-# predeploy-check.sh — MANDATORY pre-deploy gate for the contabo_pricing WHMCS addon.
+# predeploy-check.sh — local release gate for the WHMCS-native VPS suite.
 #
 # Runs the full LOCAL verification battery, fail-closed. It NEVER touches
 # production — only local files + the dockerised dev WHMCS (8.13 + 9.0). A prod
-# deploy MUST NOT proceed unless this script exits 0. See docs/DEPLOY_RUNBOOK.md.
+# release MUST NOT proceed unless this script exits 0. See docs/DEPLOY_RUNBOOK.md.
 #
 # Stages (all run; gate fails if ANY stage fails):
 #   1. Unit suite (PHPUnit, FakeCapsule) — addon.
-#   2. Unit suite (PHPUnit, FakeCapsule + FakeHttpExecutor) — contabo_vps
-#      server/provisioning module.
-#   3. PHP 7.4 syntax lint (the polyglot floor) of addon lib + entrypoints +
-#      admin templates + server-module lib/entrypoints/tests + repo scripts.
-#   4. Live-schema smoke against dev WHMCS 8.13 + 9.0 (information_schema only).
-#   5. Real-WHMCS integration smoke (apply / drift / observe end-to-end on dev).
+#   2. Unit suite — canonical securiacevps module.
+#   3. PHP 7.4 runtime syntax plus PHP 8.2 / 8.3 full-source syntax.
+#   4. Rust format, test, check, and Clippy.
+#   5. Hallmark static UI regression audit.
+#   6. Real-WHMCS migration/integration smoke in dev.
+#   7. Read-only post-migration schema verification on WHMCS 8.13 + 9.0.
 #
 # Usage:  bash scripts/predeploy-check.sh
-# Exit:   0 = gate PASS (safe to deploy); non-zero = gate FAIL (do NOT deploy).
+# Exit:   0 = gate PASS; non-zero = gate FAIL.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ADDON="$REPO_ROOT/whmcs-module/modules/addons/contabo_pricing"
-SERVER="$REPO_ROOT/whmcs-module/modules/servers/contabo_vps"
+SERVER="$REPO_ROOT/whmcs-module/modules/servers/securiacevps"
+SHIM="$REPO_ROOT/whmcs-module/modules/servers/contabo_vps"
 
 fail=0
 declare -a results
@@ -30,49 +31,93 @@ record() { if [ "$2" -eq 0 ]; then results+=("[PASS] $1"); else results+=("[FAIL
 stage()  { echo; echo "==================== $1 ===================="; }
 
 # ── 1) addon unit suite ──────────────────────────────────────────────────────
-stage "1/5 addon unit suite (phpunit)"
+stage "1/7 addon unit suite (phpunit)"
 ( cd "$ADDON" && vendor/bin/phpunit ); record "addon unit suite" $?
 
 # ── 2) server-module unit suite ──────────────────────────────────────────────
-stage "2/5 contabo_vps server-module unit suite (phpunit)"
+stage "2/7 securiacevps server-module unit suite (phpunit)"
 ( cd "$SERVER" && "$ADDON/vendor/bin/phpunit" -c phpunit.xml ); record "server-module unit suite" $?
 
-# ── 3) PHP 7.4 syntax lint ───────────────────────────────────────────────────
-stage "3/5 PHP 7.4 syntax lint"
+# ── 3) PHP syntax matrix ─────────────────────────────────────────────────────
+stage "3/7 PHP 7.4 runtime + PHP 8.2 / 8.3 full-source syntax lint"
 lint_status=0
-files=$( { ls "$ADDON"/lib/*.php "$ADDON"/*.php "$ADDON"/templates/admin/*.tpl "$SERVER"/lib/*.php "$SERVER"/*.php "$SERVER"/tests/*.php "$SCRIPT_DIR"/*.php ; } 2>/dev/null )
-if docker image inspect php:7.4-cli >/dev/null 2>&1 || docker pull php:7.4-cli >/dev/null 2>&1; then
-  rels=""
-  for f in $files; do rels="$rels ${f#"$REPO_ROOT"/}"; done
-  # One container, loop inside (fast): lint every file, fail if any fails.
-  docker run --rm -v "$REPO_ROOT":/app -w /app php:7.4-cli sh -c '
-    st=0; for f in "$@"; do php -l "$f" >/dev/null 2>&1 || { echo "  LINT FAIL (7.4): $f"; st=1; }; done; exit $st
-  ' _ $rels
-  lint_status=$?
-  echo "  linted with php:7.4-cli"
-else
-  echo "  WARNING: php:7.4-cli (docker) unavailable — falling back to local php $(php -r 'echo PHP_VERSION;' 2>/dev/null); PHP 7.4 NOT verified"
-  for f in $files; do
-    php -l "$f" >/dev/null 2>&1 || { echo "  LINT FAIL: $f"; lint_status=1; }
-  done
-fi
-record "PHP 7.4 lint" "$lint_status"
+files=()
+while IFS= read -r file; do
+  files+=("$file")
+done < <(
+  find "$ADDON" "$SERVER" "$SHIM" "$SCRIPT_DIR" \
+    -type f -name '*.php' \
+    -not -path '*/vendor/*' \
+    -print | LC_ALL=C sort
+)
+rels=()
+for file in "${files[@]}"; do
+  rels+=("${file#"$REPO_ROOT"/}")
+done
+runtime_files=()
+while IFS= read -r file; do
+  runtime_files+=("$file")
+done < <(
+  find "$ADDON" "$SERVER" "$SHIM" "$SCRIPT_DIR" \
+    -type f -name '*.php' \
+    -not -path '*/vendor/*' \
+    -not -path '*/tests/*' \
+    -print | LC_ALL=C sort
+)
+runtime_rels=()
+for file in "${runtime_files[@]}"; do
+  runtime_rels+=("${file#"$REPO_ROOT"/}")
+done
+for php_version in 7.4 8.2 8.3; do
+  if docker image inspect "php:${php_version}-cli" >/dev/null 2>&1 ||
+    docker pull "php:${php_version}-cli" >/dev/null 2>&1; then
+    lint_rels=("${rels[@]}")
+    if [ "$php_version" = "7.4" ]; then
+      lint_rels=("${runtime_rels[@]}")
+    fi
+    docker run --rm -v "$REPO_ROOT":/app -w /app "php:${php_version}-cli" sh -c '
+      st=0
+      for f in "$@"; do
+        php -l "$f" >/dev/null 2>&1 || { echo "  LINT FAIL: $f"; st=1; }
+      done
+      exit $st
+    ' _ "${lint_rels[@]}" || lint_status=1
+    echo "  linted with php:${php_version}-cli"
+  else
+    echo "  LINT MATRIX UNAVAILABLE: php:${php_version}-cli" >&2
+    lint_status=1
+  fi
+done
+record "PHP runtime/full-source lint matrix" "$lint_status"
 
-# ── 4) live-schema smoke (dev 8.13 + 9.0) ────────────────────────────────────
-stage "4/5 live-schema smoke (dev 8.13 + 9.0)"
+# ── 4) Rust verification ─────────────────────────────────────────────────────
+stage "4/7 Rust format, tests, check, and Clippy"
+rust_status=0
+(cd "$REPO_ROOT" && cargo fmt --all -- --check) || rust_status=1
+(cd "$REPO_ROOT" && cargo test --all-targets) || rust_status=1
+(cd "$REPO_ROOT" && cargo check --all-targets) || rust_status=1
+(cd "$REPO_ROOT" && cargo clippy --all-targets -- -D warnings) || rust_status=1
+record "Rust verification" "$rust_status"
+
+# ── 5) Hallmark static UI audit ──────────────────────────────────────────────
+stage "5/7 Hallmark static UI regression audit"
+ruby "$SCRIPT_DIR/hallmark-audit.rb"; record "Hallmark UI audit" $?
+
+# ── 6) real-WHMCS integration smoke (dev) ────────────────────────────────────
+stage "6/7 real-WHMCS migration and integration smoke"
+bash "$SCRIPT_DIR/whmcs-integration-smoke.sh"; record "integration smoke" $?
+
+# ── 7) live-schema smoke (dev 8.13 + 9.0) ────────────────────────────────────
+stage "7/7 post-migration schema smoke (dev 8.13 + 9.0)"
 CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 8; s8=$?
 CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 9; s9=$?
 if [ "$s8" -eq 0 ] && [ "$s9" -eq 0 ]; then record "live-schema smoke 8.13+9.0" 0; else record "live-schema smoke 8.13+9.0" 1; fi
-
-# ── 5) real-WHMCS integration smoke (dev) ────────────────────────────────────
-stage "5/5 real-WHMCS integration smoke"
-bash "$SCRIPT_DIR/whmcs-integration-smoke.sh"; record "integration smoke" $?
 
 # ── summary ──────────────────────────────────────────────────────────────────
 echo; echo "==================== predeploy gate summary ===================="
 for r in "${results[@]}"; do echo "  $r"; done
 if [ "$fail" -eq 0 ]; then
-  echo "  GATE: PASS — safe to proceed to deploy (see docs/DEPLOY_RUNBOOK.md)"
+  echo "  GATE: PASS — safe to build a release artifact"
   exit 0
 fi
 echo "  GATE: FAIL — DO NOT DEPLOY"

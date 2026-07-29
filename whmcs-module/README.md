@@ -1,104 +1,185 @@
-# WHMCS Contabo Pricing Addon
+# SecuriAce WHMCS-native VPS suite
 
-Syncs Contabo VPS / Storage VPS / Cloud VDS pricing into WHMCS products via versioned profiles. Talks to the [`contabo-pricing` API server](../) — never scrapes Contabo directly.
+This directory contains the WHMCS half of the SecuriAce VPS architecture.
 
-## Requirements
+```text
+modules/addons/contabo_pricing       catalog, mappings, prices, snapshots, ops UI
+modules/servers/securiacevps         canonical provisioning module
+modules/servers/contabo_vps          staged migration compatibility shim
+templates/orderforms/securiace-vps   Standard Cart child for VPS products
+```
 
-- WHMCS **8.0+**  (uses Capsule, AbstractWidget, modern hook signatures)
-- PHP **8.1+**
-- A running `contabo-pricing` API server reachable from the WHMCS host (set the URL in addon Settings)
+It supports WHMCS 8.13.x/9.x and PHP 7.4-compatible module syntax. Runtime
+durability uses module-owned WHMCS MySQL tables and WHMCS cron. There is no
+Python, PostgreSQL, Redis, Celery, or external queue dependency.
 
-## Concepts
+## Runtime responsibilities
 
-- **Profile** — a named template: `(plan_slug, period_months, region, OS, options[])`. Stored in `mod_contabo_profile`.
-- **Profile Version** — immutable pricing snapshot of a profile at a point in time. Every sync that detects a change creates a new version. Old versions retained for diff + rollback. Stored in `mod_contabo_profile_version`.
-- **Mapping** — links a Contabo Profile to a WHMCS product (`tblproducts.id`) and chooses which billing cycles (monthly / semi-annually / annually) receive the synced price. One profile can drive many products.
-- **Sync Run** — execution of `SyncEngine::run()`: pulls fresh `/api/v1/plans`, diffs against the latest version of each profile, optionally pushes new prices to mapped products. Writes a row to `mod_contabo_sync_log` summarising what changed.
+### Rust pricing/catalog API
 
-## Install
+The Rust service scrapes and normalizes plans, provider SKU IDs,
+configuration dimensions, prices, FX, availability, and payload hashes. It
+publishes a versioned `/api/v1/catalog` contract. It does not receive WHMCS
+customer credentials or manage customer VPS resources.
+
+### `contabo_pricing` addon
+
+The addon imports the Rust catalog and manages:
+
+- versioned plan profiles and catalog items;
+- WHMCS product/configurable-option mappings;
+- customer and renewal price previews/publications;
+- compatibility and capability observations;
+- drift, repricing, approvals, audit, and maintenance;
+- immutable paid-order snapshots;
+- the provisioning operations/reconciliation workbench;
+- additive installation of the shared native schema.
+
+Rust/API unavailability may pause imports or new quotation. It does not block
+an existing service because the provisioning module never calls the Rust API.
+
+### `securiacevps` module
+
+The canonical server module reads a sealed snapshot and calls the official
+Contabo Customer API. It accepts lifecycle intent into deterministic,
+MySQL-backed operations; WHMCS cron polls and reconciles them.
+
+Supported controls appear only when provider capabilities are certified.
+Uncertified resize/migration and other actions fail closed and remain absent
+from customer action surfaces.
+
+### VPS order form and service experience
+
+`securiace-vps` inherits WHMCS `standard_cart`. It changes the VPS product and
+configuration presentation only. WHMCS retains shared cart, session,
+authentication, CSRF, coupons, tax, invoices, gateways, payment, fraud, and
+service ownership.
+
+The client service page renders local resource/operation projections and sends
+mutations through POST + WHMCS CSRF + ownership + capability checks.
+
+## Installation order
+
+Build verified local artifacts:
 
 ```bash
-# In your WHMCS install:
-cd /path/to/whmcs/modules/addons/
-git clone <repo> contabo_pricing_src
-mv contabo_pricing_src/whmcs-module/modules/addons/contabo_pricing .
-rm -rf contabo_pricing_src
-
-cd contabo_pricing
-composer install --no-dev --optimize-autoloader
-
-# Then in WHMCS:
-#   1. Setup → Addon Modules → Contabo Pricing → Activate
-#   2. Click Configure → fill in API base URL + bearer token
-#   3. Tick the admin role(s) that should see the addon → Save
-#   4. Addons → Contabo Pricing → opens the dashboard
+bash scripts/predeploy-check.sh
+bash scripts/package-whmcs-suite.sh
 ```
 
-The Composer step is optional — the addon ships with a stub autoloader that works without `vendor/`. Composer is only required if you want PHPUnit for the test suite.
+Then, in an authorized staging or operator-controlled rollout:
 
-### Bearer token encryption at rest
+1. Install/upgrade `contabo_pricing` and activate it.
+2. Confirm schema v12 health and run the migration twice to prove idempotency.
+3. Keep global and per-capability provider writes disabled.
+4. Import/validate a Rust catalog and publish a mapping version.
+5. Install `securiacevps` and the `contabo_vps` compatibility shim.
+6. Run read-only existing-service adoption and resolve conflicts.
+7. Certify the minimum lifecycle in an allowlisted staging cohort.
+8. Assign the `securiace-vps` order form only to VPS product groups.
+9. Reassign legacy services to `securiacevps` in verified cohorts.
 
-The bearer token is stored encrypted in `tbladdonmodules` via WHMCS's native `encrypt()` helper — no third-party crypto library is introduced and no separate key store is required. The first time you save the token in the WHMCS Settings form the addon detects the plaintext row on its next read, calls `encrypt()`, and writes the value back with an `ENC:` prefix. From that point on every read decrypts via `decrypt()` transparently; no manual migration step is required.
+See the complete [release/migration runbook](modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md).
+Repository scripts do not deploy production.
 
-Because encryption is keyed off the WHMCS install's encryption key from `configuration.php`, that key must be preserved across backup/restore. If the encryption key is regenerated, the stored ciphertext is unrecoverable — re-enter the bearer token in the addon Settings form and the auto-migration will re-encrypt it under the new key.
+## Server credentials
 
-## First-time workflow
+In WHMCS server configuration:
 
-```
-Activate addon                                    (creates mod_contabo_* tables)
-   ↓
-Open addon → Settings tab                         (confirm API base URL works)
-   ↓
-Open addon → Profiles → Create a new profile      (one per plan/period combo)
-   ↓
-Open addon → Mappings → link profile to a WHMCS product + tick cycles
-   ↓
-Open addon → Run sync now                         (first sync creates Version 1)
-   ↓
-Repeat                                            (DailyCronJob hook keeps it fresh)
-```
-
-## Sync strategies (per-profile)
-
-| Strategy | Behaviour |
+| WHMCS field | Meaning |
 |---|---|
-| `manual` | New versions are recorded but no products are touched. Admin reviews diffs in the UI and applies manually. |
-| `notify` (default) | New versions are recorded + admin gets an email summary, products are NOT auto-updated. |
-| `auto-apply` | New versions are recorded AND the mapped WHMCS products' prices are updated in `tblpricing` per the configured cycles. |
+| Username | Contabo OAuth client ID |
+| Password | Contabo OAuth client secret |
+| Access Hash | API user identifier and password in the documented module format |
 
-Mix strategies per profile: keep production products on `notify` (so a human approves before invoices change) and dev products on `auto-apply`.
+WHMCS encrypts these fields. The module redacts credentials and nested
+secret-bearing provider payloads from logs, audit metadata, operations,
+communications, and customer output.
 
-## Pricing math
+The six per-product module config options remain visible only for compatibility
+and migration inventory. Native provisioning requires a sealed paid-order
+snapshot and never derives the requested server from mutable current product
+fields.
 
-The addon mirrors the API `/api/v1/quote` formula exactly, so the "Final / mo" column in the Profile History matches what an admin sees in the report UI:
+## Order and mapping workflow
 
+```text
+import catalog
+  -> validate catalog hashes/availability
+  -> create/version profile
+  -> map product and option machine codes
+  -> preview publication and prices
+  -> publish immutable mapping version
+  -> validate customer selections at checkout
+  -> seal paid/fraud-eligible order snapshot
+  -> create deterministic provisioning operation
 ```
-final_monthly = base_eur × (1 + gst_pct) × fx_rate × (1 + fx_markup_pct/100)
+
+The snapshot stores mapping, catalog, profile, provider, compatibility, price,
+cart, option, and customer-visible-label identities. It is immutable after
+sealing; corrections supersede it.
+
+## Lifecycle workflow
+
+```text
+WHMCS callback/customer action
+  -> authorize and verify capability/write switches
+  -> create or return deterministic operation
+  -> claim service lease with fencing token
+  -> submit exact provider request
+  -> poll/reconcile
+  -> verify provider result
+  -> project resource, billing saga, communication, and WHMCS status
 ```
 
-`gst_pct`, `fx_rate`, `fx_markup_pct`, and `currency_iso` are all controlled from the addon Settings page; they're snapshotted into each `ProfileVersion` row so historical prices remain reproducible even if you later change the addon's global FX or GST settings.
+WHMCS remains Pending until create readiness is verified. Suspend, unsuspend,
+and terminate update commercial state only after provider verification. An
+accepted request followed by timeout is `unknown_outcome`, not automatic
+failure; reconciliation precedes retry.
 
-## Tax rules
+## Existing-service adoption
 
-If you prefer to let WHMCS apply GST instead of baking it into the product price, click **Settings → Apply GST: no** AND run the one-time tax-rule installer (`TaxRuleManager::ensure()`) to create the 18% rule under Configuration → Tax Rules. WHMCS will then add GST on top of the synced product price at invoice time.
+Adoption is read-only and records evidence/confidence:
 
-## Database schema
+`verified`, `probable`, `ambiguous`, `missing_upstream`, `orphan_upstream`,
+`conflict`, or `excluded`.
 
-- `mod_contabo_profile` — id, slug (unique), name, plan_slug, period_months, region, os, options (json), tags, sync_strategy, active, latest_version_id, timestamps
-- `mod_contabo_profile_version` — id, profile_id, version (sequential int per profile), base/configured/setup EUR, options_snapshot (json), specs_snapshot (json), fx_rate, fx_source, fx_markup_pct, gst_pct, currency_iso, final_monthly, final_setup, snapshot_generated_at, timestamps
-- `mod_contabo_mapping` — id, profile_id, product_id (tblproducts.id), product_group_id, apply_to_monthly/annually/semiannually, active, timestamps
-- `mod_contabo_sync_log` — id, trigger ('cron'|'manual'|'webhook'), status ('running'|'succeeded'|'failed'|'no-change'), started_at, finished_at, profiles_checked, profiles_changed, products_updated, error_message, summary (json)
-- `mod_contabo_settings` — key, value, updated_at  (currently holds only `schema_version`)
+Destructive actions require exact provider account/resource identity, the exact
+`whmcs-{serviceId}` tag, and `verified` ownership. The module never guesses,
+auto-adopts, or auto-deletes an orphan.
 
-Deactivating the addon **retains** all these tables so you don't lose history. Drop them manually if you really want a clean removal.
+## Product structure
 
-## Cron
+- **Self-Managed VPS:** fixed `self_managed`; no paid management option.
+- **Managed VPS:** exactly one required recurring management value: Lite, Pro,
+  or Enterprise.
+- Management upgrades may be immediate/invoiced; downgrades are
+  renewal-effective.
+- Legacy duplicate addon/configurable-option billing is reported for operator
+  review and never silently rewritten.
 
-Registered as `DailyCronJob` hook (runs once per WHMCS daily cron pass). Idempotent: short-circuits as `no-change` when the API's `/meta.snapshot_generated_at` is unchanged from the previous successful run. Admin notifications fire on `succeeded` or `failed`, never on `no-change`.
+## Secret delivery
 
-## Roadmap
+Customer root credentials use encrypted temporary storage and an
+authenticated, owner-bound, short-lived, one-time reveal token. Plaintext is
+not stored in normal service rows, browser storage, logs, exports, audit
+metadata, analytics, or email.
 
-- Configurator selection deltas (currently `configured == base`; will apply options{} via API `/quote`)
-- Per-profile FX overrides (e.g. fixed cost-plus-margin instead of live ECB)
-- WebSocket subscription to `/ws/changes` for near-real-time updates
-- Client-area cart hook that re-prices on the fly for prospects who change region/OS
+## Tests
+
+- Addon: `modules/addons/contabo_pricing/vendor/bin/phpunit`
+- Provisioning: from `modules/servers/securiacevps`,
+  `../../addons/contabo_pricing/vendor/bin/phpunit -c phpunit.xml`
+- Complete local release gate: `bash scripts/predeploy-check.sh`
+- Package inspection: `bash scripts/package-whmcs-suite.sh`
+
+The gate reports unavailable development WHMCS environments instead of
+claiming production compatibility from a skipped test.
+
+## Normative documents
+
+- [Architecture](modules/addons/contabo_pricing/docs/WHMCS_NATIVE_ARCHITECTURE.md)
+- [Provisioning contract](modules/addons/contabo_pricing/docs/PROVISIONING_CONTRACT.md)
+- [Release/migration runbook](modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md)
+- [Test-surface policy](modules/addons/contabo_pricing/docs/TESTING_SCOPE.md)
+- [Changelog](modules/addons/contabo_pricing/CHANGELOG.md)

@@ -1,11 +1,11 @@
 <?php
 /**
- * Contabo VPS — WHMCS Server / Provisioning Module
+ * SecuriAce VPS — WHMCS Server / Provisioning Module
  *
- * Automates the Contabo compute lifecycle (VPS / VDS / Storage VPS) through
- * the official Contabo REST API — the same API the `cntb` CLI wraps. OAuth2
- * password-grant auth (Keycloak). No external dependencies — pure PHP/curl
- * behind an injectable HttpExecutor seam. WHMCS 8.x and 9.x, PHP 7.4+.
+ * Automates certified Contabo compute lifecycle operations through the
+ * official Customer API. Provider writes are accepted into a durable,
+ * MySQL-backed operation engine and reconciled by WHMCS cron. No external
+ * queue, Python service, Redis, Celery or PostgreSQL runtime is required.
  *
  * ── Server config (WHMCS → Setup → Products/Services → Servers) ───────────────
  *   Username     (serverusername)   → Contabo OAuth2 client_id
@@ -14,21 +14,16 @@
  *                                      password), colon-separated. WHMCS stores
  *                                      all three encrypted at rest.
  *
- * ── Per-product config options ───────────────────────────────────────────────
- *   configoption1 → Contabo imageId (fallback when no Image selection)
- *   configoption2 → region slug/label (fallback when no Region selection)
- *   configoption3 → SSH secret id (Contabo vault; optional)
- *   configoption4 → Contabo productId (e.g. V45)
- *   configoption5 → cloud-init user data (optional)
- *   configoption6 → add-ons JSON (optional, merged with selections)
+ * ── Per-product compatibility options ───────────────────────────────────────
+ *   Existing products retain the six legacy module fields for migration and
+ *   read-only display. New provisioning never derives its configuration from
+ *   mutable product fields: it requires the sealed paid-order snapshot created
+ *   from a published addon mapping.
  *
- * Customer selections on configurable products are round-tripped through the
- * contabo_pricing addon's link tables and take precedence over the fallbacks.
- *
- * The created instance id lives in the service custom field
- * "contabo_instance_id" (auto-created on first provision). The instance's
- * Contabo displayName carries a "whmcs-{serviceid}" tag; destructive actions
- * verify it. See docs/PROVISIONING_CONTRACT.md in the addon for the contract.
+ * The provider resource identity is projected into module-owned tables and the
+ * compatibility custom field. The strict "whmcs-{serviceid}" provider tag and
+ * verified adoption record are required for destructive actions. See the
+ * addon's docs/PROVISIONING_CONTRACT.md for the complete contract.
  */
 
 if (!defined('WHMCS')) {
@@ -39,7 +34,7 @@ if (!defined('WHMCS')) {
 // workflow (.github/workflows/release-contabo-vps.yml) to tag packages. Bump
 // this when cutting a new release.
 if (!defined('SECURIACE_VPS_VERSION')) {
-    define('SECURIACE_VPS_VERSION', '1.0.0');
+    define('SECURIACE_VPS_VERSION', '2.0.0');
 }
 
 require_once __DIR__ . '/lib/ContaboProvisioningException.php';
@@ -76,7 +71,7 @@ require_once __DIR__ . '/lib/Runtime.php';
 function securiacevps_MetaData(): array
 {
     return [
-        'DisplayName'    => 'Contabo VPS',
+        'DisplayName'    => 'SecuriAce VPS',
         'APIVersion'     => '1.1',
         'RequiresServer' => true,
     ];
@@ -86,12 +81,12 @@ function securiacevps_MetaData(): array
 function securiacevps_ConfigOptions(): array
 {
     return [
-        1 => ['FriendlyName' => 'OS Image ID',   'Type' => 'text',     'Size' => '40', 'Default' => '', 'Description' => 'Contabo imageId — fallback when no Image configurable option is exposed'],
-        2 => ['FriendlyName' => 'Region',         'Type' => 'text',     'Size' => '20', 'Default' => 'EU', 'Description' => 'Region slug (EU, US-central, US-east, US-west, SIN, UK, AUS, IND, JPN) — fallback when no Region option is exposed'],
-        3 => ['FriendlyName' => 'SSH Secret ID',  'Type' => 'text',     'Size' => '30', 'Default' => '', 'Description' => 'Optional — numeric secretId of an SSH public key in the Contabo vault'],
-        4 => ['FriendlyName' => 'Product ID',     'Type' => 'text',     'Size' => '20', 'Default' => '', 'Description' => 'Contabo productId (e.g. V45)'],
-        5 => ['FriendlyName' => 'Cloud-Init',     'Type' => 'textarea', 'Rows' => '4', 'Cols' => '50', 'Default' => '', 'Description' => 'Optional cloud-init user data applied at first boot'],
-        6 => ['FriendlyName' => 'Add-ons JSON',   'Type' => 'textarea', 'Rows' => '2', 'Cols' => '50', 'Default' => '', 'Description' => 'Optional Contabo addOns object as JSON, e.g. {"privateNetworking":{}}'],
+        1 => ['FriendlyName' => 'Legacy OS Image ID',  'Type' => 'text',     'Size' => '40', 'Default' => '', 'Description' => 'Migration reference only. Native provisioning uses the sealed paid-order snapshot.'],
+        2 => ['FriendlyName' => 'Legacy Region',       'Type' => 'text',     'Size' => '20', 'Default' => 'EU', 'Description' => 'Migration reference only. Native provisioning uses the sealed paid-order snapshot.'],
+        3 => ['FriendlyName' => 'Legacy SSH Secret ID','Type' => 'text',     'Size' => '30', 'Default' => '', 'Description' => 'Existing-product compatibility only; never used to bypass the sealed snapshot contract.'],
+        4 => ['FriendlyName' => 'Legacy Product ID',   'Type' => 'text',     'Size' => '20', 'Default' => '', 'Description' => 'Migration reference only. Native provisioning requires a published provider SKU in the sealed snapshot.'],
+        5 => ['FriendlyName' => 'Legacy Cloud-Init',   'Type' => 'textarea', 'Rows' => '4', 'Cols' => '50', 'Default' => '', 'Description' => 'Existing-product compatibility only; ignored by native sealed provisioning.'],
+        6 => ['FriendlyName' => 'Legacy Add-ons JSON', 'Type' => 'textarea', 'Rows' => '2', 'Cols' => '50', 'Default' => '', 'Description' => 'Existing-product compatibility only; ignored by native sealed provisioning.'],
     ];
 }
 

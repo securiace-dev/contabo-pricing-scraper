@@ -117,7 +117,9 @@ struct OptionItem {
     is_default: bool,
 }
 
-fn is_false(b: &bool) -> bool { !*b }
+fn is_false(b: &bool) -> bool {
+    !*b
+}
 
 // Serde adapter: emit whole f64 values as JSON integers (matches `json_num`
 // and JS JSON.stringify behaviour). Used by OptionItem's price-delta fields.
@@ -243,11 +245,21 @@ struct ScrapeArgs {
     dry_run: bool,
 
     /// Fetch strategy: reqwest (default), cloak (CloakBrowser only), auto (reqwest + cloak fallback on block)
-    #[arg(long, env = "FETCH_MODE", default_value = "reqwest", value_name = "MODE")]
+    #[arg(
+        long,
+        env = "FETCH_MODE",
+        default_value = "reqwest",
+        value_name = "MODE"
+    )]
     fetch_mode: FetchMode,
 
     /// Path to cloak-fetch.mjs (used when --fetch-mode is cloak or auto)
-    #[arg(long, env = "CLOAK_SCRIPT", default_value = "scripts/cloak-fetch.mjs", value_name = "PATH")]
+    #[arg(
+        long,
+        env = "CLOAK_SCRIPT",
+        default_value = "scripts/cloak-fetch.mjs",
+        value_name = "PATH"
+    )]
     cloak_script: PathBuf,
 
     /// Optional HTTP/HTTPS proxy for all fetches (reqwest and CloakBrowser).
@@ -275,7 +287,13 @@ impl ScrapeArgs {
             // Normalize a schemeless proxy (user:pass@host:port) to http:// once,
             // so every downstream consumer (reqwest + the CloakBrowser subprocess,
             // whose `new URL()` is strict) receives a valid URL.
-            proxy: self.proxy.map(|p| if p.contains("://") { p } else { format!("http://{p}") }),
+            proxy: self.proxy.map(|p| {
+                if p.contains("://") {
+                    p
+                } else {
+                    format!("http://{p}")
+                }
+            }),
         }
     }
 }
@@ -1179,7 +1197,7 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     }
     // Match Node's String.localeCompare (case-insensitive) so parity_check.sh
     // doesn't flag pure-ordering differences in the Image:Apps array etc.
-    deduped.sort_by(|a, b| a.sort_key().to_lowercase().cmp(&b.sort_key().to_lowercase()));
+    deduped.sort_by_key(|a| a.sort_key().to_lowercase());
     let final_options = deduped;
 
     // Default config monthly cost per period
@@ -1386,15 +1404,31 @@ fn build_quick_reference(
                 .unwrap_or_else(|| plan["base_monthly_price"].clone());
 
             // Savings + best-price enrichments (mirrors enrich_output.js STEP 3)
-            let p1m  = pricing.get("1m").and_then(|p| p["effective_monthly"].as_f64());
-            let p6m  = pricing.get("6m").and_then(|p| p["effective_monthly"].as_f64());
-            let p12m = pricing.get("12m").and_then(|p| p["effective_monthly"].as_f64());
-            let savings_6m  = p1m.zip(p6m ).map(|(a, b)| ((1.0 - b / a) * 100.0).round() as i64);
-            let savings_12m = p1m.zip(p12m).map(|(a, b)| ((1.0 - b / a) * 100.0).round() as i64);
+            let p1m = pricing
+                .get("1m")
+                .and_then(|p| p["effective_monthly"].as_f64());
+            let p6m = pricing
+                .get("6m")
+                .and_then(|p| p["effective_monthly"].as_f64());
+            let p12m = pricing
+                .get("12m")
+                .and_then(|p| p["effective_monthly"].as_f64());
+            let savings_6m = p1m
+                .zip(p6m)
+                .map(|(a, b)| ((1.0 - b / a) * 100.0).round() as i64);
+            let savings_12m = p1m
+                .zip(p12m)
+                .map(|(a, b)| ((1.0 - b / a) * 100.0).round() as i64);
             let mut candidates: Vec<(&'static str, f64)> = Vec::new();
-            if let Some(v) = p1m  { candidates.push(("1m",  v)); }
-            if let Some(v) = p6m  { candidates.push(("6m",  v)); }
-            if let Some(v) = p12m { candidates.push(("12m", v)); }
+            if let Some(v) = p1m {
+                candidates.push(("1m", v));
+            }
+            if let Some(v) = p6m {
+                candidates.push(("6m", v));
+            }
+            if let Some(v) = p12m {
+                candidates.push(("12m", v));
+            }
             candidates.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
             let best = candidates.first().copied();
 
@@ -1581,7 +1615,7 @@ async fn cloak_batch_fetch(
     use tokio::process::Command;
 
     let urls_file = tmp_dir.join("cloak-urls.json");
-    let html_dir  = tmp_dir.join("html");
+    let html_dir = tmp_dir.join("html");
 
     if let Err(e) = fs::create_dir_all(&html_dir) {
         tracing::error!(error = %e, "CloakBrowser: cannot create temp HTML dir");
@@ -1609,8 +1643,10 @@ async fn cloak_batch_fetch(
     let mut cmd = Command::new("node");
     cmd.args([
         cloak_script.to_str().unwrap_or("scripts/cloak-fetch.mjs"),
-        "--urls",    urls_file.to_str().unwrap_or(""),
-        "--out-dir", html_dir.to_str().unwrap_or(""),
+        "--urls",
+        urls_file.to_str().unwrap_or(""),
+        "--out-dir",
+        html_dir.to_str().unwrap_or(""),
     ]);
     if let Some(p) = proxy {
         cmd.args(["--proxy", p]);
@@ -1653,14 +1689,15 @@ async fn cloak_batch_fetch(
             }
         };
 
-        let url2  = url.clone();
+        let url2 = url.clone();
         let slug2 = slug.clone();
-        let gr    = Arc::clone(&gap_report);
+        let gr = Arc::clone(&gap_report);
         let result = tokio::task::spawn_blocking(move || {
             let mut local_gaps: Vec<GapEntry> = vec![];
             let r = process_plan(&url2, &html, &mut local_gaps);
             (r, local_gaps)
-        }).await;
+        })
+        .await;
 
         match result {
             Ok((plan_result, local_gaps)) => {
@@ -1764,7 +1801,9 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         if let Some(p) = &opts.proxy {
             // opts.proxy is already scheme-normalized in into_opts().
             match reqwest::Proxy::all(p) {
-                Ok(proxy) => { http_builder = http_builder.proxy(proxy); }
+                Ok(proxy) => {
+                    http_builder = http_builder.proxy(proxy);
+                }
                 Err(e) => {
                     eprintln!("ERROR: invalid SCRAPER_PROXY URL '{p}': {e}");
                     return EXIT_ERROR;
@@ -1847,7 +1886,10 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             .map(|r| r.unwrap_or(None))
             .collect()
     } else {
-        tracing::info!(fetch_mode = "cloak", "skipping reqwest pass — all URLs go to CloakBrowser");
+        tracing::info!(
+            fetch_mode = "cloak",
+            "skipping reqwest pass — all URLs go to CloakBrowser"
+        );
         vec![]
     };
 
@@ -1856,8 +1898,8 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         .expect("all reqwest tasks completed before CloakBrowser pass")
         .into_inner();
     let cloak_urls: Vec<String> = match opts.fetch_mode {
-        FetchMode::Cloak   => urls.clone(),
-        FetchMode::Auto    => failed_fetched,
+        FetchMode::Cloak => urls.clone(),
+        FetchMode::Auto => failed_fetched,
         FetchMode::Reqwest => vec![],
     };
     if !cloak_urls.is_empty() {
@@ -1869,7 +1911,8 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             &tmp_dir,
             Arc::clone(&gap_report),
             opts.proxy.as_deref(),
-        ).await;
+        )
+        .await;
         results.extend(cloak_results);
         let _ = fs::remove_dir_all(&tmp_dir);
     }
@@ -1902,7 +1945,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
     // canonical aliases that downstream consumers (WHMCS addon, dashboards)
     // expect alongside the bare `plan_sku`.
     let mut slug_to_family: BTreeMap<String, String> = BTreeMap::new();
-    let mut slug_to_name:   BTreeMap<String, String> = BTreeMap::new();
+    let mut slug_to_name: BTreeMap<String, String> = BTreeMap::new();
     for plan in &base_plans {
         if let Some(slug) = plan["product_slug"].as_str() {
             if let Some(fam) = plan["family"].as_str() {
@@ -1919,9 +1962,12 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             let mut v = item.to_json();
             let sku = item.plan_sku.as_str();
             if let Value::Object(ref mut m) = v {
-                m.insert("plan_slug".into(),   json!(sku));
-                m.insert("plan_family".into(), json!(slug_to_family.get(sku).cloned()));
-                m.insert("plan_name".into(),   json!(slug_to_name.get(sku).cloned()));
+                m.insert("plan_slug".into(), json!(sku));
+                m.insert(
+                    "plan_family".into(),
+                    json!(slug_to_family.get(sku).cloned()),
+                );
+                m.insert("plan_name".into(), json!(slug_to_name.get(sku).cloned()));
             }
             v
         })
@@ -1971,7 +2017,10 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
                 "snapshot_preserved": true,
                 "reason":          "all_plans_failed",
             });
-            println!("{}", serde_json::to_string_pretty(&summary).unwrap_or_else(|_| "{}".into()));
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&summary).unwrap_or_else(|_| "{}".into())
+            );
         }
         return EXIT_ERROR;
     }
@@ -2064,18 +2113,11 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         .map(str::to_string)
         .collect::<Vec<_>>();
 
-        let fnum = |v: &Value| -> String {
-            v.as_f64().map(|x| x.to_string()).unwrap_or_default()
-        };
-        let fnum_or_zero = |v: &Value| -> String {
-            v.as_f64().unwrap_or(0.0).to_string()
-        };
-        let int_str = |v: &Value| -> String {
-            v.as_i64().map(|x| x.to_string()).unwrap_or_default()
-        };
-        let str_or_empty = |v: &Value| -> String {
-            v.as_str().unwrap_or("").to_string()
-        };
+        let fnum = |v: &Value| -> String { v.as_f64().map(|x| x.to_string()).unwrap_or_default() };
+        let fnum_or_zero = |v: &Value| -> String { v.as_f64().unwrap_or(0.0).to_string() };
+        let int_str =
+            |v: &Value| -> String { v.as_i64().map(|x| x.to_string()).unwrap_or_default() };
+        let str_or_empty = |v: &Value| -> String { v.as_str().unwrap_or("").to_string() };
 
         let mut base_csv_rows: Vec<Vec<String>> = vec![base_csv_header];
         for plan in &base_plans {
@@ -2164,7 +2206,11 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
                 item.country.clone().unwrap_or_default(),
                 item.country_code.clone().unwrap_or_default(),
                 item.subregion.clone().unwrap_or_default(),
-                if item.is_default { "true".into() } else { "false".into() },
+                if item.is_default {
+                    "true".into()
+                } else {
+                    "false".into()
+                },
                 item.currency.clone(),
             ]);
         }
@@ -2314,7 +2360,7 @@ mod tests {
         assert_eq!(back.country, None);
         assert_eq!(back.country_code, None);
         assert_eq!(back.subregion, None);
-        assert_eq!(back.is_default, true);
+        assert!(back.is_default);
         assert_eq!(back.plan_sku, bare.plan_sku);
     }
 

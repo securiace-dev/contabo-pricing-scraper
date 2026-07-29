@@ -11,7 +11,30 @@ contabo-scraper serve       # long-running HTTP API
 
 Plus a Docker image with Caddy / Traefik / Coolify overlays. See [`deploy/README.md`](deploy/README.md) for the container recipes.
 
-> **Reality check (read this first):** the **current production deployment does _not_ use Docker.** Production runs the binary as a **native `systemd` service** (`contabo-pricing.service`) reading `/var/lib/contabo-pricing/output`. The Docker recipes are an alternative topology, not what is live today. See [Production Architecture & Operational Reality](#production-architecture--operational-reality-dev--ops-deep-dive) below for the as-deployed truth, the Cloudflare upstream constraint, the dual version streams, and runbooks.
+## WHMCS-native VPS suite
+
+This repository now carries the complete supported WHMCS integration:
+
+- the Rust service publishes versioned, read-oriented catalog and quote data;
+- `contabo_pricing` 1.0.0 imports that catalog, publishes mappings and prices,
+  and seals paid-order snapshots;
+- `securiacevps` 2.0.0 is the canonical WHMCS provisioning module, backed by
+  module-owned MySQL operations and WHMCS cron;
+- `contabo_vps` is a staged migration shim only;
+- `templates/orderforms/securiace-vps` is a Standard Cart child for VPS product
+  discovery and configuration.
+
+The target runtime has no Python, PostgreSQL, Redis, Celery, or FastAPI
+dependency. Rust owns catalog intelligence; WHMCS owns customers, billing,
+authorization, snapshots, and lifecycle intents; Contabo owns provider resource
+observations. See the [architecture](whmcs-module/modules/addons/contabo_pricing/docs/WHMCS_NATIVE_ARCHITECTURE.md),
+[provisioning contract](whmcs-module/modules/addons/contabo_pricing/docs/PROVISIONING_CONTRACT.md),
+and [operator runbook](whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md).
+
+> **Historical operations snapshot:** the section below records an observed
+> May 2026 deployment and is not deployment authorization or current-state
+> verification. Release preparation is local-only; production rollout follows
+> the operator-controlled runbook above.
 
 ## Runtime prerequisites
 
@@ -66,8 +89,8 @@ Auth model: read endpoints are open and cacheable; `POST /refresh` requires `Aut
 | How does WHMCS reach it? | Same host, `http://127.0.0.1:8080/api/v1` (loopback only; `CONTABO_BIND=127.0.0.1:8080`) |
 | How is data refreshed? | **Manually** today — `POST /api/v1/refresh` (bearer). **No cron/timer is installed**, and `CONTABO_REFRESH_CRON` is **not wired** in code. |
 | Why does data go stale / refresh fail? | **Contabo is behind Cloudflare**, which returns `403 (cf-mitigated: challenge)` to **datacenter IPs** (the prod VPS *and* CI runner). Only residential IPs pass. |
-| Two version numbers? | Yes — **scraper/API** is `2.x` (tags `v*`, GHCR image); the **WHMCS addon** is `0.5.x` (tag `addon-v*`, `AdminController::VERSION`). Different streams. |
-| Is the API stack in git? | **Partially.** `src/api/`, `Dockerfile`, `deploy/` are currently **untracked** — prod is built from a copied source tree (`/opt/contabo-pricing-src`), not from a clean `git` checkout. |
+| Version streams? | Rust/API `v*`, addon `contabo_pricing-v*`, and provisioning suite `securiacevps-v*` are independent immutable releases. |
+| Is the target source tracked? | Yes. Release workflows package only committed source. Any historical untracked production tree must be inventoried and reconciled before rollout. |
 
 ### System landscape
 
@@ -83,7 +106,7 @@ flowchart LR
     SVC["systemd: contabo-pricing.service\n/usr/local/bin/contabo-scraper serve\nbind 127.0.0.1:8080"]
     DATA[("/var/lib/contabo-pricing/output\nJSON/CSV snapshot")]
     TOK[/"/etc/contabo-pricing/auth_token\n(0640 root:contabo)"/]
-    WH["WHMCS 0.5.x addon\n(same host, web root)"]
+    WH["WHMCS contabo_pricing addon\n(same host, web root)"]
     SVC --- DATA
     SVC --- TOK
     WH -->|"GET /api/v1/* (read)"| SVC
@@ -228,36 +251,38 @@ Persistent=true
 > prove the scrape worked. **Monitor `/api/v1/meta` `generated_at`** (alert if older
 > than ~26h), not the trigger.
 
-### 4) Versioning & release streams (two independent lines)
+### 4) Versioning and release streams
 
 ```mermaid
 flowchart LR
   subgraph S["Scraper / API stream"]
-    SV["Cargo.toml + package.json\n2.3.0-dev"] --> ST["git tag v2.x"] --> SR["release.yml → binaries + ghcr.io/<repo> image"]
+    SV["Cargo.toml"] --> ST["git tag vX.Y.Z"] --> SR["release.yml\nbinaries + image + checksums"]
   end
   subgraph A["WHMCS addon stream"]
-    AV["AdminController::VERSION\n0.5.x"] --> AT["git tag addon-v0.5.1\n(annotated; does NOT match v* → no release.yml)"]
+    AV["AdminController::VERSION"] --> AT["contabo_pricing-vX.Y.Z"] --> AR["addon runtime ZIP + checksum"]
+  end
+  subgraph V["WHMCS provisioning suite"]
+    VV["SECURIACE_VPS_VERSION"] --> VT["securiacevps-vX.Y.Z"] --> VR["module + shim + child theme ZIP"]
   end
 ```
 
-| Stream | Version source | Tag convention | Build/Publish | Deploy target |
-|---|---|---|---|---|
-| Scraper / API | `Cargo.toml` + root `package.json` (`2.3.0-dev`) | `v2.x` | `release.yml` → cross-platform binaries + GHCR Docker image | prod native `systemd` (binary) |
-| WHMCS addon | `AdminController::VERSION` (`0.5.1`) | `addon-v0.5.1` | none (PHP, deployed via rsync) | WHMCS web root, same host |
-
-> **Trap:** a literal `v0.5.1` tag would land in the **scraper's** `v*` namespace and
-> trigger `release.yml` (which expects `Cargo.toml` `2.3.0-dev`) → it would fail and
-> pollute the release stream. Tag addon releases as `addon-vX.Y.Z`.
+| Stream | Version source | Tag convention | Build/publish |
+|---|---|---|---|
+| Scraper / API | `Cargo.toml` | `vX.Y.Z` | Cross-platform binaries, checksum, and immutable image |
+| WHMCS addon | `AdminController::VERSION` | `contabo_pricing-vX.Y.Z` | Runtime-only addon ZIP, manifest, and checksum |
+| WHMCS provisioning suite | `SECURIACE_VPS_VERSION` | `securiacevps-vX.Y.Z` | Canonical module, compatibility shim, child order form, manifest, and checksum |
 
 ### 5) CI/CD pipelines
 
 ```mermaid
 flowchart TD
   PR["Pull request"] --> PAR["parity.yml\nRust ↔ Node output equivalence\n(blocks merge on drift)"]
-  PUSHMAIN["push → main"] --> NONE["(no build; data commits land here)"]
+  PR --> TEST["PHP/Rust/module contract checks"]
   CRON["schedule 06:00/18:00 UTC + dispatch"] --> SCR["scrape.yml @ self-hosted runner\n(STAGING box 'securiace-zoss')"]
   SCR --> PUSH["race-safe commit&push\n(per-ref concurrency, fetch→rebase→push ×3,\nallowlist guard, never force-push)"]
   TAGV["push tag v*"] --> RELY["release.yml\n→ binaries + GHCR image + checksums"]
+  MAIN["runtime version change on main"] --> ADDONREL["contabo_pricing release ZIP"]
+  MAIN --> VPSREL["securiacevps suite release ZIP"]
 ```
 
 - **`scrape.yml`** runs on a **self-hosted runner that is a _staging_ box**, not prod.
@@ -276,50 +301,26 @@ flowchart TD
   absent/down) so it never false-fails. A schemeless proxy value is normalized to
   `http://` in both scrapers.
 - **`release.yml`** fires on `v*` tags → builds binaries (zigbuild for musl) and a
-  multi-arch GHCR image. ⚠️ It builds from `./Dockerfile`, which is currently
-  **untracked** (see §6) — a clean-checkout Docker build would fail.
+  multi-arch GHCR image.
+- **`release-contabo-pricing.yml`** publishes the runtime-only addon archive
+  when `AdminController::VERSION` changes.
+- **`release-contabo-vps.yml`** publishes the canonical module, migration shim,
+  and VPS Standard Cart child together. Release workflows never deploy WHMCS.
 
 ### 6) Repo ↔ production source-of-truth gap (release hygiene)
 
-The following exist in the working tree but are **not committed on any branch**:
-`src/api/` (the whole HTTP API), `Dockerfile`, `deploy/`, `tests/api_smoke.rs`,
-`SCHEMA_VERSION.md`, `.github/workflows/parity.yml`. Because `src/main.rs` does
-`mod api;`, **a fresh `git clone` of `main` will not compile the `serve` binary**, and
-CI cannot build the image. Prod works only because the source was copied to the host
-and built there.
-
-**Remediation (separate PR, not a prod-outage fix):** commit the API/Docker/deploy
-stack, add a `.gitignore` rule for `deploy/auth_token.txt`/`*.env`, verify `cargo
-build` + parity on a clean checkout, then cut the `2.3.0` release so CI publishes a
-real image. This is independent of the prod runtime, which is healthy.
+The canonical API, addon, provisioning module, compatibility shim, order form,
+tests, and package workflows are tracked. A release must come from a clean
+commit and preserve its commit SHA, manifest, and checksums. Historical deployed
+trees still require a read-only hash/diff inventory before rollout; observed
+production state must never be inferred from the repository.
 
 ### 7) Ops runbooks
 
-**Staleness triage** (prices look old)
-```bash
-curl -s http://127.0.0.1:8080/api/v1/meta | jq '.snapshot_meta.generated_at'   # how old?
-systemctl is-active contabo-pricing.service                                    # service up?
-# If old + service up → it's the upstream fetch. Confirm Cloudflare:
-curl -sS -o /dev/null -w '%{http_code}\n' https://contabo.com/en/vps/cloud-vps-10/   # 403 ⇒ blocked
-journalctl -u contabo-pricing.service --since '1 day ago' | grep -i '403\|all plan fetches failed'
-```
-
-**Manual refresh** (only when upstream is reachable)
-```bash
-TOKEN=$(cat /etc/contabo-pricing/auth_token)
-JOB=$(curl -s -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/refresh | jq -r .job_id)
-until curl -s http://127.0.0.1:8080/api/v1/jobs/$JOB | jq -e '.status|test("done|failed|succeeded|complete")' >/dev/null; do sleep 5; done
-curl -s http://127.0.0.1:8080/api/v1/meta | jq '.snapshot_meta.generated_at'   # advanced ⇒ success
-```
-
-**Cloudflare-403 incident** → this is upstream bot-mitigation on a datacenter IP, not a
-bug. Do **not** loop refreshes. Pursue a §2 mitigation; meanwhile prod safely serves the
-last good snapshot.
-
-**Rollback** → the binary is at `/usr/local/bin/contabo-scraper`; keep the prior binary
-and the `/var/lib/contabo-pricing/output` snapshot. Reverting the binary + `systemctl
-restart contabo-pricing.service` restores the previous version; the snapshot is
-independent and is never destroyed by a failed refresh.
+Use the [operator-controlled WHMCS release and migration runbook](whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md).
+Repository scripts validate and package; they do not connect to production.
+Catalog/API operational changes use the separate deployment-specific runbook
+and require current-state verification.
 
 ### 8) Dev runbooks
 
@@ -347,10 +348,10 @@ bash .github/scripts/parity_check.sh
 - The WHMCS addon is **resilient to API outage**: every API-backed admin page degrades
   gracefully and the **billing/renewal path uses no API call**, so an API outage never
   threatens billing safety.
-- **Two version streams** are real and must not be conflated; tag addon releases
-  `addon-v*`.
-- A large slice of the **API/deploy stack is uncommitted** — a real release-hygiene gap
-  to close in a dedicated PR.
+- **Three version streams** are independent: Rust/API, pricing addon, and
+  provisioning suite.
+- Release candidates are built from committed source with manifests and
+  checksums; deployed state still requires explicit inventory.
 
 ---
 
@@ -608,12 +609,15 @@ kill $PID
 - Gaps are first-class outputs (`gap_report`, `gap_summary`) and should be monitored, not ignored.
 - Node fallback exists for resilience and comparison, not as the recommended production control plane.
 
-## WHMCS module (Ops + Dev)
+## WHMCS-native modules (Ops + Dev)
 
-This was not intentionally omitted. The repo includes a dedicated WHMCS addon that consumes this API and manages pricing sync with versioned history.
+The repository includes the pricing/catalog addon, canonical provisioning module,
+compatibility shim, and VPS order-form child.
 
 - Module docs: [`whmcs-module/README.md`](whmcs-module/README.md)
-- Changelog and hardening notes: `whmcs-module/modules/addons/contabo_pricing/CHANGELOG.md`
+- Architecture: [`WHMCS_NATIVE_ARCHITECTURE.md`](whmcs-module/modules/addons/contabo_pricing/docs/WHMCS_NATIVE_ARCHITECTURE.md)
+- Provisioning contract: [`PROVISIONING_CONTRACT.md`](whmcs-module/modules/addons/contabo_pricing/docs/PROVISIONING_CONTRACT.md)
+- Changelog and hardening notes: [`CHANGELOG.md`](whmcs-module/modules/addons/contabo_pricing/CHANGELOG.md)
 
 ### What it does
 
@@ -621,21 +625,29 @@ This was not intentionally omitted. The repo includes a dedicated WHMCS addon th
 - Maps profiles to WHMCS products and selected billing cycles.
 - Runs sync workflows that detect changes, persist version history, and optionally apply prices.
 - Supports `manual`, `notify`, and `auto-apply` strategies per profile.
+- Publishes immutable mapping versions and seals paid-order snapshots.
+- Runs provider lifecycle work through durable MySQL operations and WHMCS cron.
+- Reconciles unknown provider outcomes, verified service ownership, billing
+  repair, one-time secrets, and customer-safe communications.
 
 ### Ops workflow (recommended)
 
-1. Keep API server healthy/fresh (`/health`, `/meta`) before WHMCS sync windows.
-2. Run addon sync in `notify` mode first for production catalogs.
-3. Review profile diffs/version history in WHMCS UI.
-4. Promote selected profiles to `auto-apply` only after review.
-5. Track sync logs and failed runs (`mod_contabo_sync_log`) as alert inputs.
+1. Keep API server healthy/fresh (`/health`, `/meta`) before catalog imports.
+2. Import, preview, validate, and publish one immutable mapping version.
+3. Review profile, mapping, pricing, drift, and approval evidence in the addon.
+4. Seal a paid-order snapshot before accepting a provisioning intent.
+5. Monitor operations, attempts, unknown outcomes, adoption, reconciliation,
+   billing repair, communications, and write switches.
 
 ### Dev workflow
 
 1. Change scraper/API contract only with schema-awareness.
 2. Validate downstream quote parity and profile version writes.
-3. Test mapping writes and cycle updates against real WHMCS schema expectations.
-4. Re-check addon behavior after any output-field/model change.
+3. Test mapping/snapshot writes and lifecycle projections against WHMCS
+   8.13.x/9.x schema and callback expectations.
+4. Re-check addon and provisioning behavior after any catalog-contract change.
+5. Build reviewable ZIPs with `scripts/package-whmcs-suite.sh`; never use the
+   repository scripts to deploy production.
 
 ### WHMCS-specific operational lessons
 
