@@ -59,6 +59,37 @@ final class PaidOrderSnapshotServiceTest extends TestCase
         $this->assertCount(1, Capsule::$tables['mod_securiacevps_order_snapshots']);
     }
 
+    public function testQuantityOptionsReceiveStableSnapshotCodes(): void
+    {
+        Capsule::$tables['tblhostingconfigoptions'][] = [
+            'relid' => 30,
+            'configid' => 110,
+            'optionid' => 0,
+            'qty' => 3,
+        ];
+        Capsule::$tables['mod_contabo_config_option_link'][] = [
+            'id' => 112,
+            'whmcs_option_id' => 110,
+            'dimension_key' => 'Additional IPv4',
+            'optiontype' => 4,
+            'default_value' => 'additional_ipv4',
+        ];
+
+        (new PaidOrderSnapshotService())->createDraft(10, 20, 30);
+        $payload = json_decode(
+            (string) Capsule::$tables['mod_securiacevps_order_snapshots'][0]['payload_json'],
+            true
+        );
+        $byDimension = [];
+        foreach ($payload['configuration']['options'] as $option) {
+            $byDimension[$option['dimension']] = $option;
+        }
+
+        $this->assertSame('additional_ipv4', $byDimension['Additional IPv4']['machine_code']);
+        $this->assertSame(3, $byDimension['Additional IPv4']['quantity']);
+        $this->assertSame(0, $byDimension['Additional IPv4']['whmcs_sub_id']);
+    }
+
     private function seed(): void
     {
         Capsule::$tables['mod_securiacevps_schema'] = [

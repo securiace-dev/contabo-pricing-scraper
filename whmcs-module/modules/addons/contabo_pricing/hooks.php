@@ -243,6 +243,28 @@ add_hook('AfterModuleCreate', 50, static function ($vars): void {
 });
 
 /**
+ * WHMCS documents ShoppingCartValidateCheckout as the last validation point
+ * before order and invoice creation. Fail closed for native VPS products when
+ * the locally published catalog/mapping contract is stale, unavailable,
+ * tampered with, or incompatible with the selected configurable options.
+ */
+add_hook('ShoppingCartValidateCheckout', 5, static function (): array {
+    try {
+        $products = isset($_SESSION['cart']['products']) && is_array($_SESSION['cart']['products'])
+            ? array_values($_SESSION['cart']['products'])
+            : [];
+        return (new \ContaboPricing\CheckoutGuard())->validateProducts($products);
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing checkout validation failed safely.');
+        }
+        return [
+            'VPS checkout is temporarily unavailable. Please review your configuration or contact support.',
+        ];
+    }
+});
+
+/**
  * Capture one immutable draft per VPS service immediately after WHMCS creates
  * the order/service records. A paid invoice seals the draft; unpaid and
  * fraud-pending orders remain non-provisionable.

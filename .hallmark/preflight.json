@@ -1,0 +1,14 @@
+{
+  "date": "2026-07-30",
+  "scope": "WHMCS VPS client-area module panel",
+  "framework": "WHMCS Smarty template with namespaced vanilla CSS",
+  "font_stack": "local and system fonts only",
+  "palette": "module-scoped CSS custom properties",
+  "motion": "motion-cut",
+  "spacing": "4px scale",
+  "preserve": [
+    "WHMCS Twenty-One theme",
+    "WHMCS authentication, session and CSRF behavior",
+    "existing cart, invoice and service routes"
+  ]
+}

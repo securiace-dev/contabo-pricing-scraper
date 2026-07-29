@@ -229,15 +229,43 @@ final class PaidOrderSnapshotService
                 ? Capsule::table('mod_contabo_config_option_link')
                     ->where('id', (int) ($value['option_link_id'] ?? 0))
                     ->first()
-                : null;
+                : Capsule::table('mod_contabo_config_option_link')
+                    ->where('whmcs_option_id', (int) ($selected['configid'] ?? 0))
+                    ->first();
             $option = $option !== null ? (array) $option : [];
+            if ($option === []) {
+                throw new \RuntimeException(
+                    'A selected configurable option has no canonical Contabo mapping'
+                );
+            }
+            $isQuantity = (int) ($option['optiontype'] ?? 0) === 4;
+            if (!$isQuantity && $value === []) {
+                throw new \RuntimeException(
+                    'A selected configurable-option value has no canonical Contabo mapping'
+                );
+            }
+            $dimension = (string) ($option['dimension_key'] ?? '');
+            $quantityCode = trim((string) ($option['default_value'] ?? ''));
+            if ($quantityCode === '') {
+                $quantityCode = strtolower(trim((string) preg_replace(
+                    '/[^a-z0-9]+/i',
+                    '_',
+                    $dimension
+                ), '_'));
+            }
             $out[] = [
                 'whmcs_config_id' => (int) ($selected['configid'] ?? 0),
-                'whmcs_sub_id' => (int) ($selected['optionid'] ?? 0),
-                'quantity' => max(1, (int) ($selected['qty'] ?? 1)),
-                'machine_code' => (string) ($value['contabo_value_key'] ?? ''),
-                'label' => (string) ($value['contabo_label'] ?? ''),
-                'dimension' => (string) ($option['dimension_key'] ?? ''),
+                'whmcs_sub_id' => $isQuantity ? 0 : (int) ($selected['optionid'] ?? 0),
+                'quantity' => $isQuantity
+                    ? max(0, (int) ($selected['qty'] ?? 0))
+                    : max(1, (int) ($selected['qty'] ?? 1)),
+                'machine_code' => $isQuantity
+                    ? $quantityCode
+                    : (string) ($value['contabo_value_key'] ?? ''),
+                'label' => $isQuantity
+                    ? $dimension
+                    : (string) ($value['contabo_label'] ?? ''),
+                'dimension' => $dimension,
             ];
         }
         usort($out, static function (array $a, array $b): int {
