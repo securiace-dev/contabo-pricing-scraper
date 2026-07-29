@@ -610,8 +610,8 @@
     "semantic_hash": ""
   },
   "src/main.rs": {
-    "mtime": 1785365985.7157266,
-    "ast_hash": "fb003745646d503e96033a9295a17947",
+    "mtime": 1785368714.251943,
+    "ast_hash": "4fa15e382e4e702ac36e8ad011e3cc49",
     "semantic_hash": ""
   },
   "src/api/handlers.rs": {

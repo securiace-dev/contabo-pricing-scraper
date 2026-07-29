@@ -112,13 +112,11 @@ struct OptionItem {
     monthly_price_delta: f64,
     #[serde(serialize_with = "serialize_whole_f64")]
     setup_fee_delta: f64,
-    // Node only writes `is_default` when true; omit-when-false matches that.
-    #[serde(skip_serializing_if = "is_false", default)]
-    is_default: bool,
-}
-
-fn is_false(b: &bool) -> bool {
-    !*b
+    // Preserve Node's three-state wire contract: ordinary classified options
+    // omit the key, injected defaults emit true, and an explicitly injected
+    // non-default alternative emits false.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    is_default: Option<bool>,
 }
 
 // Serde adapter: emit whole f64 values as JSON integers (matches `json_num`
@@ -160,7 +158,7 @@ impl OptionItem {
             self.country.clone().unwrap_or_default(),
             self.country_code.clone().unwrap_or_default(),
             self.subregion.clone().unwrap_or_default(),
-            if self.is_default {
+            if self.is_default.unwrap_or(false) {
                 "true".into()
             } else {
                 "false".into()
@@ -476,7 +474,10 @@ fn iso_now() -> String {
 }
 
 fn round2(v: f64) -> f64 {
-    (v * 100.0).round() / 100.0
+    // JavaScript's Number#toFixed rounds the stored binary value directly.
+    // Multiplying first can cross an exact half-cent boundary (4.675 * 100)
+    // and disagree with the Node reference implementation.
+    format!("{v:.2}").parse::<f64>().unwrap_or(v)
 }
 
 // Serialize f64 as integer JSON when the value is whole (e.g. 8.0 → 8, 0.0 → 0),
@@ -711,7 +712,7 @@ fn classify_addon(
             country: ri.as_ref().map(|r| r.country.clone()),
             country_code: ri.as_ref().map(|r| r.country_code.clone()),
             subregion: ri.as_ref().and_then(|r| r.subregion.clone()),
-            is_default: false,
+            is_default: None,
         };
 
     // Region
@@ -874,7 +875,7 @@ fn inject_defaults(
     let mut add = |dimension: &str,
                    category: &str,
                    label: &str,
-                   is_default: bool,
+                   is_default: Option<bool>,
                    monthly: f64,
                    setup: f64| {
         let key = format!("{dimension}|{label}");
@@ -902,14 +903,14 @@ fn inject_defaults(
     } else {
         "No Data Protection"
     };
-    add("Data Protection", "None", dp_label, true, 0.0, 0.0);
+    add("Data Protection", "None", dp_label, Some(true), 0.0, 0.0);
 
     // Networking defaults
     add(
         "Networking",
         "Private Networking",
         "No Private Networking",
-        true,
+        Some(true),
         0.0,
         0.0,
     );
@@ -917,11 +918,11 @@ fn inject_defaults(
         "Networking",
         "Bandwidth",
         "Unlimited Traffic",
-        true,
+        Some(true),
         0.0,
         0.0,
     );
-    add("Networking", "IPv4", "1 IP Address", true, 0.0, 0.0);
+    add("Networking", "IPv4", "1 IP Address", Some(true), 0.0, 0.0);
 
     // Storage defaults from product spec
     if let Some(st) = storage_title {
@@ -937,7 +938,7 @@ fn inject_defaults(
             } else {
                 "SSD"
             };
-            add(dimension, cat, &primary, true, 0.0, 0.0);
+            add(dimension, cat, &primary, Some(true), 0.0, 0.0);
         }
     }
     if let Some(sub) = storage_subtitle {
@@ -952,18 +953,18 @@ fn inject_defaults(
                 "Storage Type"
             };
             let cat = if alt.contains("NVMe") { "NVMe" } else { "SSD" };
-            add(dimension, cat, &alt, false, 0.0, 0.0);
+            add(dimension, cat, &alt, Some(false), 0.0, 0.0);
         }
     }
 
     // Ubuntu 24.04 default image (detected from HTML presence)
     if html.contains("Ubuntu") {
-        add("Image", "OS", "Ubuntu 24.04", true, 0.0, 0.0);
+        add("Image", "OS", "Ubuntu 24.04", Some(true), 0.0, 0.0);
     }
 
     // Windows Server (if in HTML but not yet in classified)
     if html.contains("Windows Server") && !has_windows_in_classified {
-        add("Image", "OS", "Windows Server", false, 0.0, 0.0);
+        add("Image", "OS", "Windows Server", None, 0.0, 0.0);
     }
 
     classified.extend(additions);
@@ -1164,7 +1165,7 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     // Mark defaults
     for item in &mut classified {
         if item.dimension == "Region" && item.option_label == "European Union" {
-            item.is_default = true;
+            item.is_default = Some(true);
         }
         if item.dimension == "Networking"
             && matches!(
@@ -1172,17 +1173,17 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
                 "Unlimited Traffic" | "No Private Networking" | "1 IP Address"
             )
         {
-            item.is_default = true;
+            item.is_default = Some(true);
         }
         if item.dimension == "Storage Type" || item.dimension == "Storage" {
             if let Some(st) = storage_title {
                 if item.option_label == normalize_storage_label(st) {
-                    item.is_default = true;
+                    item.is_default = Some(true);
                 }
             }
         }
         if item.dimension == "Image" && item.option_label.eq_ignore_ascii_case("Ubuntu 24.04") {
-            item.is_default = true;
+            item.is_default = Some(true);
         }
     }
 
@@ -1203,12 +1204,12 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     // Default config monthly cost per period
     let default_monthly_delta: f64 = final_options
         .iter()
-        .filter(|o| o.is_default)
+        .filter(|o| o.is_default == Some(true))
         .map(|o| o.monthly_price_delta)
         .sum();
     let default_setup_delta: f64 = final_options
         .iter()
-        .filter(|o| o.is_default)
+        .filter(|o| o.is_default == Some(true))
         .map(|o| o.setup_fee_delta)
         .sum();
 
@@ -1245,7 +1246,7 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     if product_type == "vds" {
         let ok = final_options
             .iter()
-            .any(|o| o.dimension == "Storage" && o.is_default);
+            .any(|o| o.dimension == "Storage" && o.is_default == Some(true));
         if !ok {
             eprintln!("  WARN   {product_slug}: no default Storage option — storageSpec.title may not match any addon label");
             gap_report.push(GapEntry {
@@ -2206,7 +2207,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
                 item.country.clone().unwrap_or_default(),
                 item.country_code.clone().unwrap_or_default(),
                 item.subregion.clone().unwrap_or_default(),
-                if item.is_default {
+                if item.is_default.unwrap_or(false) {
                     "true".into()
                 } else {
                     "false".into()
@@ -2315,7 +2316,7 @@ mod tests {
             country: Some("Germany".to_string()),
             country_code: Some("DE".to_string()),
             subregion: Some("Western Europe".to_string()),
-            is_default: false,
+            is_default: None,
         };
         let json = serde_json::to_string(&full).expect("serialize full OptionItem");
         let back: OptionItem = serde_json::from_str(&json).expect("deserialize full OptionItem");
@@ -2344,7 +2345,7 @@ mod tests {
             country: None,
             country_code: None,
             subregion: None,
-            is_default: true,
+            is_default: Some(true),
         };
         let json = serde_json::to_string(&bare).expect("serialize bare OptionItem");
         assert!(
@@ -2360,8 +2361,35 @@ mod tests {
         assert_eq!(back.country, None);
         assert_eq!(back.country_code, None);
         assert_eq!(back.subregion, None);
-        assert!(back.is_default);
+        assert_eq!(back.is_default, Some(true));
         assert_eq!(back.plan_sku, bare.plan_sku);
+    }
+
+    #[test]
+    fn option_item_preserves_explicit_false_default_marker() {
+        let item = OptionItem {
+            plan_sku: "cloud-vps-30".to_string(),
+            currency: "EUR".to_string(),
+            dimension: "Storage Type".to_string(),
+            category: "SSD".to_string(),
+            option_label: "400 GB SSD".to_string(),
+            monthly_price_delta: 0.0,
+            setup_fee_delta: 0.0,
+            region_group: None,
+            country: None,
+            country_code: None,
+            subregion: None,
+            is_default: Some(false),
+        };
+        let json = serde_json::to_string(&item).expect("serialize explicit false");
+        assert!(json.contains("\"is_default\":false"));
+    }
+
+    #[test]
+    fn round2_matches_javascript_to_fixed_contract() {
+        assert_eq!(round2((5.5 * 12.0 - 9.9) / 12.0), 4.67);
+        assert_eq!(round2(1.005), 1.0);
+        assert_eq!(round2(4.676), 4.68);
     }
 
     // GapEntry with every optional field set to None must serialise without
