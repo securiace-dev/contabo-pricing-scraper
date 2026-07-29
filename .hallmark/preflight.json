@@ -1,14 +1,20 @@
 {
   "date": "2026-07-30",
-  "scope": "WHMCS VPS client-area module panel",
-  "framework": "WHMCS Smarty template with namespaced vanilla CSS",
+  "scope": "WHMCS addon admin, VPS client-area panel, and VPS child order form",
+  "framework": "WHMCS PHP/Smarty templates with namespaced vanilla CSS and JavaScript",
   "font_stack": "local and system fonts only",
-  "palette": "module-scoped CSS custom properties",
+  "palette": "surface-scoped CSS custom properties",
   "motion": "motion-cut",
   "spacing": "4px scale",
   "preserve": [
     "WHMCS Twenty-One theme",
     "WHMCS authentication, session and CSRF behavior",
-    "existing cart, invoice and service routes"
+    "existing cart, invoice and service routes",
+    "standard WHMCS product and configurable-option controls"
+  ],
+  "release_evidence": [
+    "static invariant gate: scripts/hallmark-audit.rb",
+    "rendered viewport review: 320, 375, 414, 768, and 1280 CSS pixels",
+    "contrast checks: text 4.5:1 minimum, focus and large/status text 3:1 minimum"
   ]
 }

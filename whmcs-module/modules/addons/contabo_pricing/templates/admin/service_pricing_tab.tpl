@@ -42,22 +42,19 @@ $cb_overridePrice = isset($policy_row['manual_override_price']) ? (float) $polic
 $cb_overrideExpires = isset($policy_row['manual_override_expires_at']) ? (string) $policy_row['manual_override_expires_at'] : '';
 ?>
 
-<div class="cb-wrap" style="padding:8px 0;">
-  <style>
-    .cb-svc-tab .cb-row { display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; border-bottom:1px solid var(--border-soft); }
-    .cb-svc-tab .cb-row:last-child { border-bottom:0; }
-    .cb-svc-tab .lbl { color: var(--muted); font-size: 12px; }
-    .cb-svc-tab .val { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
-  </style>
+<link rel="stylesheet"
+      href="/modules/addons/contabo_pricing/assets/app.css?v=1.0.0">
 
-  <div class="cb-svc-tab" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+<div class="cb-wrap" data-cb-u="u-59b1c00a93">
 
-    <div class="cb-card" style="margin:0;">
+  <div class="cb-svc-tab" data-cb-u="u-5f28e5f494">
+
+    <div class="cb-card" data-cb-u="u-38965f9b18">
       <h3>Policy</h3>
       <?php if ($cb_policy === ''): ?>
-        <div class="cb-empty" style="padding:14px 0;">
+        <div class="cb-empty" data-cb-u="u-ab86258f15">
           <div>No service policy row yet.</div>
-          <p style="margin:6px 0 0; font-size:12px; color:var(--muted)">
+          <p data-cb-u="u-83dfef8170">
             The Phase A backfill will create a <code class="mono">lifetime</code> policy on first cron pass.
           </p>
         </div>
@@ -97,7 +94,7 @@ $cb_overrideExpires = isset($policy_row['manual_override_expires_at']) ? (string
       <?php endif; ?>
     </div>
 
-    <div class="cb-card" style="margin:0;">
+    <div class="cb-card" data-cb-u="u-38965f9b18">
       <h3>Pricing</h3>
       <div class="cb-row">
         <span class="lbl">Current recurring</span>
@@ -131,15 +128,15 @@ $cb_overrideExpires = isset($policy_row['manual_override_expires_at']) ? (string
 
   </div>
 
-  <div class="cb-card" style="margin-top:14px;">
+  <div class="cb-card" data-cb-u="u-8d84299030">
     <h3>Recent decisions</h3>
     <?php if (empty($decisions)): ?>
-      <div class="cb-empty" style="padding:14px 0;">
+      <div class="cb-empty" data-cb-u="u-ab86258f15">
         <div>No decisions recorded for this service yet.</div>
       </div>
     <?php else: ?>
-      <div style="overflow:auto">
-        <table class="cb-table" style="width:100%">
+      <div data-cb-u="u-e2c857d54b">
+        <table class="cb-table" data-cb-u="u-b7aa1ec004">
           <thead>
             <tr>
               <th>Decided</th>
@@ -160,12 +157,12 @@ $cb_overrideExpires = isset($policy_row['manual_override_expires_at']) ? (string
               $skipRsn   = (string) ($r['skip_reason'] ?? '');
             ?>
             <tr>
-              <td class="mono" style="font-size:12px"><?= $esc(substr($decidedAt, 0, 16)) ?></td>
+              <td class="mono" data-cb-u="u-a49cca52be"><?= $esc(substr($decidedAt, 0, 16)) ?></td>
               <td><span class="cb-pill grey"><?= $esc($polUsed) ?></span></td>
               <td class="right mono price"><?= $esc(number_format($old, 2)) ?></td>
               <td class="right mono price"><?= $esc(number_format($new, 2)) ?></td>
               <td><?= $applied ? '<span class="cb-pill good">yes</span>' : '<span class="cb-pill grey">no</span>' ?></td>
-              <td><code class="mono" style="font-size:11.5px"><?= $esc($skipRsn) ?></code></td>
+              <td><code class="mono" data-cb-u="u-bd299c8ad6"><?= $esc($skipRsn) ?></code></td>
             </tr>
             <?php endforeach; ?>
           </tbody>
@@ -174,7 +171,7 @@ $cb_overrideExpires = isset($policy_row['manual_override_expires_at']) ? (string
     <?php endif; ?>
   </div>
 
-  <p style="margin-top:12px; font-size:12px; color:var(--muted)">
+  <p data-cb-u="u-24113ce498">
     Read-only in Phase A. Per-service policy editing ships in Phase B.
     <a href="<?= $esc($module_link) ?>&amp;action=price-decisions">Open audit log &rarr;</a>
   </p>

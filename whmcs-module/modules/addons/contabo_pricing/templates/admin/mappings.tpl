@@ -54,10 +54,10 @@ $cb_rounding_modes = [
 ];
 ?>
 
-<header style="margin:6px 0 18px; display:flex; justify-content:space-between; gap:16px; align-items:flex-start;">
+<header data-cb-u="u-cb7921f71e">
   <div>
-    <h2 class="display" style="margin:0 0 4px;">Mappings</h2>
-    <p class="cb-card-sub" style="margin:0; max-width:78ch;">
+    <h2 class="display" data-cb-u="u-0cbe035c55">Mappings</h2>
+    <p class="cb-card-sub" data-cb-u="u-8a5832c351">
       Link Contabo profiles to WHMCS products and choose, per billing cycle, whether
       SyncEngine writes to the catalog (<code class="mono">tblpricing</code>) and whether
       RenewalEngine considers it for existing services.
@@ -66,7 +66,7 @@ $cb_rounding_modes = [
   <form method="post" action="<?= $esc($module_link) ?>">
     <input type="hidden" name="action" value="catalog-import">
     <?= generate_token() ?>
-    <button type="submit" class="cb-btn subtle">Import latest Rust catalog</button>
+    <button type="submit" class="cb-btn subtle">Import catalog</button>
   </form>
 </header>
 
@@ -74,18 +74,18 @@ $cb_rounding_modes = [
   <div class="cb-flash"><?= $esc($flash) ?></div>
 <?php endif; ?>
 
-<div style="display:grid; grid-template-columns:minmax(420px, 1.1fr) minmax(0, 1fr); gap:16px; align-items:flex-start;">
+<div data-cb-u="u-c076561dc1">
 
   <!-- ───────── Left card: add / update mapping ───────── -->
   <section class="cb-card" data-cb-mapping-form-scope>
-    <h3 class="cb-card-title" style="margin:0 0 4px;">Add or update mapping</h3>
-    <p class="cb-card-sub" style="margin:0 0 14px;">Pick a profile, product, currency, then per-cycle catalog/renewal flags.</p>
+    <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Add or update mapping</h3>
+    <p class="cb-card-sub" data-cb-u="u-619b35a9f4">Pick a profile, product, currency, then per-cycle catalog/renewal flags.</p>
 
     <form method="post" action="<?= $esc($module_link) ?>" data-cb-form="mapping-save">
       <input type="hidden" name="action" value="mapping-save">
       <?= generate_token() ?>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div data-cb-u="u-8a2c7566c2">
         <div class="cb-field">
           <label for="cb-map-profile">Contabo profile</label>
           <select id="cb-map-profile" name="profile_id" required data-cb-mapping-profile>
@@ -114,7 +114,7 @@ $cb_rounding_modes = [
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div data-cb-u="u-8a2c7566c2">
         <div class="cb-field">
           <label for="cb-map-currency">Currency</label>
           <select id="cb-map-currency" name="currency_id" data-cb-currency-id>
@@ -154,15 +154,15 @@ $cb_rounding_modes = [
 
       <div class="cb-field">
         <label>Billing cycles</label>
-        <div class="cb-card" style="margin:6px 0; padding:0; background:var(--bg-elev); overflow:hidden;">
+        <div class="cb-inset" data-cb-u="u-41290e0232">
           <table class="cb-table" data-cb-cycles-table>
             <thead>
               <tr>
                 <th>Cycle</th>
                 <th class="right">Source (from profile)</th>
                 <th class="right">Catalog price</th>
-                <th style="text-align:center">Catalog sync</th>
-                <th style="text-align:center">Renewal reprice</th>
+                <th data-cb-u="u-905008530c">Catalog sync</th>
+                <th data-cb-u="u-905008530c">Renewal reprice</th>
                 <th>Markup override</th>
               </tr>
             </thead>
@@ -173,23 +173,23 @@ $cb_rounding_modes = [
                     data-cb-cycle-months="<?= (int) $row['months'] ?>"
                     data-cb-cycle-status="absent">
                   <td>
-                    <div style="font-weight:600"><?= $esc($row['cycle']) ?></div>
-                    <div class="muted mono" style="font-size:11px"><?= $esc($row['short']) ?> · <?= $esc($row['rec_col']) ?></div>
+                    <div data-cb-u="u-6e8bcfac8d"><?= $esc($row['cycle']) ?></div>
+                    <div class="muted mono" data-cb-u="u-33ee298127"><?= $esc($row['short']) ?> · <?= $esc($row['rec_col']) ?></div>
                   </td>
                   <td class="right" data-cb-cycle-source>
-                    <span class="muted" style="font-size:11px">—</span>
+                    <span class="muted" data-cb-u="u-33ee298127">—</span>
                   </td>
                   <td class="right mono price" data-cb-cycle-current-price>
-                    <span class="muted" style="font-size:11.5px">—</span>
+                    <span class="muted" data-cb-u="u-bd299c8ad6">—</span>
                   </td>
-                  <td style="text-align:center">
+                  <td data-cb-u="u-905008530c">
                     <input type="checkbox"
                            data-cb-cycle-bit-catalog="<?= (int) $row['bit'] ?>"
                            data-cb-cycle="<?= $esc($row['cycle']) ?>"
                            disabled
                            aria-label="Catalog sync for <?= $esc($row['cycle']) ?>">
                   </td>
-                  <td style="text-align:center">
+                  <td data-cb-u="u-905008530c">
                     <input type="checkbox"
                            data-cb-cycle-bit-renewal="<?= (int) $row['bit'] ?>"
                            data-cb-cycle="<?= $esc($row['cycle']) ?>"
@@ -198,9 +198,9 @@ $cb_rounding_modes = [
                   <td>
                     <button type="button" class="cb-btn ghost"
                             data-cb-markup-toggle="<?= $esc($row['cycle']) ?>"
-                            style="padding:3px 8px; font-size:11.5px;">+ Override</button>
-                    <div data-cb-markup-editor="<?= $esc($row['cycle']) ?>" hidden style="margin-top:6px; display:flex; gap:4px; align-items:center;">
-                      <select data-cb-markup-strategy="<?= $esc($row['cycle']) ?>" style="padding:3px 6px; font-size:12px;">
+                            data-cb-u="u-b520024318">+ Override</button>
+                    <div data-cb-markup-editor="<?= $esc($row['cycle']) ?>" hidden data-cb-u="u-8150f9d612">
+                      <select data-cb-markup-strategy="<?= $esc($row['cycle']) ?>" data-cb-u="u-7c6f35d797">
                         <option value="inherit" selected>inherit</option>
                         <option value="cost_plus_pct">cost+%</option>
                         <option value="cost_plus_amount">cost+amt</option>
@@ -209,14 +209,14 @@ $cb_rounding_modes = [
                       <input type="number" step="0.01"
                              data-cb-markup-value="<?= $esc($row['cycle']) ?>"
                              placeholder="value"
-                             style="width:80px; padding:3px 6px; font-size:12px;">
+                             data-cb-u="u-e4f722deec">
                     </div>
                   </td>
                 </tr>
               <?php endforeach; ?>
             </tbody>
           </table>
-          <div data-cb-cycles-loading style="padding:8px 14px; font-size:11.5px; color:var(--muted);">
+          <div data-cb-cycles-loading data-cb-u="u-f0c6b37bc8">
             Pick a product to load catalog prices…
           </div>
         </div>
@@ -224,55 +224,55 @@ $cb_rounding_modes = [
 
       <div class="cb-field">
         <label>Catalog write guards</label>
-        <div style="display:flex; flex-direction:column; gap:6px; padding:6px 0;">
-          <label style="display:flex; gap:6px; align-items:flex-start; cursor:pointer; font-size:12.5px;">
+        <div data-cb-u="u-364f3c4dc7">
+          <label data-cb-u="u-1c39ed2ac4">
             <input type="checkbox" name="respect_disabled_cycles" value="1" checked data-cb-respect-disabled>
             <span>Honour WHMCS's <code class="mono">-1.00</code> disabled-cycle sentinel
-              <span class="muted" style="display:block; font-size:11.5px;">When on, cycles marked disabled in <code class="mono">tblpricing</code> stay disabled — catalog sync is blocked for them.</span>
+              <span class="muted" data-cb-u="u-940d85d787">When on, cycles marked disabled in <code class="mono">tblpricing</code> stay disabled — catalog sync is blocked for them.</span>
             </span>
           </label>
-          <label style="display:flex; gap:6px; align-items:flex-start; cursor:pointer; font-size:12.5px;">
+          <label data-cb-u="u-1c39ed2ac4">
             <input type="checkbox" name="overwrite_free_cycles" value="1" data-cb-overwrite-free>
             <span>Allow overwriting cycles currently priced at <code class="mono">0.00</code>
-              <span class="muted" style="display:block; font-size:11.5px;">Most free cycles are intentional promos. Off by default.</span>
+              <span class="muted" data-cb-u="u-940d85d787">Most free cycles are intentional promos. Off by default.</span>
             </span>
           </label>
-          <label style="display:flex; gap:6px; align-items:flex-start; cursor:pointer; font-size:12.5px;">
+          <label data-cb-u="u-1c39ed2ac4">
             <input type="checkbox" name="sync_setup_fees" value="1" data-cb-sync-setup-fees>
             <span>Sync setup-fee columns too
-              <span class="muted" style="display:block; font-size:11.5px;">Affects only new orders. Renewal repricing never touches setup fees.</span>
+              <span class="muted" data-cb-u="u-940d85d787">Affects only new orders. Renewal repricing never touches setup fees.</span>
             </span>
           </label>
         </div>
       </div>
 
-      <div class="cb-card" style="margin:12px 0; background:#faf6f1;" data-cb-mapping-preview>
-        <div class="cb-card-sub" style="margin-bottom:4px">Summary</div>
+      <div class="cb-inset" data-cb-u="u-86e35488e1" data-cb-mapping-preview>
+        <div class="cb-card-sub" data-cb-u="u-0d248ae75a">Summary</div>
         <div data-cb-mapping-preview-body>
-          <span class="muted" style="font-size:12.5px">Pick a profile + product to preview which cycles will sync.</span>
+          <span class="muted" data-cb-u="u-7e6609e5f6">Pick a profile + product to preview which cycles will sync.</span>
         </div>
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
+      <div data-cb-u="u-0af65df8af">
         <button type="submit" class="cb-btn">Save mapping</button>
       </div>
     </form>
   </section>
 
   <!-- ───────── Right card: existing mappings ───────── -->
-  <section class="cb-card" style="padding:0;">
-    <header style="padding:16px 20px 8px; display:flex; justify-content:space-between; align-items:flex-end; gap:12px;">
+  <section class="cb-card" data-cb-u="u-1305fa8339">
+    <header data-cb-u="u-9166572773">
       <div>
-        <h3 class="cb-card-title" style="margin:0 0 4px;">Existing mappings</h3>
-        <p class="cb-card-sub" style="margin:0;">All profile → product links currently configured.</p>
+        <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Existing mappings</h3>
+        <p class="cb-card-sub" data-cb-u="u-38965f9b18">All profile → product links currently configured.</p>
       </div>
       <div class="cb-pill grey"><?= (int) count($mappings) ?> total</div>
     </header>
 
     <?php if (empty($mappings)): ?>
-      <div class="cb-empty" style="margin:8px 16px 20px;">
-        <div class="display" style="font-size:18px; margin-bottom:6px;">No mappings yet</div>
-        <p class="cb-card-sub" style="margin:0;">Map a profile to a product on the left to start syncing prices.</p>
+      <div class="cb-empty" data-cb-u="u-6000b01fae">
+        <div class="display" data-cb-u="u-0fab6fb9ed">No mappings yet</div>
+        <p class="cb-card-sub" data-cb-u="u-38965f9b18">Map a profile to a product on the left to start syncing prices.</p>
       </div>
     <?php else: ?>
       <?php
@@ -323,15 +323,15 @@ $cb_rounding_modes = [
             data-cb-sort-active="<?= $isActive ? 1 : 0 ?>"
           >
             <td>
-              <div class="mono" style="font-weight:600"><?= $esc($pSlug) ?></div>
+              <div class="mono" data-cb-u="u-6e8bcfac8d"><?= $esc($pSlug) ?></div>
               <?php if ($pName !== ''): ?>
-                <div class="muted" style="font-size:11px"><?= $esc($pName) ?></div>
+                <div class="muted" data-cb-u="u-33ee298127"><?= $esc($pName) ?></div>
               <?php endif; ?>
             </td>
             <td>
               <?php if ($wpRow): ?>
                 <div><?= $esc($wpName) ?></div>
-                <div class="muted mono" style="font-size:11px">#<?= $productId ?></div>
+                <div class="muted mono" data-cb-u="u-33ee298127">#<?= $productId ?></div>
               <?php else: ?>
                 <span class="muted">#<?= $productId ?> (missing)</span>
               <?php endif; ?>
@@ -366,7 +366,7 @@ $cb_rounding_modes = [
               <?php endif; ?>
             </td>
             <td>
-              <button type="button" class="cb-btn ghost" style="padding:3px 8px; font-size:11.5px;"
+              <button type="button" class="cb-btn ghost" data-cb-u="u-b520024318"
                       data-cb-edit-mapping-id="<?= $mid ?>"
                       data-cb-edit-profile-id="<?= (int) $profileId ?>"
                       data-cb-edit-product-id="<?= (int) $productId ?>">Edit</button>
@@ -380,11 +380,11 @@ $cb_rounding_modes = [
 
 </div>
 
-<section class="cb-card" style="margin-top:16px;">
-  <header style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px;">
+<section class="cb-card" data-cb-u="u-76977cc9f2">
+  <header data-cb-u="u-69d1e8a1fb">
     <div>
-      <h3 class="cb-card-title" style="margin:0 0 4px;">Provisioning publication</h3>
-      <p class="cb-card-sub" style="margin:0; max-width:78ch;">
+      <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Provisioning publication</h3>
+      <p class="cb-card-sub" data-cb-u="u-8a5832c351">
         Seal stable Rust catalog and Contabo Customer API identifiers for future orders.
         Previewing does not change the active mapping. Approval requires the exact preview hash.
       </p>
@@ -459,8 +459,8 @@ $cb_rounding_modes = [
           </select>
         </div>
       </div>
-      <div style="display:flex; justify-content:flex-end;">
-        <button type="submit" class="cb-btn">Generate immutable preview</button>
+      <div data-cb-u="u-a858745d5d">
+        <button type="submit" class="cb-btn">Generate preview</button>
       </div>
     </form>
   <?php endif; ?>
@@ -503,9 +503,9 @@ $cb_rounding_modes = [
   <?php endif; ?>
 </section>
 
-<section class="cb-card" style="margin-top:16px;">
-  <h3 class="cb-card-title" style="margin:0 0 4px;">Publication history</h3>
-  <p class="cb-card-sub" style="margin:0 0 12px;">
+<section class="cb-card" data-cb-u="u-76977cc9f2">
+  <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Publication history</h3>
+  <p class="cb-card-sub" data-cb-u="u-2b0e8ce8c2">
     Immutable previews and their approval state. Superseded versions remain available for order history.
   </p>
   <?php if (empty($mapping_publications)): ?>

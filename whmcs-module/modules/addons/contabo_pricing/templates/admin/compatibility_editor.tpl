@@ -48,17 +48,17 @@ $cb_strip_data = [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:6px 0 18px;">
+<header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" style="margin:0 0 4px;">Compatibility editor</h2>
-    <p class="cb-card-sub" style="margin:0; max-width:70ch;">
+    <h2 class="display" data-cb-u="u-0cbe035c55">Compatibility editor</h2>
+    <p class="cb-card-sub" data-cb-u="u-1966bf5724">
       Define which option values can be combined for
       <strong><?= $esc($profile['name'] ?? $profile['plan_slug'] ?? ('#' . $cb_pid)) ?></strong>
       (<code class="mono"><?= $esc($plan_slug ?? '') ?></code>). Reference other values by their
       <code class="mono">value_key</code> (shown under each row), one per line.
     </p>
   </div>
-  <div style="display:flex; gap:8px;">
+  <div data-cb-u="u-b887bfd543">
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=capability-editor&amp;id=<?= $cb_pid ?>">&larr; Capability</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-preview&amp;id=<?= $cb_pid ?>">Back to preview</a>
   </div>
@@ -69,7 +69,7 @@ require __DIR__ . '/_layout_open.tpl';
 <?php endif; ?>
 
 <?php if (!empty($api_error)): ?>
-  <div class="cb-card" style="padding:12px 16px; margin-bottom:14px; border-left:3px solid var(--bad);">
+  <div class="cb-card" data-cb-u="u-2c1d9c6f96">
     <strong>Couldn't load this plan's options from the pricing API.</strong>
     <span class="muted"><?= $esc($api_error) ?></span>
     Showing only compatibility rules already saved for this plan.
@@ -82,20 +82,20 @@ require __DIR__ . '/_layout_open.tpl';
     <p>The pricing API returned no configurable dimensions for <code class="mono"><?= $esc($plan_slug ?? '') ?></code>.</p>
   </div></div>
 <?php else: ?>
-  <form class="cb-card" method="post" action="<?= $esc($module_link) ?>" style="padding:0; overflow:hidden;">
+  <form class="cb-card" method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-14f5e9e79f">
     <input type="hidden" name="action" value="compatibility-editor-save">
     <input type="hidden" name="id" value="<?= $cb_pid ?>">
     <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
 
-    <div style="overflow-x:auto;">
-      <table class="cb-table" style="min-width:900px;">
+    <div data-cb-u="u-fbff25e9fc">
+      <table class="cb-table" data-cb-u="u-16b426dd7f">
         <thead>
           <tr>
-            <th style="text-align:left;">Dimension / value</th>
+            <th data-cb-u="u-0413867b13">Dimension / value</th>
             <th>Incompatible with <span class="muted">(value_keys)</span></th>
             <th>Requires <span class="muted">(value_keys)</span></th>
-            <th style="text-align:center;">Min qty</th>
-            <th style="text-align:center;">Max qty</th>
+            <th data-cb-u="u-5a2dfef236">Min qty</th>
+            <th data-cb-u="u-5a2dfef236">Max qty</th>
           </tr>
         </thead>
         <tbody>
@@ -108,25 +108,25 @@ require __DIR__ . '/_layout_open.tpl';
               $cb_maxV  = isset($cb_saved['max_value']) && $cb_saved['max_value'] !== null ? (string) (int) $cb_saved['max_value'] : '';
           ?>
           <tr>
-            <td style="vertical-align:top;">
+            <td data-cb-u="u-0d31d4ada7">
               <input type="hidden" name="row[<?= (int) $cb_i ?>][dimension_key]" value="<?= $esc($cb_dim) ?>">
               <input type="hidden" name="row[<?= (int) $cb_i ?>][value_key]" value="<?= $esc($cb_val) ?>">
-              <div style="font-weight:600;"><?= $esc($cb_lab) ?></div>
-              <div class="muted mono" style="font-size:11px;"><?= $esc($cb_dim) ?> · <?= $esc($cb_val) ?></div>
+              <div data-cb-u="u-6b2a94ea3b"><?= $esc($cb_lab) ?></div>
+              <div class="muted mono" data-cb-u="u-025fe51291"><?= $esc($cb_dim) ?> · <?= $esc($cb_val) ?></div>
             </td>
-            <td style="vertical-align:top;">
-              <textarea name="row[<?= (int) $cb_i ?>][incompatible_with]" rows="2" style="width:220px; font-size:12px;"
+            <td data-cb-u="u-0d31d4ada7">
+              <textarea name="row[<?= (int) $cb_i ?>][incompatible_with]" rows="2" data-cb-u="u-dffa6380c5"
                         placeholder="one value_key per line"><?= $esc($cb_listText($cb_saved['incompatible_with_json'] ?? null)) ?></textarea>
             </td>
-            <td style="vertical-align:top;">
-              <textarea name="row[<?= (int) $cb_i ?>][required_values]" rows="2" style="width:220px; font-size:12px;"
+            <td data-cb-u="u-0d31d4ada7">
+              <textarea name="row[<?= (int) $cb_i ?>][required_values]" rows="2" data-cb-u="u-dffa6380c5"
                         placeholder="one value_key per line"><?= $esc($cb_listText($cb_saved['required_values_json'] ?? null)) ?></textarea>
             </td>
-            <td style="text-align:center; vertical-align:top;">
-              <input type="number" name="row[<?= (int) $cb_i ?>][min_value]" value="<?= $esc($cb_minV) ?>" min="0" style="width:70px;">
+            <td data-cb-u="u-6d3b4c3bb0">
+              <input type="number" name="row[<?= (int) $cb_i ?>][min_value]" value="<?= $esc($cb_minV) ?>" min="0" data-cb-u="u-3e5bb81768">
             </td>
-            <td style="text-align:center; vertical-align:top;">
-              <input type="number" name="row[<?= (int) $cb_i ?>][max_value]" value="<?= $esc($cb_maxV) ?>" min="0" style="width:70px;">
+            <td data-cb-u="u-6d3b4c3bb0">
+              <input type="number" name="row[<?= (int) $cb_i ?>][max_value]" value="<?= $esc($cb_maxV) ?>" min="0" data-cb-u="u-3e5bb81768">
             </td>
           </tr>
           <?php endforeach; ?>
@@ -134,9 +134,9 @@ require __DIR__ . '/_layout_open.tpl';
       </table>
     </div>
 
-    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:14px 16px; border-top:1px solid var(--border);">
+    <div data-cb-u="u-5651eaf98d">
       <button type="submit" class="cb-btn">Save compatibility</button>
-      <span class="muted" style="font-size:12px;">
+      <span class="muted" data-cb-u="u-c42f23b8ec">
         Blank rows are ignored; clearing a saved rule removes its constraints. Min/Max apply to quantity options (e.g. IPv4).
       </span>
     </div>

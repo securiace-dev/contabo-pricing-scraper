@@ -1,7 +1,15 @@
 /* Hallmark · macrostructure: Operational Truth Rail · tone: control-room editorial · anchor hue: cobalt
  * pre-emit critique: P5 H5 E4 S5 R5 V4
+ * contrast: pass (40–41) · nav/footer: WHMCS-owned · slop: pass (42–45)
+ * honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49)
+ * icons: pass (30) · mobile: pass (34, 49, 50–57)
  */
 @import url("./tokens.css");
+
+html:has(.sav-panel),
+body:has(.sav-panel) {
+  overflow-x: clip;
+}
 
 .sav-panel,
 .sav-panel * {
@@ -47,16 +55,6 @@
   line-height: 0.96;
   margin-bottom: var(--sav-space-3);
   max-width: 14ch;
-}
-
-.sav-kicker {
-  color: var(--sav-color-muted);
-  font-family: var(--sav-font-data);
-  font-size: var(--sav-text-xs);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  margin-bottom: var(--sav-space-2);
-  text-transform: uppercase;
 }
 
 .sav-lede {
@@ -107,7 +105,7 @@
 }
 
 .sav-notice {
-  border-left: 4px solid var(--sav-color-accent);
+  border-top: 2px solid var(--sav-color-accent);
   margin: var(--sav-space-5) 0;
   padding: var(--sav-space-3) var(--sav-space-4);
 }
@@ -198,7 +196,7 @@
 }
 
 .sav-card h3 {
-  font-size: 1.6rem;
+  font-size: var(--sav-text-title);
   margin-bottom: var(--sav-space-5);
 }
 
@@ -246,7 +244,7 @@
   font-size: var(--sav-text-sm);
   font-weight: 700;
   justify-content: center;
-  min-height: 2.6rem;
+  min-height: var(--sav-control-min);
   padding: var(--sav-space-2) var(--sav-space-4);
   text-decoration: none;
   transition: opacity var(--sav-dur-fast) var(--sav-ease-out),
@@ -265,10 +263,19 @@
 }
 
 .sav-btn:focus-visible,
-.sav-confirm > summary:focus-visible,
-.sav-panel input:focus-visible {
+.sav-confirm > summary:focus-visible {
   outline: 3px solid var(--sav-color-focus);
   outline-offset: 2px;
+}
+
+.sav-panel input {
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+}
+
+.sav-panel input:focus-visible {
+  outline: 2px solid var(--sav-color-focus);
+  outline-offset: 1px;
 }
 
 .sav-btn:active {
@@ -350,7 +357,7 @@
   background: var(--sav-color-surface);
   border: var(--sav-rule) solid var(--sav-color-rule);
   border-radius: var(--sav-radius-sm);
-  min-height: 2.6rem;
+  min-height: var(--sav-control-min);
   padding: var(--sav-space-2) var(--sav-space-3);
   width: 100%;
 }

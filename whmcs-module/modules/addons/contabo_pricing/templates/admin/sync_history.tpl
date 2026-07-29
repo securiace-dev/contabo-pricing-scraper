@@ -42,8 +42,8 @@ $cb_duration = static function ($a, $b) {
 
 <!-- ───────────────────── Header ───────────────────── -->
 <div class="cb-card">
-  <h2 class="cb-card-title display" style="margin:0">Sync history</h2>
-  <p class="cb-card-sub" style="margin:6px 0 0">
+  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Sync history</h2>
+  <p class="cb-card-sub" data-cb-u="u-5074b45d61">
     Recent automated and manual sync runs against the Contabo pricing API. Click a row for the full summary JSON.
   </p>
 </div>
@@ -64,17 +64,17 @@ $cb_duration = static function ($a, $b) {
 <div class="cb-toolbar" role="region" aria-label="Sync history filters">
   <span class="glabel">Status</span>
   <div class="cb-filter-pills" data-cb-filter-group="sync-history-status">
-    <button type="button" data-cb-filter="all"       aria-pressed="true">All <span class="mono" style="margin-left:4px; opacity:.6"><?= (int) $cb_counts['all'] ?></span></button>
-    <button type="button" data-cb-filter="succeeded" aria-pressed="false">Succeeded <span class="mono" style="margin-left:4px; opacity:.6"><?= (int) $cb_counts['succeeded'] ?></span></button>
-    <button type="button" data-cb-filter="no-change" aria-pressed="false">No change <span class="mono" style="margin-left:4px; opacity:.6"><?= (int) $cb_counts['no-change'] ?></span></button>
-    <button type="button" data-cb-filter="failed"    aria-pressed="false">Failed <span class="mono" style="margin-left:4px; opacity:.6"><?= (int) $cb_counts['failed'] ?></span></button>
+    <button type="button" data-cb-filter="all"       aria-pressed="true">All <span class="mono" data-cb-u="u-8dbc1c006c"><?= (int) $cb_counts['all'] ?></span></button>
+    <button type="button" data-cb-filter="succeeded" aria-pressed="false">Succeeded <span class="mono" data-cb-u="u-8dbc1c006c"><?= (int) $cb_counts['succeeded'] ?></span></button>
+    <button type="button" data-cb-filter="no-change" aria-pressed="false">No change <span class="mono" data-cb-u="u-8dbc1c006c"><?= (int) $cb_counts['no-change'] ?></span></button>
+    <button type="button" data-cb-filter="failed"    aria-pressed="false">Failed <span class="mono" data-cb-u="u-8dbc1c006c"><?= (int) $cb_counts['failed'] ?></span></button>
   </div>
 
-  <div class="cb-field" style="flex-direction:row; align-items:center; gap:6px; margin:0">
-    <label class="glabel" for="cb-sh-from" style="margin-right:2px">From</label>
-    <input id="cb-sh-from" type="date" data-cb-date-from style="padding:5px 8px">
-    <label class="glabel" for="cb-sh-to" style="margin:0 2px 0 8px">To</label>
-    <input id="cb-sh-to" type="date" data-cb-date-to style="padding:5px 8px">
+  <div class="cb-field" data-cb-u="u-ff46992490">
+    <label class="glabel" for="cb-sh-from" data-cb-u="u-0aa89a4011">From</label>
+    <input id="cb-sh-from" type="date" data-cb-date-from data-cb-u="u-485fc5be97">
+    <label class="glabel" for="cb-sh-to" data-cb-u="u-19db841668">To</label>
+    <input id="cb-sh-to" type="date" data-cb-date-to data-cb-u="u-485fc5be97">
   </div>
 
   <div class="cb-search">
@@ -92,7 +92,7 @@ $cb_duration = static function ($a, $b) {
 </div>
 
 <!-- ───────────────────── Table ───────────────────── -->
-<div class="cb-card" style="padding:0; overflow:hidden">
+<div class="cb-card" data-cb-u="u-a5c8b31f20">
   <table class="cb-table" data-cb-table="sync-history">
     <thead>
       <tr>
@@ -101,7 +101,7 @@ $cb_duration = static function ($a, $b) {
         <th>Finished</th>
         <th>Trigger</th>
         <th>Status</th>
-        <th class="right">Profiles ✓ / Δ</th>
+        <th class="right">Profiles checked / changed</th>
         <th class="right">Products updated</th>
         <th>Snapshot</th>
         <th>Error</th>
@@ -131,19 +131,17 @@ $cb_duration = static function ($a, $b) {
             data-cb-status="<?= $esc($cb_status) ?>"
             data-cb-trigger="<?= $esc($cb_trigger) ?>"
             data-cb-started="<?= $esc($cb_started) ?>"
-            data-cb-search-text="<?= $esc(strtolower($cb_trigger . ' ' . $cb_error_msg . ' ' . $cb_status)) ?>"
-            data-cb-open-drawer="log"
-            style="cursor:pointer">
+            data-cb-search-text="<?= $esc(strtolower($cb_trigger . ' ' . $cb_error_msg . ' ' . $cb_status)) ?>">
           <td class="mono">#<?= (int) $cb_id ?></td>
           <td>
-            <div class="mono" style="font-size:12.5px"><?= $esc(substr($cb_started, 0, 10)) ?></div>
-            <div class="mono" style="font-size:11px; color:var(--muted)"><?= $esc(substr($cb_started, 11, 8)) ?></div>
+            <div class="mono" data-cb-u="u-7e6609e5f6"><?= $esc(substr($cb_started, 0, 10)) ?></div>
+            <div class="mono" data-cb-u="u-9f803cd406"><?= $esc(substr($cb_started, 11, 8)) ?></div>
           </td>
           <td>
             <?php if ($cb_finished !== ''): ?>
-              <div class="mono" style="font-size:12.5px"><?= $esc(substr($cb_finished, 11, 8)) ?></div>
+              <div class="mono" data-cb-u="u-7e6609e5f6"><?= $esc(substr($cb_finished, 11, 8)) ?></div>
               <?php if ($cb_dur !== ''): ?>
-                <div style="font-size:11px; color:var(--muted)">⏱ <?= $esc($cb_dur) ?></div>
+                <div data-cb-u="u-9f803cd406">Duration <?= $esc($cb_dur) ?></div>
               <?php endif; ?>
             <?php else: ?>
               <span class="cb-pill warn"><span class="dot"></span>running</span>
@@ -170,17 +168,17 @@ $cb_duration = static function ($a, $b) {
           </td>
           <td class="right mono">
             <?= (int) $cb_checked ?>
-            <span style="color:var(--muted)"> / </span>
-            <span style="color:<?= $cb_changed > 0 ? 'var(--accent)' : 'var(--muted)' ?>"><?= (int) $cb_changed ?></span>
+            <span data-cb-u="u-eac7694072"> / </span>
+            <span class="<?= $cb_changed > 0 ? 'cb-tone-accent' : 'cb-tone-muted' ?>"><?= (int) $cb_changed ?></span>
           </td>
           <td class="right mono"><?= (int) $cb_products ?></td>
-          <td class="mono" style="font-size:12px; color:var(--muted)"><?= $esc(substr($cb_snap_at, 0, 16)) ?></td>
+          <td class="mono" data-cb-u="u-685394115d"><?= $esc(substr($cb_snap_at, 0, 16)) ?></td>
           <td>
             <?php if ($cb_error_msg !== ''): ?>
-              <code class="mono" style="font-size:11.5px; color:var(--bad)"
+              <code class="mono" data-cb-u="u-21e471ac42"
                     title="<?= $esc($cb_error_msg) ?>"><?= $esc($cb_trunc($cb_error_msg, 60)) ?></code>
             <?php else: ?>
-              <span style="color:var(--muted)">—</span>
+              <span data-cb-u="u-eac7694072">—</span>
             <?php endif; ?>
           </td>
         </tr>
@@ -191,7 +189,7 @@ $cb_duration = static function ($a, $b) {
 
 <?php endif; ?>
 
-<p style="margin-top:14px">
+<p data-cb-u="u-c53ea1da23">
   <a class="cb-btn ghost" href="<?= $esc($module_link) ?>">← Back to dashboard</a>
 </p>
 

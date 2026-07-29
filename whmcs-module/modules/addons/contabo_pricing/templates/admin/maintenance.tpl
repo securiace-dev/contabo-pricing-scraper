@@ -85,16 +85,16 @@ $cb_strip_data = [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:6px 0 18px;">
+<header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" style="margin:0 0 4px;">Maintenance</h2>
-    <p class="cb-card-sub" style="margin:0; max-width:64ch;">
+    <h2 class="display" data-cb-u="u-0cbe035c55">Maintenance</h2>
+    <p class="cb-card-sub" data-cb-u="u-1beb43d512">
       Verify the addon's database schema, run pending migrations, and (carefully)
       reset all Contabo Pricing data. Destructive actions are gated by an explicit
       typed confirmation.
     </p>
   </div>
-  <div style="display:flex; gap:8px;">
+  <div data-cb-u="u-b887bfd543">
     <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=currency-report">Currency support</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=dashboard">&larr; Dashboard</a>
   </div>
@@ -110,29 +110,29 @@ require __DIR__ . '/_layout_open.tpl';
 <?php /* ── Panel 1: Schema health ─────────────────────────────────────────── */ ?>
 <div class="cb-card">
   <h3>Schema health</h3>
-  <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
+  <div data-cb-u="u-2af59efcc3">
     <?php if ($cb_all_green): ?>
       <span class="cb-pill good"><span class="dot"></span>Healthy</span>
     <?php else: ?>
       <span class="cb-pill bad"><span class="dot"></span>Needs migration</span>
     <?php endif; ?>
-    <span style="color:var(--muted); font-size:13px;">
+    <span data-cb-u="u-84933fa4aa">
       recorded version <span class="mono">v<?= (int) $cb_current ?></span>
       vs target <span class="mono">v<?= (int) $cb_target ?></span>
     </span>
   </div>
 
   <?php if ($cb_missing === []): ?>
-    <p style="margin:0; color:var(--good); font-size:13.5px;">
+    <p data-cb-u="u-d83761292e">
       All required runtime columns are present on
       <code class="mono">mod_contabo_mapping</code> and
       <code class="mono">mod_contabo_profile</code>.
     </p>
   <?php else: ?>
-    <p style="margin:0 0 8px; color:var(--bad); font-size:13.5px;">
+    <p data-cb-u="u-919cd4969c">
       The following required columns are missing. Run migrations to repair:
     </p>
-    <ul style="margin:0; padding-left:18px; font-size:13px;">
+    <ul data-cb-u="u-44c90ade49">
       <?php foreach ($cb_missing as $cb_col): ?>
         <li><code class="mono"><?= $esc((string) $cb_col) ?></code></li>
       <?php endforeach; ?>
@@ -143,11 +143,11 @@ require __DIR__ . '/_layout_open.tpl';
 <?php /* ── Panel 2: Run migrations now ────────────────────────────────────── */ ?>
 <div class="cb-card">
   <h3>Run migrations now</h3>
-  <p class="cb-card-sub" style="margin:0 0 12px;">
+  <p class="cb-card-sub" data-cb-u="u-2b0e8ce8c2">
     Re-runs forward-only migrations up to <code class="mono">v<?= (int) $cb_target ?></code>.
     Migrations are idempotent — running this when already up to date is a safe no-op.
   </p>
-  <form method="post" action="<?= $esc($module_link) ?>" style="margin:0;">
+  <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-38965f9b18">
     <input type="hidden" name="action" value="maintenance-migrate">
     <?= generate_token() ?>
     <button class="cb-btn" type="submit">Run migrations now</button>
@@ -155,39 +155,39 @@ require __DIR__ . '/_layout_open.tpl';
 </div>
 
 <?php /* ── Panel 3: Purge / reset module data ─────────────────────────────── */ ?>
-<div class="cb-card" style="border-color: rgba(185,28,28,.35);">
-  <h3 style="color:var(--bad);">Purge / reset module data</h3>
+<div class="cb-card" data-cb-u="u-3bf30616da">
+  <h3 data-cb-u="u-cf716c9f6e">Purge / reset module data</h3>
 
-  <div class="cb-error" style="margin-top:0;">
+  <div class="cb-error" data-cb-u="u-1294519fc5">
     <strong>This truncates <code class="mono">mod_contabo_*</code> tables only.</strong>
     It does <strong>NOT</strong> touch WHMCS clients, services, invoices, or transactions.
     A backup export is taken first.
   </div>
 
-  <p style="margin:0 0 10px; color:var(--muted); font-size:12.5px;">
+  <p data-cb-u="u-f2f2d4e94a">
     Not sure what a purge would remove? <strong>Preview the exact blast radius first</strong> —
     this dry-run deletes nothing and needs no confirmation phrase.
   </p>
-  <form method="post" action="<?= $esc($module_link) ?>" style="margin:0 0 18px;">
+  <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-7b8b5d8af2">
     <input type="hidden" name="action" value="maintenance-purge">
     <input type="hidden" name="purge_dry_run" value="1">
     <?= generate_token() ?>
     <button class="cb-btn subtle" type="submit">Preview purge (dry-run)</button>
   </form>
 
-  <form method="post" action="<?= $esc($module_link) ?>" style="margin:0;"
+  <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-38965f9b18"
         data-cb-form="maintenance-purge"
-        onsubmit="return confirm('This will delete ALL Contabo Pricing addon data. Continue?');">
+        data-cb-confirm="This will delete ALL Contabo Pricing addon data. Continue?">
     <input type="hidden" name="action" value="maintenance-purge">
     <?= generate_token() ?>
 
-    <label style="display:flex; align-items:flex-start; gap:8px; margin:12px 0; font-size:13.5px; cursor:pointer;">
-      <input type="checkbox" name="purge_confirm_checkbox" value="1" required style="margin-top:3px;">
+    <label data-cb-u="u-8cc56ae6d5">
+      <input type="checkbox" name="purge_confirm_checkbox" value="1" required data-cb-u="u-c8590d693a">
       <span>I understand this deletes all Contabo Pricing addon data.</span>
     </label>
 
-    <label style="display:flex; align-items:flex-start; gap:8px; margin:12px 0; font-size:13.5px; cursor:pointer;">
-      <input type="checkbox" name="purge_config_objects" value="1" style="margin-top:3px;">
+    <label data-cb-u="u-8cc56ae6d5">
+      <input type="checkbox" name="purge_config_objects" value="1" data-cb-u="u-c8590d693a">
       <span>
         <strong>Also delete the WHMCS configurable options this addon created.</strong>
         Removes only the option groups / options / sub-options / pricing rows recorded
@@ -199,7 +199,7 @@ require __DIR__ . '/_layout_open.tpl';
       </span>
     </label>
 
-    <div class="cb-field" style="max-width:420px;">
+    <div class="cb-field" data-cb-u="u-d3d0db89cc">
       <label for="cb-purge-phrase">
         Type <code class="mono"><?= $esc($cb_phrase) ?></code> to confirm
       </label>

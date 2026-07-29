@@ -75,18 +75,18 @@ require __DIR__ . '/_layout_open.tpl';
 <?php endif; ?>
 
 <?php /* Hero ----------------------------------------------------------- */ ?>
-<div class="cb-card" style="padding: 22px 24px;">
-  <div style="display:flex; flex-wrap:wrap; align-items:flex-start; gap:14px; justify-content:space-between;">
-    <div style="flex:1; min-width:280px;">
-      <div class="cb-card-sub" style="margin:0 0 4px;">Contabo Pricing</div>
-      <h2 class="cb-card-title" style="font-size:28px; margin:0 0 6px;">
+<div class="cb-card" data-cb-u="u-48ca9c4f12">
+  <div data-cb-u="u-0dfd52ecd9">
+    <div data-cb-u="u-5f62ac8378">
+      <div class="cb-card-sub" data-cb-u="u-0cbe035c55">Contabo Pricing</div>
+      <h2 class="cb-card-title" data-cb-u="u-f83807b020">
         <?php if ($cb_api_base !== ''): ?>
-          Connected to <span class="mono" style="font-size:20px; color:var(--accent);"><?= $esc($cb_api_base) ?></span>
+          Connected to <span class="mono" data-cb-u="u-169bb84a59"><?= $esc($cb_api_base) ?></span>
         <?php else: ?>
           Contabo Pricing
         <?php endif; ?>
       </h2>
-      <div class="cb-card-sub" style="margin:0;">
+      <div class="cb-card-sub" data-cb-u="u-38965f9b18">
         <?php if ($cb_scraper_v !== ''): ?>
           Scraper <span class="mono"><?= $esc($cb_scraper_v) ?></span>
         <?php else: ?>
@@ -105,7 +105,7 @@ require __DIR__ . '/_layout_open.tpl';
   </div>
 
   <?php if ($cb_has_error): ?>
-    <div class="cb-error" style="margin-top:14px;">
+    <div class="cb-error" data-cb-u="u-8d84299030">
       Can't reach the API: <code class="mono"><?= $esc((string) $connect_error) ?></code><br>
       Check the URL and bearer token under
       <a href="<?= $esc($module_link) ?>&amp;action=settings">Settings</a>.
@@ -115,23 +115,23 @@ require __DIR__ . '/_layout_open.tpl';
 
 <?php /* Get-started callout — shows only when no profiles exist yet -------- */ ?>
 <?php if (((int) $profile_count) === 0 && !$cb_has_error): ?>
-<div class="cb-card" style="border-color: var(--accent); background: linear-gradient(180deg, var(--accent-soft), var(--panel) 40%);">
-  <div style="display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap;">
-    <div style="flex:1; min-width:280px;">
-      <h3 style="color: var(--accent); margin: 0 0 6px;">Get started</h3>
-      <div class="cb-card-title" style="font-size: 22px; margin: 0 0 8px;">You're connected, but nothing is being synced yet.</div>
-      <p class="cb-card-sub" style="margin:0 0 12px;">
+<div class="cb-card" data-cb-u="u-ad0f812542">
+  <div data-cb-u="u-8bc29ba9f1">
+    <div data-cb-u="u-5f62ac8378">
+      <h3 data-cb-u="u-64970cd978">Get started</h3>
+      <div class="cb-card-title" data-cb-u="u-7259bbafaa">You're connected, but nothing is being synced yet.</div>
+      <p class="cb-card-sub" data-cb-u="u-2b0e8ce8c2">
         The sync engine walks <em>profiles</em> — named templates that pair a Contabo plan
         with a billing period, region, and OS. Until you create at least one profile,
         every sync run will report 0 profiles checked.
       </p>
-      <ol style="margin: 0 0 14px 20px; padding: 0; color: var(--fg); font-size: 13.5px; line-height: 1.7;">
+      <ol data-cb-u="u-b44378b3c1">
         <li><strong>Create a profile</strong> (e.g. <em>Cloud VPS 10 — EU — Ubuntu — 12 mo</em>)</li>
         <li><strong>Map it</strong> to one or more WHMCS products + tick the billing cycles to update</li>
         <li><strong>Choose a sync strategy</strong> per profile: <code>manual</code> (record only), <code>notify</code> (email on drift), or <code>auto-apply</code> (push prices immediately)</li>
         <li><strong>Run sync</strong> — the daily cron will keep it fresh after the first manual run</li>
       </ol>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <div data-cb-u="u-9e77998f13">
         <a class="cb-btn" href="<?= $esc($module_link) ?>&amp;action=profiles">Create your first profile</a>
         <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=mappings">Map a WHMCS product</a>
       </div>
@@ -143,20 +143,20 @@ require __DIR__ . '/_layout_open.tpl';
 <?php /* Quick actions ---------------------------------------------------- */ ?>
 <div class="cb-card">
   <h3>Quick actions</h3>
-  <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-    <form method="post" action="<?= $esc($module_link) ?>" style="display:inline; margin:0;">
+  <div data-cb-u="u-cc44f1c604">
+    <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-3cb81f8dc9">
       <input type="hidden" name="action" value="sync-run">
       <?= generate_token() ?>
       <button class="cb-btn" type="submit" data-cb-action="sync-run">Run sync now</button>
     </form>
-    <form method="post" action="<?= $esc($module_link) ?>" style="display:inline; margin:0;">
+    <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-3cb81f8dc9">
       <input type="hidden" name="action" value="refresh-api">
       <?= generate_token() ?>
       <button class="cb-btn subtle" type="submit" data-cb-action="refresh-api">Trigger API refresh</button>
     </form>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles">Manage profiles</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=mappings">Edit mappings</a>
-    <span style="flex:1;"></span>
+    <span data-cb-u="u-6253876a64"></span>
     <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=settings">Settings</a>
   </div>
 </div>
@@ -180,40 +180,40 @@ require __DIR__ . '/_layout_open.tpl';
       $cb_updated  = isset($last_sync['products_updated']) ? (int) $last_sync['products_updated'] : 0;
       $cb_errmsg   = isset($last_sync['error_message']) ? (string) $last_sync['error_message'] : '';
     ?>
-    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px 28px;">
+    <div data-cb-u="u-8dbbdf5477">
       <div>
-        <div class="cb-card-sub" style="margin:0 0 2px;">Status</div>
+        <div class="cb-card-sub" data-cb-u="u-ef38380253">Status</div>
         <span class="cb-pill <?= $esc($cb_pill_class) ?>">
           <span class="dot"></span><?= $esc($cb_last_status !== '' ? $cb_last_status : 'unknown') ?>
         </span>
       </div>
       <div>
-        <div class="cb-card-sub" style="margin:0 0 2px;">Trigger</div>
+        <div class="cb-card-sub" data-cb-u="u-ef38380253">Trigger</div>
         <div class="mono"><?= $esc($cb_trigger) ?></div>
       </div>
       <div>
-        <div class="cb-card-sub" style="margin:0 0 2px;">Started</div>
+        <div class="cb-card-sub" data-cb-u="u-ef38380253">Started</div>
         <div class="mono"><?= $esc($cb_last_started !== '' ? $cb_last_started : '—') ?></div>
       </div>
       <div>
-        <div class="cb-card-sub" style="margin:0 0 2px;">Finished</div>
+        <div class="cb-card-sub" data-cb-u="u-ef38380253">Finished</div>
         <div class="mono"><?= $esc($cb_finished !== '' ? $cb_finished : '—') ?></div>
       </div>
       <div>
-        <div class="cb-card-sub" style="margin:0 0 2px;">Profiles changed</div>
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="mono" style="font-size:18px; color:var(--accent);"><?= (int) $cb_changed ?></span>
+        <div class="cb-card-sub" data-cb-u="u-ef38380253">Profiles changed</div>
+        <div data-cb-u="u-8ba0c206b7">
+          <span class="mono" data-cb-u="u-60f42128d0"><?= (int) $cb_changed ?></span>
           <svg class="sparkline" data-cb-sparkline data-cb-source="profiles-changed" aria-hidden="true"></svg>
         </div>
       </div>
       <div>
-        <div class="cb-card-sub" style="margin:0 0 2px;">Products updated</div>
-        <span class="mono" style="font-size:18px; color:var(--accent);"><?= (int) $cb_updated ?></span>
+        <div class="cb-card-sub" data-cb-u="u-ef38380253">Products updated</div>
+        <span class="mono" data-cb-u="u-60f42128d0"><?= (int) $cb_updated ?></span>
       </div>
     </div>
 
     <?php if ($cb_errmsg !== ''): ?>
-      <div class="cb-error" style="margin-top:14px;">
+      <div class="cb-error" data-cb-u="u-8d84299030">
         <strong>Error:</strong> <code class="mono"><?= $esc($cb_errmsg) ?></code>
       </div>
     <?php endif; ?>
@@ -221,7 +221,7 @@ require __DIR__ . '/_layout_open.tpl';
 </div>
 
 <?php /* Three-card summary row ------------------------------------------ */ ?>
-<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+<div data-cb-u="u-7c4d3c876f">
 
   <div class="cb-card">
     <h3>Profiles</h3>

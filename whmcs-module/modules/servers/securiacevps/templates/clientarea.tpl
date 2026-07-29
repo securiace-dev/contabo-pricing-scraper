@@ -1,10 +1,9 @@
 <link rel="stylesheet"
-      href="{$WEB_ROOT}/modules/servers/securiacevps/assets/clientarea.css?v=1.1.0">
+      href="{$WEB_ROOT}/modules/servers/securiacevps/assets/clientarea.css?v=2.0.0">
 
 <section class="sav-panel" aria-labelledby="sav-title">
   <header class="sav-head">
     <div class="sav-head-copy">
-      <p class="sav-kicker">VPS service</p>
       <h2 id="sav-title">Your server, as it is now</h2>
       <p class="sav-lede">
         Provider status, ownership checks, pending work and recovery controls in one place.
@@ -28,7 +27,6 @@
   {if $revealed_credential}
     <section class="sav-secret" aria-labelledby="sav-secret-title">
       <div>
-        <p class="sav-kicker">One-time reveal</p>
         <h3 id="sav-secret-title">Copy the root password now</h3>
         <p>This value has been removed from storage and cannot be displayed again.</p>
       </div>
@@ -55,7 +53,7 @@
     <section class="sav-operation" aria-labelledby="sav-operation-title">
       <div class="sav-operation-mark" aria-hidden="true"></div>
       <div>
-        <p class="sav-kicker">Latest operation</p>
+        <span class="sav-status-label">Latest operation</span>
         <h3 id="sav-operation-title">
           {$operation.operation_type|replace:'_':' '|escape|capitalize}
           · {$operation.state|replace:'_':' '|escape|capitalize}
@@ -74,7 +72,6 @@
     <section class="sav-card" aria-labelledby="sav-details-title">
       <div class="sav-card-head">
         <div>
-          <p class="sav-kicker">Configuration</p>
           <h3 id="sav-details-title">Server details</h3>
         </div>
         <form method="post" class="sav-inline-form">
@@ -120,7 +117,6 @@
     </section>
 
     <section class="sav-card sav-actions-card" aria-labelledby="sav-actions-title">
-      <p class="sav-kicker">Controls</p>
       <h3 id="sav-actions-title">Available actions</h3>
 
       {if !$verified_ownership}

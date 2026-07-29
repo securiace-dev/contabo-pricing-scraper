@@ -211,9 +211,9 @@ add_hook('AdminHomeWidgets', 1, static function () {
                   <div><strong>Last sync:</strong> {$status} at {$when}</div>
                   <div>Profiles changed: {$changed} · Products updated: {$products}</div>
                   <div>Active profiles: {$data['active']}</div>
-                  <div style="margin-top:8px">
+                  <p>
                     <a class="btn btn-default btn-sm" href="addonmodules.php?module=contabo_pricing">Open addon</a>
-                  </div>
+                  </p>
                 </div>
             HTML;
         }

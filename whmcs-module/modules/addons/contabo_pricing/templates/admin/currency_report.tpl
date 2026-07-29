@@ -30,7 +30,7 @@ $cb_strip_data = $cb_r !== null ? [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin: 4px 0 12px;">
+<div data-cb-u="u-7a6e688133">
   <div>
     <h2 class="cb-card-title">Currency support</h2>
     <p class="cb-card-sub">Read-only diagnostic. The configurable-option pricing &amp; revenue path is <strong><?= $esc($cb_base !== '' ? $cb_base : 'base-currency') ?>-only</strong> in this version; this page shows whether any non-base-currency services are exposed to it.</p>
@@ -47,15 +47,15 @@ $cb_fx_stale = $fx_stale ?? true;
 $cb_fx_at    = $fx_fetched_at ?? null;
 ?>
 <?php if ($cb_fx !== null && $cb_fx !== []): ?>
-<div class="cb-card" style="margin-bottom:12px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-    <h3 style="margin:0;">Live FX rates <span class="muted" style="font-weight:400;font-size:12px;">(vs EUR)</span></h3>
+<div class="cb-card" data-cb-u="u-4636770b49">
+  <div data-cb-u="u-9d1b997475">
+    <h3 data-cb-u="u-38965f9b18">Live FX rates <span class="muted" data-cb-u="u-f520361752">(vs EUR)</span></h3>
     <span class="cb-pill <?= $esc($cb_fx_stale ? 'warn' : 'good') ?>">
       <span class="dot"></span>
       <?= $esc($cb_fx_stale ? 'Rates may be stale' : 'Live') ?><?php if ($cb_fx_at !== null): ?> · <?= $esc((string) $cb_fx_at) ?><?php endif; ?>
     </span>
   </div>
-  <table class="cb-table" style="margin-top:8px;">
+  <table class="cb-table" data-cb-u="u-a33b8fc2ff">
     <thead><tr><th>Currency</th><th class="right">Rate</th></tr></thead>
     <tbody>
       <?php foreach ($cb_fx as $fxRow): ?>
@@ -68,8 +68,8 @@ $cb_fx_at    = $fx_fetched_at ?? null;
   </table>
 </div>
 <?php elseif (array_key_exists('fx_rates', get_defined_vars()) && $fx_rates === null): ?>
-<div class="cb-card" style="border-left:3px solid var(--warn); margin-bottom:12px;">
-  <p style="margin:0;color:var(--warn);"><strong>FX rates unavailable.</strong> The pricing API server could not be reached; INR equivalents below may be stale or absent.</p>
+<div class="cb-card" data-cb-u="u-dac72abfd9">
+  <p data-cb-u="u-171a169012"><strong>FX rates unavailable.</strong> The pricing API server could not be reached; INR equivalents below may be stale or absent.</p>
 </div>
 <?php endif; ?>
 
@@ -79,7 +79,7 @@ $cb_fx_at    = $fx_fetched_at ?? null;
   <div class="cb-error">No report data.</div>
 <?php else: ?>
 
-  <div class="cb-card cb-<?= $esc($cb_tone === 'good' ? 'flash' : 'error') ?>" style="margin-top:0;">
+  <div class="cb-card cb-<?= $esc($cb_tone === 'good' ? 'flash' : 'error') ?>" data-cb-u="u-1294519fc5">
     <strong><?= $esc(ucfirst(str_replace('_', ' ', $cb_verdict))) ?>.</strong>
     <?php
       $cb_msgs = [
@@ -92,8 +92,8 @@ $cb_fx_at    = $fx_fetched_at ?? null;
   </div>
 
   <!-- Req 4 labeling: be explicit about what the money column means. -->
-  <div class="cb-card" style="border-left:3px solid var(--accent);">
-    <p style="margin:0; font-size:12.5px; color:var(--muted);">
+  <div class="cb-card" data-cb-u="u-ba7201c167">
+    <p data-cb-u="u-af684e84ff">
       <strong>What the amounts mean:</strong>
       “Service amount” below is the WHMCS service recurring amount
       (<code class="mono">tblhosting.amount</code>) — what the customer is billed today.
@@ -123,7 +123,7 @@ $cb_fx_at    = $fx_fetched_at ?? null;
 
   <div class="cb-card">
     <h3>Meaningful services by currency &amp; status</h3>
-    <p class="cb-card-sub" style="margin-top:-4px;">Active / Suspended / Pending only. Excluded (Cancelled / Terminated / Fraud) non-base services: <strong><?= $esc((string) (int) ($cb_r['excluded_non_inr_total'] ?? 0)) ?></strong>.</p>
+    <p class="cb-card-sub" data-cb-u="u-d7a30f1cbd">Active / Suspended / Pending only. Excluded (Cancelled / Terminated / Fraud) non-base services: <strong><?= $esc((string) (int) ($cb_r['excluded_non_inr_total'] ?? 0)) ?></strong>.</p>
     <?php if (empty($cb_r['meaningful_counts'])): ?>
       <div class="cb-empty"><div class="display">No meaningful services.</div></div>
     <?php else: ?>
@@ -143,10 +143,10 @@ $cb_fx_at    = $fx_fetched_at ?? null;
   </div>
 
   <?php if (!empty($cb_r['non_inr_mapped'])): ?>
-    <div class="cb-card" style="border-left:3px solid var(--bad);">
-      <h3 style="color:var(--bad);">Non-base services on mapped products (active risk)</h3>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
-        <p style="margin:0;color:var(--bad);font-weight:600;">
+    <div class="cb-card" data-cb-u="u-647b2884f2">
+      <h3 data-cb-u="u-cf716c9f6e">Non-base services on mapped products (active risk)</h3>
+      <div data-cb-u="u-641adae525">
+        <p data-cb-u="u-e2760ef9ee">
           <?= $esc((string) count($cb_r['non_inr_mapped'])) ?> non-base service(s) on mapped products — revenue impact needs manual review.
         </p>
         <?php if (isset($csv_url)): ?>
@@ -154,8 +154,8 @@ $cb_fx_at    = $fx_fetched_at ?? null;
         <?php endif; ?>
       </div>
       <?php if (!empty($currency_preview ?? [])): ?>
-        <div class="cb-card" style="border-left:3px solid var(--warn);margin:0 0 8px;">
-          <h4 style="margin:0 0 6px;">Indicative INR equivalents</h4>
+        <div class="cb-inset" data-cb-u="u-94153ea61e">
+          <h4 data-cb-u="u-d886b9a9db">Indicative INR equivalents</h4>
           <table class="cb-table">
             <thead><tr><th>Service</th><th>Currency</th><th class="right">Billed</th><th class="right">INR equiv.</th><th class="right">Rate used</th></tr></thead>
             <tbody>
@@ -190,9 +190,9 @@ $cb_fx_at    = $fx_fetched_at ?? null;
       </table>
     </div>
 
-    <div class="cb-card" style="border-left:3px solid var(--accent);">
-      <h4 style="margin:0 0 4px;">Remediation</h4>
-      <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--muted);">
+    <div class="cb-card" data-cb-u="u-ba7201c167">
+      <h4 data-cb-u="u-0cbe035c55">Remediation</h4>
+      <ul data-cb-u="u-bec7b0ca86">
         <li>Move affected clients to INR billing (recommended for this addon version), or</li>
         <li>Implement per-currency pricing profiles in a future phase (<code class="mono">mod_contabo_profile.currency_iso</code> groundwork is already in place).</li>
         <li>Until resolved, renewal price decisions for these services use approximate figures — do not enable configurable-product billing for the affected products.</li>

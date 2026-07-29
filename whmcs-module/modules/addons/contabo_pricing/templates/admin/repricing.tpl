@@ -85,15 +85,15 @@ $cb_strip_data = [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:6px 0 18px;">
+<header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" style="margin:0 0 4px;">Repricing</h2>
-    <p class="cb-card-sub" style="margin:0; max-width:62ch;">
+    <h2 class="display" data-cb-u="u-0cbe035c55">Repricing</h2>
+    <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
       Renewal pricing policy engine — decisions are emitted by the daily observe sweep.
       Phase A is read-only; nothing here writes <code class="mono">tblhosting.recurringamount</code>.
     </p>
   </div>
-  <div style="display:flex; gap:8px; align-items:center;">
+  <div data-cb-u="u-9c170d8708">
     <span class="cb-pill <?= $esc($cb_phase_tone) ?>" title="Repricing phase">
       <span class="dot"></span>phase: <?= $esc($cb_phase) ?>
     </span>
@@ -128,7 +128,7 @@ require __DIR__ . '/_layout_open.tpl';
 </div>
 
 <?php /* Cycle filter pill row — drives `data-cb-cycle` row attr below. ------ */ ?>
-<div class="cb-toolbar" role="region" aria-label="Cycle filter" style="margin-top:-6px;">
+<div class="cb-toolbar" role="region" aria-label="Cycle filter" data-cb-u="u-9dcf1dec3b">
   <span class="glabel">Cycle</span>
   <div class="cb-filter-pills" data-cb-filter-group="repricing-cycle" role="group">
     <button type="button" data-cb-filter-cycle="all"           aria-pressed="true">All</button>
@@ -157,7 +157,7 @@ require __DIR__ . '/_layout_open.tpl';
 
 <?php else: ?>
 
-<div class="cb-card" style="padding:0; overflow:hidden;">
+<div class="cb-card" data-cb-u="u-14f5e9e79f">
   <table class="cb-table" data-cb-table="repricing-decisions">
     <thead>
       <tr>
@@ -201,18 +201,15 @@ require __DIR__ . '/_layout_open.tpl';
       ?>
       <tr data-cb-status="<?= $esc($statusBucket) ?>"
           data-cb-cycle="<?= $esc($cycle) ?>"
-          data-cb-search-text="<?= $esc(strtolower($policy . ' ' . $skipReason . ' service-' . $svcId . ' ' . $cycle)) ?>"
-          data-cb-open-drawer="decision"
-          data-cb-decision-id="<?= (int) ($r['id'] ?? 0) ?>"
-          style="cursor:pointer">
+          data-cb-search-text="<?= $esc(strtolower($policy . ' ' . $skipReason . ' service-' . $svcId . ' ' . $cycle)) ?>">
         <td class="mono">#<?= (int) $svcId ?></td>
-        <td class="mono" style="font-size:12px"><?= $esc($cycle) ?></td>
+        <td class="mono" data-cb-u="u-a49cca52be"><?= $esc($cycle) ?></td>
         <td><span class="cb-pill <?= $esc($policyTone) ?>"><?= $esc($policy) ?></span></td>
         <td class="right mono price"><?= $esc(number_format($old, 2)) ?></td>
         <td class="right mono price"><?= $esc(number_format($new, 2)) ?></td>
         <td class="right mono">
-          <?php $tone = $deltaPct > 0 ? 'var(--accent)' : ($deltaPct < 0 ? 'var(--good)' : 'var(--muted)'); ?>
-          <span style="color: <?= $tone ?>">
+          <?php $tone = $deltaPct > 0 ? 'cb-tone-accent' : ($deltaPct < 0 ? 'cb-tone-good' : 'cb-tone-muted'); ?>
+          <span class="<?= $esc($tone) ?>">
             <?= ($deltaPct >= 0 ? '+' : '') . number_format($deltaPct, 1) ?>%
           </span>
         </td>
@@ -227,15 +224,15 @@ require __DIR__ . '/_layout_open.tpl';
             <span class="cb-pill grey">skipped</span>
           <?php endif; ?>
         </td>
-        <td><code class="mono" style="font-size:11.5px"><?= $esc($skipReason) ?></code></td>
-        <td class="mono" style="font-size:12px"><?= $esc(substr($decidedAt, 0, 16)) ?></td>
+        <td><code class="mono" data-cb-u="u-bd299c8ad6"><?= $esc($skipReason) ?></code></td>
+        <td class="mono" data-cb-u="u-a49cca52be"><?= $esc(substr($decidedAt, 0, 16)) ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>
   </table>
 </div>
 
-<p style="margin-top:14px; color:var(--muted); font-size:12.5px">
+<p data-cb-u="u-e4401e441a">
   Showing the most recent <?= (int) count($rows) ?> decisions.
   Use the <a href="<?= $esc($module_link) ?>&amp;action=price-decisions">audit log</a> for full history + CSV export.
 </p>

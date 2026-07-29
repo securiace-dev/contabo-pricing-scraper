@@ -80,7 +80,7 @@ $cb_state_tone = static function (string $state): string {
         <input type="text" id="cb-global-write-confirmation" name="confirmation"
                autocomplete="off">
       </div>
-      <button type="submit" class="cb-btn danger">Queue global control change</button>
+      <button type="submit" class="cb-btn danger">Queue change</button>
     </form>
   </section>
 

@@ -1,6 +1,6 @@
 <section class="sa-vps-order sa-vps-order--discovery" aria-labelledby="sa-vps-order-title">
     <div class="sa-vps-order__eyebrow">SecuriAce Cloud</div>
-    <h1 id="sa-vps-order-title">Choose the VPS that fits the work</h1>
+    <h2 id="sa-vps-order-title">Choose the VPS that fits the work</h2>
     <p class="sa-vps-order__lede">
         Compare compute first. You can review region, operating system, protection,
         networking, management and the exact renewal price before checkout.

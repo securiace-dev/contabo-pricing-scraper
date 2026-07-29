@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.7.0';
+    public const VERSION = '1.0.0';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -3546,7 +3546,11 @@ class AdminController
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing service-pricing-tab render error (service #' . $serviceId . '): ' . $e->getMessage());
             }
-            return '<div style="color:#b91c1c">Contabo Pricing tab unavailable — see the activity log for detail.</div>';
+            return '<link rel="stylesheet" href="/modules/addons/contabo_pricing/assets/app.css?v='
+                . rawurlencode(self::VERSION)
+                . '"><div class="cb-wrap"><div class="cb-error">'
+                . 'Contabo Pricing tab unavailable — see the activity log for detail.'
+                . '</div></div>';
         }
 
         $path = $this->templateDir . '/service_pricing_tab.tpl';

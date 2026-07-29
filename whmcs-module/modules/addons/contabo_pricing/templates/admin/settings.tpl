@@ -22,8 +22,8 @@ $cb_token_set   = $cb_api_token !== '';
 
 <!-- ───────────────────── Header ───────────────────── -->
 <div class="cb-card">
-  <h2 class="cb-card-title display" style="margin:0">Settings</h2>
-  <p class="cb-card-sub" style="margin:6px 0 0">
+  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Settings</h2>
+  <p class="cb-card-sub" data-cb-u="u-5074b45d61">
     Edit these values from <strong>Setup → Addon Modules → Contabo Pricing Sync → Configure</strong>.
     Values shown here are read-only.
   </p>
@@ -32,12 +32,12 @@ $cb_token_set   = $cb_api_token !== '';
 <!-- ───────────────────── API connection ───────────────────── -->
 <div class="cb-card">
   <h3>API connection</h3>
-  <table class="cb-table" style="margin-top:4px">
+  <table class="cb-table" data-cb-u="u-eb2cdaa55e">
     <tr>
-      <th style="width:220px">API base URL</th>
+      <th data-cb-u="u-e104eb5fa2">API base URL</th>
       <td>
         <?php if ($cb_api_url !== ''): ?>
-          <code class="mono" style="font-size:12.5px"><?= $esc($cb_api_url) ?></code>
+          <code class="mono" data-cb-u="u-7e6609e5f6"><?= $esc($cb_api_url) ?></code>
         <?php else: ?>
           <span class="cb-pill bad"><span class="dot"></span>not set</span>
         <?php endif; ?>
@@ -48,7 +48,7 @@ $cb_token_set   = $cb_api_token !== '';
       <td>
         <?php if ($cb_token_set): ?>
           <span class="cb-pill good"><span class="dot"></span>ENC · encrypted at rest</span>
-          <span class="kbd" style="margin-left:8px">stored</span>
+          <span class="kbd" data-cb-u="u-9d5367afed">stored</span>
         <?php else: ?>
           <span class="cb-pill bad"><span class="dot"></span>not set</span>
         <?php endif; ?>
@@ -64,7 +64,8 @@ $cb_token_set   = $cb_api_token !== '';
                 data-cb-target="cb-api-test-result">
           Test connection
         </button>
-        <span data-cb-result="cb-api-test-result" style="margin-left:10px; font-size:12.5px; color:var(--muted)"></span>
+        <span data-cb-result="cb-api-test-result" role="status" aria-live="polite"
+              data-cb-u="u-a40f776248"></span>
       </td>
     </tr>
   </table>
@@ -73,9 +74,9 @@ $cb_token_set   = $cb_api_token !== '';
 <!-- ───────────────────── Sync behaviour ───────────────────── -->
 <div class="cb-card">
   <h3>Sync behaviour</h3>
-  <table class="cb-table" style="margin-top:4px">
+  <table class="cb-table" data-cb-u="u-eb2cdaa55e">
     <tr>
-      <th style="width:220px">Default sync strategy</th>
+      <th data-cb-u="u-e104eb5fa2">Default sync strategy</th>
       <td>
         <?php if ($cb_sync_strat !== ''): ?>
           <span class="cb-pill"><?= $esc($cb_sync_strat) ?></span>
@@ -89,7 +90,7 @@ $cb_token_set   = $cb_api_token !== '';
       <td>
         <span class="mono"><?= (int) $cb_log_ret ?></span> days
         <?php if ($cb_log_ret <= 0): ?>
-          <span class="cb-pill warn" style="margin-left:8px">logs kept indefinitely</span>
+          <span class="cb-pill warn" data-cb-u="u-9d5367afed">logs kept indefinitely</span>
         <?php endif; ?>
       </td>
     </tr>
@@ -99,9 +100,9 @@ $cb_token_set   = $cb_api_token !== '';
 <!-- ───────────────────── Currency & tax ───────────────────── -->
 <div class="cb-card">
   <h3>Currency &amp; tax</h3>
-  <table class="cb-table" style="margin-top:4px">
+  <table class="cb-table" data-cb-u="u-eb2cdaa55e">
     <tr>
-      <th style="width:220px">Base currency</th>
+      <th data-cb-u="u-e104eb5fa2">Base currency</th>
       <td>
         <?php if ($cb_currency !== ''): ?>
           <span class="cb-pill"><span class="mono"><?= $esc($cb_currency) ?></span></span>
@@ -125,7 +126,7 @@ $cb_token_set   = $cb_api_token !== '';
       <td>
         <span class="mono"><?= $esc(number_format($cb_fx_markup, 2)) ?>%</span>
         <?php if ($cb_fx_markup > 0): ?>
-          <span style="color:var(--muted); font-size:12px; margin-left:6px">applied on top of mid-market rate</span>
+          <span data-cb-u="u-68abf08f77">applied on top of mid-market rate</span>
         <?php endif; ?>
       </td>
     </tr>
@@ -138,18 +139,18 @@ $cb_token_set   = $cb_api_token !== '';
   <div data-cb-fx-preview
        data-cb-fx-base="EUR"
        data-cb-fx-quote="<?= $esc($cb_currency !== '' ? $cb_currency : 'INR') ?>"
-       style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap">
+       data-cb-u="u-0dfbf8c0b4">
     <div>
-      <span class="glabel" style="color:var(--muted-soft)">EUR → <?= $esc($cb_currency !== '' ? $cb_currency : 'INR') ?></span>
-      <div class="mono" style="font-size:22px; color:var(--accent); margin-top:2px" data-cb-fx-rate>
-        <span style="color:var(--muted-soft)">…</span>
+      <span class="glabel" data-cb-u="u-6c850f109c">EUR → <?= $esc($cb_currency !== '' ? $cb_currency : 'INR') ?></span>
+      <div class="mono" data-cb-u="u-5360f3178f" data-cb-fx-rate>
+        <span data-cb-u="u-6c850f109c">…</span>
       </div>
     </div>
-    <div style="color:var(--muted); font-size:12px">
+    <div data-cb-u="u-e1612f0331">
       last fetched
       <span class="mono" data-cb-fx-fetched-at>—</span>
     </div>
-    <div style="margin-left:auto">
+    <div data-cb-u="u-ca6fc035af">
       <button type="button"
               class="cb-btn ghost"
               data-cb-action="fx-refresh"
@@ -158,7 +159,7 @@ $cb_token_set   = $cb_api_token !== '';
       </button>
     </div>
   </div>
-  <p style="margin:10px 0 0; color:var(--muted); font-size:11.5px">
+  <p data-cb-u="u-9e4546b1ac">
     Source: <span class="mono">/api/v1/fx</span> · markup of <span class="mono"><?= $esc(number_format($cb_fx_markup, 2)) ?>%</span> applied separately during sync.
   </p>
 </div>

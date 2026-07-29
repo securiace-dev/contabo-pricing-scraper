@@ -201,15 +201,15 @@ function contabo_pricing_sidebar(array $vars): string
         'Tax settings'    => '&action=tax-settings',
         'Maintenance'     => '&action=maintenance',
     ];
-    $html = '<ul class="list-unstyled" style="padding-left:0;margin:0">';
+    $html = '<ul class="list-unstyled cb-side-nav">';
     foreach ($items as $label => $qs) {
         if ($qs === '#divider') {
-            $html .= '<li style="margin:8px 0 2px;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b91a0;font-weight:600">'
+            $html .= '<li class="cb-side-nav__label small text-muted">'
                 . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</li>';
             continue;
         }
         $href = htmlspecialchars($base . $qs, ENT_QUOTES, 'UTF-8');
-        $html .= '<li style="margin:4px 0"><a href="' . $href . '">' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</a></li>';
+        $html .= '<li class="cb-side-nav__item"><a href="' . $href . '">' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</a></li>';
     }
     $html .= '</ul>';
     return $html;

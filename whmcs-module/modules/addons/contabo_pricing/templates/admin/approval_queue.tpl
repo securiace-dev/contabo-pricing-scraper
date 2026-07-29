@@ -55,7 +55,7 @@ $cb_strip_data = [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin: 4px 0 12px;">
+<div data-cb-u="u-7a6e688133">
   <div>
     <h2 class="cb-card-title">Approval queue</h2>
     <p class="cb-card-sub">Price changes that breached a threshold during a renewal pass and are awaiting your sign-off. Approving applies the new price through the single write path and records an append-only audit row.</p>
@@ -68,8 +68,8 @@ require __DIR__ . '/_layout_open.tpl';
 <?php endif; ?>
 
 <?php if ($cb_phase === 'observe'): ?>
-  <div class="cb-card" style="border-left:3px solid var(--warn);">
-    <p style="margin:0;color:var(--warn);">
+  <div class="cb-card" data-cb-u="u-a8cbff188d">
+    <p data-cb-u="u-171a169012">
       <strong>Phase is “observe”.</strong> Approving records the decision but the price write is suppressed
       (the writer is disabled outside <code class="mono">opt_in</code> / <code class="mono">enforce</code>).
       Switch the repricing phase before approving if you want the change to take effect.
@@ -132,23 +132,23 @@ require __DIR__ . '/_layout_open.tpl';
             </td>
             <td class="mono"><?= $esc($cb_when) ?></td>
             <td>
-              <div style="display:flex; gap:6px; flex-direction:column;">
-                <form method="post" action="<?= $esc($module_link) ?>&amp;action=approval-approve" style="margin:0;">
+              <div data-cb-u="u-4b92880a59">
+                <form method="post" action="<?= $esc($module_link) ?>&amp;action=approval-approve" data-cb-u="u-38965f9b18">
                   <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
                   <input type="hidden" name="decision_id" value="<?= $esc((string) $cb_did) ?>">
                   <input type="hidden" name="page" value="<?= $esc((string) $cb_page) ?>">
                   <?php if ($cb_is_force): ?>
-                    <p class="cb-card-sub" style="margin:0 0 4px; max-width:240px;">This exceeds your hard ceiling. Confirm you have reviewed the margin impact before approving.</p>
+                    <p class="cb-card-sub" data-cb-u="u-4d060e043a">This exceeds your hard ceiling. Confirm you have reviewed the margin impact before approving.</p>
                   <?php endif; ?>
-                  <button type="submit" class="cb-btn" style="background:var(--good);border-color:var(--good);"
-                    onclick="return confirm('Approve decision #<?= $esc((string) $cb_did) ?> and apply the new price?');">Approve</button>
+                  <button type="submit" class="cb-btn" data-cb-u="u-7f0f697408"
+                    data-cb-confirm="Approve decision #<?= $esc((string) $cb_did) ?> and apply the new price?">Approve</button>
                 </form>
-                <form method="post" action="<?= $esc($module_link) ?>&amp;action=approval-reject" style="margin:0;">
+                <form method="post" action="<?= $esc($module_link) ?>&amp;action=approval-reject" data-cb-u="u-38965f9b18">
                   <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
                   <input type="hidden" name="decision_id" value="<?= $esc((string) $cb_did) ?>">
                   <input type="hidden" name="page" value="<?= $esc((string) $cb_page) ?>">
                   <button type="submit" class="cb-btn danger"
-                    onclick="return confirm('Reject decision #<?= $esc((string) $cb_did) ?>? No price change will be applied.');">Reject</button>
+                    data-cb-confirm="Reject decision #<?= $esc((string) $cb_did) ?>? No price change will be applied.">Reject</button>
                 </form>
               </div>
             </td>
@@ -159,7 +159,7 @@ require __DIR__ . '/_layout_open.tpl';
   </div>
 
   <?php if ($cb_pages > 1): ?>
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px;">
+    <div data-cb-u="u-1de1a4d3be">
       <?php if ($cb_page > 1): ?>
         <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=approval-queue&amp;page=<?= $esc((string) ($cb_page - 1)) ?>">← Previous</a>
       <?php else: ?>

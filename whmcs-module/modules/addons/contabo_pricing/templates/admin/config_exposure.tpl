@@ -33,17 +33,17 @@ $cb_strip_data = [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:6px 0 18px;">
+<header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" style="margin:0 0 4px;">Exposure editor</h2>
-    <p class="cb-card-sub" style="margin:0; max-width:64ch;">
+    <h2 class="display" data-cb-u="u-0cbe035c55">Exposure editor</h2>
+    <p class="cb-card-sub" data-cb-u="u-1beb43d512">
       Choose which configurable options are exposed to customers for
       <strong><?= $esc($profile['name'] ?? $profile['plan_slug'] ?? ('#' . $cb_pid)) ?></strong>
       (<code class="mono"><?= $esc($profile['plan_slug'] ?? '') ?></code>).
       Saving records your choices — you must re-run <em>Apply</em> to push them to the live product.
     </p>
   </div>
-  <div style="display:flex; gap:8px;">
+  <div data-cb-u="u-b887bfd543">
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-preview&amp;id=<?= $cb_pid ?>">&larr; Back to preview</a>
   </div>
 </header>
@@ -52,7 +52,7 @@ require __DIR__ . '/_layout_open.tpl';
   <div class="cb-flash"><?= $esc($flash) ?></div>
 <?php endif; ?>
 
-<div class="cb-card" style="padding:12px 16px; margin-bottom:14px; border-left:3px solid var(--accent);">
+<div class="cb-card" data-cb-u="u-e9341aa696">
   <strong>Saving here does not change the live product yet.</strong> These flags are
   recorded on the option-links. Re-run <em>Apply</em> on the
   <a href="<?= $esc($module_link) ?>&amp;action=config-preview&amp;id=<?= $cb_pid ?>">preview screen</a>
@@ -66,24 +66,24 @@ require __DIR__ . '/_layout_open.tpl';
       This profile has no configurable-option links to curate. They're created the first
       time you <strong>Apply</strong> the profile's options to a mapped product.
     </p>
-    <p style="margin-top:10px;">
-      <a class="cb-btn" href="<?= $esc($module_link) ?>&amp;action=config-preview&amp;id=<?= $cb_pid ?>">Go to preview &amp; Apply</a>
+    <p data-cb-u="u-726e8b317f">
+      <a class="cb-btn" href="<?= $esc($module_link) ?>&amp;action=config-preview&amp;id=<?= $cb_pid ?>">Preview &amp; apply</a>
     </p>
   </div></div>
 <?php else: ?>
-  <form class="cb-card" method="post" action="<?= $esc($module_link) ?>" style="padding:0; overflow:hidden;">
+  <form class="cb-card" method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-14f5e9e79f">
     <input type="hidden" name="action" value="config-exposure-save">
     <input type="hidden" name="id" value="<?= $cb_pid ?>">
     <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
 
-    <div style="overflow-x:auto;">
-      <table class="cb-table" style="min-width:600px;">
+    <div data-cb-u="u-fbff25e9fc">
+      <table class="cb-table" data-cb-u="u-0292bc7fc0">
         <thead>
           <tr>
             <th>Dimension</th>
             <th>Type</th>
-            <th style="text-align:center;">Expose to customer</th>
-            <th style="text-align:center;">Hidden</th>
+            <th data-cb-u="u-5a2dfef236">Expose to customer</th>
+            <th data-cb-u="u-5a2dfef236">Hidden</th>
           </tr>
         </thead>
         <tbody>
@@ -94,12 +94,12 @@ require __DIR__ . '/_layout_open.tpl';
           <tr>
             <td><code class="mono"><?= $esc($cb_dim) ?></code></td>
             <td><span class="cb-pill grey"><?= $esc($cb_typeLabel[$cb_type] ?? ('type ' . $cb_type)) ?></span></td>
-            <td style="text-align:center;">
+            <td data-cb-u="u-5a2dfef236">
               <input type="checkbox"
                      name="expose_to_customer[<?= $esc($cb_dim) ?>]"
                      value="1"<?= !empty($cb_l['expose_to_customer']) ? ' checked' : '' ?>>
             </td>
-            <td style="text-align:center;">
+            <td data-cb-u="u-5a2dfef236">
               <input type="checkbox"
                      name="hidden[<?= $esc($cb_dim) ?>]"
                      value="1"<?= !empty($cb_l['hidden']) ? ' checked' : '' ?>>
@@ -110,9 +110,9 @@ require __DIR__ . '/_layout_open.tpl';
       </table>
     </div>
 
-    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:14px 16px; border-top:1px solid var(--border);">
+    <div data-cb-u="u-5651eaf98d">
       <button type="submit" class="cb-btn">Save exposure</button>
-      <span class="muted" style="font-size:12px;">
+      <span class="muted" data-cb-u="u-c42f23b8ec">
         Records intent only — re-run <em>Apply</em> afterwards to push these flags to the live product.
       </span>
     </div>

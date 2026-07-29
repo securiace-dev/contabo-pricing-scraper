@@ -34,16 +34,16 @@ $undo_id     = isset($undo_id) ? (int) $undo_id : 0;
 $cb_purge_phrase = isset($cb_purge_phrase) ? (string) $cb_purge_phrase : '';
 ?>
 
-<header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:6px 0 18px;">
+<header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" style="margin:0 0 4px;"><?= $trash_mode ? 'Profiles — Trash' : 'Profiles' ?></h2>
-    <p class="cb-card-sub" style="margin:0; max-width:62ch;">
+    <h2 class="display" data-cb-u="u-0cbe035c55"><?= $trash_mode ? 'Profiles — Trash' : 'Profiles' ?></h2>
+    <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
       <?= $trash_mode
         ? 'Soft-deleted profiles. Restore brings one back; permanent purge is guarded and irreversible.'
         : 'Versioned pricing templates that map Contabo plans to your WHMCS products.' ?>
     </p>
   </div>
-  <div style="display:flex; gap:8px; align-items:center;">
+  <div data-cb-u="u-9c170d8708">
     <?php if ($trash_mode): ?>
       <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles">← Back to profiles</a>
     <?php else: ?>
@@ -56,14 +56,14 @@ $cb_purge_phrase = isset($cb_purge_phrase) ? (string) $cb_purge_phrase : '';
 </header>
 
 <?php if (!empty($flash)): ?>
-  <div class="cb-flash" style="display:flex; align-items:center; gap:12px;">
-    <span style="flex:1 1 auto"><?= $esc($flash) ?></span>
+  <div class="cb-flash" data-cb-u="u-a527d03795">
+    <span data-cb-u="u-7fff97ee23"><?= $esc($flash) ?></span>
     <?php if ($undo_id > 0): ?>
-      <form method="post" action="<?= $esc($module_link) ?>" style="margin:0">
+      <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-ab79ea2b85">
         <input type="hidden" name="action" value="profile-restore">
         <input type="hidden" name="id" value="<?= $undo_id ?>">
         <?= generate_token() ?>
-        <button type="submit" class="cb-btn subtle" style="white-space:nowrap">↩ Undo</button>
+        <button type="submit" class="cb-btn subtle" data-cb-u="u-eb99a4c193">↩ Undo</button>
       </form>
     <?php endif; ?>
   </div>
@@ -73,12 +73,12 @@ $cb_purge_phrase = isset($cb_purge_phrase) ? (string) $cb_purge_phrase : '';
 <?php if ($trash_mode): ?>
   <?php if (empty($trashed)): ?>
     <div class="cb-empty">
-      <div class="display" style="font-size:22px; margin-bottom:8px;">Trash is empty</div>
-      <p class="cb-card-sub" style="margin:0 0 14px;">Deleted profiles will appear here, where you can restore or permanently purge them.</p>
+      <div class="display" data-cb-u="u-84bf8f7a31">Trash is empty</div>
+      <p class="cb-card-sub" data-cb-u="u-619b35a9f4">Deleted profiles will appear here, where you can restore or permanently purge them.</p>
       <a class="cb-btn" href="<?= $esc($module_link) ?>&amp;action=profiles">Back to profiles</a>
     </div>
   <?php else: ?>
-    <div class="cb-card" style="padding:0; overflow:hidden;">
+    <div class="cb-card" data-cb-u="u-14f5e9e79f">
       <table class="cb-table">
         <thead>
           <tr>
@@ -86,7 +86,7 @@ $cb_purge_phrase = isset($cb_purge_phrase) ? (string) $cb_purge_phrase : '';
             <th>Plan slug</th>
             <th>Deleted</th>
             <th>Purge eligibility</th>
-            <th style="text-align:right; width:260px">Actions</th>
+            <th data-cb-u="u-fc2af690d3">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -100,21 +100,21 @@ $cb_purge_phrase = isset($cb_purge_phrase) ? (string) $cb_purge_phrase : '';
           ?>
             <tr>
               <td>
-                <div style="font-weight:600"><?= $esc($tname) ?></div>
-                <div class="muted mono" style="font-size:11px; opacity:.7"><?= $esc($tslug) ?></div>
+                <div data-cb-u="u-6e8bcfac8d"><?= $esc($tname) ?></div>
+                <div class="muted mono" data-cb-u="u-ab736dfd55"><?= $esc($tslug) ?></div>
               </td>
               <td class="mono"><?= $esc((string) ($tp['plan_slug'] ?? '')) ?></td>
-              <td class="muted" style="font-size:12px"><?= $esc($tdel) ?></td>
+              <td class="muted" data-cb-u="u-a49cca52be"><?= $esc($tdel) ?></td>
               <td>
                 <?php if ($allowed): ?>
                   <span class="cb-pill good">eligible</span>
                 <?php else: ?>
                   <span class="cb-pill warn" title="<?= $esc(implode(' ', (array) ($assess['reasons'] ?? []))) ?>">blocked</span>
-                  <div class="muted" style="font-size:11px; margin-top:2px;"><?= $esc(implode(' ', (array) ($assess['reasons'] ?? []))) ?></div>
+                  <div class="muted" data-cb-u="u-4fbe14f3db"><?= $esc(implode(' ', (array) ($assess['reasons'] ?? []))) ?></div>
                 <?php endif; ?>
               </td>
-              <td style="text-align:right">
-                <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+              <td data-cb-u="u-5f326564a5">
+                <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
                   <input type="hidden" name="action" value="profile-restore">
                   <input type="hidden" name="id" value="<?= $tpid ?>">
                   <?= generate_token() ?>
@@ -123,21 +123,21 @@ $cb_purge_phrase = isset($cb_purge_phrase) ? (string) $cb_purge_phrase : '';
                 <button type="button" class="cb-btn ghost"
                         data-cb-purge-open="<?= $tpid ?>"
                         <?= $allowed ? '' : 'disabled title="Resolve the blockers above first"' ?>
-                        style="color:var(--bad,#b3261e)">Purge…</button>
+                        data-cb-u="u-5bad398266">Purge…</button>
                 <?php if ($allowed): ?>
-                  <div data-cb-purge-form="<?= $tpid ?>" hidden style="margin-top:8px; text-align:left; background:#fdf3f2; border:1px solid #e7b9b3; border-radius:8px; padding:10px;">
-                    <form method="post" action="<?= $esc($module_link) ?>" style="margin:0"
-                          onsubmit="return confirm('Permanently purge &quot;<?= $esc($tname) ?>&quot; and everything it owns? This cannot be undone.');">
+                  <div data-cb-purge-form="<?= $tpid ?>" hidden data-cb-u="u-94a0f712ff">
+                    <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-ab79ea2b85"
+                          data-cb-confirm="Permanently purge &quot;<?= $esc($tname) ?>&quot; and everything it owns? This cannot be undone.">
                       <input type="hidden" name="action" value="profile-purge">
                       <input type="hidden" name="id" value="<?= $tpid ?>">
                       <?= generate_token() ?>
-                      <label style="display:block; font-size:11.5px; margin-bottom:4px;">
+                      <label data-cb-u="u-eb3a56761e">
                         Type <code class="mono"><?= $esc($cb_purge_phrase) ?></code> to confirm:
                       </label>
                       <input type="text" name="purge_confirmation_phrase" autocomplete="off"
                              placeholder="<?= $esc($cb_purge_phrase) ?>"
-                             style="width:100%; padding:5px 8px; font-size:12px; margin-bottom:6px;">
-                      <button type="submit" class="cb-btn" style="background:var(--bad,#b3261e); border-color:var(--bad,#b3261e); color:#fff;">Purge permanently</button>
+                             data-cb-u="u-f9cec146c1">
+                      <button type="submit" class="cb-btn" data-cb-u="u-a979101b9e">Purge permanently</button>
                     </form>
                   </div>
                 <?php endif; ?>
@@ -180,19 +180,19 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
     $cfSubmit  = is_array($cf['submit'] ?? null) ? $cf['submit'] : [];
 ?>
   <div class="cb-card cb-conflict" data-cb-profile-conflict
-       style="border-color:var(--warn,#caa45a); background:#fdf8ef; padding:16px 18px; margin-bottom:18px;">
-    <div style="display:flex; align-items:flex-start; gap:12px;">
-      <span class="cb-pill warn" style="margin-top:2px;">conflict</span>
-      <div style="flex:1 1 auto;">
-        <h3 class="display" style="margin:0 0 4px; font-size:18px;">A profile with this slug already exists</h3>
-        <p class="cb-card-sub" style="margin:0 0 12px; max-width:64ch;">
+       data-cb-u="u-b3eb6bbe30">
+    <div data-cb-u="u-cd08368205">
+      <span class="cb-pill warn" data-cb-u="u-d1dc646165">conflict</span>
+      <div data-cb-u="u-2575e93d1e">
+        <h3 class="display" data-cb-u="u-d58e3ffc06">A profile with this slug already exists</h3>
+        <p class="cb-card-sub" data-cb-u="u-44f71ea1c9">
           The slug <code class="mono"><?= $esc($cfSlug) ?></code> is already taken by
           <strong><?= $esc($cfExName) ?></strong> (profile #<?= $cfExId ?>), but the
           configuration you just submitted is <em>different</em>. Nothing was changed.
           Choose how to proceed:
         </p>
 
-        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <div data-cb-u="u-26f8c9dd81">
           <!-- (1) Open existing -->
           <a class="cb-btn subtle"
              href="<?= $esc($module_link) ?>&amp;action=profile-diff&amp;id=<?= $cfExId ?>">
@@ -200,20 +200,19 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
           </a>
 
           <!-- (2) Create duplicate with numeric suffix -->
-          <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+          <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
             <input type="hidden" name="action" value="profile-create">
             <input type="hidden" name="slug" value="<?= $esc($cfSuffix) ?>">
             <?php foreach ($cfSubmit as $fk => $fv): if ($fk === 'slug' || $fk === 'action') { continue; } ?>
               <input type="hidden" name="<?= $esc((string) $fk) ?>" value="<?= $esc(is_array($fv) ? (string) json_encode($fv) : (string) $fv) ?>">
             <?php endforeach; ?>
             <?= generate_token() ?>
-            <button type="submit" class="cb-btn">
-              Create duplicate as <code class="mono"><?= $esc($cfSuffix) ?></code>
-            </button>
+            <span class="cb-text-xs">New slug: <code class="mono"><?= $esc($cfSuffix) ?></code></span>
+            <button type="submit" class="cb-btn">Create duplicate</button>
           </form>
 
           <!-- (3) Update existing -->
-          <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+          <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
             <input type="hidden" name="action" value="profile-save">
             <input type="hidden" name="id" value="<?= $cfExId ?>">
             <?php foreach ($cfSubmit as $fk => $fv): if ($fk === 'slug' || $fk === 'action' || $fk === 'id') { continue; } ?>
@@ -253,7 +252,7 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
     <button type="button" data-cb-sort="plan_slug"   aria-pressed="false">Plan slug</button>
   </div>
 
-  <div style="flex:1 1 auto"></div>
+  <div data-cb-u="u-7fff97ee23"></div>
 
   <div class="cb-pill grey" data-cb-row-count title="Visible rows">
     <span data-cb-visible-count><?= (int) count($profiles) ?></span> / <?= (int) count($profiles) ?>
@@ -261,28 +260,28 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
 </div>
 
 <!-- ───────────────────── Bulk-action bar ───────────────────── -->
-<div class="cb-card cb-bulk-bar" data-cb-bulk-toolbar hidden style="align-items:center; gap:10px; padding:10px 14px;">
+<div class="cb-card cb-bulk-bar" data-cb-bulk-toolbar hidden data-cb-u="u-5a17309b79">
   <strong><span data-cb-bulk-count>0</span> selected</strong>
-  <span style="opacity:.5">·</span>
+  <span data-cb-u="u-443072299c">·</span>
   <button type="button" class="cb-btn subtle" data-cb-bulk-action="apply-latest">Apply latest version</button>
   <button type="button" class="cb-btn ghost"  data-cb-bulk-action="disable">Disable</button>
-  <div style="flex:1 1 auto"></div>
+  <div data-cb-u="u-7fff97ee23"></div>
   <button type="button" class="cb-btn ghost" data-cb-bulk-cancel>Cancel</button>
 </div>
 
 <!-- ───────────────────── Profiles table ───────────────────── -->
 <?php if (empty($profiles)): ?>
   <div class="cb-empty">
-    <div class="display" style="font-size:22px; margin-bottom:8px;">No profiles yet</div>
-    <p class="cb-card-sub" style="margin:0 0 14px;">Create your first profile to start tracking Contabo pricing for a WHMCS product.</p>
+    <div class="display" data-cb-u="u-84bf8f7a31">No profiles yet</div>
+    <p class="cb-card-sub" data-cb-u="u-619b35a9f4">Create your first profile to start tracking Contabo pricing for a WHMCS product.</p>
     <button type="button" class="cb-btn" data-cb-open-modal="profile-create">+ New profile</button>
   </div>
 <?php else: ?>
-  <div class="cb-card" style="padding:0; overflow:hidden;">
+  <div class="cb-card" data-cb-u="u-14f5e9e79f">
     <table class="cb-table" data-cb-table="profiles">
       <thead>
         <tr>
-          <th style="width:32px"><input type="checkbox" data-cb-bulk-all aria-label="Select all"></th>
+          <th data-cb-u="u-63349069ab"><input type="checkbox" data-cb-bulk-all aria-label="Select all"></th>
           <th data-cb-sort="name">Plan name <span class="arr"></span></th>
           <th data-cb-sort="plan_slug">Plan slug <span class="arr"></span></th>
           <th data-cb-sort="period_months">Period <span class="arr"></span></th>
@@ -290,8 +289,8 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
           <th data-cb-sort="sync_strategy">Strategy <span class="arr"></span></th>
           <th data-cb-sort="active">Status <span class="arr"></span></th>
           <th data-cb-sort="latest_version_id">Latest version <span class="arr"></span></th>
-          <th style="width:120px">Trend</th>
-          <th style="width:160px; text-align:right">Actions</th>
+          <th data-cb-u="u-d334b57bfc">Trend</th>
+          <th data-cb-u="u-299c8f0abe">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -316,7 +315,6 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
           data-cb-profile-name="<?= $esc($slug) ?>"
           data-cb-active="<?= $active ? 1 : 0 ?>"
           data-cb-drifted="<?= $drifted ?>"
-          data-cb-open-drawer="profile"
           data-cb-search-haystack="<?= $esc(strtolower($slug . ' ' . $name . ' ' . $plan . ' ' . $region . ' ' . $os)) ?>"
           data-cb-sort-name="<?= $esc(strtolower($name)) ?>"
           data-cb-sort-plan_slug="<?= $esc(strtolower($plan)) ?>"
@@ -330,15 +328,15 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
             <input type="checkbox" data-cb-bulk value="<?= $pid ?>" aria-label="Select profile <?= $esc($slug) ?>">
           </td>
           <td>
-            <div style="font-weight:600"><?= $esc($name !== '' ? $name : $slug) ?></div>
-            <div class="muted mono" style="font-size:11px; opacity:.7"><?= $esc($slug) ?></div>
+            <div data-cb-u="u-6e8bcfac8d"><?= $esc($name !== '' ? $name : $slug) ?></div>
+            <div class="muted mono" data-cb-u="u-ab736dfd55"><?= $esc($slug) ?></div>
           </td>
           <td class="mono"><?= $esc($plan) ?></td>
           <td><?= $period ?> mo</td>
           <td>
             <?= $region !== '' ? $esc($region) : '<span class="muted">—</span>' ?>
             <?php if ($os !== ''): ?>
-              <div class="muted" style="font-size:11px"><?= $esc($os) ?></div>
+              <div class="muted" data-cb-u="u-33ee298127"><?= $esc($os) ?></div>
             <?php endif; ?>
           </td>
           <td><span class="cb-pill <?= $esc($stratPill) ?>"><?= $esc($strat) ?></span></td>
@@ -356,25 +354,25 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
           <td>
             <svg class="sparkline" data-cb-sparkline data-cb-profile-id="<?= $pid ?>" width="100" height="22" viewBox="0 0 100 22" preserveAspectRatio="none" aria-hidden="true"></svg>
           </td>
-          <td style="text-align:right" data-cb-stop>
+          <td data-cb-u="u-5f326564a5" data-cb-stop>
             <button type="button" class="cb-btn subtle"
                     data-cb-open-modal="profile-create"
                     data-cb-profile-edit-id="<?= $pid ?>">Edit</button>
             <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profile-diff&amp;id=<?= $pid ?>">History</a>
             <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-preview&amp;id=<?= $pid ?>" title="Preview the WHMCS configurable options this profile would create">Config preview</a>
             <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-exposure&amp;id=<?= $pid ?>" title="Curate which configurable options are exposed to customers">Exposure</a>
-            <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+            <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
               <input type="hidden" name="action" value="profile-toggle">
               <input type="hidden" name="id" value="<?= $pid ?>">
               <?= generate_token() ?>
               <button class="cb-btn subtle" type="submit"><?= $active ? 'Disable' : 'Enable' ?></button>
             </form>
-            <form method="post" action="<?= $esc($module_link) ?>" style="display:inline"
-                  onsubmit="return confirm('Move &quot;<?= $esc($name !== '' ? $name : $slug) ?>&quot; to Trash? You can restore it afterwards.');">
+            <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565"
+                  data-cb-confirm="Move &quot;<?= $esc($name !== '' ? $name : $slug) ?>&quot; to Trash? You can restore it afterwards.">
               <input type="hidden" name="action" value="profile-delete">
               <input type="hidden" name="id" value="<?= $pid ?>">
               <?= generate_token() ?>
-              <button class="cb-btn ghost" type="submit" style="color:var(--bad,#b3261e)" title="Move to Trash (recoverable)">Delete</button>
+              <button class="cb-btn ghost" type="submit" data-cb-u="u-5bad398266" title="Move to Trash (recoverable)">Delete</button>
             </form>
           </td>
         </tr>
@@ -393,24 +391,10 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
   (monthly + setup deltas) inline so JS can recompute totals without
   re-fetching the configurator.
 -->
-<style>
-  .cb-cfg-grid { display:grid; grid-template-columns: minmax(120px, 0.8fr) 1.4fr; gap:8px 14px; align-items:center; margin-top:8px; }
-  .cb-cfg-grid label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
-  .cb-cfg-grid select { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; font: inherit; font-size: 12.5px; color: var(--fg); }
-  .cb-osum { margin-top: 12px; padding: 10px 12px; background: #faf6f1; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; }
-  .cb-osum .ln { display:flex; justify-content:space-between; gap:10px; padding: 3px 0; }
-  .cb-osum .ln.muted { color: var(--muted); }
-  .cb-osum .ln.chg .v { color: var(--bad); font-family: "IBM Plex Mono", monospace; }
-  .cb-osum .ln.chg.up .v { color: var(--good); }
-  .cb-osum .ln.tot { border-top: 1px dashed var(--border); margin-top: 4px; padding-top: 6px; font-weight: 600; }
-  .cb-osum .ln.tot .v { color: var(--price); font-family: "IBM Plex Mono", monospace; }
-  .cb-osum .sel { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border-soft); font-size: 11.5px; color: var(--muted); }
-  .cb-cfg-empty { padding: 14px; text-align: center; color: var(--muted); font-size: 12.5px; background: #faf6f1; border: 1px dashed var(--border); border-radius: var(--radius-sm); }
-</style>
 <div class="cb-modal" id="cb-modal-profile-create" hidden>
-  <div class="sheet" role="dialog" aria-labelledby="cb-modal-profile-create-title" aria-modal="true" style="max-width:780px;">
-    <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-      <h3 id="cb-modal-profile-create-title" class="display" style="margin:0" data-cb-modal-title>Create profile</h3>
+  <div class="sheet" role="dialog" aria-labelledby="cb-modal-profile-create-title" aria-modal="true" data-cb-u="u-7fd6f74ba3">
+    <header data-cb-u="u-7a9696f8e6">
+      <h3 id="cb-modal-profile-create-title" class="display" data-cb-u="u-ab79ea2b85" data-cb-modal-title>Create profile</h3>
       <button type="button" class="cb-btn ghost" data-cb-close-modal aria-label="Close">×</button>
     </header>
 
@@ -430,7 +414,7 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
           <option value="fixed_admin_profile" selected>Fixed admin profile — admin locks every build option; customer cannot choose</option>
           <option value="customer_configurable_product">Customer-configurable product — admin exposes options; customer picks at order time</option>
         </select>
-        <div class="muted" style="font-size:11px; margin-top:4px;" data-cb-mode-hint>
+        <div class="muted" data-cb-u="u-64aa79933f" data-cb-mode-hint>
           Pre-packaged plan: pick a value for every option below — that locked set becomes the SKU. Customers cannot change it.
         </div>
       </div>
@@ -461,24 +445,24 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
         ];
       ?>
       <div class="cb-field">
-        <label>Publish cycles <span class="muted" style="text-transform:none; letter-spacing:0; font-weight:400;">— which terms this profile sources</span></label>
+        <label>Publish cycles <span class="muted" data-cb-u="u-76b999ddce">— which terms this profile sources</span></label>
         <!-- The single period dropdown is gone: the profile now sources a price
              per published cycle. period_months is derived server-side from the
              longest published cycle (kept for slug + identity). -->
         <input type="hidden" name="published_cycles_mask" value="63" data-cb-published-mask>
-        <div data-cb-publish-cycles style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px 12px; margin-top:6px;">
+        <div data-cb-publish-cycles data-cb-u="u-ee4b4558b5">
           <?php foreach ($cb_publish_cycles as $pc): ?>
-            <label style="display:flex; align-items:baseline; gap:6px; font-size:12.5px; cursor:pointer;">
+            <label data-cb-u="u-d8887aa5ee">
               <input type="checkbox" data-cb-publish-cycle data-cb-bit="<?= (int) $pc['bit'] ?>" data-cb-months="<?= (int) $pc['months'] ?>" checked>
               <span>
                 <?= $esc($pc['cycle']) ?>
-                <?php if ((int) $pc['months'] >= 24): ?><span class="cb-pill grey" title="Not sold publicly by Contabo — projected from the 12-month rate" style="font-size:9px; padding:1px 5px;">projected</span><?php endif; ?>
-                <span class="muted mono" data-cb-cycle-source="<?= (int) $pc['months'] ?>" style="display:block; font-size:11px; opacity:.75;">—</span>
+                <?php if ((int) $pc['months'] >= 24): ?><span class="cb-pill grey" title="Not sold publicly by Contabo — projected from the 12-month rate" data-cb-u="u-c50da33819">projected</span><?php endif; ?>
+                <span class="muted mono" data-cb-cycle-source="<?= (int) $pc['months'] ?>" data-cb-u="u-f6ffcfe1dc">—</span>
               </span>
             </label>
           <?php endforeach; ?>
         </div>
-        <div class="muted" style="font-size:11px; margin-top:6px;">
+        <div class="muted" data-cb-u="u-8693fd01b7">
           Source (cost) price per cycle, in EUR/mo, shown once a plan loads. The
           <strong>mapping</strong> decides which of these the customer sees and at what markup.
         </div>
@@ -490,13 +474,13 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
       <input type="hidden" value="12" data-cb-cfg-period data-cb-quote-period>
 
       <!-- Configurator: hydrated by assets/app.js once plan_slug + period are set. -->
-      <div class="cb-card" style="margin-top:14px; padding:14px 16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="cb-card" data-cb-u="u-ca659fbc54">
+        <div data-cb-u="u-5ffb91a26b">
           <div>
-            <div class="cb-card-sub" style="margin:0;">Configure &amp; price</div>
-            <div class="muted" style="font-size:11px">Per-dimension dropdowns mirror the upstream Contabo order page.</div>
+            <div class="cb-card-sub" data-cb-u="u-38965f9b18">Configure &amp; price</div>
+            <div class="muted" data-cb-u="u-33ee298127">Per-dimension dropdowns mirror the upstream Contabo order page.</div>
           </div>
-          <button type="button" class="cb-btn ghost" data-cb-cfg-reset style="font-size:12px;padding:4px 10px;" hidden>Reset defaults</button>
+          <button type="button" class="cb-btn ghost" data-cb-cfg-reset data-cb-u="u-a8d41863df" hidden>Reset defaults</button>
         </div>
         <div data-cb-configurator>
           <div class="cb-cfg-empty">Pick a plan to load configuration options…</div>
@@ -520,13 +504,13 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
       </div>
 
       <div class="cb-field" data-cb-expose-field>
-        <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-weight:600;">
+        <label data-cb-u="u-f8d305aab0">
           <!-- unchecked checkboxes don't POST; the hidden 0 is the fallback the checkbox overrides -->
           <input type="hidden" name="expose_configurable_options" value="0">
           <input id="cb-pc-expose" type="checkbox" name="expose_configurable_options" value="1" checked data-cb-expose-config>
           Expose configurable options to customers
         </label>
-        <div class="muted" style="font-size:11px; margin-top:4px;">
+        <div class="muted" data-cb-u="u-64aa79933f">
           When on, “Config preview → Apply” creates the WHMCS configurable-option groups for this profile. Turn off to keep this profile’s options admin-only (Apply is skipped). Curate exactly which options show via the exposure editor.
         </div>
       </div>
@@ -536,22 +520,11 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
         <input id="cb-pc-tags" type="text" name="tags" placeholder="production, billing-team">
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
+      <div data-cb-u="u-ca21caa3b0">
         <button type="button" class="cb-btn subtle" data-cb-close-modal>Cancel</button>
         <button type="submit" class="cb-btn" data-cb-submit-label>Create profile</button>
       </div>
     </form>
-  </div>
-</div>
-
-<!-- ───────────────────── Drawer: profile detail ───────────────────── -->
-<div class="cb-drawer" id="cb-drawer-profile" hidden aria-hidden="true" role="dialog" aria-labelledby="cb-drawer-profile-title">
-  <header style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
-    <h3 id="cb-drawer-profile-title" class="display" data-cb-drawer-title style="margin:0">—</h3>
-    <button type="button" class="cb-btn ghost close" data-cb-close-drawer aria-label="Close drawer">Close</button>
-  </header>
-  <div data-cb-drawer-body style="margin-top:14px">
-    <p class="muted">Loading…</p>
   </div>
 </div>
 
