@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 8;
+    public const SCHEMA_VERSION = 9;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -1156,5 +1156,297 @@ class Installer
                 logActivity('Contabo Pricing migrateTo8: added source_overrides_json to mod_contabo_mapping');
             }
         }
+    }
+
+    /**
+     * Schema v9 — WHMCS-native SecuriAce VPS suite foundation.
+     *
+     * The pricing addon owns installation and forward-only migration of the
+     * shared suite schema.  The provisioning module owns every runtime write to
+     * these tables and only checks the recorded suite schema version.  Keeping
+     * DDL here ensures customer requests, lifecycle callbacks and cron workers
+     * never attempt schema changes.
+     *
+     * All structured payloads use LONGTEXT rather than a database-native JSON
+     * type so the package remains portable across WHMCS-supported MySQL and
+     * MariaDB versions.
+     */
+    public function migrateTo9(): void
+    {
+        $schema = Capsule::schema();
+
+        if (!$schema->hasTable('mod_securiacevps_schema')) {
+            $schema->create('mod_securiacevps_schema', static function (Blueprint $t): void {
+                $t->string('key', 80)->primary();
+                $t->text('value')->nullable();
+                $t->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_order_snapshots')) {
+            $schema->create('mod_securiacevps_order_snapshots', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('snapshot_uuid', 36)->unique();
+                $t->string('installation_id', 120);
+                $t->unsignedInteger('order_id')->nullable();
+                $t->unsignedInteger('service_id')->nullable();
+                $t->unsignedInteger('product_id');
+                $t->unsignedInteger('product_group_id')->nullable();
+                $t->string('mapping_version', 120);
+                $t->string('catalog_version', 120);
+                $t->string('pricing_profile_version', 120)->nullable();
+                $t->enum('state', ['draft', 'sealed', 'superseded', 'invalid'])->default('draft');
+                $t->longText('payload_json');
+                $t->char('configuration_hash', 64);
+                $t->char('price_hash', 64);
+                $t->char('cart_total_hash', 64);
+                $t->timestamp('quote_expires_at')->nullable();
+                $t->timestamp('paid_at')->nullable();
+                $t->timestamp('sealed_at')->nullable();
+                $t->char('supersedes_snapshot_uuid', 36)->nullable();
+                $t->timestamps();
+                $t->index(['service_id', 'state']);
+                $t->index(['order_id', 'state']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_resources')) {
+            $schema->create('mod_securiacevps_resources', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->unsignedInteger('service_id')->unique();
+                $t->string('installation_id', 120);
+                $t->string('provider_account_id', 120);
+                $t->string('provider_resource_id', 160)->nullable();
+                $t->char('snapshot_uuid', 36)->nullable();
+                $t->string('provider_state', 40)->default('unknown');
+                $t->string('provisioning_state', 40)->default('not_requested');
+                $t->string('ownership_state', 40)->default('unverified');
+                $t->unsignedBigInteger('resource_version')->default(1);
+                $t->char('observed_payload_hash', 64)->nullable();
+                $t->timestamp('last_observed_at')->nullable();
+                $t->timestamps();
+                $t->unique(['provider_account_id', 'provider_resource_id']);
+                $t->index(['provisioning_state', 'updated_at']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_operations')) {
+            $schema->create('mod_securiacevps_operations', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('operation_uuid', 36)->unique();
+                $t->unsignedInteger('service_id');
+                $t->char('snapshot_uuid', 36)->nullable();
+                $t->string('provider_account_id', 120);
+                $t->string('operation_type', 40);
+                $t->string('state', 40)->default('accepted');
+                $t->string('command_id', 191)->unique();
+                $t->char('request_fingerprint', 64);
+                $t->char('idempotency_key', 64);
+                $t->string('provider_resource_id', 160)->nullable();
+                $t->unsignedInteger('attempt_count')->default(0);
+                $t->timestamp('next_attempt_at')->nullable();
+                $t->unsignedInteger('max_attempts')->default(8);
+                $t->string('lease_owner', 120)->nullable();
+                $t->timestamp('lease_expires_at')->nullable();
+                $t->unsignedBigInteger('fencing_token')->default(0);
+                $t->string('safe_error_code', 80)->nullable();
+                $t->string('retry_classification', 40)->nullable();
+                $t->boolean('unknown_outcome')->default(false);
+                $t->char('correlation_id', 36);
+                $t->longText('result_json')->nullable();
+                $t->timestamp('submitted_at')->nullable();
+                $t->timestamp('reconciled_at')->nullable();
+                $t->timestamp('completed_at')->nullable();
+                $t->timestamps();
+                $t->index(['state', 'next_attempt_at']);
+                $t->index(['service_id', 'created_at']);
+                $t->index(['lease_expires_at', 'state']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_operation_attempts')) {
+            $schema->create('mod_securiacevps_operation_attempts', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('operation_uuid', 36);
+                $t->unsignedInteger('attempt_number');
+                $t->unsignedBigInteger('fencing_token');
+                $t->string('state', 40);
+                $t->string('provider_request_id', 160)->nullable();
+                $t->string('safe_error_code', 80)->nullable();
+                $t->string('retry_classification', 40)->nullable();
+                $t->longText('request_metadata_json')->nullable();
+                $t->longText('response_metadata_json')->nullable();
+                $t->timestamp('started_at')->useCurrent();
+                $t->timestamp('finished_at')->nullable();
+                $t->unique(['operation_uuid', 'attempt_number']);
+                $t->index(['operation_uuid', 'started_at']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_provider_requests')) {
+            $schema->create('mod_securiacevps_provider_requests', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('operation_uuid', 36);
+                $t->string('provider_request_id', 160)->nullable();
+                $t->char('request_fingerprint', 64);
+                $t->char('idempotency_key', 64);
+                $t->string('state', 40);
+                $t->string('provider_resource_id', 160)->nullable();
+                $t->boolean('unknown_outcome')->default(false);
+                $t->timestamp('submitted_at');
+                $t->timestamp('last_checked_at')->nullable();
+                $t->timestamps();
+                $t->unique(['operation_uuid', 'request_fingerprint']);
+                $t->index('provider_request_id');
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_service_locks')) {
+            $schema->create('mod_securiacevps_service_locks', static function (Blueprint $t): void {
+                $t->unsignedInteger('service_id')->primary();
+                $t->char('operation_uuid', 36);
+                $t->string('lease_owner', 120);
+                $t->timestamp('lease_expires_at');
+                $t->unsignedBigInteger('fencing_token')->default(1);
+                $t->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+                $t->index('lease_expires_at');
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_capabilities')) {
+            $schema->create('mod_securiacevps_capabilities', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('provider_account_id', 120);
+                $t->string('capability', 80);
+                $t->enum('state', [
+                    'supported',
+                    'unsupported',
+                    'read_only',
+                    'requires_polling',
+                    'requires_manual_action',
+                    'not_certified',
+                ])->default('not_certified');
+                $t->string('certification_version', 120)->nullable();
+                $t->longText('evidence_json')->nullable();
+                $t->unsignedInteger('certified_by_admin_id')->nullable();
+                $t->timestamp('certified_at')->nullable();
+                $t->timestamps();
+                $t->unique(['provider_account_id', 'capability']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_reconciliation')) {
+            $schema->create('mod_securiacevps_reconciliation', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('finding_uuid', 36)->unique();
+                $t->unsignedInteger('service_id')->nullable();
+                $t->string('provider_account_id', 120);
+                $t->string('provider_resource_id', 160)->nullable();
+                $t->string('finding_type', 80);
+                $t->string('severity', 20);
+                $t->string('state', 40)->default('open');
+                $t->char('evidence_hash', 64);
+                $t->longText('evidence_json')->nullable();
+                $t->string('safe_next_action', 120)->nullable();
+                $t->timestamp('first_seen_at')->useCurrent();
+                $t->timestamp('last_seen_at')->useCurrent();
+                $t->timestamp('resolved_at')->nullable();
+                $t->timestamps();
+                $t->index(['state', 'severity', 'last_seen_at']);
+                $t->index(['service_id', 'state']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_adoption')) {
+            $schema->create('mod_securiacevps_adoption', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->unsignedInteger('service_id')->unique();
+                $t->string('provider_account_id', 120);
+                $t->string('provider_resource_id', 160)->nullable();
+                $t->enum('state', [
+                    'verified',
+                    'probable',
+                    'ambiguous',
+                    'missing_upstream',
+                    'orphan_upstream',
+                    'conflict',
+                    'excluded',
+                ]);
+                $t->decimal('confidence', 5, 4)->default(0);
+                $t->longText('evidence_json')->nullable();
+                $t->unsignedInteger('reviewed_by_admin_id')->nullable();
+                $t->timestamp('reviewed_at')->nullable();
+                $t->timestamps();
+                $t->index(['state', 'updated_at']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_billing_sagas')) {
+            $schema->create('mod_securiacevps_billing_sagas', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('saga_uuid', 36)->unique();
+                $t->unsignedInteger('service_id');
+                $t->char('operation_uuid', 36)->nullable();
+                $t->string('saga_type', 40);
+                $t->string('state', 40);
+                $t->unsignedInteger('invoice_id')->nullable();
+                $t->unsignedInteger('transaction_id')->nullable();
+                $t->char('currency', 3)->nullable();
+                $t->decimal('amount', 18, 6)->nullable();
+                $t->string('compensation_state', 40)->nullable();
+                $t->longText('evidence_json')->nullable();
+                $t->timestamp('completed_at')->nullable();
+                $t->timestamps();
+                $t->index(['service_id', 'state']);
+                $t->index(['operation_uuid', 'state']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_audit_events')) {
+            $schema->create('mod_securiacevps_audit_events', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('event_uuid', 36)->unique();
+                $t->char('correlation_id', 36)->nullable();
+                $t->string('actor_type', 40);
+                $t->unsignedInteger('actor_id')->nullable();
+                $t->unsignedInteger('service_id')->nullable();
+                $t->string('event_type', 80);
+                $t->string('outcome', 40);
+                $t->char('previous_event_hash', 64)->nullable();
+                $t->char('event_hash', 64);
+                $t->longText('metadata_json')->nullable();
+                $t->timestamp('created_at')->useCurrent();
+                $t->index(['service_id', 'created_at']);
+                $t->index(['event_type', 'created_at']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_operator_commands')) {
+            $schema->create('mod_securiacevps_operator_commands', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('command_uuid', 36)->unique();
+                $t->string('command_type', 80);
+                $t->unsignedInteger('service_id')->nullable();
+                $t->char('operation_uuid', 36)->nullable();
+                $t->unsignedInteger('requested_by_admin_id');
+                $t->string('state', 40)->default('pending_validation');
+                $t->char('payload_hash', 64);
+                $t->longText('payload_json')->nullable();
+                $t->string('safe_error_code', 80)->nullable();
+                $t->timestamp('claimed_at')->nullable();
+                $t->timestamp('completed_at')->nullable();
+                $t->timestamps();
+                $t->index(['state', 'created_at']);
+            });
+        }
+
+        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
+            ['key' => 'schema_version'],
+            ['value' => '1', 'updated_at' => date('Y-m-d H:i:s')]
+        );
+        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
+            ['key' => 'installed_by'],
+            ['value' => 'contabo_pricing', 'updated_at' => date('Y-m-d H:i:s')]
+        );
     }
 }

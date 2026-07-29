@@ -69,6 +69,101 @@ final class SchemaHealth
             'published_cycles_mask',
             'deleted_at',
         ],
+        // Suite schema is installed by this addon but owned at runtime by the
+        // SecuriAce VPS provisioning module. Keep this list to the columns that
+        // are required to fail safe before any provider mutation.
+        'mod_securiacevps_schema' => [
+            'key',
+            'value',
+        ],
+        'mod_securiacevps_order_snapshots' => [
+            'snapshot_uuid',
+            'service_id',
+            'state',
+            'payload_json',
+            'configuration_hash',
+            'price_hash',
+            'sealed_at',
+        ],
+        'mod_securiacevps_resources' => [
+            'service_id',
+            'provider_account_id',
+            'provider_resource_id',
+            'provider_state',
+            'provisioning_state',
+            'ownership_state',
+            'resource_version',
+        ],
+        'mod_securiacevps_operations' => [
+            'operation_uuid',
+            'service_id',
+            'operation_type',
+            'state',
+            'command_id',
+            'request_fingerprint',
+            'idempotency_key',
+            'fencing_token',
+            'unknown_outcome',
+            'correlation_id',
+        ],
+        'mod_securiacevps_operation_attempts' => [
+            'operation_uuid',
+            'attempt_number',
+            'fencing_token',
+            'state',
+        ],
+        'mod_securiacevps_provider_requests' => [
+            'operation_uuid',
+            'request_fingerprint',
+            'idempotency_key',
+            'state',
+            'unknown_outcome',
+        ],
+        'mod_securiacevps_service_locks' => [
+            'service_id',
+            'operation_uuid',
+            'lease_owner',
+            'lease_expires_at',
+            'fencing_token',
+        ],
+        'mod_securiacevps_capabilities' => [
+            'provider_account_id',
+            'capability',
+            'state',
+        ],
+        'mod_securiacevps_reconciliation' => [
+            'finding_uuid',
+            'finding_type',
+            'severity',
+            'state',
+            'evidence_hash',
+        ],
+        'mod_securiacevps_adoption' => [
+            'service_id',
+            'provider_account_id',
+            'provider_resource_id',
+            'state',
+            'confidence',
+        ],
+        'mod_securiacevps_billing_sagas' => [
+            'saga_uuid',
+            'service_id',
+            'saga_type',
+            'state',
+        ],
+        'mod_securiacevps_audit_events' => [
+            'event_uuid',
+            'event_type',
+            'outcome',
+            'event_hash',
+        ],
+        'mod_securiacevps_operator_commands' => [
+            'command_uuid',
+            'command_type',
+            'requested_by_admin_id',
+            'state',
+            'payload_hash',
+        ],
     ];
 
     /**
