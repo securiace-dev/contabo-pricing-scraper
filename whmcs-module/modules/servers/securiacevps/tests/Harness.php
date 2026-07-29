@@ -41,11 +41,15 @@ final class Harness
                 new ContaboInstanceMapper()
             );
         });
+        Runtime::swapLifecycle(static function () {
+            return new LegacyLifecycleAdapter();
+        });
     }
 
     public static function reset(): void
     {
         Runtime::swap(null);
+        Runtime::swapLifecycle(null);
         Capsule::reset();
         $GLOBALS['__activity_log'] = [];
         $GLOBALS['__module_log']   = [];
@@ -99,5 +103,43 @@ final class Harness
             'createdDate' => '2026-07-01T00:00:00Z',
             'ipConfig'    => ['v4' => [['ip' => '203.0.113.10'], ['ip' => '203.0.113.11']]],
         ]]]);
+    }
+}
+
+/**
+ * Keeps the pre-existing low-level flow tests focused on InstanceService.
+ * NativeFoundationTest and NativeLifecycleTest exercise the durable
+ * orchestrator itself.
+ */
+final class LegacyLifecycleAdapter
+{
+    /** @param array<string,mixed> $params */
+    public function create(array $params): string
+    {
+        return Runtime::instanceService($params)->create($params);
+    }
+
+    /** @param array<string,mixed> $params */
+    public function suspend(array $params): string
+    {
+        return Runtime::instanceService($params)->powerAction($params, 'stop');
+    }
+
+    /** @param array<string,mixed> $params */
+    public function unsuspend(array $params): string
+    {
+        return Runtime::instanceService($params)->powerAction($params, 'start');
+    }
+
+    /** @param array<string,mixed> $params */
+    public function terminate(array $params): string
+    {
+        return Runtime::instanceService($params)->terminate($params);
+    }
+
+    /** @param array<string,mixed> $params */
+    public function power(array $params, string $action): string
+    {
+        return Runtime::instanceService($params)->powerAction($params, $action);
     }
 }

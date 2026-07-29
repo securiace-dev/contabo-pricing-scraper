@@ -60,6 +60,19 @@ class ContaboApiClient
         return $this->request('POST', $path, $body);
     }
 
+    /**
+     * Submit a mutation using a stable request identity. Contabo documents the
+     * x-request-id as a tracing identity, not a universal idempotency
+     * guarantee, so callers must still reconcile ambiguous outcomes.
+     *
+     * @param array<string,mixed> $body
+     * @return array<string,mixed>
+     */
+    public function postWithIdentity(string $path, array $body, string $requestIdentity): array
+    {
+        return $this->request('POST', $path, $body, $requestIdentity);
+    }
+
     /** @param array<string,mixed> $body @return array<string,mixed> */
     public function put(string $path, array $body): array
     {
@@ -82,7 +95,7 @@ class ContaboApiClient
      * @param array<string,mixed>|null $body
      * @return array<string,mixed>
      */
-    private function request(string $method, string $path, ?array $body): array
+    private function request(string $method, string $path, ?array $body, ?string $requestIdentity = null): array
     {
         $url     = self::BASE_URL . $path;
         $encoded = null;
@@ -99,9 +112,12 @@ class ContaboApiClient
         $slept     = 0;
 
         while (true) {
+            $requestId = $requestIdentity !== null && $requestIdentity !== ''
+                ? substr($requestIdentity, 0, 64)
+                : $this->generateRequestId();
             $headers = [
                 'Authorization: Bearer ' . $this->auth->getToken(),
-                'x-request-id: ' . $this->generateRequestId(),
+                'x-request-id: ' . $requestId,
                 'Content-Type: application/json',
                 'Accept: application/json',
             ];
@@ -109,7 +125,12 @@ class ContaboApiClient
             list($code, $raw, $errno, $err) = $this->executor->execute($method, $url, $headers, $encoded, $this->timeoutSec);
 
             if ($errno !== 0) {
-                throw new ContaboProvisioningException('API transport error: ' . ($err !== '' ? $err : ('curl errno ' . $errno)));
+                throw new ContaboProvisioningException(
+                    'API transport error: ' . ($err !== '' ? $err : ('curl errno ' . $errno)),
+                    'provider_transport_error',
+                    'transient',
+                    in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)
+                );
             }
 
             if ($code === 401 && !$refreshed) {
@@ -136,7 +157,13 @@ class ContaboApiClient
             $data = json_decode($raw, true);
             if ($code >= 400) {
                 $msg = is_array($data) ? (string) ($data['message'] ?? json_encode($data)) : $raw;
-                throw new ContaboProvisioningException('API error (HTTP ' . $code . '): ' . substr($msg, 0, 300));
+                $retry = ($code === 429 || $code >= 500) ? 'transient' : 'terminal';
+                throw new ContaboProvisioningException(
+                    'API error (HTTP ' . $code . '): ' . substr($msg, 0, 300),
+                    'provider_http_' . $code,
+                    $retry,
+                    $code >= 500 && in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)
+                );
             }
 
             return is_array($data) ? $data : [];

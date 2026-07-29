@@ -12,11 +12,28 @@ final class Runtime
 {
     /** @var callable|null test seam: fn(array $params): InstanceService */
     private static $factory = null;
+    /** @var callable|null test seam for the durable lifecycle coordinator */
+    private static $lifecycleFactory = null;
 
     /** @param callable|null $factory fn(array $params): InstanceService */
     public static function swap(?callable $factory): void
     {
         self::$factory = $factory;
+    }
+
+    /** @param callable|null $factory fn():object */
+    public static function swapLifecycle(?callable $factory): void
+    {
+        self::$lifecycleFactory = $factory;
+    }
+
+    /** @return LifecycleOrchestrator|object */
+    public static function lifecycle()
+    {
+        if (self::$lifecycleFactory !== null) {
+            return call_user_func(self::$lifecycleFactory);
+        }
+        return new LifecycleOrchestrator();
     }
 
     /** @param array<string,mixed> $params */

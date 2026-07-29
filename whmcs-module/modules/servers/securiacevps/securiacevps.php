@@ -43,6 +43,17 @@ if (!defined('SECURIACE_VPS_VERSION')) {
 }
 
 require_once __DIR__ . '/lib/ContaboProvisioningException.php';
+require_once __DIR__ . '/lib/Uuid.php';
+require_once __DIR__ . '/lib/CanonicalJson.php';
+require_once __DIR__ . '/lib/SchemaGuard.php';
+require_once __DIR__ . '/lib/ProviderAccount.php';
+require_once __DIR__ . '/lib/CapabilityRegistry.php';
+require_once __DIR__ . '/lib/OrderSnapshotRepository.php';
+require_once __DIR__ . '/lib/AuditLogger.php';
+require_once __DIR__ . '/lib/OneTimeSecretStore.php';
+require_once __DIR__ . '/lib/OperationRepository.php';
+require_once __DIR__ . '/lib/OperationProcessor.php';
+require_once __DIR__ . '/lib/LifecycleOrchestrator.php';
 require_once __DIR__ . '/lib/HttpExecutor.php';
 require_once __DIR__ . '/lib/CurlHttpExecutor.php';
 require_once __DIR__ . '/lib/ContaboAuth.php';
@@ -106,36 +117,44 @@ function securiacevps_TestConnection(array $params): array
 function securiacevps_CreateAccount(array $params): string
 {
     try {
-        return \SecuriAceVps\Runtime::instanceService($params)->create($params);
+        return \SecuriAceVps\Runtime::lifecycle()->create($params);
     } catch (\Throwable $e) {
         _securiacevps_log('CreateAccount', $params['domain'] ?? '', $e->getMessage(), 'error');
-        return $e->getMessage();
+        return _securiacevps_safe_error($e);
     }
 }
 
 /** @param array<string,mixed> $params */
 function securiacevps_SuspendAccount(array $params): string
 {
-    // Contabo has no suspend concept — map to a power-off.
-    return _securiacevps_run($params, 'SuspendAccount', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->powerAction($params, 'stop');
-    });
+    try {
+        return \SecuriAceVps\Runtime::lifecycle()->suspend($params);
+    } catch (\Throwable $e) {
+        _securiacevps_log('SuspendAccount', (int) ($params['serviceid'] ?? 0), $e->getMessage(), 'error');
+        return _securiacevps_safe_error($e);
+    }
 }
 
 /** @param array<string,mixed> $params */
 function securiacevps_UnsuspendAccount(array $params): string
 {
-    return _securiacevps_run($params, 'UnsuspendAccount', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->powerAction($params, 'start');
-    });
+    try {
+        return \SecuriAceVps\Runtime::lifecycle()->unsuspend($params);
+    } catch (\Throwable $e) {
+        _securiacevps_log('UnsuspendAccount', (int) ($params['serviceid'] ?? 0), $e->getMessage(), 'error');
+        return _securiacevps_safe_error($e);
+    }
 }
 
 /** @param array<string,mixed> $params */
 function securiacevps_TerminateAccount(array $params): string
 {
-    return _securiacevps_run($params, 'TerminateAccount', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->terminate($params);
-    });
+    try {
+        return \SecuriAceVps\Runtime::lifecycle()->terminate($params);
+    } catch (\Throwable $e) {
+        _securiacevps_log('TerminateAccount', (int) ($params['serviceid'] ?? 0), $e->getMessage(), 'error');
+        return _securiacevps_safe_error($e);
+    }
 }
 
 /** @param array<string,mixed> $params */
@@ -168,25 +187,19 @@ function securiacevps_AdminCustomButtonArray(): array
 /** @param array<string,mixed> $params */
 function securiacevps_buttonStart(array $params): string
 {
-    return _securiacevps_run($params, 'buttonStart', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->powerAction($params, 'start');
-    });
+    return _securiacevps_durable_power($params, 'buttonStart', 'start');
 }
 
 /** @param array<string,mixed> $params */
 function securiacevps_buttonStop(array $params): string
 {
-    return _securiacevps_run($params, 'buttonStop', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->powerAction($params, 'stop');
-    });
+    return _securiacevps_durable_power($params, 'buttonStop', 'stop');
 }
 
 /** @param array<string,mixed> $params */
 function securiacevps_buttonRestart(array $params): string
 {
-    return _securiacevps_run($params, 'buttonRestart', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->powerAction($params, 'restart');
-    });
+    return _securiacevps_durable_power($params, 'buttonRestart', 'restart');
 }
 
 /** @param array<string,mixed> $params */
@@ -262,25 +275,19 @@ function securiacevps_ClientAreaCustomButtonArray(): array
 /** @param array<string,mixed> $params */
 function securiacevps_clientStart(array $params): string
 {
-    return _securiacevps_run($params, 'clientStart', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->powerAction($params, 'start');
-    });
+    return _securiacevps_durable_power($params, 'clientStart', 'start');
 }
 
 /** @param array<string,mixed> $params */
 function securiacevps_clientStop(array $params): string
 {
-    return _securiacevps_run($params, 'clientStop', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->powerAction($params, 'stop');
-    });
+    return _securiacevps_durable_power($params, 'clientStop', 'stop');
 }
 
 /** @param array<string,mixed> $params */
 function securiacevps_clientRestart(array $params): string
 {
-    return _securiacevps_run($params, 'clientRestart', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->powerAction($params, 'restart');
-    });
+    return _securiacevps_durable_power($params, 'clientRestart', 'restart');
 }
 
 /** @param array<string,mixed> $params */
@@ -334,6 +341,25 @@ function securiacevps_ClientArea(array $params): array
 }
 
 // ── Internal helpers ──────────────────────────────────────────────────────────
+
+/** @param array<string,mixed> $params */
+function _securiacevps_durable_power(array $params, string $callName, string $action): string
+{
+    try {
+        return \SecuriAceVps\Runtime::lifecycle()->power($params, $action);
+    } catch (\Throwable $e) {
+        _securiacevps_log($callName, (int) ($params['serviceid'] ?? 0), $e->getMessage(), 'error');
+        return _securiacevps_safe_error($e);
+    }
+}
+
+function _securiacevps_safe_error(\Throwable $error): string
+{
+    if ($error instanceof \SecuriAceVps\ContaboProvisioningException) {
+        return $error->getMessage();
+    }
+    return 'The VPS operation could not be completed. Check the module log for the correlation reference.';
+}
 
 /**
  * Shared wrapper: build the service, run the action, map any throwable to the

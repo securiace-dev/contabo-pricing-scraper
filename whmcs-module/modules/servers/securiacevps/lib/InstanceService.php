@@ -123,6 +123,251 @@ final class InstanceService
     }
 
     /**
+     * Submit a create request exclusively from the sealed order snapshot.
+     * Mutable product and configurable-option rows are deliberately ignored.
+     *
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $snapshotPayload
+     * @return array<string,mixed>
+     */
+    public function submitCreateFromSnapshot(
+        array $params,
+        array $snapshotPayload,
+        string $requestIdentity
+    ): array {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $productId = (int) ($params['pid'] ?? ($params['packageid'] ?? 0));
+        $fieldId = $this->linker->ensureCustomField($productId);
+
+        $storedId = $this->linker->readInstanceId($params);
+        if ($storedId !== '') {
+            $owned = $this->linker->verifyOwnership($this->client, $storedId, $serviceId);
+            if ($owned['exists'] && $owned['tagMatches']) {
+                return ['instance_id' => $storedId, 'recovered' => true];
+            }
+            throw new ContaboProvisioningException(
+                'The service has an existing provider link that could not be verified',
+                'existing_resource_unverified',
+                'manual_review'
+            );
+        }
+
+        $orphan = $this->linker->findByTag($this->client, $serviceId);
+        if ($orphan !== null) {
+            $orphanId = trim((string) ($orphan['instanceId'] ?? ''));
+            if ($orphanId !== '') {
+                $this->linker->storeInstanceId($serviceId, $fieldId, $orphanId);
+                return ['instance_id' => $orphanId, 'recovered' => true];
+            }
+        }
+
+        $provider = isset($snapshotPayload['provider']) && is_array($snapshotPayload['provider'])
+            ? $snapshotPayload['provider']
+            : [];
+        $configuration = isset($snapshotPayload['configuration']) && is_array($snapshotPayload['configuration'])
+            ? $snapshotPayload['configuration']
+            : [];
+        $pricing = isset($snapshotPayload['pricing']) && is_array($snapshotPayload['pricing'])
+            ? $snapshotPayload['pricing']
+            : [];
+
+        $password = SecretManager::generatePassword();
+        $secretId = $this->secrets->ensureRootPasswordSecret($serviceId, $password);
+        $sealedParams = [
+            'serviceid' => $serviceId,
+            'pid' => $productId,
+            'domain' => (string) ($snapshotPayload['whmcs']['service_label'] ?? ($params['domain'] ?? '')),
+            'billingcycle' => (string) ($pricing['billing_cycle'] ?? ($configuration['billing_cycle'] ?? '')),
+            'configoption1' => (string) ($provider['image_id'] ?? $configuration['image_id'] ?? ''),
+            'configoption2' => (string) ($provider['region_id'] ?? $configuration['region'] ?? ''),
+            'configoption3' => (string) ($provider['ssh_secret_id'] ?? ''),
+            'configoption4' => (string) ($provider['sku_id'] ?? ''),
+            'configoption5' => (string) ($configuration['cloud_init'] ?? ''),
+            'configoption6' => isset($provider['add_ons'])
+                ? CanonicalJson::encode($provider['add_ons'])
+                : '',
+        ];
+        $body = $this->mapper->mapCreate($sealedParams, [], $secretId);
+        $resp = $this->client->postWithIdentity('/v1/compute/instances', $body, $requestIdentity);
+        $instanceId = trim((string) ($resp['data'][0]['instanceId'] ?? ''));
+        if ($instanceId === '') {
+            throw new ContaboProvisioningException(
+                'Provider accepted the create request but returned no resource identity',
+                'provider_resource_id_missing',
+                'manual_review',
+                true
+            );
+        }
+        $this->linker->storeInstanceId($serviceId, $fieldId, $instanceId);
+        $secret = (new OneTimeSecretStore())->store($serviceId, 'root_password', $password);
+        Capsule::table('mod_securiacevps_resources')->updateOrInsert(
+            ['service_id' => $serviceId],
+            [
+                'installation_id' => SchemaGuard::installationId(),
+                'provider_account_id' => ProviderAccount::id($params),
+                'provider_resource_id' => $instanceId,
+                'provider_state' => 'creating',
+                'provisioning_state' => 'creating',
+                'ownership_state' => 'verified',
+                'resource_version' => 1,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]
+        );
+        $this->log('CreateAccount', _securiacevps_sanitize($body), ['instance_id' => $instanceId]);
+        return [
+            'instance_id' => $instanceId,
+            'recovered' => false,
+            'secret_uuid' => $secret['secret_uuid'],
+            'reveal_token_ciphertext' => function_exists('encrypt') ? encrypt($secret['reveal_token']) : '',
+            'secret_expires_at' => $secret['expires_at'],
+        ];
+    }
+
+    /**
+     * Verify provider identity, ownership, expected configuration and network
+     * readiness. A non-ready state is returned, not treated as failure.
+     *
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $snapshotPayload
+     * @return array{ready:bool,state:string,snapshot:array<string,mixed>}
+     */
+    public function verifyReady(array $params, array $snapshotPayload): array
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->requireInstanceId($params);
+        $owned = $this->linker->verifyOwnership($this->client, $instanceId, $serviceId);
+        if (!$owned['exists']) {
+            return ['ready' => false, 'state' => 'creating', 'snapshot' => []];
+        }
+        if (!$owned['tagMatches']) {
+            throw new ContaboProvisioningException(
+                'Provider resource ownership could not be verified',
+                'resource_ownership_mismatch',
+                'manual_review'
+            );
+        }
+        $provider = isset($snapshotPayload['provider']) && is_array($snapshotPayload['provider'])
+            ? $snapshotPayload['provider']
+            : [];
+        $instance = $owned['instance'];
+        $expectedRegion = (string) ($provider['region_id'] ?? '');
+        $expectedImage = (string) ($provider['image_id'] ?? '');
+        if ($expectedRegion !== '' && isset($instance['region'])
+            && strcasecmp($expectedRegion, (string) $instance['region']) !== 0
+        ) {
+            throw new ContaboProvisioningException(
+                'Provider resource region does not match the paid order',
+                'resource_configuration_mismatch',
+                'manual_review'
+            );
+        }
+        if ($expectedImage !== '' && isset($instance['imageId'])
+            && (string) $instance['imageId'] !== $expectedImage
+        ) {
+            throw new ContaboProvisioningException(
+                'Provider resource image does not match the paid order',
+                'resource_configuration_mismatch',
+                'manual_review'
+            );
+        }
+        $snapshot = $this->sync($params);
+        $state = strtolower((string) ($snapshot['status'] ?? 'unknown'));
+        $ready = $state === 'running' && !empty($snapshot['ipv4']);
+        return ['ready' => $ready, 'state' => $state, 'snapshot' => $snapshot];
+    }
+
+    /** @param array<string,mixed> $params */
+    public function recoverCreateByTag(array $params): ?string
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $productId = (int) ($params['pid'] ?? ($params['packageid'] ?? 0));
+        $found = $this->linker->findByTag($this->client, $serviceId);
+        if ($found === null) {
+            return null;
+        }
+        $instanceId = trim((string) ($found['instanceId'] ?? ''));
+        if ($instanceId === '') {
+            return null;
+        }
+        $this->linker->storeInstanceId(
+            $serviceId,
+            $this->linker->ensureCustomField($productId),
+            $instanceId
+        );
+        return $instanceId;
+    }
+
+    /** @param array<string,mixed> $params */
+    public function submitPowerWithIdentity(array $params, string $action, string $requestIdentity): void
+    {
+        if (!in_array($action, ['start', 'stop', 'restart', 'shutdown'], true)) {
+            throw new ContaboProvisioningException('Unsupported power action');
+        }
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->requireInstanceId($params);
+        $owned = $this->linker->verifyOwnership($this->client, $instanceId, $serviceId);
+        if (!$owned['exists'] || !$owned['tagMatches']) {
+            throw new ContaboProvisioningException(
+                'Provider resource ownership could not be verified',
+                'resource_ownership_mismatch',
+                'manual_review'
+            );
+        }
+        $this->client->postWithIdentity(
+            '/v1/compute/instances/' . rawurlencode($instanceId) . '/actions/' . $action,
+            [],
+            $requestIdentity
+        );
+    }
+
+    /** @param array<string,mixed> $params */
+    public function submitTerminateWithIdentity(array $params, string $requestIdentity): bool
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->requireInstanceId($params);
+        $owned = $this->linker->verifyOwnership($this->client, $instanceId, $serviceId);
+        if (!$owned['exists']) {
+            return false;
+        }
+        if (!$owned['tagMatches']) {
+            throw new ContaboProvisioningException(
+                'Provider resource ownership could not be verified',
+                'resource_ownership_mismatch',
+                'manual_review'
+            );
+        }
+        $this->client->postWithIdentity(
+            '/v1/compute/instances/' . rawurlencode($instanceId) . '/cancel',
+            [],
+            $requestIdentity
+        );
+        return true;
+    }
+
+    /** @param array<string,mixed> $params */
+    public function verifyAbsent(array $params): bool
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->requireInstanceId($params);
+        $owned = $this->linker->verifyOwnership($this->client, $instanceId, $serviceId);
+        return !$owned['exists'];
+    }
+
+    /** @param array<string,mixed> $params */
+    public function cleanupAfterTermination(array $params): void
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $this->secrets->cleanupServiceSecrets($serviceId);
+        Capsule::table('mod_securiacevps_resources')
+            ->where('service_id', $serviceId)
+            ->update([
+                'provider_state' => 'deleted',
+                'provisioning_state' => 'ready',
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+    }
+
+    /**
      * Map customer selections (already round-tripped to Contabo labels by
      * ConfigOptionResolver) onto API values. Image and Region resolve
      * fail-closed; dimensions without a create-API mapping are acknowledged in
