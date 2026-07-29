@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 9;
+    public const SCHEMA_VERSION = 10;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -1447,6 +1447,194 @@ class Installer
         Capsule::table('mod_securiacevps_schema')->updateOrInsert(
             ['key' => 'installed_by'],
             ['value' => 'contabo_pricing', 'updated_at' => date('Y-m-d H:i:s')]
+        );
+    }
+
+    /**
+     * Schema v10 — versioned catalog publication, sealed-order support and
+     * one-time secret delivery.
+     */
+    public function migrateTo10(): void
+    {
+        $schema = Capsule::schema();
+
+        if (!$schema->hasTable('mod_contabo_catalog_versions')) {
+            $schema->create('mod_contabo_catalog_versions', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('catalog_version', 120)->unique();
+                $t->string('source_version', 120)->nullable();
+                $t->string('state', 40)->default('observed');
+                $t->char('payload_hash', 64);
+                $t->timestamp('source_observed_at');
+                $t->timestamp('effective_at')->nullable();
+                $t->timestamp('imported_at')->useCurrent();
+                $t->unsignedInteger('imported_by_admin_id')->nullable();
+                $t->longText('metadata_json')->nullable();
+                $t->timestamps();
+                $t->index(['state', 'effective_at']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_contabo_catalog_items')) {
+            $schema->create('mod_contabo_catalog_items', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->unsignedBigInteger('catalog_version_id');
+                $t->string('machine_id', 191);
+                $t->string('provider_id', 191)->nullable();
+                $t->string('item_type', 60);
+                $t->string('label', 255);
+                $t->string('availability_state', 40);
+                $t->boolean('deprecated')->default(false);
+                $t->timestamp('effective_at')->nullable();
+                $t->timestamp('source_observed_at');
+                $t->char('payload_hash', 64);
+                $t->longText('compatibility_json')->nullable();
+                $t->longText('payload_json');
+                $t->timestamps();
+                $t->unique(['catalog_version_id', 'machine_id']);
+                $t->index(['item_type', 'availability_state']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_contabo_mapping_publications')) {
+            $schema->create('mod_contabo_mapping_publications', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('mapping_version', 120)->unique();
+                $t->unsignedBigInteger('profile_id');
+                $t->unsignedInteger('product_id');
+                $t->unsignedBigInteger('catalog_version_id');
+                $t->string('provider_sku_id', 191);
+                $t->string('state', 40)->default('draft');
+                $t->char('payload_hash', 64);
+                $t->longText('payload_json');
+                $t->unsignedInteger('approved_by_admin_id')->nullable();
+                $t->timestamp('approved_at')->nullable();
+                $t->timestamp('effective_at')->nullable();
+                $t->string('supersedes_mapping_version', 120)->nullable();
+                $t->timestamps();
+                $t->index(['product_id', 'state', 'effective_at']);
+                $t->index(['profile_id', 'state']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_contabo_publication_approvals')) {
+            $schema->create('mod_contabo_publication_approvals', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('publication_type', 40);
+                $t->string('publication_version', 120);
+                $t->string('decision', 40);
+                $t->unsignedInteger('admin_id');
+                $t->text('reason')->nullable();
+                $t->char('preview_hash', 64);
+                $t->timestamp('created_at')->useCurrent();
+                $t->index(['publication_type', 'publication_version']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_secrets')) {
+            $schema->create('mod_securiacevps_secrets', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('secret_uuid', 36)->unique();
+                $t->unsignedInteger('service_id');
+                $t->string('secret_type', 40);
+                $t->text('encrypted_value');
+                $t->char('reveal_token_hash', 64)->unique();
+                $t->unsignedInteger('maximum_reveals')->default(1);
+                $t->unsignedInteger('reveal_count')->default(0);
+                $t->timestamp('expires_at');
+                $t->timestamp('revealed_at')->nullable();
+                $t->timestamp('destroyed_at')->nullable();
+                $t->timestamps();
+                $t->index(['service_id', 'secret_type', 'expires_at']);
+            });
+        }
+
+        if (!$schema->hasTable('mod_securiacevps_communications')) {
+            $schema->create('mod_securiacevps_communications', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->char('communication_uuid', 36)->unique();
+                $t->unsignedInteger('service_id');
+                $t->char('operation_uuid', 36)->nullable();
+                $t->string('message_type', 60);
+                $t->string('state', 40)->default('pending');
+                $t->string('template_name', 120);
+                $t->char('payload_hash', 64);
+                $t->unsignedInteger('attempt_count')->default(0);
+                $t->timestamp('next_attempt_at')->nullable();
+                $t->timestamp('sent_at')->nullable();
+                $t->string('safe_error_code', 80)->nullable();
+                $t->timestamps();
+                $t->index(['state', 'next_attempt_at']);
+                $t->index(['service_id', 'created_at']);
+            });
+        }
+
+        if ($schema->hasTable('mod_contabo_mapping')) {
+            $schema->table('mod_contabo_mapping', static function (Blueprint $t) use ($schema): void {
+                if (!$schema->hasColumn('mod_contabo_mapping', 'published_mapping_version')) {
+                    $t->string('published_mapping_version', 120)->nullable();
+                }
+                if (!$schema->hasColumn('mod_contabo_mapping', 'provider_sku_id')) {
+                    $t->string('provider_sku_id', 191)->nullable();
+                }
+                if (!$schema->hasColumn('mod_contabo_mapping', 'rust_catalog_version')) {
+                    $t->string('rust_catalog_version', 120)->nullable();
+                }
+                if (!$schema->hasColumn('mod_contabo_mapping', 'mapping_state')) {
+                    $t->string('mapping_state', 40)->default('draft');
+                }
+                if (!$schema->hasColumn('mod_contabo_mapping', 'mapping_payload_hash')) {
+                    $t->char('mapping_payload_hash', 64)->nullable();
+                }
+                if (!$schema->hasColumn('mod_contabo_mapping', 'mapping_effective_at')) {
+                    $t->timestamp('mapping_effective_at')->nullable();
+                }
+            });
+        }
+
+        if ($schema->hasTable('mod_securiacevps_operations')) {
+            $schema->table('mod_securiacevps_operations', static function (Blueprint $t) use ($schema): void {
+                if (!$schema->hasColumn('mod_securiacevps_operations', 'operation_generation')) {
+                    $t->unsignedInteger('operation_generation')->default(1);
+                }
+                if (!$schema->hasColumn('mod_securiacevps_operations', 'payload_json')) {
+                    $t->longText('payload_json')->nullable();
+                }
+            });
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $installationId = Capsule::table('mod_securiacevps_schema')
+            ->where('key', 'installation_id')
+            ->value('value');
+        if ($installationId === null || trim((string) $installationId) === '') {
+            Capsule::table('mod_securiacevps_schema')->insert([
+                'key' => 'installation_id',
+                'value' => bin2hex(random_bytes(16)),
+                'updated_at' => $now,
+            ]);
+        }
+
+        $defaults = [
+            'provider_writes_enabled' => '0',
+            'operation_batch_size' => '25',
+            'operation_lease_seconds' => '120',
+            'suite_schema_version' => '2',
+        ];
+        foreach ($defaults as $key => $value) {
+            $existing = Capsule::table('mod_securiacevps_schema')->where('key', $key)->value('value');
+            if ($existing === null) {
+                Capsule::table('mod_securiacevps_schema')->insert([
+                    'key' => $key,
+                    'value' => $value,
+                    'updated_at' => $now,
+                ]);
+            }
+        }
+
+        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
+            ['key' => 'schema_version'],
+            ['value' => '2', 'updated_at' => $now]
         );
     }
 }
