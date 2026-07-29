@@ -191,6 +191,7 @@ function contabo_pricing_sidebar(array $vars): string
         'Dashboard'       => '',
         'Profiles'        => '&action=profiles',
         'Mappings'        => '&action=mappings',
+        'VPS operations'  => '&action=operations',
         'Sync history'    => '&action=sync-history',
         'Settings'        => '&action=settings',
         'Repricing'       => '#divider',

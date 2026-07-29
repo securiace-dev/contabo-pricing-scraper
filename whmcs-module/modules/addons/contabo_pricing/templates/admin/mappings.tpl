@@ -54,13 +54,20 @@ $cb_rounding_modes = [
 ];
 ?>
 
-<header style="margin:6px 0 18px;">
-  <h2 class="display" style="margin:0 0 4px;">Mappings</h2>
-  <p class="cb-card-sub" style="margin:0; max-width:78ch;">
-    Link Contabo profiles to WHMCS products and choose, per billing cycle, whether
-    SyncEngine writes to the catalog (<code class="mono">tblpricing</code>) and whether
-    RenewalEngine considers it for existing services.
-  </p>
+<header style="margin:6px 0 18px; display:flex; justify-content:space-between; gap:16px; align-items:flex-start;">
+  <div>
+    <h2 class="display" style="margin:0 0 4px;">Mappings</h2>
+    <p class="cb-card-sub" style="margin:0; max-width:78ch;">
+      Link Contabo profiles to WHMCS products and choose, per billing cycle, whether
+      SyncEngine writes to the catalog (<code class="mono">tblpricing</code>) and whether
+      RenewalEngine considers it for existing services.
+    </p>
+  </div>
+  <form method="post" action="<?= $esc($module_link) ?>">
+    <input type="hidden" name="action" value="catalog-import">
+    <?= generate_token() ?>
+    <button type="submit" class="cb-btn subtle">Import latest Rust catalog</button>
+  </form>
 </header>
 
 <?php if (!empty($flash)): ?>
@@ -372,5 +379,165 @@ $cb_rounding_modes = [
   </section>
 
 </div>
+
+<section class="cb-card" style="margin-top:16px;">
+  <header style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:14px;">
+    <div>
+      <h3 class="cb-card-title" style="margin:0 0 4px;">Provisioning publication</h3>
+      <p class="cb-card-sub" style="margin:0; max-width:78ch;">
+        Seal stable Rust catalog and Contabo Customer API identifiers for future orders.
+        Previewing does not change the active mapping. Approval requires the exact preview hash.
+      </p>
+    </div>
+    <span class="cb-pill warn">preview first</span>
+  </header>
+
+  <?php if (empty($catalog_versions)): ?>
+    <div class="cb-empty">
+      Import a versioned Rust catalog before publishing a provisioning mapping.
+    </div>
+  <?php elseif (empty($mappings)): ?>
+    <div class="cb-empty">Create a product mapping before publishing provider identifiers.</div>
+  <?php else: ?>
+    <form method="post" action="<?= $esc($module_link) ?>">
+      <input type="hidden" name="action" value="mapping-publication-preview">
+      <?= generate_token() ?>
+      <div class="cb-publication-grid">
+        <div class="cb-field">
+          <label for="cb-pub-mapping">Mapping</label>
+          <select id="cb-pub-mapping" name="mapping_id" required>
+            <option value="">— pick a mapping —</option>
+            <?php foreach ($mappings as $m):
+              $mappingId = (int) ($m['id'] ?? 0);
+              $mappingProductId = (int) ($m['product_id'] ?? 0);
+              $mappingProfileId = (int) ($m['profile_id'] ?? 0);
+              $mappingProduct = isset($byProduct[$mappingProductId])
+                  ? (string) ($byProduct[$mappingProductId]['name'] ?? '')
+                  : ('Product #' . $mappingProductId);
+            ?>
+              <option value="<?= $mappingId ?>">
+                <?= $esc($mappingProduct) ?> · profile #<?= $mappingProfileId ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="cb-field">
+          <label for="cb-pub-catalog">Rust catalog version</label>
+          <select id="cb-pub-catalog" name="rust_catalog_version" required>
+            <option value="">— pick an imported version —</option>
+            <?php foreach ($catalog_versions as $version): ?>
+              <option value="<?= $esc($version['catalog_version'] ?? '') ?>">
+                <?= $esc($version['catalog_version'] ?? '') ?>
+                · <?= $esc($version['state'] ?? '') ?>
+                · observed <?= $esc(substr((string) ($version['source_observed_at'] ?? ''), 0, 16)) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="cb-field">
+          <label for="cb-pub-sku">Provider SKU ID</label>
+          <input type="text" id="cb-pub-sku" name="provider_sku_id" required maxlength="191"
+                 autocomplete="off" placeholder="e.g. V45">
+        </div>
+        <div class="cb-field">
+          <label for="cb-pub-region">Provider region ID</label>
+          <input type="text" id="cb-pub-region" name="region_id" required maxlength="191"
+                 autocomplete="off" placeholder="e.g. EU">
+        </div>
+        <div class="cb-field">
+          <label for="cb-pub-image">Provider image ID</label>
+          <input type="text" id="cb-pub-image" name="image_id" required maxlength="191"
+                 autocomplete="off" placeholder="Customer API image identifier">
+        </div>
+        <div class="cb-field">
+          <label for="cb-pub-management">Management model</label>
+          <select id="cb-pub-management" name="management_code" required>
+            <option value="self_managed">Self-Managed</option>
+            <option value="lite">Managed Lite</option>
+            <option value="pro">Managed Pro</option>
+            <option value="enterprise">Managed Enterprise</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end;">
+        <button type="submit" class="cb-btn">Generate immutable preview</button>
+      </div>
+    </form>
+  <?php endif; ?>
+
+  <?php if (!empty($publication_preview)):
+    $previewPayload = json_encode(
+        $publication_preview['payload'] ?? [],
+        JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+    );
+  ?>
+    <div class="cb-publication-review" role="region" aria-labelledby="cb-publication-review-title">
+      <h4 id="cb-publication-review-title">Approval review</h4>
+      <dl class="cb-key-values">
+        <div><dt>Version</dt><dd class="mono"><?= $esc($publication_preview['mapping_version'] ?? '') ?></dd></div>
+        <div><dt>Preview SHA-256</dt><dd class="mono"><?= $esc($publication_preview['preview_hash'] ?? '') ?></dd></div>
+        <div><dt>State</dt><dd><?= $esc($publication_preview['state'] ?? '') ?></dd></div>
+      </dl>
+      <details>
+        <summary>Review exact sealed payload</summary>
+        <pre class="cb-json-preview"><?= $esc($previewPayload === false ? '{}' : $previewPayload) ?></pre>
+      </details>
+      <form method="post" action="<?= $esc($module_link) ?>" class="cb-approval-form">
+        <input type="hidden" name="action" value="mapping-publication-approve">
+        <input type="hidden" name="mapping_version" value="<?= $esc($publication_preview['mapping_version'] ?? '') ?>">
+        <input type="hidden" name="preview_hash" value="<?= $esc($publication_preview['preview_hash'] ?? '') ?>">
+        <?= generate_token() ?>
+        <div class="cb-field">
+          <label for="cb-pub-reason">Approval reason</label>
+          <input type="text" id="cb-pub-reason" name="reason" maxlength="500"
+                 placeholder="What evidence was checked?">
+        </div>
+        <div class="cb-field">
+          <label for="cb-pub-confirmation">Type <code>PUBLISH MAPPING</code></label>
+          <input type="text" id="cb-pub-confirmation" name="confirmation" required
+                 autocomplete="off" pattern="PUBLISH MAPPING">
+        </div>
+        <button type="submit" class="cb-btn danger">Approve and activate</button>
+      </form>
+    </div>
+  <?php endif; ?>
+</section>
+
+<section class="cb-card" style="margin-top:16px;">
+  <h3 class="cb-card-title" style="margin:0 0 4px;">Publication history</h3>
+  <p class="cb-card-sub" style="margin:0 0 12px;">
+    Immutable previews and their approval state. Superseded versions remain available for order history.
+  </p>
+  <?php if (empty($mapping_publications)): ?>
+    <div class="cb-empty">No publication previews have been created.</div>
+  <?php else: ?>
+    <table class="cb-table">
+      <thead>
+        <tr>
+          <th>Version</th>
+          <th>Product</th>
+          <th>SKU</th>
+          <th>Hash</th>
+          <th>State</th>
+          <th>Effective</th>
+        </tr>
+      </thead>
+      <tbody>
+      <?php foreach ($mapping_publications as $publication): ?>
+        <tr>
+          <td class="mono"><?= $esc($publication['mapping_version'] ?? '') ?></td>
+          <td>#<?= (int) ($publication['product_id'] ?? 0) ?></td>
+          <td class="mono"><?= $esc($publication['provider_sku_id'] ?? '') ?></td>
+          <td class="mono" title="<?= $esc($publication['payload_hash'] ?? '') ?>">
+            <?= $esc(substr((string) ($publication['payload_hash'] ?? ''), 0, 12)) ?>…
+          </td>
+          <td><span class="cb-pill grey"><?= $esc($publication['state'] ?? '') ?></span></td>
+          <td class="mono"><?= $esc(substr((string) ($publication['effective_at'] ?? ''), 0, 16)) ?></td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+</section>
 
 </div>
