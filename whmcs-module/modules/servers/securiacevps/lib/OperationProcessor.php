@@ -53,6 +53,8 @@ final class OperationProcessor
                 $this->processPower($operation, $params, $instances);
             } elseif ($type === 'terminate') {
                 $this->processTerminate($operation, $params, $instances);
+            } elseif (in_array($type, ['reset_password', 'reinstall'], true)) {
+                $this->processCredentialAction($operation, $params, $instances, $payload);
             } else {
                 throw new ContaboProvisioningException(
                     'Unsupported durable VPS operation',
@@ -119,7 +121,10 @@ final class OperationProcessor
         $providerRequest = $providerRequest !== null ? (array) $providerRequest : null;
         $resourceId = trim((string) ($operation['provider_resource_id'] ?? ''));
 
-        if ($resourceId === '' && $providerRequest !== null) {
+        if ($resourceId === ''
+            && $providerRequest !== null
+            && (string) ($providerRequest['state'] ?? '') !== 'rejected'
+        ) {
             // Any prior submission without a known resource identity is an
             // ambiguous outcome. Reconcile by the deterministic service tag;
             // never submit another create request blindly.
@@ -151,21 +156,38 @@ final class OperationProcessor
         }
 
         if ($resourceId === '') {
-            Capsule::table('mod_securiacevps_provider_requests')->insert([
-                'operation_uuid' => $uuid,
-                'provider_request_id' => null,
-                'request_fingerprint' => (string) $operation['request_fingerprint'],
-                'idempotency_key' => $requestIdentity,
-                'state' => 'submitting',
-                'provider_resource_id' => null,
-                'unknown_outcome' => 1,
-                'submitted_at' => date('Y-m-d H:i:s'),
-                'last_checked_at' => null,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
+            if ($providerRequest !== null && (string) ($providerRequest['state'] ?? '') === 'rejected') {
+                Capsule::table('mod_securiacevps_provider_requests')
+                    ->where('operation_uuid', $uuid)
+                    ->update([
+                        'state' => 'submitting',
+                        'unknown_outcome' => 1,
+                        'submitted_at' => date('Y-m-d H:i:s'),
+                        'last_checked_at' => null,
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]);
+            } else {
+                Capsule::table('mod_securiacevps_provider_requests')->insert([
+                    'operation_uuid' => $uuid,
+                    'provider_request_id' => null,
+                    'request_fingerprint' => (string) $operation['request_fingerprint'],
+                    'idempotency_key' => $requestIdentity,
+                    'state' => 'submitting',
+                    'provider_resource_id' => null,
+                    'unknown_outcome' => 1,
+                    'submitted_at' => date('Y-m-d H:i:s'),
+                    'last_checked_at' => null,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
             try {
-                $result = $instances->submitCreateFromSnapshot($params, $payload, $requestIdentity);
+                $result = $instances->submitCreateFromSnapshot(
+                    $params,
+                    $payload,
+                    $requestIdentity,
+                    $uuid
+                );
             } catch (ContaboProvisioningException $e) {
                 if ($e->hasAmbiguousOutcome()) {
                     Capsule::table('mod_securiacevps_provider_requests')
@@ -232,6 +254,158 @@ final class OperationProcessor
             'next_attempt_at' => null,
             'safe_error_code' => null,
             'retry_classification' => null,
+        ]);
+    }
+
+    /**
+     * Process password reset and reinstall as durable, non-repeatable
+     * credential operations. An ambiguous reset is never replayed because its
+     * effect cannot be proven by a read. An ambiguous reinstall is reconciled
+     * against the sealed image before any operator chooses a next action.
+     *
+     * @param array<string,mixed> $operation
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $payload
+     */
+    private function processCredentialAction(
+        array $operation,
+        array $params,
+        InstanceService $instances,
+        array $payload
+    ): void {
+        $uuid = (string) $operation['operation_uuid'];
+        $token = (int) $operation['fencing_token'];
+        $type = (string) $operation['operation_type'];
+        $markerObject = Capsule::table('mod_securiacevps_provider_requests')
+            ->where('operation_uuid', $uuid)
+            ->first();
+        $marker = $markerObject !== null ? (array) $markerObject : null;
+        $markerState = (string) ($marker['state'] ?? '');
+
+        if ($marker !== null
+            && in_array($markerState, ['submitting', 'unknown_outcome'], true)
+            && $type === 'reset_password'
+        ) {
+            throw new ContaboProvisioningException(
+                'The password reset outcome cannot be verified safely',
+                'password_reset_outcome_unknown',
+                'manual_review'
+            );
+        }
+
+        if ($marker === null || $markerState === 'rejected') {
+            $markerValues = [
+                'state' => 'submitting',
+                'provider_resource_id' => (string) ($operation['provider_resource_id'] ?? ''),
+                'unknown_outcome' => 1,
+                'submitted_at' => date('Y-m-d H:i:s'),
+                'last_checked_at' => null,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ];
+            if ($marker === null) {
+                Capsule::table('mod_securiacevps_provider_requests')->insert(array_merge(
+                    [
+                        'operation_uuid' => $uuid,
+                        'provider_request_id' => null,
+                        'request_fingerprint' => (string) $operation['request_fingerprint'],
+                        'idempotency_key' => (string) $operation['idempotency_key'],
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ],
+                    $markerValues
+                ));
+            } else {
+                Capsule::table('mod_securiacevps_provider_requests')
+                    ->where('operation_uuid', $uuid)
+                    ->update($markerValues);
+            }
+            try {
+                $result = $type === 'reset_password'
+                    ? $instances->submitPasswordResetWithIdentity(
+                        $params,
+                        (string) $operation['idempotency_key'],
+                        $uuid
+                    )
+                    : $instances->submitReinstallWithIdentity(
+                        $params,
+                        $payload,
+                        (string) $operation['idempotency_key'],
+                        $uuid
+                    );
+            } catch (ContaboProvisioningException $e) {
+                Capsule::table('mod_securiacevps_provider_requests')
+                    ->where('operation_uuid', $uuid)
+                    ->update([
+                        'state' => $e->hasAmbiguousOutcome() ? 'unknown_outcome' : 'rejected',
+                        'unknown_outcome' => $e->hasAmbiguousOutcome() ? 1 : 0,
+                        'last_checked_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]);
+                throw $e;
+            }
+            Capsule::table('mod_securiacevps_provider_requests')
+                ->where('operation_uuid', $uuid)
+                ->update([
+                    'state' => 'accepted',
+                    'unknown_outcome' => 0,
+                    'last_checked_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            $this->operations->transition($uuid, $token, 'submitted', [
+                'submitted_at' => date('Y-m-d H:i:s'),
+                'unknown_outcome' => 0,
+                'result_json' => CanonicalJson::encode($result),
+            ]);
+            $markerState = 'accepted';
+        }
+
+        if ($type === 'reset_password') {
+            $verification = $instances->verifyOwnedResource($params);
+            if (!$verification['exists']) {
+                throw new ContaboProvisioningException(
+                    'The provider resource disappeared after password reset',
+                    'resource_missing_after_password_reset',
+                    'manual_review'
+                );
+            }
+        } else {
+            $verification = $instances->verifyReinstall($params, $payload);
+            if (!$verification['ready']) {
+                $unknown = in_array($markerState, ['submitting', 'unknown_outcome'], true);
+                $this->schedule(
+                    $operation,
+                    $unknown ? 'unknown_outcome' : 'provider_pending',
+                    $unknown ? 'provider_reinstall_outcome_unknown' : null,
+                    $unknown ? 'inspect_before_retry' : 'provider_pending',
+                    $unknown,
+                    $this->backoff((int) ($operation['attempt_count'] ?? 0), 30, 600)
+                );
+                return;
+            }
+            Capsule::table('mod_securiacevps_resources')
+                ->where('service_id', (int) $operation['service_id'])
+                ->update([
+                    'provider_state' => (string) $verification['state'],
+                    'provisioning_state' => 'ready',
+                    'last_observed_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+        }
+
+        Capsule::table('mod_securiacevps_provider_requests')
+            ->where('operation_uuid', $uuid)
+            ->update([
+                'state' => 'reconciled',
+                'unknown_outcome' => 0,
+                'last_checked_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+        $this->operations->transition($uuid, $token, 'succeeded', [
+            'reconciled_at' => date('Y-m-d H:i:s'),
+            'completed_at' => date('Y-m-d H:i:s'),
+            'next_attempt_at' => null,
+            'safe_error_code' => null,
+            'retry_classification' => null,
+            'unknown_outcome' => 0,
         ]);
     }
 
@@ -425,16 +599,26 @@ final class OperationProcessor
         bool $unknown,
         int $delaySeconds
     ): void {
+        $attempt = ((int) ($operation['attempt_count'] ?? 0)) + 1;
+        if ($attempt >= (int) ($operation['max_attempts'] ?? 8)) {
+            $state = 'manual_review';
+            $safeCode = $safeCode !== null ? $safeCode : 'operation_retry_limit_reached';
+            $classification = 'manual_review';
+            $unknown = false;
+        }
         $this->operations->transition(
             (string) $operation['operation_uuid'],
             (int) $operation['fencing_token'],
             $state,
             [
-                'attempt_count' => ((int) ($operation['attempt_count'] ?? 0)) + 1,
-                'next_attempt_at' => date('Y-m-d H:i:s', time() + max(5, $delaySeconds)),
+                'attempt_count' => $attempt,
+                'next_attempt_at' => $state === 'manual_review'
+                    ? null
+                    : date('Y-m-d H:i:s', time() + max(5, $delaySeconds)),
                 'safe_error_code' => $safeCode,
                 'retry_classification' => $classification,
                 'unknown_outcome' => $unknown ? 1 : 0,
+                'completed_at' => $state === 'manual_review' ? date('Y-m-d H:i:s') : null,
             ]
         );
     }
@@ -453,6 +637,9 @@ final class OperationProcessor
         }
         if ($type === 'unsuspend') {
             return 'start';
+        }
+        if ($type === 'reset_password') {
+            return 'password_reset';
         }
         return $type;
     }

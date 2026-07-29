@@ -7,7 +7,7 @@ use WHMCS\Database\Capsule;
 
 final class SchemaGuard
 {
-    public const SUITE_SCHEMA_VERSION = 2;
+    public const SUITE_SCHEMA_VERSION = 3;
 
     /** @var list<string> */
     private const REQUIRED_TABLES = [
@@ -53,7 +53,7 @@ final class SchemaGuard
                 'Provider writes are paused by the SecuriAce VPS safety switch'
             );
         }
-        if (self::setting('capability.' . $capability . '.enabled', '1') !== '1') {
+        if (self::setting('capability.' . $capability . '.enabled', '0') !== '1') {
             throw new ContaboProvisioningException(
                 'This provider action is paused by its capability safety switch'
             );

@@ -133,7 +133,8 @@ final class InstanceService
     public function submitCreateFromSnapshot(
         array $params,
         array $snapshotPayload,
-        string $requestIdentity
+        string $requestIdentity,
+        string $operationUuid
     ): array {
         $serviceId = (int) ($params['serviceid'] ?? 0);
         $productId = (int) ($params['pid'] ?? ($params['packageid'] ?? 0));
@@ -171,7 +172,12 @@ final class InstanceService
             ? $snapshotPayload['pricing']
             : [];
 
-        $password = SecretManager::generatePassword();
+        $preparedSecret = (new OneTimeSecretStore())->prepareForOperation(
+            $serviceId,
+            'root_password',
+            $operationUuid
+        );
+        $password = $preparedSecret['plaintext'];
         $secretId = $this->secrets->ensureRootPasswordSecret($serviceId, $password);
         $sealedParams = [
             'serviceid' => $serviceId,
@@ -199,7 +205,6 @@ final class InstanceService
             );
         }
         $this->linker->storeInstanceId($serviceId, $fieldId, $instanceId);
-        $secret = (new OneTimeSecretStore())->store($serviceId, 'root_password', $password);
         Capsule::table('mod_securiacevps_resources')->updateOrInsert(
             ['service_id' => $serviceId],
             [
@@ -217,9 +222,11 @@ final class InstanceService
         return [
             'instance_id' => $instanceId,
             'recovered' => false,
-            'secret_uuid' => $secret['secret_uuid'],
-            'reveal_token_ciphertext' => function_exists('encrypt') ? encrypt($secret['reveal_token']) : '',
-            'secret_expires_at' => $secret['expires_at'],
+            'secret_uuid' => $preparedSecret['secret_uuid'],
+            'reveal_token_ciphertext' => function_exists('encrypt')
+                ? encrypt($preparedSecret['reveal_token'])
+                : '',
+            'secret_expires_at' => $preparedSecret['expires_at'],
         ];
     }
 
@@ -318,6 +325,184 @@ final class InstanceService
             [],
             $requestIdentity
         );
+    }
+
+    /**
+     * Submit a durable password reset without writing plaintext to tblhosting.
+     *
+     * @param array<string,mixed> $params
+     * @return array<string,mixed>
+     */
+    public function submitPasswordResetWithIdentity(
+        array $params,
+        string $requestIdentity,
+        string $operationUuid
+    ): array {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->verifiedInstanceId($params);
+        $prepared = (new OneTimeSecretStore())->prepareForOperation(
+            $serviceId,
+            'root_password',
+            $operationUuid
+        );
+        $secretId = $this->secrets->ensureRootPasswordSecret($serviceId, $prepared['plaintext']);
+        $this->client->postWithIdentity(
+            '/v1/compute/instances/' . rawurlencode($instanceId) . '/actions/resetPassword',
+            ['rootPassword' => $secretId],
+            $requestIdentity
+        );
+        return $this->safeSecretResult($prepared);
+    }
+
+    /**
+     * Reinstall only to the image sealed in the paid-order snapshot. Mutable
+     * current configurable options are deliberately ignored.
+     *
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $snapshotPayload
+     * @return array<string,mixed>
+     */
+    public function submitReinstallWithIdentity(
+        array $params,
+        array $snapshotPayload,
+        string $requestIdentity,
+        string $operationUuid
+    ): array {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->verifiedInstanceId($params);
+        $provider = isset($snapshotPayload['provider']) && is_array($snapshotPayload['provider'])
+            ? $snapshotPayload['provider']
+            : [];
+        $imageId = trim((string) ($provider['image_id'] ?? ''));
+        if ($imageId === '') {
+            throw new ContaboProvisioningException(
+                'The sealed order snapshot has no provider image identifier',
+                'sealed_image_missing',
+                'manual_review'
+            );
+        }
+        $prepared = (new OneTimeSecretStore())->prepareForOperation(
+            $serviceId,
+            'root_password',
+            $operationUuid
+        );
+        $secretId = $this->secrets->ensureRootPasswordSecret($serviceId, $prepared['plaintext']);
+        $body = ['imageId' => $imageId, 'rootPassword' => $secretId];
+        if (!empty($provider['ssh_secret_id'])) {
+            $body['sshKeys'] = [(int) $provider['ssh_secret_id']];
+        }
+        $configuration = isset($snapshotPayload['configuration'])
+            && is_array($snapshotPayload['configuration'])
+            ? $snapshotPayload['configuration']
+            : [];
+        if (!empty($configuration['cloud_init'])) {
+            $body['userData'] = (string) $configuration['cloud_init'];
+        }
+        $this->client->putWithIdentity(
+            '/v1/compute/instances/' . rawurlencode($instanceId),
+            $body,
+            $requestIdentity
+        );
+        return $this->safeSecretResult($prepared);
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     * @return array{exists:bool,state:string,snapshot:array<string,mixed>}
+     */
+    public function verifyOwnedResource(array $params): array
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->requireInstanceId($params);
+        $owned = $this->linker->verifyOwnership($this->client, $instanceId, $serviceId);
+        if (!$owned['exists']) {
+            return ['exists' => false, 'state' => 'missing', 'snapshot' => []];
+        }
+        if (!$owned['tagMatches']) {
+            throw new ContaboProvisioningException(
+                'Provider resource ownership could not be verified',
+                'resource_ownership_mismatch',
+                'manual_review'
+            );
+        }
+        $snapshot = $this->sync($params);
+        return [
+            'exists' => true,
+            'state' => strtolower((string) ($snapshot['status'] ?? 'unknown')),
+            'snapshot' => $snapshot,
+        ];
+    }
+
+    /**
+     * Verify a reinstall from provider observations without issuing another
+     * mutation. The expected image is read exclusively from the sealed order
+     * snapshot carried by the durable operation.
+     *
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $snapshotPayload
+     * @return array{ready:bool,state:string,image:string,snapshot:array<string,mixed>}
+     */
+    public function verifyReinstall(array $params, array $snapshotPayload): array
+    {
+        $provider = isset($snapshotPayload['provider']) && is_array($snapshotPayload['provider'])
+            ? $snapshotPayload['provider']
+            : [];
+        $expectedImage = trim((string) ($provider['image_id'] ?? ''));
+        if ($expectedImage === '') {
+            throw new ContaboProvisioningException(
+                'The sealed order snapshot has no provider image identifier',
+                'sealed_image_missing',
+                'manual_review'
+            );
+        }
+        $observed = $this->verifyOwnedResource($params);
+        if (!$observed['exists']) {
+            throw new ContaboProvisioningException(
+                'The provider resource disappeared during reinstall',
+                'resource_missing_during_reinstall',
+                'manual_review'
+            );
+        }
+        $snapshot = $observed['snapshot'];
+        $image = trim((string) ($snapshot['image'] ?? ''));
+        $state = strtolower((string) ($observed['state'] ?? 'unknown'));
+        return [
+            'ready' => hash_equals($expectedImage, $image) && $state === 'running',
+            'state' => $state,
+            'image' => $image,
+            'snapshot' => $snapshot,
+        ];
+    }
+
+    /** @param array<string,mixed> $params */
+    private function verifiedInstanceId(array $params): string
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->requireInstanceId($params);
+        $owned = $this->linker->verifyOwnership($this->client, $instanceId, $serviceId);
+        if (!$owned['exists'] || !$owned['tagMatches']) {
+            throw new ContaboProvisioningException(
+                'Provider resource ownership could not be verified',
+                'resource_ownership_mismatch',
+                'manual_review'
+            );
+        }
+        return $instanceId;
+    }
+
+    /**
+     * @param array<string,mixed> $prepared
+     * @return array<string,mixed>
+     */
+    private function safeSecretResult(array $prepared): array
+    {
+        return [
+            'secret_uuid' => $prepared['secret_uuid'] ?? null,
+            'reveal_token_ciphertext' => function_exists('encrypt')
+                ? encrypt((string) ($prepared['reveal_token'] ?? ''))
+                : '',
+            'secret_expires_at' => $prepared['expires_at'] ?? null,
+        ];
     }
 
     /** @param array<string,mixed> $params */

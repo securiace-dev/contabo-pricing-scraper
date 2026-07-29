@@ -33,17 +33,18 @@ final class LogRedactionTest extends TestCase
         $this->h->http->queue('POST /v1/compute/instances', 201, ['data' => [['instanceId' => 9001]]]);
         $this->assertSame('success', securiacevps_CreateAccount(Harness::params(['password' => ''])));
 
-        // …then a reset.
-        $this->h->stubTaggedInstance('9001');
-        $this->h->http->queue('POST /v1/secrets', 201, ['data' => [['secretId' => 701]]]);
-        $this->assertSame('success', securiacevps_buttonResetPassword(Harness::params()));
-
-        // Recover the real passwords that were sent to the vault.
+        // Recover the real password sent to the vault and exercise the same
+        // recursive sanitizer used by durable reset/reinstall logging.
         $vaulted = [];
         foreach ($this->h->http->callsMatching('POST https://api.contabo.com/v1/secrets') as $call) {
             $vaulted[] = (string) (json_decode((string) $call['body'], true)['value'] ?? '');
         }
         $this->assertNotEmpty($vaulted);
+        _securiacevps_log(
+            'DurableCredentialAction',
+            ['nested' => ['password' => $vaulted[0]], 'value' => $vaulted[0]],
+            ['state' => 'accepted']
+        );
 
         $this->assertNotEmpty($GLOBALS['__module_log']);
         $logDump = json_encode($GLOBALS['__module_log']);

@@ -175,11 +175,6 @@ function securiacevps_ChangePackage(array $params): string
 function securiacevps_AdminCustomButtonArray(): array
 {
     return [
-        'Start'             => 'buttonStart',
-        'Stop'              => 'buttonStop',
-        'Restart'           => 'buttonRestart',
-        'Reset Password'    => 'buttonResetPassword',
-        'Reinstall'         => 'buttonReinstall',
         'Sync from Contabo' => 'buttonSync',
     ];
 }
@@ -205,17 +200,13 @@ function securiacevps_buttonRestart(array $params): string
 /** @param array<string,mixed> $params */
 function securiacevps_buttonResetPassword(array $params): string
 {
-    return _securiacevps_run($params, 'buttonResetPassword', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->resetPassword($params);
-    });
+    return _securiacevps_lifecycle($params, 'buttonResetPassword', 'resetPassword');
 }
 
 /** @param array<string,mixed> $params */
 function securiacevps_buttonReinstall(array $params): string
 {
-    return _securiacevps_run($params, 'buttonReinstall', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->reinstall($params);
-    });
+    return _securiacevps_lifecycle($params, 'buttonReinstall', 'reinstall');
 }
 
 /** @param array<string,mixed> $params */
@@ -264,12 +255,7 @@ function securiacevps_AdminServicesTabFields(array $params): array
 /** @return array<string,string> */
 function securiacevps_ClientAreaCustomButtonArray(): array
 {
-    return [
-        'Start'               => 'clientStart',
-        'Stop'                => 'clientStop',
-        'Restart'             => 'clientRestart',
-        'Reset Root Password' => 'clientResetPassword',
-    ];
+    return [];
 }
 
 /** @param array<string,mixed> $params */
@@ -293,9 +279,7 @@ function securiacevps_clientRestart(array $params): string
 /** @param array<string,mixed> $params */
 function securiacevps_clientResetPassword(array $params): string
 {
-    return _securiacevps_run($params, 'clientResetPassword', static function (\SecuriAceVps\InstanceService $svc) use ($params) {
-        return $svc->resetPassword($params);
-    });
+    return _securiacevps_lifecycle($params, 'clientResetPassword', 'resetPassword');
 }
 
 /**
@@ -347,6 +331,21 @@ function _securiacevps_durable_power(array $params, string $callName, string $ac
 {
     try {
         return \SecuriAceVps\Runtime::lifecycle()->power($params, $action);
+    } catch (\Throwable $e) {
+        _securiacevps_log($callName, (int) ($params['serviceid'] ?? 0), $e->getMessage(), 'error');
+        return _securiacevps_safe_error($e);
+    }
+}
+
+/** @param array<string,mixed> $params */
+function _securiacevps_lifecycle(array $params, string $callName, string $method): string
+{
+    try {
+        $lifecycle = \SecuriAceVps\Runtime::lifecycle();
+        if (!in_array($method, ['resetPassword', 'reinstall'], true)) {
+            throw new \LogicException('Unsupported lifecycle callback');
+        }
+        return $lifecycle->{$method}($params);
     } catch (\Throwable $e) {
         _securiacevps_log($callName, (int) ($params['serviceid'] ?? 0), $e->getMessage(), 'error');
         return _securiacevps_safe_error($e);

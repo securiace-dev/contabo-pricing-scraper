@@ -73,6 +73,15 @@ class ContaboApiClient
         return $this->request('POST', $path, $body, $requestIdentity);
     }
 
+    /**
+     * @param array<string,mixed> $body
+     * @return array<string,mixed>
+     */
+    public function putWithIdentity(string $path, array $body, string $requestIdentity): array
+    {
+        return $this->request('PUT', $path, $body, $requestIdentity);
+    }
+
     /** @param array<string,mixed> $body @return array<string,mixed> */
     public function put(string $path, array $body): array
     {

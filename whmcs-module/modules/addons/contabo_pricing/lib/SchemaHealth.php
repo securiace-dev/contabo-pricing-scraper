@@ -206,9 +206,11 @@ final class SchemaHealth
         'mod_securiacevps_secrets' => [
             'secret_uuid',
             'service_id',
+            'operation_uuid',
             'secret_type',
             'encrypted_value',
             'reveal_token_hash',
+            'reveal_token_ciphertext',
             'expires_at',
         ],
         'mod_securiacevps_communications' => [

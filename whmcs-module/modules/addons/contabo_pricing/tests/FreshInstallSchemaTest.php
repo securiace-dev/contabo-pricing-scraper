@@ -39,7 +39,7 @@ final class FreshInstallSchemaTest extends TestCase
             $recorded,
             'a fresh install must record the current schema version'
         );
-        $this->assertSame(10, $recorded);
+        $this->assertSame(11, $recorded);
     }
 
     public function testFreshInstallSchemaIsHealthy(): void
@@ -100,7 +100,7 @@ final class FreshInstallSchemaTest extends TestCase
         }
 
         $this->assertSame(
-            '2',
+            '3',
             Capsule::table('mod_securiacevps_schema')
                 ->where('key', 'schema_version')
                 ->value('value')

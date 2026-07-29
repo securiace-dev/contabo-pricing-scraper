@@ -62,6 +62,27 @@ final class LifecycleOrchestrator
         return $this->acceptAndProgress($params, $action);
     }
 
+    /** @param array<string,mixed> $params */
+    public function resetPassword(array $params): string
+    {
+        return $this->acceptAndProgress($params, 'reset_password');
+    }
+
+    /** @param array<string,mixed> $params */
+    public function reinstall(array $params): string
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $snapshot = $this->snapshots->sealedForService($serviceId);
+        $operation = $this->operations->accept(
+            $serviceId,
+            (string) $snapshot['row']['snapshot_uuid'],
+            ProviderAccount::id($params),
+            'reinstall',
+            $snapshot['payload']
+        );
+        return $this->progress($operation, $params);
+    }
+
     /**
      * @param array<string,mixed> $operation
      * @param array<string,mixed> $params

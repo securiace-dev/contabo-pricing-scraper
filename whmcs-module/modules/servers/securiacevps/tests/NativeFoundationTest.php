@@ -53,6 +53,10 @@ final class NativeFoundationTest extends TestCase
             'capability' => 'create',
             'state' => 'requires_polling',
         ]];
+        Capsule::$tables['mod_securiacevps_schema'][] = [
+            'key' => 'capability.create.enabled',
+            'value' => '1',
+        ];
 
         (new CapabilityRegistry())->assertWriteAllowed('provider-account', 'create');
         $this->addToAssertionCount(1);
@@ -166,7 +170,7 @@ final class NativeFoundationTest extends TestCase
             Capsule::$tables[$table] = [];
         }
         Capsule::$tables['mod_securiacevps_schema'] = [
-            ['key' => 'schema_version', 'value' => '2'],
+            ['key' => 'schema_version', 'value' => '3'],
             ['key' => 'installation_id', 'value' => 'test-installation'],
             ['key' => 'provider_writes_enabled', 'value' => '0'],
         ];

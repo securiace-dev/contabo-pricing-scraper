@@ -1,84 +1,42 @@
 <?php
 declare(strict_types=1);
 
-use SecuriAceVps\Tests\Harness;
 use PHPUnit\Framework\TestCase;
-use WHMCS\Database\Capsule;
+use SecuriAceVps\Runtime;
+use SecuriAceVps\Tests\Harness;
 
 final class ReinstallFlowTest extends TestCase
 {
-    private Harness $h;
-
-    protected function setUp(): void
-    {
-        Harness::reset();
-        $this->h = new Harness();
-        Harness::seedWhmcs();
-        $this->h->linkService('9001');
-    }
-
     protected function tearDown(): void
     {
         Harness::reset();
     }
 
-    public function testReinstallRebuildsWithConfiguredImageAndFreshPassword(): void
+    public function testAdminReinstallCallbackDelegatesToDurableLifecycle(): void
     {
-        $this->h->stubTaggedInstance('9001');
-        $this->h->http->stub('GET /v1/secrets', 200, ['data' => []]);
-        $this->h->http->queue('POST /v1/secrets', 201, ['data' => [['secretId' => 710]]]);
-        $this->h->http->queue('PUT /v1/compute/instances/9001', 200, ['data' => []]);
+        $lifecycle = new class {
+            /** @var int */
+            public $calls = 0;
 
-        $result = securiacevps_buttonReinstall(Harness::params());
+            /** @param array<string,mixed> $params */
+            public function reinstall(array $params): string
+            {
+                $this->calls++;
+                return ((int) ($params['serviceid'] ?? 0)) === 300
+                    ? 'success'
+                    : 'unexpected service';
+            }
+        };
+        Runtime::swapLifecycle(static function () use ($lifecycle) {
+            return $lifecycle;
+        });
 
-        $this->assertSame('success', $result);
-        $puts = $this->h->http->callsMatching('PUT https://api.contabo.com/v1/compute/instances/9001');
-        $this->assertCount(1, $puts);
-        $body = json_decode((string) $puts[0]['body'], true);
-        $this->assertSame('afecbb85-e2fc-46f0-9684-b46b1faf00bb', $body['imageId']);
-        $this->assertSame(710, $body['rootPassword']);
-
-        // The rebuild's password is what WHMCS now shows.
-        $stored = decrypt((string) Capsule::$tables['tblhosting'][0]['password']);
-        $vaulted = json_decode((string) $this->h->http->callsMatching('POST https://api.contabo.com/v1/secrets')[0]['body'], true)['value'];
-        $this->assertSame($vaulted, $stored);
+        $this->assertSame('success', securiacevps_buttonReinstall(Harness::params()));
+        $this->assertSame(1, $lifecycle->calls);
     }
 
-    public function testReinstallCarriesSshAndCloudInit(): void
+    public function testUncertifiedReinstallIsNotAdvertisedAsAnAdminButton(): void
     {
-        $this->h->stubTaggedInstance('9001');
-        $this->h->http->stub('GET /v1/secrets', 200, ['data' => []]);
-        $this->h->http->queue('POST /v1/secrets', 201, ['data' => [['secretId' => 711]]]);
-        $this->h->http->queue('PUT /v1/compute/instances/9001', 200, ['data' => []]);
-
-        securiacevps_buttonReinstall(Harness::params([
-            'configoption3' => '4242',
-            'configoption5' => "#cloud-config\npackages: [nginx]",
-        ]));
-
-        $body = json_decode((string) $this->h->http->callsMatching('PUT https://api.contabo.com/v1/compute/instances/9001')[0]['body'], true);
-        $this->assertSame([4242], $body['sshKeys']);
-        $this->assertSame("#cloud-config\npackages: [nginx]", $body['userData']);
-    }
-
-    public function testReinstallTagMismatchBlocks(): void
-    {
-        $this->h->http->stub('GET /v1/compute/instances/9001', 200, ['data' => [
-            ['instanceId' => 9001, 'displayName' => 'foreign box', 'status' => 'running'],
-        ]]);
-
-        $result = securiacevps_buttonReinstall(Harness::params());
-
-        $this->assertStringContainsString('Refusing to reinstall', $result);
-        $this->assertCount(0, $this->h->http->callsMatching('PUT https://api.contabo.com/v1/compute/instances/9001'));
-    }
-
-    public function testReinstallWithNoImageFailsClosed(): void
-    {
-        $this->h->stubTaggedInstance('9001');
-        $result = securiacevps_buttonReinstall(Harness::params(['configoption1' => '']));
-
-        $this->assertStringContainsString('no image resolved', $result);
-        $this->assertCount(0, $this->h->http->callsMatching('PUT https://api.contabo.com/v1/compute/instances/9001'));
+        $this->assertArrayNotHasKey('Reinstall', securiacevps_AdminCustomButtonArray());
     }
 }

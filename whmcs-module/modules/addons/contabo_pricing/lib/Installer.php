@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 10;
+    public const SCHEMA_VERSION = 11;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -1635,6 +1635,36 @@ class Installer
         Capsule::table('mod_securiacevps_schema')->updateOrInsert(
             ['key' => 'schema_version'],
             ['value' => '2', 'updated_at' => $now]
+        );
+    }
+
+    /**
+     * Schema v11 — bind one-time credentials to their durable operation and
+     * retain only an encrypted copy of the opaque reveal token.
+     */
+    public function migrateTo11(): void
+    {
+        $schema = Capsule::schema();
+        if ($schema->hasTable('mod_securiacevps_secrets')) {
+            $schema->table('mod_securiacevps_secrets', static function (Blueprint $t) use ($schema): void {
+                if (!$schema->hasColumn('mod_securiacevps_secrets', 'operation_uuid')) {
+                    $t->char('operation_uuid', 36)->nullable();
+                    $t->index('operation_uuid');
+                }
+                if (!$schema->hasColumn('mod_securiacevps_secrets', 'reveal_token_ciphertext')) {
+                    $t->text('reveal_token_ciphertext')->nullable();
+                }
+            });
+        }
+
+        $now = date('Y-m-d H:i:s');
+        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
+            ['key' => 'suite_schema_version'],
+            ['value' => '3', 'updated_at' => $now]
+        );
+        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
+            ['key' => 'schema_version'],
+            ['value' => '3', 'updated_at' => $now]
         );
     }
 }
