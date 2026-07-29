@@ -13,15 +13,25 @@ final class OperationProcessor
     private $capabilities;
     /** @var AuditLogger */
     private $audit;
+    /** @var BillingSagaRepository */
+    private $billing;
+    /** @var CommunicationService */
+    private $communications;
 
     public function __construct(
         ?OperationRepository $operations = null,
         ?CapabilityRegistry $capabilities = null,
-        ?AuditLogger $audit = null
+        ?AuditLogger $audit = null,
+        ?BillingSagaRepository $billing = null,
+        ?CommunicationService $communications = null
     ) {
         $this->operations = $operations !== null ? $operations : new OperationRepository();
         $this->capabilities = $capabilities !== null ? $capabilities : new CapabilityRegistry();
         $this->audit = $audit !== null ? $audit : new AuditLogger();
+        $this->billing = $billing !== null ? $billing : new BillingSagaRepository();
+        $this->communications = $communications !== null
+            ? $communications
+            : new CommunicationService();
     }
 
     /**
@@ -64,6 +74,9 @@ final class OperationProcessor
             }
 
             $latest = $this->operations->byUuid($uuid);
+            if ((string) $latest['state'] === 'succeeded') {
+                $this->projectVerifiedCommercialState($latest);
+            }
             $this->operations->attempt($uuid, $attempt, $token, (string) $latest['state'], [
                 'started_at' => $startedAt,
                 'finished_at' => date('Y-m-d H:i:s'),
@@ -98,7 +111,122 @@ final class OperationProcessor
             $this->operations->release($uuid, $serviceId, $token);
         }
 
-        return $this->operations->byUuid($uuid);
+        $latest = $this->operations->byUuid($uuid);
+        if ($type === 'create') {
+            $this->billing->recordProvisioning($latest, $payload);
+        }
+        $this->communications->queueForOperation($latest);
+        return $latest;
+    }
+
+    /**
+     * WHMCS normally projects callback success into tblhosting.domainstatus.
+     * A durable operation can instead complete in this module's cron, so the
+     * same projection must be explicit here and only occur after provider
+     * verification. Pure power/recovery actions do not alter commercial state.
+     *
+     * @param array<string,mixed> $operation
+     */
+    private function projectVerifiedCommercialState(array $operation): void
+    {
+        $targets = [
+            'create' => 'Active',
+            'suspend' => 'Suspended',
+            'unsuspend' => 'Active',
+            'terminate' => 'Terminated',
+        ];
+        $type = (string) ($operation['operation_type'] ?? '');
+        if (!isset($targets[$type])) {
+            return;
+        }
+        $serviceId = (int) ($operation['service_id'] ?? 0);
+        $serviceObject = Capsule::table('tblhosting')->where('id', $serviceId)->first();
+        if ($serviceObject === null) {
+            $this->recordProjectionFinding($operation, 'service_record_missing');
+            throw new ContaboProvisioningException(
+                'WHMCS service projection requires operator review',
+                'service_record_missing',
+                'manual_review'
+            );
+        }
+        $service = (array) $serviceObject;
+        $target = $targets[$type];
+        if ((string) ($service['domainstatus'] ?? '') === $target) {
+            $this->resolveProjectionFinding($serviceId);
+            return;
+        }
+        $updated = Capsule::table('tblhosting')
+            ->where('id', $serviceId)
+            ->where('domainstatus', (string) ($service['domainstatus'] ?? ''))
+            ->update(['domainstatus' => $target]);
+        $readBack = Capsule::table('tblhosting')->where('id', $serviceId)->value('domainstatus');
+        if ($updated !== 1 && (string) $readBack !== $target) {
+            $this->recordProjectionFinding($operation, 'service_status_projection_failed');
+            throw new ContaboProvisioningException(
+                'WHMCS service state could not be projected after provider verification',
+                'service_status_projection_failed',
+                'transient'
+            );
+        }
+        $this->resolveProjectionFinding($serviceId);
+    }
+
+    /** @param array<string,mixed> $operation */
+    private function recordProjectionFinding(array $operation, string $safeCode): void
+    {
+        $now = date('Y-m-d H:i:s');
+        $serviceId = (int) ($operation['service_id'] ?? 0);
+        $evidence = [
+            'operation_uuid' => (string) ($operation['operation_uuid'] ?? ''),
+            'operation_type' => (string) ($operation['operation_type'] ?? ''),
+            'safe_error_code' => $safeCode,
+        ];
+        $existing = Capsule::table('mod_securiacevps_reconciliation')
+            ->where('service_id', $serviceId)
+            ->where('finding_type', 'whmcs_service_projection')
+            ->where('state', 'open')
+            ->first();
+        $values = [
+            'provider_account_id' => (string) ($operation['provider_account_id'] ?? ''),
+            'provider_resource_id' => (string) ($operation['provider_resource_id'] ?? ''),
+            'severity' => 'critical',
+            'evidence_hash' => hash('sha256', CanonicalJson::encode($evidence)),
+            'evidence_json' => CanonicalJson::encode($evidence),
+            'safe_next_action' => 'repair_whmcs_service_state',
+            'last_seen_at' => $now,
+            'resolved_at' => null,
+            'updated_at' => $now,
+        ];
+        if ($existing === null) {
+            Capsule::table('mod_securiacevps_reconciliation')->insert(array_merge(
+                [
+                    'finding_uuid' => Uuid::v4(),
+                    'service_id' => $serviceId,
+                    'finding_type' => 'whmcs_service_projection',
+                    'state' => 'open',
+                    'first_seen_at' => $now,
+                ],
+                $values
+            ));
+        } else {
+            Capsule::table('mod_securiacevps_reconciliation')
+                ->where('id', (int) (((array) $existing)['id'] ?? 0))
+                ->update($values);
+        }
+    }
+
+    private function resolveProjectionFinding(int $serviceId): void
+    {
+        Capsule::table('mod_securiacevps_reconciliation')
+            ->where('service_id', $serviceId)
+            ->where('finding_type', 'whmcs_service_projection')
+            ->where('state', 'open')
+            ->update([
+                'state' => 'resolved',
+                'resolved_at' => date('Y-m-d H:i:s'),
+                'last_seen_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
     }
 
     /**
@@ -248,6 +376,24 @@ final class OperationProcessor
                 'last_observed_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
+        Capsule::table('mod_securiacevps_adoption')->updateOrInsert(
+            ['service_id' => (int) $operation['service_id']],
+            [
+                'provider_account_id' => (string) $operation['provider_account_id'],
+                'provider_resource_id' => $resourceId,
+                'state' => 'verified',
+                'confidence' => '1.0000',
+                'evidence_json' => CanonicalJson::encode([
+                    'source' => 'native_provisioning',
+                    'provider_resource_id' => $resourceId,
+                    'tag_matches' => true,
+                    'provider_state' => (string) $verification['state'],
+                    'observed_at' => date('Y-m-d H:i:s'),
+                ]),
+                'updated_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]
+        );
         $this->operations->transition($uuid, $token, 'succeeded', [
             'reconciled_at' => date('Y-m-d H:i:s'),
             'completed_at' => date('Y-m-d H:i:s'),

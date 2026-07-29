@@ -243,7 +243,9 @@ final class InstanceLinker
             }
             throw new ContaboProvisioningException(
                 'Multiple Contabo instances carry the tag "' . $tag . '" (' . implode(', ', $ids)
-                . ') — refusing to guess. Resolve the duplicates in the Contabo panel, then retry.'
+                . ') — refusing to guess. Resolve the duplicates in the Contabo panel, then retry.',
+                'duplicate_service_tag',
+                'manual_review'
             );
         }
         return $matches !== [] ? $matches[0] : null;

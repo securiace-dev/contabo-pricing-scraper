@@ -41,9 +41,6 @@ final class Harness
                 new ContaboInstanceMapper()
             );
         });
-        Runtime::swapLifecycle(static function () {
-            return new LegacyLifecycleAdapter();
-        });
     }
 
     public static function reset(): void
@@ -53,6 +50,8 @@ final class Harness
         Capsule::reset();
         $GLOBALS['__activity_log'] = [];
         $GLOBALS['__module_log']   = [];
+        $GLOBALS['__local_api_calls'] = [];
+        $GLOBALS['__local_api_handler'] = null;
     }
 
     /** @return array<string,mixed> standard provisioning params for service #300 on product #7 */
@@ -82,7 +81,14 @@ final class Harness
         ];
         Capsule::$tables['tblcustomfieldsvalues'] = [];
         Capsule::$tables['tblhosting'] = [
-            ['id' => 300, 'packageid' => 7, 'dedicatedip' => '', 'assignedips' => '', 'password' => ''],
+            [
+                'id' => 300,
+                'packageid' => 7,
+                'domainstatus' => 'Pending',
+                'dedicatedip' => '',
+                'assignedips' => '',
+                'password' => '',
+            ],
         ];
     }
 
@@ -103,43 +109,5 @@ final class Harness
             'createdDate' => '2026-07-01T00:00:00Z',
             'ipConfig'    => ['v4' => [['ip' => '203.0.113.10'], ['ip' => '203.0.113.11']]],
         ]]]);
-    }
-}
-
-/**
- * Keeps the pre-existing low-level flow tests focused on InstanceService.
- * NativeFoundationTest and NativeLifecycleTest exercise the durable
- * orchestrator itself.
- */
-final class LegacyLifecycleAdapter
-{
-    /** @param array<string,mixed> $params */
-    public function create(array $params): string
-    {
-        return Runtime::instanceService($params)->create($params);
-    }
-
-    /** @param array<string,mixed> $params */
-    public function suspend(array $params): string
-    {
-        return Runtime::instanceService($params)->powerAction($params, 'stop');
-    }
-
-    /** @param array<string,mixed> $params */
-    public function unsuspend(array $params): string
-    {
-        return Runtime::instanceService($params)->powerAction($params, 'start');
-    }
-
-    /** @param array<string,mixed> $params */
-    public function terminate(array $params): string
-    {
-        return Runtime::instanceService($params)->terminate($params);
-    }
-
-    /** @param array<string,mixed> $params */
-    public function power(array $params, string $action): string
-    {
-        return Runtime::instanceService($params)->powerAction($params, $action);
     }
 }

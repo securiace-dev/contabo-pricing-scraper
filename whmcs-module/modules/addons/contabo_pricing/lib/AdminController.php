@@ -61,6 +61,7 @@ class AdminController
             case 'operations':        $this->operations($req); return;
             case 'operation-detail':  $this->operationDetail($req); return;
             case 'operation-command': $this->operationCommand($req); return;
+            case 'adoption-approve': $this->adoptionApprove($req); return;
             case 'capability-certify': $this->capabilityCertify($req); return;
             case 'provider-write-control': $this->providerWriteControl($req); return;
             case 'sync-history':     $this->syncHistory(); return;
@@ -2293,6 +2294,7 @@ class AdminController
         ];
         if ($scope === 'capability') {
             $payload['capability'] = (string) ($req['capability'] ?? '');
+            $payload['provider_account_id'] = (string) ($req['provider_account_id'] ?? '');
         }
 
         try {
@@ -2311,12 +2313,41 @@ class AdminController
         }
     }
 
+    /** @param array<string,mixed> $req */
+    private function adoptionApprove(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        $serviceId = (int) ($req['service_id'] ?? 0);
+        $payload = [
+            'provider_resource_id' => trim((string) ($req['provider_resource_id'] ?? '')),
+            'evidence_hash' => trim((string) ($req['evidence_hash'] ?? '')),
+            'confirmation' => (string) ($req['confirmation'] ?? ''),
+        ];
+        try {
+            $uuid = (new VpsOperationsWorkbench())->queueCommand(
+                'approve_adoption',
+                $serviceId,
+                null,
+                $payload,
+                $adminId
+            );
+            $this->redirect('operations', [
+                'flash' => 'Adoption approval queued for live re-verification: ' . $uuid,
+            ]);
+        } catch (\Throwable $e) {
+            $this->operatorActionError($e);
+        }
+    }
+
     private function operatorActionError(\Throwable $e): void
     {
         if (function_exists('logActivity')) {
             logActivity('Contabo Pricing operator action rejected: ' . $e->getMessage());
         }
-        $safe = ($e instanceof \InvalidArgumentException || $e instanceof \RuntimeException)
+        $safe = $e instanceof \InvalidArgumentException
             ? $e->getMessage()
             : 'The operator action could not be queued.';
         $this->redirect('operations', ['flash' => 'Request rejected: ' . $safe]);

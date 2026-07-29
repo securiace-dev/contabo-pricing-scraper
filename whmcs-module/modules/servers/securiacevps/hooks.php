@@ -2,10 +2,9 @@
 /**
  * Contabo VPS — module hooks.
  *
- * DailyCronJob sweep: opportunistically reconcile IP/status for every active
- * or suspended securiacevps service (bounded batch, per-service isolation) so
- * tblhosting.dedicatedip converges even for services nobody opens in the UI.
- * View paths (admin tab / client area) sync on render; this is the safety net.
+ * DailyCronJob sweep: assess ownership read-only, then reconcile IP/status only
+ * for verified active or suspended services. Provider mutations are never
+ * performed from a read or view path.
  */
 
 if (!defined('WHMCS')) {
@@ -22,6 +21,7 @@ define('SECURIACE_VPS_HOOKS_REGISTERED', true);
 add_hook('AfterCronJob', 30, function () {
     _securiacevps_process_operator_commands();
     _securiacevps_process_operations();
+    (new \SecuriAceVps\CommunicationService())->processQueue();
     (new \SecuriAceVps\OneTimeSecretStore())->destroyExpired();
 });
 
@@ -66,12 +66,14 @@ add_hook('DailyCronJob', 30, function () {
         $failed = 0;
         foreach ($byServer as $serverParamsList) {
             $client = null;
+            $instances = null;
             foreach ($serverParamsList as $params) {
                 try {
                     if ($client === null) {
                         $client = new \SecuriAceVps\ContaboApiClient(\SecuriAceVps\Runtime::auth($params));
+                        $instances = \SecuriAceVps\Runtime::instanceServiceWithClient($client);
                     }
-                    \SecuriAceVps\Runtime::instanceServiceWithClient($client)->sync($params);
+                    $instances->refreshProjection($params);
                     $synced++;
                 } catch (\Throwable $e) {
                     $failed++;
@@ -81,6 +83,26 @@ add_hook('DailyCronJob', 30, function () {
                 }
                 // Small pause to stay well under Contabo's rate limit on big fleets.
                 usleep(150000);
+            }
+            if ($client !== null && $serverParamsList !== []) {
+                try {
+                    $inventory = (new \SecuriAceVps\AdoptionService($client))
+                        ->inventoryProviderAccount($serverParamsList[0]);
+                    if (($inventory['orphans'] ?? 0) > 0 && function_exists('logActivity')) {
+                        logActivity(
+                            'SecuriAce VPS: provider inventory found '
+                            . (int) $inventory['orphans']
+                            . ' tagged orphan resource(s); review the operations workbench.'
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    if (function_exists('logActivity')) {
+                        logActivity(
+                            'SecuriAce VPS: provider inventory incomplete for one account; '
+                            . 'review provider health in the operations workbench.'
+                        );
+                    }
+                }
             }
         }
 
@@ -210,7 +232,30 @@ function _securiacevps_process_operator_commands(): void
             ->get();
         foreach ($rows as $item) {
             $command = (array) $item;
-            _securiacevps_process_operator_command($command);
+            $claimed = \WHMCS\Database\Capsule::table('mod_securiacevps_operator_commands')
+                ->where('id', (int) ($command['id'] ?? 0))
+                ->where('state', 'pending_validation')
+                ->update([
+                    'state' => 'claimed',
+                    'claimed_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            if ($claimed !== 1) {
+                continue;
+            }
+            $command['state'] = 'claimed';
+            try {
+                _securiacevps_process_operator_command($command);
+            } catch (\Throwable $e) {
+                $safeCode = $e instanceof \SecuriAceVps\ContaboProvisioningException
+                    ? $e->safeCode()
+                    : 'operator_command_execution_failed';
+                _securiacevps_finish_operator_command(
+                    (int) ($command['id'] ?? 0),
+                    'rejected',
+                    $safeCode
+                );
+            }
         }
     } catch (\Throwable $e) {
         if (function_exists('logActivity')) {
@@ -297,14 +342,53 @@ function _securiacevps_process_operator_command(array $command): void
 
     if ($type === 'set_capability_write_state') {
         $capability = preg_replace('/[^a-z0-9_.-]/', '', strtolower((string) ($payload['capability'] ?? '')));
+        $providerAccountId = trim((string) ($payload['provider_account_id'] ?? ''));
         $enabled = !empty($payload['enabled']);
-        if ($capability === '' || ($enabled && (string) ($payload['confirmation'] ?? '') !== 'ENABLE CAPABILITY WRITE')) {
+        if ($capability === ''
+            || $providerAccountId === ''
+            || ($enabled && (string) ($payload['confirmation'] ?? '') !== 'ENABLE CAPABILITY WRITE')
+        ) {
             _securiacevps_finish_operator_command($id, 'rejected', 'capability_command_invalid');
             return;
+        }
+        if ($enabled) {
+            $certified = \WHMCS\Database\Capsule::table('mod_securiacevps_capabilities')
+                ->where('provider_account_id', $providerAccountId)
+                ->where('capability', $capability)
+                ->whereIn('state', ['supported', 'requires_polling'])
+                ->count();
+            if ($certified !== 1) {
+                _securiacevps_finish_operator_command(
+                    $id,
+                    'rejected',
+                    'capability_not_certified_for_provider'
+                );
+                return;
+            }
         }
         \WHMCS\Database\Capsule::table('mod_securiacevps_schema')->updateOrInsert(
             ['key' => 'capability.' . $capability . '.enabled'],
             ['value' => $enabled ? '1' : '0', 'updated_at' => $now]
+        );
+        _securiacevps_finish_operator_command($id, 'completed', null);
+        return;
+    }
+
+    if ($type === 'approve_adoption') {
+        $serviceId = (int) ($command['service_id'] ?? 0);
+        $params = _securiacevps_operation_params(['service_id' => $serviceId]);
+        if ($params === null
+            || (string) ($payload['confirmation'] ?? '') !== 'VERIFY OWNERSHIP'
+        ) {
+            _securiacevps_finish_operator_command($id, 'rejected', 'adoption_command_invalid');
+            return;
+        }
+        $client = new \SecuriAceVps\ContaboApiClient(\SecuriAceVps\Runtime::auth($params));
+        (new \SecuriAceVps\AdoptionService($client))->approveCandidate(
+            $params,
+            trim((string) ($payload['provider_resource_id'] ?? '')),
+            trim((string) ($payload['evidence_hash'] ?? '')),
+            (int) ($command['requested_by_admin_id'] ?? 0)
         );
         _securiacevps_finish_operator_command($id, 'completed', null);
         return;
@@ -315,13 +399,32 @@ function _securiacevps_process_operator_command(array $command): void
 
 function _securiacevps_finish_operator_command(int $id, string $state, ?string $safeErrorCode): void
 {
-    \WHMCS\Database\Capsule::table('mod_securiacevps_operator_commands')
+    $command = \WHMCS\Database\Capsule::table('mod_securiacevps_operator_commands')
         ->where('id', $id)
+        ->first();
+    $command = $command !== null ? (array) $command : [];
+    $updated = \WHMCS\Database\Capsule::table('mod_securiacevps_operator_commands')
+        ->where('id', $id)
+        ->where('state', 'claimed')
         ->update([
             'state' => $state,
             'safe_error_code' => $safeErrorCode,
-            'claimed_at' => date('Y-m-d H:i:s'),
             'completed_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
+    if ($updated === 1 && $command !== []) {
+        (new \SecuriAceVps\AuditLogger())->record(
+            'operator_command.' . (string) ($command['command_type'] ?? 'unknown'),
+            $state,
+            (int) ($command['service_id'] ?? 0),
+            '',
+            [
+                'command_uuid' => (string) ($command['command_uuid'] ?? ''),
+                'operation_uuid' => (string) ($command['operation_uuid'] ?? ''),
+                'safe_error_code' => $safeErrorCode,
+            ],
+            'admin',
+            (int) ($command['requested_by_admin_id'] ?? 0)
+        );
+    }
 }

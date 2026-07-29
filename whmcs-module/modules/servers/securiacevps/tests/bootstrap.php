@@ -56,6 +56,29 @@ if (!function_exists('decrypt')) {
     }
 }
 
+if (!function_exists('localAPI')) {
+    /**
+     * Deterministic WHMCS LocalAPI stand-in. Individual tests can install a
+     * callable in $__local_api_handler and inspect $__local_api_calls.
+     *
+     * @param array<string,mixed> $parameters
+     * @return array<string,mixed>
+     */
+    function localAPI(string $command, array $parameters, string $adminUsername = ''): array
+    {
+        $GLOBALS['__local_api_calls'][] = [
+            'command' => $command,
+            'parameters' => $parameters,
+            'admin_username' => $adminUsername,
+        ];
+        $handler = $GLOBALS['__local_api_handler'] ?? null;
+        if (is_callable($handler)) {
+            return (array) $handler($command, $parameters, $adminUsername);
+        }
+        return ['result' => 'error', 'message' => 'No test LocalAPI handler installed'];
+    }
+}
+
 // In-memory Capsule stand-in — shared with the addon suite (both modules ship
 // together; the relative path is stable inside the repo).
 require __DIR__ . '/../../../addons/contabo_pricing/tests/FakeCapsule.php';

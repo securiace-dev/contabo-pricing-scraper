@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 11;
+    public const SCHEMA_VERSION = 12;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -1666,5 +1666,19 @@ class Installer
             ['key' => 'schema_version'],
             ['value' => '3', 'updated_at' => $now]
         );
+    }
+
+    /**
+     * Schema v12 — install the customer lifecycle email templates used by the
+     * durable VPS communication queue. Existing administrator customisations
+     * are never overwritten.
+     */
+    public function migrateTo12(): void
+    {
+        if (!Capsule::schema()->hasTable('tblemailtemplates')) {
+            return;
+        }
+
+        (new EmailTemplateSeeder())->ensure();
     }
 }

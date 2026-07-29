@@ -23,6 +23,7 @@ final class VpsOperationsWorkbench
         'cancel_operation',
         'set_global_write_state',
         'set_capability_write_state',
+        'approve_adoption',
     ];
 
     /** @var list<string> */
@@ -119,6 +120,8 @@ final class VpsOperationsWorkbench
             'reconciliation' => $this->openFindings(),
             'adoption' => $this->rows('mod_securiacevps_adoption', 'updated_at', 300),
             'commands' => $this->rows('mod_securiacevps_operator_commands', 'id', 100),
+            'billing_sagas' => $this->rows('mod_securiacevps_billing_sagas', 'updated_at', 100),
+            'communications' => $this->rows('mod_securiacevps_communications', 'id', 100),
             'provider_accounts' => $this->providerAccounts(),
             'global_writes_enabled' => $this->schemaSetting('provider_writes_enabled', '0') === '1',
             'capability_write_settings' => $this->capabilityWriteSettings(),
@@ -164,6 +167,18 @@ final class VpsOperationsWorkbench
             ),
             'commands' => $this->whereRows(
                 'mod_securiacevps_operator_commands',
+                'operation_uuid',
+                $operationUuid,
+                'id'
+            ),
+            'billing_sagas' => $this->whereRows(
+                'mod_securiacevps_billing_sagas',
+                'operation_uuid',
+                $operationUuid,
+                'id'
+            ),
+            'communications' => $this->whereRows(
+                'mod_securiacevps_communications',
                 'operation_uuid',
                 $operationUuid,
                 'id'
@@ -216,6 +231,33 @@ final class VpsOperationsWorkbench
             $operation = (array) $operation;
             $serviceId = (int) ($operation['service_id'] ?? 0);
         }
+        if ($commandType === 'approve_adoption') {
+            if (($serviceId ?? 0) <= 0
+                || (string) ($payload['confirmation'] ?? '') !== 'VERIFY OWNERSHIP'
+                || !preg_match('/^[a-f0-9]{64}$/', (string) ($payload['evidence_hash'] ?? ''))
+                || trim((string) ($payload['provider_resource_id'] ?? '')) === ''
+            ) {
+                throw new InvalidArgumentException(
+                    'A current adoption candidate and typed VERIFY OWNERSHIP confirmation are required.'
+                );
+            }
+            $adoption = Capsule::table('mod_securiacevps_adoption')
+                ->where('service_id', (int) $serviceId)
+                ->first();
+            $adoption = $adoption !== null ? (array) $adoption : [];
+            if ((string) ($adoption['state'] ?? '') !== 'probable'
+                || !hash_equals(
+                    trim((string) ($payload['provider_resource_id'] ?? '')),
+                    (string) ($adoption['provider_resource_id'] ?? '')
+                )
+                || !hash_equals(
+                    (string) ($payload['evidence_hash'] ?? ''),
+                    hash('sha256', (string) ($adoption['evidence_json'] ?? ''))
+                )
+            ) {
+                throw new InvalidArgumentException('The adoption candidate is stale or no longer probable.');
+            }
+        }
 
         if ($commandType === 'set_global_write_state' && !empty($payload['enabled'])) {
             if ((string) ($payload['confirmation'] ?? '') !== 'ENABLE PROVIDER WRITES') {
@@ -225,6 +267,24 @@ final class VpsOperationsWorkbench
         if ($commandType === 'set_capability_write_state' && !empty($payload['enabled'])) {
             if ((string) ($payload['confirmation'] ?? '') !== 'ENABLE CAPABILITY WRITE') {
                 throw new InvalidArgumentException('Type ENABLE CAPABILITY WRITE to enable this mutation.');
+            }
+            $providerAccountId = trim((string) ($payload['provider_account_id'] ?? ''));
+            $capability = preg_replace(
+                '/[^a-z0-9_.-]/',
+                '',
+                strtolower((string) ($payload['capability'] ?? ''))
+            ) ?: '';
+            $certified = $providerAccountId !== '' && $capability !== ''
+                ? Capsule::table('mod_securiacevps_capabilities')
+                    ->where('provider_account_id', $providerAccountId)
+                    ->where('capability', $capability)
+                    ->whereIn('state', ['supported', 'requires_polling'])
+                    ->count()
+                : 0;
+            if ($certified !== 1) {
+                throw new InvalidArgumentException(
+                    'Only a certified provider-account capability may be enabled.'
+                );
             }
         }
 

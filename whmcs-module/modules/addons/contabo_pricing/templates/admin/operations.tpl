@@ -7,6 +7,8 @@ $cb_capabilities = is_array($capabilities ?? null) ? $capabilities : [];
 $cb_findings = is_array($reconciliation ?? null) ? $reconciliation : [];
 $cb_adoption = is_array($adoption ?? null) ? $adoption : [];
 $cb_commands = is_array($commands ?? null) ? $commands : [];
+$cb_billing_sagas = is_array($billing_sagas ?? null) ? $billing_sagas : [];
+$cb_communications = is_array($communications ?? null) ? $communications : [];
 $cb_capability_switches = is_array($capability_write_settings ?? null)
     ? $capability_write_settings
     : [];
@@ -147,6 +149,52 @@ $cb_state_tone = static function (string $state): string {
   </section>
 </div>
 
+<div class="cb-workbench-grid">
+  <section class="cb-card">
+    <header class="cb-section-header">
+      <div><h3 class="cb-card-title">Billing compensation</h3><p class="cb-card-sub">Commercial/provider saga state without automatic destructive compensation.</p></div>
+      <span class="cb-pill grey"><?= count($cb_billing_sagas) ?> recent</span>
+    </header>
+    <?php if (empty($cb_billing_sagas)): ?>
+      <div class="cb-empty">No provisioning billing saga has been recorded.</div>
+    <?php else: ?>
+      <ul class="cb-record-list">
+      <?php foreach ($cb_billing_sagas as $saga): ?>
+        <li>
+          <div>
+            <strong>Service #<?= (int) ($saga['service_id'] ?? 0) ?> · <?= $esc(str_replace('_', ' ', (string) ($saga['saga_type'] ?? ''))) ?></strong>
+            <div class="muted"><?= $esc($saga['currency'] ?? '') ?> <?= $esc($saga['amount'] ?? '') ?> · <?= $esc($saga['compensation_state'] ?? 'none') ?></div>
+          </div>
+          <span class="cb-pill <?= $esc($cb_state_tone((string) ($saga['state'] ?? ''))) ?>"><?= $esc($saga['state'] ?? '') ?></span>
+        </li>
+      <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </section>
+
+  <section class="cb-card">
+    <header class="cb-section-header">
+      <div><h3 class="cb-card-title">Customer communications</h3><p class="cb-card-sub">WHMCS product-email delivery state. No message body or credential is retained here.</p></div>
+      <span class="cb-pill <?= count(array_filter($cb_communications, static function (array $row): bool { return ($row['state'] ?? '') === 'failed'; })) > 0 ? 'warn' : 'grey' ?>"><?= count($cb_communications) ?> recent</span>
+    </header>
+    <?php if (empty($cb_communications)): ?>
+      <div class="cb-empty">No lifecycle communication has been queued.</div>
+    <?php else: ?>
+      <ul class="cb-record-list">
+      <?php foreach ($cb_communications as $communication): ?>
+        <li>
+          <div>
+            <strong>Service #<?= (int) ($communication['service_id'] ?? 0) ?> · <?= $esc(str_replace('_', ' ', (string) ($communication['message_type'] ?? ''))) ?></strong>
+            <div class="muted"><?= $esc($communication['template_name'] ?? '') ?> · attempts <?= (int) ($communication['attempt_count'] ?? 0) ?></div>
+          </div>
+          <span class="cb-pill <?= $esc($cb_state_tone((string) ($communication['state'] ?? ''))) ?>"><?= $esc($communication['state'] ?? '') ?></span>
+        </li>
+      <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </section>
+</div>
+
 <section class="cb-card">
   <header class="cb-section-header">
     <div>
@@ -178,6 +226,8 @@ $cb_state_tone = static function (string $state): string {
                 <input type="hidden" name="action" value="provider-write-control">
                 <input type="hidden" name="scope" value="capability">
                 <input type="hidden" name="capability" value="<?= $esc($capName) ?>">
+                <input type="hidden" name="provider_account_id"
+                       value="<?= $esc($capability['provider_account_id'] ?? '') ?>">
                 <?= generate_token() ?>
                 <label class="cb-check compact">
                   <input type="checkbox" name="enabled" value="1"<?= $switchEnabled ? ' checked' : '' ?>>
@@ -305,6 +355,23 @@ $cb_state_tone = static function (string $state): string {
           <div>
             <strong>Service #<?= (int) ($record['service_id'] ?? 0) ?></strong>
             <div class="muted">Confidence <?= $esc((string) ($record['confidence'] ?? '0')) ?></div>
+            <?php if ($adoptionState === 'probable'): ?>
+              <form method="post" action="<?= $esc($module_link) ?>" class="cb-inline-form">
+                <input type="hidden" name="action" value="adoption-approve">
+                <input type="hidden" name="service_id" value="<?= (int) ($record['service_id'] ?? 0) ?>">
+                <input type="hidden" name="provider_resource_id"
+                       value="<?= $esc($record['provider_resource_id'] ?? '') ?>">
+                <input type="hidden" name="evidence_hash"
+                       value="<?= $esc(hash('sha256', (string) ($record['evidence_json'] ?? ''))) ?>">
+                <?= generate_token() ?>
+                <label>
+                  <span class="sr-only">Type VERIFY OWNERSHIP to approve this candidate</span>
+                  <input type="text" name="confirmation" autocomplete="off"
+                         placeholder="VERIFY OWNERSHIP" required>
+                </label>
+                <button type="submit" class="cb-btn subtle">Verify candidate</button>
+              </form>
+            <?php endif; ?>
           </div>
           <span class="cb-pill <?= $esc($cb_state_tone($adoptionState)) ?>"><?= $esc($adoptionState) ?></span>
         </li>

@@ -40,6 +40,8 @@ final class VpsOperationsWorkbenchTest extends TestCase
         Capsule::$tables['mod_securiacevps_adoption'] = [];
         Capsule::$tables['mod_securiacevps_capabilities'] = [];
         Capsule::$tables['mod_securiacevps_operator_commands'] = [];
+        Capsule::$tables['mod_securiacevps_billing_sagas'] = [];
+        Capsule::$tables['mod_securiacevps_communications'] = [];
         Capsule::$tables['tblhosting'] = [[
             'id' => 10,
             'userid' => 20,

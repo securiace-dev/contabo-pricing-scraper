@@ -64,6 +64,10 @@ final class NativeLifecycleTest extends TestCase
             'provider_pending',
             Capsule::$tables['mod_securiacevps_operations'][0]['state']
         );
+        $this->assertSame(
+            'provider_pending',
+            Capsule::$tables['mod_securiacevps_billing_sagas'][0]['state']
+        );
 
         $this->harness->http->stub('GET /v1/compute/instances/9001', 200, [
             'data' => [[
@@ -86,8 +90,11 @@ final class NativeLifecycleTest extends TestCase
             $this->harness->http->callsMatching('POST https://api.contabo.com/v1/compute/instances')
         );
         $this->assertSame('succeeded', Capsule::$tables['mod_securiacevps_operations'][0]['state']);
+        $this->assertSame('Active', Capsule::$tables['tblhosting'][0]['domainstatus']);
         $this->assertSame('', Capsule::$tables['tblhosting'][0]['password']);
         $this->assertCount(1, Capsule::$tables['mod_securiacevps_secrets']);
+        $this->assertSame('completed', Capsule::$tables['mod_securiacevps_billing_sagas'][0]['state']);
+        $this->assertSame('1999.00', Capsule::$tables['mod_securiacevps_billing_sagas'][0]['amount']);
     }
 
     public function testProviderWriteKillSwitchBlocksBeforeSubmission(): void
@@ -105,9 +112,104 @@ final class NativeLifecycleTest extends TestCase
         );
     }
 
+    public function testSuspendWaitsForProviderStateBeforeCommercialProjection(): void
+    {
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('stop');
+        $this->harness->http->stub('GET /v1/compute/instances/9001', 200, [
+            'data' => [$this->providerInstance('image-1', 'stopped')],
+        ]);
+        $this->harness->http->queue(
+            'POST /v1/compute/instances/9001/actions/stop',
+            200,
+            ['data' => []]
+        );
+
+        $this->assertSame('success', securiacevps_SuspendAccount(Harness::params()));
+        $this->assertSame('Suspended', Capsule::$tables['tblhosting'][0]['domainstatus']);
+        $this->assertCount(
+            1,
+            $this->harness->http->callsMatching(
+                'POST https://api.contabo.com/v1/compute/instances/9001/actions/stop'
+            )
+        );
+    }
+
+    public function testUnsuspendWaitsForProviderStateBeforeCommercialProjection(): void
+    {
+        Capsule::$tables['tblhosting'][0]['domainstatus'] = 'Suspended';
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('start');
+        $this->harness->http->stub('GET /v1/compute/instances/9001', 200, [
+            'data' => [$this->providerInstance('image-1', 'running')],
+        ]);
+        $this->harness->http->queue(
+            'POST /v1/compute/instances/9001/actions/start',
+            200,
+            ['data' => []]
+        );
+
+        $this->assertSame('success', securiacevps_UnsuspendAccount(Harness::params()));
+        $this->assertSame('Active', Capsule::$tables['tblhosting'][0]['domainstatus']);
+    }
+
+    public function testTerminateWaitsUntilDeletionIsVerified(): void
+    {
+        Capsule::$tables['tblhosting'][0]['domainstatus'] = 'Active';
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('terminate');
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, [
+            'data' => [$this->providerInstance('image-1', 'running')],
+        ]);
+        $this->harness->http->queue(
+            'POST /v1/compute/instances/9001/cancel',
+            201,
+            ['data' => [['cancelDate' => '2026-08-01']]]
+        );
+        $this->harness->http->queue(
+            'GET /v1/compute/instances/9001',
+            404,
+            ['message' => 'not found']
+        );
+        $this->harness->http->stub('GET /v1/secrets?', 200, ['data' => []]);
+
+        $this->assertSame('success', securiacevps_TerminateAccount(Harness::params()));
+        $this->assertSame('Terminated', Capsule::$tables['tblhosting'][0]['domainstatus']);
+        $this->assertCount(
+            1,
+            $this->harness->http->callsMatching(
+                'POST https://api.contabo.com/v1/compute/instances/9001/cancel'
+            )
+        );
+    }
+
+    public function testOwnershipMismatchBlocksLifecycleMutation(): void
+    {
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('stop');
+        $this->harness->http->stub('GET /v1/compute/instances/9001', 200, [
+            'data' => [[
+                'instanceId' => 9001,
+                'displayName' => 'foreign-resource',
+                'status' => 'running',
+            ]],
+        ]);
+
+        $result = securiacevps_SuspendAccount(Harness::params());
+
+        $this->assertStringContainsString('administrator review', $result);
+        $this->assertCount(0, $this->harness->http->callsMatching('/actions/stop'));
+        $this->assertSame('Pending', Capsule::$tables['tblhosting'][0]['domainstatus']);
+    }
+
     public function testPasswordResetIsDurableAndUsesOneTimeDelivery(): void
     {
         $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
         $this->seedCapability('password_reset');
         $this->harness->stubTaggedInstance('9001');
         $this->harness->http->stub('GET /v1/secrets?', 200, ['data' => []]);
@@ -144,6 +246,7 @@ final class NativeLifecycleTest extends TestCase
     public function testAmbiguousPasswordResetIsNeverRepeated(): void
     {
         $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
         $this->seedCapability('password_reset');
         $this->harness->stubTaggedInstance('9001');
         $this->harness->http->stub('GET /v1/secrets?', 200, ['data' => []]);
@@ -176,6 +279,7 @@ final class NativeLifecycleTest extends TestCase
     public function testReinstallUsesSealedImageAndReconcilesBeforeSuccess(): void
     {
         $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
         $this->seedCapability('reinstall');
         $this->harness->http->queue('GET /v1/compute/instances/9001', 200, [
             'data' => [$this->providerInstance('image-old', 'running')],
@@ -204,6 +308,7 @@ final class NativeLifecycleTest extends TestCase
     public function testAmbiguousReinstallPollsInsteadOfRepeatingMutation(): void
     {
         $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
         $this->seedCapability('reinstall');
         $this->harness->http->stub('GET /v1/compute/instances/9001', 200, [
             'data' => [$this->providerInstance('image-old', 'running')],
@@ -243,6 +348,30 @@ final class NativeLifecycleTest extends TestCase
             'imageId' => $image,
             'createdDate' => '2026-07-30T00:00:00Z',
             'ipConfig' => ['v4' => [['ip' => '203.0.113.10']]],
+        ];
+    }
+
+    private function seedVerifiedOwnership(string $resourceId): void
+    {
+        $account = hash('sha256', 'contabo|0|');
+        Capsule::$tables['mod_securiacevps_resources'][] = [
+            'id' => 1,
+            'service_id' => 300,
+            'installation_id' => 'test-installation',
+            'provider_account_id' => $account,
+            'provider_resource_id' => $resourceId,
+            'provider_state' => 'running',
+            'provisioning_state' => 'ready',
+            'ownership_state' => 'verified',
+            'resource_version' => 1,
+        ];
+        Capsule::$tables['mod_securiacevps_adoption'][] = [
+            'id' => 1,
+            'service_id' => 300,
+            'provider_account_id' => $account,
+            'provider_resource_id' => $resourceId,
+            'state' => 'verified',
+            'confidence' => '1.0000',
         ];
     }
 

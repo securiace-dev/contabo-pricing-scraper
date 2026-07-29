@@ -45,9 +45,7 @@ final class SyncFlowTest extends TestCase
             ],
         ]]]);
 
-        $out = securiacevps_ClientArea(Harness::params());
-        $this->assertSame(['203.0.113.10'], $out['vars']['ipv4']);
-        $this->assertSame(['2a02:c207::1'], $out['vars']['ipv6']);
+        $this->assertSame('success', securiacevps_buttonSync(Harness::params()));
 
         $row = Capsule::$tables['tblhosting'][0];
         $this->assertSame('203.0.113.10', $row['dedicatedip']);
@@ -71,7 +69,7 @@ final class SyncFlowTest extends TestCase
         $this->assertSame([], $hostingWrites, 'no tblhosting write expected when nothing changed');
     }
 
-    public function testDriftedDisplayNameTagIsRestored(): void
+    public function testDriftedDisplayNameTagIsRejectedWithoutProviderMutation(): void
     {
         $this->h->http->stub('GET /v1/compute/instances/9001', 200, ['data' => [[
             'instanceId'  => 9001,
@@ -80,12 +78,12 @@ final class SyncFlowTest extends TestCase
             'ipConfig'    => ['v4' => [['ip' => '203.0.113.10']]],
         ]]]);
 
-        securiacevps_buttonSync(Harness::params());
+        $result = securiacevps_buttonSync(Harness::params());
 
         $patches = $this->h->http->callsMatching('PATCH https://api.contabo.com/v1/compute/instances/9001');
-        $this->assertCount(1, $patches);
-        $body = json_decode((string) $patches[0]['body'], true);
-        $this->assertSame('whmcs-300 vps.example.com', $body['displayName']);
+        $this->assertStringContainsString('ownership could not be verified', $result);
+        $this->assertCount(0, $patches);
+        $this->assertSame('', Capsule::$tables['tblhosting'][0]['dedicatedip']);
     }
 
     public function testAdminTabDegradesGracefullyWhenApiIsDown(): void
@@ -96,7 +94,7 @@ final class SyncFlowTest extends TestCase
         $fields = securiacevps_AdminServicesTabFields(Harness::params());
 
         $this->assertArrayHasKey('Status', $fields);
-        $this->assertStringContainsString('Live status unavailable', $fields['Status']);
+        $this->assertStringContainsString('Local VPS projection is unavailable', $fields['Status']);
         $this->assertStringContainsString('198.51.100.5', $fields['IPv4']);
     }
 
@@ -108,29 +106,72 @@ final class SyncFlowTest extends TestCase
         $out = securiacevps_ClientArea(Harness::params());
 
         $this->assertSame('clientarea', $out['templatefile']);
-        $this->assertTrue($out['vars']['stale']);
         $this->assertSame(['198.51.100.5'], $out['vars']['ipv4']);
         $this->assertSame('unavailable', $out['vars']['status']);
     }
 
     public function testClientAreaRendersLiveSnapshot(): void
     {
-        $this->h->stubTaggedInstance('9001');
+        $this->seedLocalProjection();
+        $this->h->http->setDefault(503, ['message' => 'maintenance']);
+        $callsBefore = count($this->h->http->calls);
 
         $out = securiacevps_ClientArea(Harness::params());
 
         $this->assertSame('clientarea', $out['templatefile']);
         $this->assertSame('running', $out['vars']['status']);
         $this->assertSame(['203.0.113.10', '203.0.113.11'], $out['vars']['ipv4']);
-        $this->assertArrayNotHasKey('stale', $out['vars']);
+        $this->assertSame('verified', $out['vars']['ownership_state']);
+        $this->assertSame($callsBefore, count($this->h->http->calls), 'render must not call Contabo');
     }
 
-    public function testSuspendMapsToStopAndUnsuspendToStart(): void
+    private function seedLocalProjection(): void
     {
-        $this->h->stubTaggedInstance('9001');
-        $this->assertSame('success', securiacevps_SuspendAccount(Harness::params()));
-        $this->assertSame('success', securiacevps_UnsuspendAccount(Harness::params()));
-        $this->assertCount(1, $this->h->http->callsMatching('actions/stop'));
-        $this->assertCount(1, $this->h->http->callsMatching('actions/start'));
+        foreach ([
+            'mod_securiacevps_schema',
+            'mod_securiacevps_order_snapshots',
+            'mod_securiacevps_resources',
+            'mod_securiacevps_operations',
+            'mod_securiacevps_operation_attempts',
+            'mod_securiacevps_provider_requests',
+            'mod_securiacevps_service_locks',
+            'mod_securiacevps_capabilities',
+            'mod_securiacevps_reconciliation',
+            'mod_securiacevps_adoption',
+            'mod_securiacevps_billing_sagas',
+            'mod_securiacevps_audit_events',
+            'mod_securiacevps_operator_commands',
+            'mod_securiacevps_secrets',
+            'mod_securiacevps_communications',
+        ] as $table) {
+            Capsule::$columns[$table] = ['id'];
+            Capsule::$tables[$table] = [];
+        }
+        $account = hash('sha256', 'contabo|0|');
+        Capsule::$tables['mod_securiacevps_schema'] = [
+            ['key' => 'schema_version', 'value' => '3'],
+            ['key' => 'installation_id', 'value' => 'test-installation'],
+            ['key' => 'provider_writes_enabled', 'value' => '0'],
+        ];
+        Capsule::$tables['mod_securiacevps_resources'] = [[
+            'id' => 1,
+            'service_id' => 300,
+            'provider_account_id' => $account,
+            'provider_resource_id' => '9001',
+            'provider_state' => 'running',
+            'provisioning_state' => 'ready',
+            'ownership_state' => 'verified',
+            'last_observed_at' => '2026-07-30 12:00:00',
+        ]];
+        Capsule::$tables['mod_securiacevps_adoption'] = [[
+            'id' => 1,
+            'service_id' => 300,
+            'provider_account_id' => $account,
+            'provider_resource_id' => '9001',
+            'state' => 'verified',
+            'confidence' => '1.0000',
+        ]];
+        Capsule::$tables['tblhosting'][0]['dedicatedip'] = '203.0.113.10';
+        Capsule::$tables['tblhosting'][0]['assignedips'] = '203.0.113.11';
     }
 }

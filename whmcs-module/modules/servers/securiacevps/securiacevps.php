@@ -51,6 +51,11 @@ require_once __DIR__ . '/lib/CapabilityRegistry.php';
 require_once __DIR__ . '/lib/OrderSnapshotRepository.php';
 require_once __DIR__ . '/lib/AuditLogger.php';
 require_once __DIR__ . '/lib/OneTimeSecretStore.php';
+require_once __DIR__ . '/lib/OwnershipGuard.php';
+require_once __DIR__ . '/lib/AdoptionService.php';
+require_once __DIR__ . '/lib/ClientAreaPresenter.php';
+require_once __DIR__ . '/lib/BillingSagaRepository.php';
+require_once __DIR__ . '/lib/CommunicationService.php';
 require_once __DIR__ . '/lib/OperationRepository.php';
 require_once __DIR__ . '/lib/OperationProcessor.php';
 require_once __DIR__ . '/lib/LifecycleOrchestrator.php';
@@ -225,27 +230,34 @@ function securiacevps_buttonSync(array $params): string
 function securiacevps_AdminServicesTabFields(array $params): array
 {
     try {
-        $snapshot = \SecuriAceVps\Runtime::instanceService($params)->sync($params, true);
+        $view = (new \SecuriAceVps\ClientAreaPresenter())->present($params);
         $fields = [
-            'Instance ID' => htmlspecialchars($snapshot['instance_id']),
-            'Status'      => htmlspecialchars($snapshot['status']),
-            'Region'      => htmlspecialchars($snapshot['region']),
-            'IPv4'        => htmlspecialchars(implode(', ', $snapshot['ipv4'])),
+            'Instance ID' => htmlspecialchars((string) $view['instance_id']),
+            'Provider status' => htmlspecialchars((string) $view['status']),
+            'Provisioning' => htmlspecialchars((string) $view['provisioning_state']),
+            'Ownership' => htmlspecialchars((string) $view['ownership_state']),
+            'Region' => htmlspecialchars((string) $view['region']),
+            'IPv4' => htmlspecialchars(implode(', ', (array) $view['ipv4'])),
         ];
-        if (!empty($snapshot['ipv6'])) {
-            $fields['IPv6'] = htmlspecialchars(implode(', ', $snapshot['ipv6']));
+        if (!empty($view['ipv6'])) {
+            $fields['IPv6'] = htmlspecialchars(implode(', ', (array) $view['ipv6']));
         }
-        $fields['Image']   = htmlspecialchars($snapshot['image']);
-        $fields['Created'] = htmlspecialchars($snapshot['created']);
-        $fields['Panel']   = '<a href="https://my.contabo.com" target="_blank" rel="noopener">Open Contabo Panel &#8599;</a>';
+        $fields['Image'] = htmlspecialchars((string) $view['image']);
+        $operation = is_array($view['operation'] ?? null) ? $view['operation'] : [];
+        if ($operation !== []) {
+            $fields['Latest operation'] = htmlspecialchars(
+                (string) ($operation['operation_type'] ?? '')
+                . ' · ' . (string) ($operation['state'] ?? '')
+                . ' · ref ' . (string) ($operation['correlation_id'] ?? '')
+            );
+        }
+        $fields['Last observed'] = htmlspecialchars((string) $view['synced_at']);
         return $fields;
     } catch (\Throwable $e) {
-        // Degrade to the last-synced IP instead of a bare error row.
         $cached = _securiacevps_cached_ip($params);
         return [
-            'Status' => htmlspecialchars('Live status unavailable: ' . $e->getMessage()),
+            'Status' => 'Local VPS projection is unavailable. Use the addon operations workbench.',
             'IPv4'   => htmlspecialchars($cached !== '' ? $cached . ' (last synced)' : '—'),
-            'Panel'  => '<a href="https://my.contabo.com" target="_blank" rel="noopener">Open Contabo Panel &#8599;</a>',
         ];
     }
 }
@@ -288,40 +300,98 @@ function securiacevps_clientResetPassword(array $params): string
  */
 function securiacevps_ClientArea(array $params): array
 {
+    $flash = '';
+    $flashTone = 'info';
+    $revealedCredential = '';
     try {
-        $snapshot = \SecuriAceVps\Runtime::instanceService($params)->sync($params, true);
-        return [
-            'templatefile' => 'clientarea',
-            'vars' => [
-                'instance_id' => $snapshot['instance_id'],
-                'status'      => $snapshot['status'],
-                'region'      => $snapshot['region'],
-                'image'       => $snapshot['image'],
-                'ipv4'        => $snapshot['ipv4'],
-                'ipv6'        => $snapshot['ipv6'],
-                'created'     => $snapshot['created'],
-                'synced_at'   => $snapshot['synced_at'],
-            ],
-        ];
+        if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'POST'
+            && isset($_POST['securiacevps_action'])
+        ) {
+            if (function_exists('check_token')) {
+                check_token();
+            }
+            $action = (string) $_POST['securiacevps_action'];
+            if ($action === 'refresh') {
+                \SecuriAceVps\Runtime::instanceService($params)->refreshProjection($params);
+                $flash = 'Server details refreshed.';
+                $flashTone = 'success';
+            } elseif (in_array($action, ['start', 'stop', 'restart'], true)) {
+                $result = \SecuriAceVps\Runtime::lifecycle()->power($params, $action);
+                $flash = $result === 'success'
+                    ? 'The server action completed.'
+                    : $result;
+                $flashTone = $result === 'success' ? 'success' : 'warning';
+            } elseif ($action === 'reset_password') {
+                if ((string) ($_POST['confirmation'] ?? '') !== 'RESET PASSWORD') {
+                    throw new \SecuriAceVps\ContaboProvisioningException(
+                        'Type RESET PASSWORD to confirm this action',
+                        'confirmation_required'
+                    );
+                }
+                $result = \SecuriAceVps\Runtime::lifecycle()->resetPassword($params);
+                $flash = $result === 'success'
+                    ? 'Password reset completed. Reveal the new credential once below.'
+                    : $result;
+                $flashTone = $result === 'success' ? 'success' : 'warning';
+            } elseif ($action === 'reinstall') {
+                if ((string) ($_POST['confirmation'] ?? '') !== 'REINSTALL') {
+                    throw new \SecuriAceVps\ContaboProvisioningException(
+                        'Type REINSTALL to confirm data erasure',
+                        'confirmation_required'
+                    );
+                }
+                $result = \SecuriAceVps\Runtime::lifecycle()->reinstall($params);
+                $flash = $result === 'success'
+                    ? 'Reinstall completed. Reveal the new credential once below.'
+                    : $result;
+                $flashTone = $result === 'success' ? 'success' : 'warning';
+            } elseif ($action === 'reveal_credential') {
+                if (!headers_sent()) {
+                    header('Cache-Control: no-store, max-age=0');
+                    header('Pragma: no-cache');
+                    header('Referrer-Policy: no-referrer');
+                }
+                $revealedCredential = (new \SecuriAceVps\OneTimeSecretStore())->reveal(
+                    (int) ($params['serviceid'] ?? 0),
+                    (string) ($_POST['reveal_token'] ?? '')
+                );
+                $flash = 'Credential revealed. Copy it now; it cannot be shown again.';
+                $flashTone = 'warning';
+            } else {
+                throw new \SecuriAceVps\ContaboProvisioningException(
+                    'The requested VPS action is not available',
+                    'client_action_not_available'
+                );
+            }
+        }
+        $view = (new \SecuriAceVps\ClientAreaPresenter())->present($params);
     } catch (\Throwable $e) {
-        // Degrade to last-known data instead of an error-only page.
+        $flash = _securiacevps_safe_error($e);
+        $flashTone = 'danger';
         $cached = _securiacevps_cached_ip($params);
-        return [
-            'templatefile' => 'clientarea',
-            'vars' => [
-                'stale'       => true,
-                'stale_error' => $e->getMessage(),
-                'instance_id' => '',
-                'status'      => 'unavailable',
-                'region'      => '',
-                'image'       => '',
-                'ipv4'        => $cached !== '' ? [$cached] : [],
-                'ipv6'        => [],
-                'created'     => '',
-                'synced_at'   => '',
-            ],
+        $view = [
+            'instance_id' => '',
+            'status' => 'unavailable',
+            'provisioning_state' => 'unknown',
+            'ownership_state' => 'unassessed',
+            'verified_ownership' => false,
+            'region' => '',
+            'image' => '',
+            'ipv4' => $cached !== '' ? [$cached] : [],
+            'ipv6' => [],
+            'synced_at' => '',
+            'operation' => [],
+            'busy' => false,
+            'actions' => [],
+            'credential' => null,
+            'writes_enabled' => false,
         ];
     }
+    $view['flash'] = $flash;
+    $view['flash_tone'] = $flashTone;
+    $view['revealed_credential'] = $revealedCredential;
+    $view['csrf_field'] = function_exists('generate_token') ? generate_token() : '';
+    return ['templatefile' => 'clientarea', 'vars' => $view];
 }
 
 // ── Internal helpers ──────────────────────────────────────────────────────────
@@ -355,7 +425,14 @@ function _securiacevps_lifecycle(array $params, string $callName, string $method
 function _securiacevps_safe_error(\Throwable $error): string
 {
     if ($error instanceof \SecuriAceVps\ContaboProvisioningException) {
-        return $error->getMessage();
+        $safe = [
+            'confirmation_required' => $error->getMessage(),
+            'client_action_not_available' => 'The requested VPS action is not available.',
+            'resource_ownership_not_adopted' => 'This server is awaiting ownership verification.',
+            'operation_credential_unavailable' => 'This credential is no longer available.',
+        ];
+        return $safe[$error->safeCode()]
+            ?? 'The VPS operation could not be completed safely. An administrator can review the operation record.';
     }
     return 'The VPS operation could not be completed. Check the module log for the correlation reference.';
 }

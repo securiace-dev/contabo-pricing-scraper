@@ -6,6 +6,8 @@ $cb_resource = is_array($resource ?? null) ? $resource : [];
 $cb_attempts = is_array($attempts ?? null) ? $attempts : [];
 $cb_provider_requests = is_array($provider_requests ?? null) ? $provider_requests : [];
 $cb_commands = is_array($commands ?? null) ? $commands : [];
+$cb_billing_sagas = is_array($billing_sagas ?? null) ? $billing_sagas : [];
+$cb_communications = is_array($communications ?? null) ? $communications : [];
 $cb_events = is_array($audit_events ?? null) ? $audit_events : [];
 $cb_findings = is_array($findings ?? null) ? $findings : [];
 $cb_uuid = (string) ($cb_operation['operation_uuid'] ?? '');
@@ -102,6 +104,46 @@ $cb_uuid = (string) ($cb_operation['operation_uuid'] ?? '');
             <div class="muted">Admin #<?= (int) ($command['requested_by_admin_id'] ?? 0) ?> · <?= $esc($command['created_at'] ?? '') ?></div>
           </div>
           <span class="cb-pill grey"><?= $esc($command['state'] ?? '') ?></span>
+        </li>
+      <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </section>
+</div>
+
+<div class="cb-workbench-grid">
+  <section class="cb-card">
+    <h3 class="cb-card-title">Billing saga</h3>
+    <?php if (empty($cb_billing_sagas)): ?>
+      <div class="cb-empty">No billing compensation record is linked to this operation.</div>
+    <?php else: ?>
+      <ul class="cb-record-list">
+      <?php foreach ($cb_billing_sagas as $saga): ?>
+        <li>
+          <div>
+            <strong><?= $esc(str_replace('_', ' ', (string) ($saga['saga_type'] ?? ''))) ?></strong>
+            <div class="muted"><?= $esc($saga['currency'] ?? '') ?> <?= $esc($saga['amount'] ?? '') ?> · <?= $esc($saga['compensation_state'] ?? 'none') ?></div>
+          </div>
+          <span class="cb-pill grey"><?= $esc($saga['state'] ?? '') ?></span>
+        </li>
+      <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </section>
+
+  <section class="cb-card">
+    <h3 class="cb-card-title">Customer communication</h3>
+    <?php if (empty($cb_communications)): ?>
+      <div class="cb-empty">No lifecycle communication is linked to this operation.</div>
+    <?php else: ?>
+      <ul class="cb-record-list">
+      <?php foreach ($cb_communications as $communication): ?>
+        <li>
+          <div>
+            <strong><?= $esc(str_replace('_', ' ', (string) ($communication['message_type'] ?? ''))) ?></strong>
+            <div class="muted"><?= $esc($communication['template_name'] ?? '') ?> · attempts <?= (int) ($communication['attempt_count'] ?? 0) ?></div>
+          </div>
+          <span class="cb-pill grey"><?= $esc($communication['state'] ?? '') ?></span>
         </li>
       <?php endforeach; ?>
       </ul>

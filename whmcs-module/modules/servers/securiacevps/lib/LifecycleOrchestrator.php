@@ -72,6 +72,7 @@ final class LifecycleOrchestrator
     public function reinstall(array $params): string
     {
         $serviceId = (int) ($params['serviceid'] ?? 0);
+        OwnershipGuard::assertVerified($serviceId);
         $snapshot = $this->snapshots->sealedForService($serviceId);
         $operation = $this->operations->accept(
             $serviceId,
@@ -101,6 +102,7 @@ final class LifecycleOrchestrator
     private function acceptAndProgress(array $params, string $type): string
     {
         $serviceId = (int) ($params['serviceid'] ?? 0);
+        OwnershipGuard::assertVerified($serviceId);
         $operation = $this->operations->accept(
             $serviceId,
             null,

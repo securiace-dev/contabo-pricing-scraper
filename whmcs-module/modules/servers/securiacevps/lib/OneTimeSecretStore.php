@@ -163,6 +163,15 @@ final class OneTimeSecretStore
             ) {
                 continue;
             }
+            $operationUuid = trim((string) ($row['operation_uuid'] ?? ''));
+            if ($operationUuid !== '') {
+                $operationState = Capsule::table('mod_securiacevps_operations')
+                    ->where('operation_uuid', $operationUuid)
+                    ->value('state');
+                if ((string) $operationState !== 'succeeded') {
+                    continue;
+                }
+            }
             $token = decrypt((string) ($row['reveal_token_ciphertext'] ?? ''));
             if ($token === '') {
                 continue;

@@ -39,7 +39,7 @@ final class FreshInstallSchemaTest extends TestCase
             $recorded,
             'a fresh install must record the current schema version'
         );
-        $this->assertSame(11, $recorded);
+        $this->assertSame(12, $recorded);
     }
 
     public function testFreshInstallSchemaIsHealthy(): void
