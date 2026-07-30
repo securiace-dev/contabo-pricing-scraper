@@ -43,7 +43,9 @@ permissions:
 jobs:
   scrape:
     name: Scrape & publish
-    runs-on: [self-hosted, Linux, X64]
+    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+    runs-on: contabo-ci-release
+    timeout-minutes: 60
     # Grants access to the SCRAPER_PROXY secret (Build environment). The runner
     # is a datacenter IP that Cloudflare 403-blocks; fetching through the proxy
     # lets plain `reqwest` mode succeed — so CloakBrowser/Chromium is no longer
@@ -51,11 +53,24 @@ jobs:
     environment: Build
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # Full history so the pre-push rebase can find a merge base against the
           # latest origin/<branch> (a shallow clone makes rebase unreliable).
           fetch-depth: 0
+
+      - name: Set up Node 20.19.5
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '20.19.5'
+          cache: npm
+
+      - name: Verify runner capabilities
+        run: |
+          set -euo pipefail
+          for command in gh git sha256sum; do
+            command -v "$command"
+          done
 
       # Resolve "latest" → concrete tag so cache key is stable across runs
       - name: Resolve binary version
@@ -73,10 +88,10 @@ jobs:
       # Cache keyed by release tag — re-download only when a new release ships
       - name: Cache scraper binary
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: bin/contabo-scraper
-          key: binary-${{ steps.ver.outputs.tag }}-linux-x86_64
+          key: contabo-scrape-${{ runner.arch }}-binary-${{ steps.ver.outputs.tag }}
 
       - name: Download binary
         if: steps.cache.outputs.cache-hit != 'true'
@@ -89,26 +104,31 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Install system libraries required by headless Chromium on Debian/Ubuntu.
-      # Skipped in reqwest-only mode. Only needs to run once per runner lifetime,
-      # but apt-get is idempotent so it's safe to repeat.
-      # Gracefully no-ops if the runner user lacks passwordless sudo (libs likely
-      # pre-installed on a persistent self-hosted runner).
-      - name: Install Chromium system dependencies
+      - name: Verify binary checksum
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release download "${{ steps.ver.outputs.tag }}" \
+            --pattern 'SHA256SUMS.txt' \
+            --output bin/SHA256SUMS.txt
+          EXPECTED="$(
+            awk '$2 == "contabo-scraper-linux-x86_64" { print $1 }' \
+              bin/SHA256SUMS.txt
+          )"
+          test -n "$EXPECTED"
+          ACTUAL="$(sha256sum bin/contabo-scraper | awk '{print $1}')"
+          test "$ACTUAL" = "$EXPECTED"
+
+      # Browser libraries are part of the runner image. Workflow jobs never
+      # mutate apt state or require passwordless sudo.
+      - name: Verify Chromium system dependencies
         if: env.FETCH_MODE != 'reqwest'
         run: |
-          if ! sudo -n true 2>/dev/null; then
-            echo "Skipping system deps install (sudo requires password — assuming libs pre-installed on runner)"
-            exit 0
-          fi
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            libatk1.0-0 libatk-bridge2.0-0 libcups2 libdbus-1-3 \
-            libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libnss3 \
-            libx11-6 libxcomposite1 libxdamage1 libxext6 libxfixes3 \
-            libxrandr2 libxrender1 libxss1 libxtst6 \
-            libpango-1.0-0 libcairo2 libasound2 libgbm1 \
-            fonts-liberation
+          set -euo pipefail
+          for library in libatk-1.0.so.0 libnss3.so libX11.so.6 libgbm.so.1; do
+            ldconfig -p | grep -F "$library" >/dev/null
+          done
 
       # Install CloakBrowser npm wrapper + resolve the Chromium binary version.
       # Skipped in reqwest-only mode to avoid a 200MB download on every run.
@@ -118,21 +138,20 @@ jobs:
         id: cloak-ver
         if: env.FETCH_MODE != 'reqwest'
         run: |
-          npm install cloakbrowser playwright-core --omit=dev --prefer-offline 2>/dev/null || \
-            npm install cloakbrowser playwright-core --omit=dev
+          npm ci --ignore-scripts --omit=dev
           VER=$(node -e "console.log(require('./node_modules/cloakbrowser/package.json').version)" 2>/dev/null || echo "unknown")
           echo "version=$VER" >> "$GITHUB_OUTPUT"
 
       - name: Cache CloakBrowser Chromium binary
         id: cloak-cache
         if: env.FETCH_MODE != 'reqwest'
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           # CloakBrowser stores its patched Chromium binary in ~/.cloakbrowser/
           # (not ~/.cache/ms-playwright). The binary auto-downloads on first launch()
           # and is cached here to avoid a 200MB download on every subsequent run.
           path: ~/.cloakbrowser
-          key: cloakbrowser-chromium-${{ steps.cloak-ver.outputs.version }}-linux-x86_64
+          key: contabo-scrape-${{ runner.arch }}-cloakbrowser-${{ steps.cloak-ver.outputs.version }}
 
       - name: Pre-download CloakBrowser Chromium binary
         if: env.FETCH_MODE != 'reqwest' && steps.cloak-cache.outputs.cache-hit != 'true'
@@ -159,28 +178,33 @@ jobs:
         # the same mechanism proven in parity.yml and on the prod systemd service.
         env:
           SCRAPER_PROXY: ${{ secrets.SCRAPER_PROXY }}
+          REQUESTED_CONCURRENCY: ${{ github.event.inputs.concurrency || env.SCRAPER_CONCURRENCY }}
+          REQUESTED_PLANS: ${{ github.event.inputs.plans || '' }}
         run: |
-          CONCURRENCY="${{ github.event.inputs.concurrency || env.SCRAPER_CONCURRENCY }}"
-          EXTRA_ARGS=""
-          if [ -n "${{ github.event.inputs.plans }}" ]; then
-            EXTRA_ARGS="--plans ${{ github.event.inputs.plans }}"
+          set -euo pipefail
+          EXTRA_ARGS=()
+          if [ -n "$REQUESTED_PLANS" ]; then
+            EXTRA_ARGS=(--plans "$REQUESTED_PLANS")
           fi
           mkdir -p "$OUTPUT_DIR"
 
           # Build CloakBrowser args only when mode requires it
-          CLOAK_ARGS=""
+          CLOAK_ARGS=()
           if [ "$FETCH_MODE" != "reqwest" ]; then
-            CLOAK_ARGS="--fetch-mode $FETCH_MODE --cloak-script scripts/cloak-fetch.mjs"
+            CLOAK_ARGS=(
+              --fetch-mode "$FETCH_MODE"
+              --cloak-script scripts/cloak-fetch.mjs
+            )
           fi
 
           bin/contabo-scraper \
             --output          "$OUTPUT_DIR" \
-            --concurrency     "$CONCURRENCY" \
+            --concurrency     "$REQUESTED_CONCURRENCY" \
             --retries         "$SCRAPER_RETRIES" \
             --json            \
             --plan-urls-file  data/plan_urls.json \
-            $CLOAK_ARGS       \
-            $EXTRA_ARGS
+            "${CLOAK_ARGS[@]}" \
+            "${EXTRA_ARGS[@]}"
 
       - name: Enrich output
         run: node .github/scripts/enrich_output.js
@@ -261,3 +285,9 @@ jobs:
           done
           echo "::error::Could not push after 3 rebase attempts — persistent contention on $BRANCH"
           exit 1
+
+      - name: Clean persistent runner state
+        if: always()
+        run: |
+          git rebase --abort >/dev/null 2>&1 || true
+          pkill -u "$(id -u)" -f '[c]loakbrowser' >/dev/null 2>&1 || true

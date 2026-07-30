@@ -36,7 +36,8 @@ jobs:
   build:
     name: Verify and package contabo_pricing
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: contabo-ci-release
+    timeout-minutes: 20
     permissions:
       contents: read
     outputs:
@@ -47,13 +48,13 @@ jobs:
       MODULE_DIR: whmcs-module/modules/addons/contabo_pricing
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-
-      - name: Set up PHP 8.2
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
-          php-version: '8.2'
-          extensions: json, curl, mbstring
-          tools: composer
+          persist-credentials: false
+
+      - name: Verify host PHP 8.2 and Composer
+        run: |
+          test "$(/usr/bin/php8.2 -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')" = "8.2"
+          /usr/bin/php8.2 /usr/local/bin/composer --version
 
       - name: Resolve version and release state
         id: meta
@@ -90,7 +91,7 @@ jobs:
 
       - name: Install dev dependencies
         working-directory: ${{ env.MODULE_DIR }}
-        run: composer install --no-interaction --no-progress
+        run: /usr/bin/php8.2 /usr/local/bin/composer install --no-interaction --no-progress
 
       - name: Lint executable runtime and templates
         run: |
@@ -99,11 +100,11 @@ jobs:
             -not -path '*/vendor/*' \
             -not -path '*/tests/*' \
             -print0 |
-            xargs -0 -n1 php -l >/dev/null
+            xargs -0 -n1 /usr/bin/php8.2 -l >/dev/null
 
       - name: Unit tests
         working-directory: ${{ env.MODULE_DIR }}
-        run: vendor/bin/phpunit
+        run: /usr/bin/php8.2 vendor/bin/phpunit
 
       - name: Build and inspect installable package
         if: steps.meta.outputs.exists == 'false'
@@ -157,7 +158,8 @@ jobs:
     name: Publish contabo_pricing
     needs: build
     if: needs.build.outputs.exists == 'false'
-    runs-on: ubuntu-latest
+    runs-on: contabo-ci-release
+    timeout-minutes: 10
     permissions:
       contents: write
     steps:
