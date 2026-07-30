@@ -650,8 +650,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785381852.7370934,
-    "ast_hash": "22f83396a9921b865de4d2f9598e01e6",
+    "mtime": 1785406186.548032,
+    "ast_hash": "79158c64241f3139c5a5b636fe90a45f",
     "semantic_hash": ""
   },
   "SCHEMA_VERSION.md": {
@@ -775,7 +775,7 @@
     "semantic_hash": ""
   },
   "scripts/predeploy-check.sh": {
-    "mtime": 1785385503.751853,
+    "mtime": 1785386607.6071916,
     "ast_hash": "7c33a7e354d229530462d6da1881c9b1",
     "semantic_hash": ""
   },
@@ -870,7 +870,7 @@
     "semantic_hash": ""
   },
   "scripts/package-whmcs-suite.sh": {
-    "mtime": 1785385300.6185584,
+    "mtime": 1785386607.606963,
     "ast_hash": "76de5cba75059693ec951ba8838ccfbd",
     "semantic_hash": ""
   },
@@ -1280,18 +1280,23 @@
     "semantic_hash": ""
   },
   "scripts/extract-changelog-section.sh": {
-    "mtime": 1785385300.7538064,
+    "mtime": 1785386607.6066072,
     "ast_hash": "65f5b71c236589f9cd983645a43ab63a",
     "semantic_hash": ""
   },
   "scripts/test-whmcs-release-contract.sh": {
-    "mtime": 1785386490.6809103,
+    "mtime": 1785386607.6074195,
     "ast_hash": "d5661383791278a5f4fa76011a0d6f38",
     "semantic_hash": ""
   },
   "scripts/inspect-github-release.sh": {
-    "mtime": 1785386457.3618512,
+    "mtime": 1785386607.6067474,
     "ast_hash": "2e7e8fdd979866681257830e803f1beb",
+    "semantic_hash": ""
+  },
+  "docs/operations/self-hosted-runners.md": {
+    "mtime": 1785406186.7892303,
+    "ast_hash": "3af147ab0abb05a7c9fddb68516eb2f9",
     "semantic_hash": ""
   }
 }
