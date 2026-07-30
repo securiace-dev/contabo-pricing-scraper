@@ -278,14 +278,18 @@ flowchart LR
 flowchart TD
   PR["Pull request"] --> PAR["parity.yml\nRust ↔ Node output equivalence\n(blocks merge on drift)"]
   PR --> TEST["PHP/Rust/module contract checks"]
-  CRON["schedule 06:00/18:00 UTC + dispatch"] --> SCR["scrape.yml @ self-hosted runner\n(STAGING box 'securiace-zoss')"]
+  CRON["schedule 06:00/18:00 UTC + dispatch"] --> SCR["scrape.yml @ contabo-ci-release\n(STAGING box 'securiace-zoss')"]
   SCR --> PUSH["race-safe commit&push\n(per-ref concurrency, fetch→rebase→push ×3,\nallowlist guard, never force-push)"]
   TAGV["push tag v*"] --> RELY["release.yml\n→ binaries + GHCR image + checksums"]
   MAIN["runtime version change on main"] --> ADDONREL["contabo_pricing release ZIP"]
   MAIN --> VPSREL["securiacevps suite release ZIP"]
 ```
 
-- **`scrape.yml`** runs on a **self-hosted runner that is a _staging_ box**, not prod.
+- All workflows run on repository-scoped Linux self-hosted runners. Pull-request
+  validation targets the Dockerless `contabo-ci-pr` identity; trusted release and
+  scrape jobs target `contabo-ci-release`. Fork pull requests cannot claim either
+  workflow. See the [runner operations contract](docs/operations/self-hosted-runners.md).
+- **`scrape.yml`** runs on the trusted **staging** identity, not prod.
   Its commit step was hardened (2026-05): per-ref `concurrency`, `fetch-depth: 0`,
   fetch→rebase→push retry (×3), an allowlist guard that refuses anything outside
   `data/output/**`, `data/plan_urls.json`, `PRICES.md`, `report.html`, and it **never
@@ -295,13 +299,14 @@ flowchart TD
   Rust-only web server) and fails on Rust↔Node output drift. Both scrapers fetch
   through **`SCRAPER_PROXY`** — a GitHub *environment* secret in the **`Build`**
   environment — which bypasses the Cloudflare datacenter-IP 403, so the check does
-  a **real** diff on stock GitHub-hosted runners (no self-hosted runner needed).
+  a **real** diff on the repository PR runner.
   It reports `plans scraped — rust=N node=M`, fails if either side pulls 0 plans,
   and skips **neutrally** only when *both* scrapers are upstream-blocked (proxy
   absent/down) so it never false-fails. A schemeless proxy value is normalized to
   `http://` in both scrapers.
-- **`release.yml`** fires on `v*` tags → builds binaries (zigbuild for musl) and a
-  multi-arch GHCR image.
+- **`release.yml`** fires on `v*` tags → builds Linux x86_64 and ARM64 static
+  binaries (zigbuild for musl) and a multi-arch Linux GHCR image. macOS and
+  Windows artifacts are not part of the supported release contract.
 - **`release-contabo-pricing.yml`** publishes the runtime-only addon archive
   when `AdminController::VERSION` changes.
 - **`release-contabo-vps.yml`** publishes the canonical module, migration shim,
