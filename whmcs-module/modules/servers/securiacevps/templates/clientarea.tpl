@@ -19,7 +19,8 @@
   </header>
 
   {if $flash}
-    <div class="sav-notice sav-notice--{$flash_tone|escape}" role="status">
+    <div class="sav-notice sav-notice--{$flash_tone|escape}"
+         role="status" aria-live="polite">
       {$flash|escape}
     </div>
   {/if}
@@ -149,7 +150,7 @@
                     Type <code>{$meta.confirmation|escape}</code> to continue
                   </label>
                   <input id="sav-confirm-{$action|escape}" type="text" name="confirmation"
-                         autocomplete="off" required>
+                         autocomplete="off" spellcheck="false" required>
                   <button type="submit" class="sav-btn sav-btn--{$meta.tone|escape}">
                     {$meta.label|escape}
                   </button>
@@ -184,4 +185,130 @@
       {/if}
     </section>
   </div>
+
+  <section class="sav-card sav-snapshots" aria-labelledby="sav-snapshots-title">
+    <div class="sav-card-head">
+      <div>
+        <span class="sav-status-label">Recovery points</span>
+        <h3 id="sav-snapshots-title">Snapshots</h3>
+      </div>
+      {if $snapshot_list_certified}
+        <span class="sav-snapshot-count">
+          {$snapshots|@count} observed
+        </span>
+      {/if}
+    </div>
+
+    {if !$snapshot_list_certified}
+      <div class="sav-empty">
+        Snapshot management is not certified for this provider account.
+      </div>
+    {else}
+      {if $snapshot_actions.create}
+        <details class="sav-snapshot-create">
+          <summary class="sav-btn sav-btn--secondary">Create snapshot</summary>
+          <form method="post" class="sav-snapshot-form">
+            {$csrf_field nofilter}
+            <input type="hidden" name="securiacevps_action" value="snapshot_create">
+            <label for="sav-snapshot-name">Name</label>
+            <input id="sav-snapshot-name" type="text" name="snapshot_name"
+                   minlength="1" maxlength="30"
+                   pattern="[A-Za-z0-9 -]+"
+                   autocomplete="off" spellcheck="false" required>
+            <label for="sav-snapshot-description">Description <span>(optional)</span></label>
+            <textarea id="sav-snapshot-description" name="snapshot_description"
+                      maxlength="255" rows="3" autocomplete="off"></textarea>
+            <button type="submit" class="sav-btn sav-btn--primary">Create snapshot</button>
+          </form>
+        </details>
+      {/if}
+
+      {if $snapshots}
+        <div class="sav-snapshot-list">
+          {foreach from=$snapshots item=snapshot}
+            <article class="sav-snapshot">
+              <div class="sav-snapshot-copy">
+                <strong>{$snapshot.name|escape}</strong>
+                {if $snapshot.description}
+                  <p>{$snapshot.description|escape}</p>
+                {/if}
+                <dl>
+                  <div>
+                    <dt>Created</dt>
+                    <dd>{if $snapshot.provider_created_at}{$snapshot.provider_created_at|escape}{else}Unknown{/if}</dd>
+                  </div>
+                  <div>
+                    <dt>Automatic deletion</dt>
+                    <dd>{if $snapshot.provider_auto_delete_at}{$snapshot.provider_auto_delete_at|escape}{else}Not reported{/if}</dd>
+                  </div>
+                  <div>
+                    <dt>Image</dt>
+                    <dd>{if $snapshot.image_name}{$snapshot.image_name|escape}{else}{$snapshot.image_id|escape}{/if}</dd>
+                  </div>
+                </dl>
+              </div>
+
+              {if $snapshot_actions.delete || $snapshot_actions.rollback}
+                <div class="sav-snapshot-actions">
+                  {if $snapshot_actions.rollback}
+                    <details class="sav-confirm">
+                      <summary class="sav-btn sav-btn--warning">Roll back</summary>
+                      <form method="post" class="sav-confirm-body">
+                        {$csrf_field nofilter}
+                        <input type="hidden" name="securiacevps_action" value="snapshot_rollback">
+                        <input type="hidden" name="snapshot_id" value="{$snapshot.snapshot_id|escape}">
+                        <input type="hidden" name="snapshot_evidence" value="{$snapshot.payload_hash|escape}">
+                        <p class="sav-risk-copy">
+                          This restores the server and Contabo will automatically delete
+                          every newer snapshot.
+                        </p>
+                        <label for="sav-rollback-{$snapshot@iteration}">
+                          Type <code>ROLL BACK SNAPSHOT</code>
+                        </label>
+                        <input id="sav-rollback-{$snapshot@iteration}" type="text"
+                               name="confirmation" autocomplete="off"
+                               spellcheck="false" required>
+                        <button type="submit" class="sav-btn sav-btn--warning">
+                          Roll back to this snapshot
+                        </button>
+                      </form>
+                    </details>
+                  {/if}
+
+                  {if $snapshot_actions.delete}
+                    <details class="sav-confirm">
+                      <summary class="sav-btn sav-btn--danger">Delete</summary>
+                      <form method="post" class="sav-confirm-body">
+                        {$csrf_field nofilter}
+                        <input type="hidden" name="securiacevps_action" value="snapshot_delete">
+                        <input type="hidden" name="snapshot_id" value="{$snapshot.snapshot_id|escape}">
+                        <input type="hidden" name="snapshot_evidence" value="{$snapshot.payload_hash|escape}">
+                        <label for="sav-delete-{$snapshot@iteration}">
+                          Type <code>DELETE SNAPSHOT</code>
+                        </label>
+                        <input id="sav-delete-{$snapshot@iteration}" type="text"
+                               name="confirmation" autocomplete="off"
+                               spellcheck="false" required>
+                        <button type="submit" class="sav-btn sav-btn--danger">
+                          Delete snapshot
+                        </button>
+                      </form>
+                    </details>
+                  {/if}
+                </div>
+              {/if}
+            </article>
+          {/foreach}
+        </div>
+        <p class="sav-observation-note">
+          Snapshot inventory is provider-observed and updates only after Refresh details
+          or a completed snapshot operation.
+        </p>
+      {else}
+        <div class="sav-empty">
+          No snapshots were present at the last successful provider observation.
+        </div>
+      {/if}
+    {/if}
+  </section>
 </section>

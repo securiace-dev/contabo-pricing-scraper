@@ -98,6 +98,25 @@ final class ClientAreaPresenter
         }
         $ips = $this->serviceIps($hosting);
         $credential = (new OneTimeSecretStore())->availableForService($serviceId);
+        $snapshotListCertified = $this->capabilities->canRead(
+            $providerAccountId,
+            'snapshot_list'
+        );
+        $snapshots = [];
+        if ($snapshotListCertified) {
+            $snapshotRows = Capsule::table('mod_securiacevps_snapshot_inventory')
+                ->where('service_id', $serviceId)
+                ->where('provider_account_id', $providerAccountId)
+                ->where(
+                    'provider_resource_id',
+                    (string) ($resource['provider_resource_id'] ?? '')
+                )
+                ->orderByDesc('provider_created_at')
+                ->get();
+            foreach ($snapshotRows as $snapshotRow) {
+                $snapshots[] = (array) $snapshotRow;
+            }
+        }
         return [
             'service_id' => $serviceId,
             'instance_id' => (string) ($resource['provider_resource_id'] ?? ''),
@@ -115,6 +134,19 @@ final class ClientAreaPresenter
             'actions' => $actions,
             'credential' => $credential,
             'writes_enabled' => SchemaGuard::setting('provider_writes_enabled', '0') === '1',
+            'snapshots' => $snapshots,
+            'snapshot_list_certified' => $snapshotListCertified,
+            'snapshot_actions' => [
+                'create' => $verified && !$busy
+                    && $snapshotListCertified
+                    && $this->canWrite($providerAccountId, 'snapshot_create'),
+                'delete' => $verified && !$busy
+                    && $snapshotListCertified
+                    && $this->canWrite($providerAccountId, 'snapshot_delete'),
+                'rollback' => $verified && !$busy
+                    && $snapshotListCertified
+                    && $this->canWrite($providerAccountId, 'snapshot_rollback'),
+            ],
         ];
     }
 

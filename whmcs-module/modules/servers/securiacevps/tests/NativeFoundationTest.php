@@ -164,13 +164,14 @@ final class NativeFoundationTest extends TestCase
             'mod_securiacevps_operator_commands',
             'mod_securiacevps_secrets',
             'mod_securiacevps_communications',
+            'mod_securiacevps_snapshot_inventory',
         ];
         foreach ($tables as $table) {
             Capsule::$columns[$table] = ['id'];
             Capsule::$tables[$table] = [];
         }
         Capsule::$tables['mod_securiacevps_schema'] = [
-            ['key' => 'schema_version', 'value' => '3'],
+            ['key' => 'schema_version', 'value' => '4'],
             ['key' => 'installation_id', 'value' => 'test-installation'],
             ['key' => 'provider_writes_enabled', 'value' => '0'],
         ];

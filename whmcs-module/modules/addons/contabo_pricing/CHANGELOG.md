@@ -20,6 +20,10 @@ retained only as a delegation shim for phased service reassignment.
 - Routes create, suspend, unsuspend, terminate, power, reinstall, and password
   reset through the same durable engine. Direct provider-mutation helpers now
   fail closed.
+- Adds certified snapshot inventory, create, delete, and rollback workflows.
+  Provider requests use stable UUID audit identities; ambiguous outcomes are
+  reconciled without replay, and rollback warns that newer snapshots are
+  removed.
 
 ### Ownership, recovery, and billing
 

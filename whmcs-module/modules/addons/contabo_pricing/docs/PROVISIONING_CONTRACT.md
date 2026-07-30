@@ -91,6 +91,9 @@ Alternative states are `retry_scheduled`, `failed_retryable`,
 | Terminate | Verified ownership; certified delete; typed/operator authorization where applicable | Prior commercial state | Delete/cancel exact resource | Absence/deletion is verified; then Terminated | Create orphan-risk reconciliation; never report fully terminated while upstream remains |
 | Power | Verified ownership; certified action | No commercial change | Start/stop/reboot | Persist provider observation | Retry/reconcile; never reinterpret technical stop as billing suspension |
 | Reinstall/reset | Verified ownership; certified capability; owner/admin authorization | No commercial change | Exact certified request | Read-back/request completion verified; one-time secret created where applicable | Unknown outcome/manual review; never reveal or log provider payloads |
+| Snapshot create | Verified ownership; certified snapshot write; valid name/description | No commercial change | Create against the exact owned resource | Snapshot identity appears in the complete provider inventory and local projection | Reconcile by exact Contabo request audit before any replay |
+| Snapshot delete | Verified ownership; snapshot exists in the local provider-account projection; typed confirmation | No commercial change | Delete the exact snapshot | Snapshot is absent from a complete refreshed inventory | Preserve the existing intent and reconcile; never blindly repeat an ambiguous delete |
+| Snapshot rollback | Verified ownership; snapshot exists in the local provider-account projection; typed confirmation acknowledging newer snapshots are deleted | No commercial change | Roll back the exact snapshot | Exact request audit exists and the complete inventory is refreshed | Keep the operation pending or manual review; never claim completion from the HTTP acknowledgement alone |
 | Change package | Sealed superseding snapshot; certified resize/migration; billing saga accepted | Current package | Provider resize or migration | Provider and WHMCS billing projections reconciled before completion | Do not repeat provider change after billing persistence failure; expose billing repair |
 
 Uncertified features do not appear as customer or administrator controls.
@@ -150,6 +153,9 @@ Rules:
 9. Unknown create/delete outcomes are inspected before any replay.
 10. A successful provider effect is not repeated to repair a failed WHMCS
     billing or status projection.
+11. The internal deterministic identity is mapped to a stable UUIDv4-form
+    `x-request-id` before calling Contabo. The internal identity remains the
+    WHMCS idempotency key; the UUID is the exact provider-audit identity.
 
 WHMCS cron claims bounded due work, polls provider requests, classifies retries,
 releases expired leases, reconciles ambiguity, progresses cancellation, and
@@ -189,6 +195,13 @@ checks, certified capabilities, the same durable operation engine, and typed
 confirmation for destructive actions. Client pages render local projections
 only, so a provider outage does not turn a page view into a remote operation.
 
+Snapshot inventory refresh is an explicit read operation. It fetches and
+validates every provider page before atomically replacing the local projection.
+Create, delete, and rollback persist a provider-request record before the
+network mutation. An ambiguous create reconciles through Contabo's exact request
+audit and inventory; it cannot issue a second POST. Rollback confirmation
+states that Contabo deletes snapshots newer than the selected restore point.
+
 ## 7. Capability certification and kill switches
 
 Capabilities are stored per provider account/action with one of:
@@ -204,6 +217,15 @@ eventual consistency, error taxonomy, SKU/region availability, read-after-write,
 power/suspension/deletion semantics, reinstall, password reset, console tokens,
 snapshot quotas, reverse DNS, resize/migration, storage restrictions, and
 maintenance/capacity errors.
+
+The current certified snapshot contract is the official Contabo Customer API:
+list/create/get/delete/rollback under
+`/v1/compute/instances/{instanceId}/snapshots`, with request-audit lookup used
+for ambiguous mutations. Console/VNC, per-instance telemetry, and package
+resize/migration have no certified callable endpoint in the current official
+contract and therefore remain absent. Reverse DNS and private networking have
+documented endpoints but remain unavailable until their complete WHMCS
+authorization, validation, billing, and recovery workflows are certified.
 
 The global provider-write switch and individual capability switches fail
 closed. Read-only inspection, reconciliation, and customer local projections
@@ -276,6 +298,7 @@ The addon migration owns the shared native schema:
 - `mod_securiacevps_operator_commands`
 - `mod_securiacevps_secrets`
 - `mod_securiacevps_communications`
+- `mod_securiacevps_snapshot_inventory`
 
 Catalog versions and items remain addon-owned (`mod_contabo_catalog_versions`,
 `mod_contabo_catalog_items`) alongside the existing profile, mapping,
@@ -294,6 +317,9 @@ A release is blocked unless evidence proves:
 - each provider mutation has one operation, command, and correlation identity;
 - failed/unknown operations have a safe operator next action;
 - manual/cron overlap cannot duplicate effects;
+- an ambiguous snapshot mutation cannot cause a second provider mutation;
+- snapshot rollback cannot proceed without verified local ownership evidence
+  and explicit acknowledgement that newer snapshots are deleted;
 - Rust catalog outage cannot block existing-service lifecycle operations;
 - provider credentials, raw provider responses, and plaintext customer secrets
   do not appear in logs, exports, audit metadata, or customer UI;

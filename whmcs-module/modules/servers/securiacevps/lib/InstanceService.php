@@ -472,6 +472,9 @@ final class InstanceService
     {
         $serviceId = (int) ($params['serviceid'] ?? 0);
         $this->secrets->cleanupServiceSecrets($serviceId);
+        Capsule::table('mod_securiacevps_snapshot_inventory')
+            ->where('service_id', $serviceId)
+            ->delete();
         Capsule::table('mod_securiacevps_resources')
             ->where('service_id', $serviceId)
             ->update([
@@ -485,6 +488,164 @@ final class InstanceService
     public function terminate(array $params): string
     {
         throw $this->directMutationDisabled();
+    }
+
+    /**
+     * Persist a complete local projection of the provider's snapshot inventory.
+     * Provider data is collected first; the prior projection is replaced only
+     * inside one local transaction after all pages have been validated.
+     *
+     * @param array<string,mixed> $params
+     * @return list<array<string,mixed>>
+     */
+    public function refreshSnapshotsProjection(array $params): array
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $instanceId = $this->verifiedInstanceId($params);
+        $providerAccountId = ProviderAccount::id($params);
+        $observedAt = date('Y-m-d H:i:s');
+        $rows = [];
+        foreach ($this->providerSnapshots($instanceId) as $snapshot) {
+            $snapshotId = trim((string) ($snapshot['snapshotId'] ?? ''));
+            if ($snapshotId === '') {
+                throw new ContaboProvisioningException(
+                    'Provider snapshot inventory contained no snapshot identity',
+                    'snapshot_identity_missing',
+                    'manual_review'
+                );
+            }
+            $snapshotInstanceId = trim((string) ($snapshot['instanceId'] ?? ''));
+            if ($snapshotInstanceId !== '' && !hash_equals($instanceId, $snapshotInstanceId)) {
+                throw new ContaboProvisioningException(
+                    'Provider snapshot inventory did not match the owned server',
+                    'snapshot_ownership_mismatch',
+                    'manual_review'
+                );
+            }
+            $safe = [
+                'snapshot_id' => $snapshotId,
+                'name' => substr(trim((string) ($snapshot['name'] ?? '')), 0, 30),
+                'description' => substr(trim((string) ($snapshot['description'] ?? '')), 0, 255),
+                'image_id' => substr(trim((string) ($snapshot['imageId'] ?? '')), 0, 160),
+                'image_name' => substr(trim((string) ($snapshot['imageName'] ?? '')), 0, 191),
+                'provider_created_at' => $this->providerTimestamp(
+                    (string) ($snapshot['createdDate'] ?? '')
+                ),
+                'provider_auto_delete_at' => $this->providerTimestamp(
+                    (string) ($snapshot['autoDeleteDate'] ?? '')
+                ),
+            ];
+            $rows[] = array_merge($safe, [
+                'service_id' => $serviceId,
+                'provider_account_id' => $providerAccountId,
+                'provider_resource_id' => $instanceId,
+                'payload_hash' => hash('sha256', CanonicalJson::encode($safe)),
+                'observed_at' => $observedAt,
+                'created_at' => $observedAt,
+                'updated_at' => $observedAt,
+            ]);
+        }
+
+        Capsule::connection()->transaction(static function () use ($serviceId, $rows): void {
+            Capsule::table('mod_securiacevps_snapshot_inventory')
+                ->where('service_id', $serviceId)
+                ->delete();
+            foreach ($rows as $row) {
+                Capsule::table('mod_securiacevps_snapshot_inventory')->insert($row);
+            }
+        });
+        return $rows;
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $payload
+     * @return array<string,mixed>
+     */
+    public function submitSnapshotCreateWithIdentity(
+        array $params,
+        array $payload,
+        string $requestIdentity
+    ): array {
+        $instanceId = $this->verifiedInstanceId($params);
+        $body = ['name' => (string) ($payload['name'] ?? '')];
+        if (trim((string) ($payload['description'] ?? '')) !== '') {
+            $body['description'] = (string) $payload['description'];
+        }
+        return $this->client->postWithIdentity(
+            '/v1/compute/instances/' . rawurlencode($instanceId) . '/snapshots',
+            $body,
+            $requestIdentity
+        );
+    }
+
+    /** @param array<string,mixed> $params */
+    public function submitSnapshotDeleteWithIdentity(
+        array $params,
+        string $snapshotId,
+        string $requestIdentity
+    ): void {
+        $instanceId = $this->verifiedInstanceId($params);
+        $this->assertSnapshotId($snapshotId);
+        $this->client->deleteWithIdentity(
+            '/v1/compute/instances/' . rawurlencode($instanceId)
+                . '/snapshots/' . rawurlencode($snapshotId),
+            $requestIdentity
+        );
+    }
+
+    /** @param array<string,mixed> $params */
+    public function submitSnapshotRollbackWithIdentity(
+        array $params,
+        string $snapshotId,
+        string $requestIdentity
+    ): void {
+        $instanceId = $this->verifiedInstanceId($params);
+        $this->assertSnapshotId($snapshotId);
+        $this->client->postWithIdentity(
+            '/v1/compute/instances/' . rawurlencode($instanceId)
+                . '/snapshots/' . rawurlencode($snapshotId) . '/rollback',
+            [],
+            $requestIdentity
+        );
+    }
+
+    /**
+     * Find the provider audit record for an exact durable request identity.
+     *
+     * @param array<string,mixed> $params
+     * @return array<string,mixed>|null
+     */
+    public function snapshotAudit(
+        array $params,
+        string $snapshotId,
+        string $requestIdentity
+    ): ?array {
+        $instanceId = $this->verifiedInstanceId($params);
+        $requestId = ContaboApiClient::requestIdForIdentity($requestIdentity);
+        $query = http_build_query([
+            'page' => 1,
+            'size' => 100,
+            'instanceId' => $instanceId,
+            'requestId' => $requestId,
+        ], '', '&', PHP_QUERY_RFC3986);
+        $response = $this->client->get('/v1/compute/snapshots/audits?' . $query);
+        $rows = isset($response['data']) && is_array($response['data'])
+            ? $response['data']
+            : [];
+        foreach ($rows as $row) {
+            if (!is_array($row)
+                || strcasecmp((string) ($row['requestId'] ?? ''), $requestId) !== 0
+                || (string) ($row['instanceId'] ?? '') !== $instanceId
+            ) {
+                continue;
+            }
+            $auditedSnapshotId = trim((string) ($row['snapshotId'] ?? ''));
+            if ($snapshotId === '' || hash_equals($snapshotId, $auditedSnapshotId)) {
+                return $row;
+            }
+        }
+        return null;
     }
 
     /** @param array<string,mixed> $params */
@@ -610,6 +771,72 @@ final class InstanceService
             throw new ContaboProvisioningException('Service has no linked Contabo instance — provision it first (or run "Sync from Contabo" after fixing the link)');
         }
         return $id;
+    }
+
+    /**
+     * @return list<array<string,mixed>>
+     */
+    private function providerSnapshots(string $instanceId): array
+    {
+        $page = 1;
+        $totalPages = 1;
+        $snapshots = [];
+        do {
+            $query = http_build_query([
+                'page' => $page,
+                'size' => 100,
+                'orderBy' => 'createdDate:desc',
+            ], '', '&', PHP_QUERY_RFC3986);
+            $response = $this->client->get(
+                '/v1/compute/instances/' . rawurlencode($instanceId)
+                    . '/snapshots?' . $query
+            );
+            $data = isset($response['data']) && is_array($response['data'])
+                ? $response['data']
+                : [];
+            foreach ($data as $snapshot) {
+                if (is_array($snapshot)) {
+                    $snapshots[] = $snapshot;
+                }
+            }
+            $pagination = isset($response['_pagination']) && is_array($response['_pagination'])
+                ? $response['_pagination']
+                : [];
+            $totalPages = max(1, (int) ($pagination['totalPages'] ?? 1));
+            $page++;
+        } while ($page <= min($totalPages, 100));
+
+        if ($totalPages > 100) {
+            throw new ContaboProvisioningException(
+                'Provider snapshot inventory exceeded the safe pagination bound',
+                'snapshot_inventory_too_large',
+                'manual_review'
+            );
+        }
+        return $snapshots;
+    }
+
+    private function providerTimestamp(string $value): ?string
+    {
+        if (trim($value) === '') {
+            return null;
+        }
+        $timestamp = strtotime($value);
+        return $timestamp === false ? null : gmdate('Y-m-d H:i:s', $timestamp);
+    }
+
+    private function assertSnapshotId(string $snapshotId): void
+    {
+        if ($snapshotId === ''
+            || strlen($snapshotId) > 160
+            || preg_match('/^[A-Za-z0-9._:-]+$/', $snapshotId) !== 1
+        ) {
+            throw new ContaboProvisioningException(
+                'The provider snapshot identity is invalid',
+                'snapshot_identity_invalid',
+                'terminal'
+            );
+        }
     }
 
     /**

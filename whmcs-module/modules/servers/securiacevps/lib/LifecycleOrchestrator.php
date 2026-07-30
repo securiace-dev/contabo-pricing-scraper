@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace SecuriAceVps;
 
+use WHMCS\Database\Capsule;
+
 final class LifecycleOrchestrator
 {
     /** @var OperationRepository */
@@ -84,6 +86,83 @@ final class LifecycleOrchestrator
         return $this->progress($operation, $params);
     }
 
+    /** @param array<string,mixed> $params */
+    public function createSnapshot(array $params, string $name, string $description = ''): string
+    {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        OwnershipGuard::assertVerified($serviceId);
+        $this->assertSnapshotReadCertified($params);
+        $name = trim($name);
+        $description = trim($description);
+        if (strlen($name) < 1
+            || strlen($name) > 30
+            || preg_match('/^[A-Za-z0-9 -]+$/', $name) !== 1
+        ) {
+            throw new ContaboProvisioningException(
+                'Snapshot names must use 1–30 letters, numbers, spaces or dashes',
+                'snapshot_name_invalid',
+                'terminal'
+            );
+        }
+        if (strlen($description) > 255
+            || preg_match('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', $description) === 1
+        ) {
+            throw new ContaboProvisioningException(
+                'The snapshot description is invalid',
+                'snapshot_description_invalid',
+                'terminal'
+            );
+        }
+        $operation = $this->operations->accept(
+            $serviceId,
+            null,
+            ProviderAccount::id($params),
+            'snapshot_create',
+            ['name' => $name, 'description' => $description]
+        );
+        return $this->progress($operation, $params);
+    }
+
+    /** @param array<string,mixed> $params */
+    public function deleteSnapshot(
+        array $params,
+        string $snapshotId,
+        string $evidenceHash
+    ): string {
+        $row = $this->snapshotInventoryRow($params, $snapshotId, $evidenceHash);
+        $operation = $this->operations->accept(
+            (int) ($params['serviceid'] ?? 0),
+            null,
+            ProviderAccount::id($params),
+            'snapshot_delete',
+            [
+                'snapshot_id' => (string) $row['snapshot_id'],
+                'evidence_hash' => (string) $row['payload_hash'],
+            ]
+        );
+        return $this->progress($operation, $params);
+    }
+
+    /** @param array<string,mixed> $params */
+    public function rollbackSnapshot(
+        array $params,
+        string $snapshotId,
+        string $evidenceHash
+    ): string {
+        $row = $this->snapshotInventoryRow($params, $snapshotId, $evidenceHash);
+        $operation = $this->operations->accept(
+            (int) ($params['serviceid'] ?? 0),
+            null,
+            ProviderAccount::id($params),
+            'snapshot_rollback',
+            [
+                'snapshot_id' => (string) $row['snapshot_id'],
+                'evidence_hash' => (string) $row['payload_hash'],
+            ]
+        );
+        return $this->progress($operation, $params);
+    }
+
     /**
      * @param array<string,mixed> $operation
      * @param array<string,mixed> $params
@@ -153,5 +232,59 @@ final class LifecycleOrchestrator
             return 'Provider outcome is being reconciled; do not retry manually (reference ' . $reference . ')';
         }
         return 'VPS operation is still in progress (reference ' . $reference . ')';
+    }
+
+    /** @param array<string,mixed> $params */
+    private function assertSnapshotReadCertified(array $params): void
+    {
+        if (!(new CapabilityRegistry())->canRead(ProviderAccount::id($params), 'snapshot_list')) {
+            throw new ContaboProvisioningException(
+                'Snapshot inventory is not certified for this Contabo account',
+                'snapshot_inventory_not_certified',
+                'terminal'
+            );
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     * @return array<string,mixed>
+     */
+    private function snapshotInventoryRow(
+        array $params,
+        string $snapshotId,
+        string $evidenceHash
+    ): array {
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        OwnershipGuard::assertVerified($serviceId);
+        $this->assertSnapshotReadCertified($params);
+        if (preg_match('/^[A-Za-z0-9._:-]{1,160}$/', $snapshotId) !== 1
+            || preg_match('/^[a-f0-9]{64}$/', $evidenceHash) !== 1
+        ) {
+            throw new ContaboProvisioningException(
+                'The snapshot selection is invalid or stale',
+                'snapshot_selection_invalid',
+                'terminal'
+            );
+        }
+        $row = Capsule::table('mod_securiacevps_snapshot_inventory')
+            ->where('service_id', $serviceId)
+            ->where('snapshot_id', $snapshotId)
+            ->first();
+        $row = $row !== null ? (array) $row : [];
+        if ($row === []
+            || !hash_equals((string) ($row['payload_hash'] ?? ''), $evidenceHash)
+            || !hash_equals(
+                ProviderAccount::id($params),
+                (string) ($row['provider_account_id'] ?? '')
+            )
+        ) {
+            throw new ContaboProvisioningException(
+                'The snapshot inventory changed; refresh before continuing',
+                'snapshot_selection_stale',
+                'terminal'
+            );
+        }
+        return $row;
     }
 }

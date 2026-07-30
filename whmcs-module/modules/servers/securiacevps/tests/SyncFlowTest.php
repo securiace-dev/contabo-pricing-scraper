@@ -125,6 +125,55 @@ final class SyncFlowTest extends TestCase
         $this->assertSame($callsBefore, count($this->h->http->calls), 'render must not call Contabo');
     }
 
+    public function testClientAreaRendersCertifiedLocalSnapshotControlsWithoutProviderRead(): void
+    {
+        $this->seedLocalProjection();
+        $account = hash('sha256', 'contabo|0|');
+        foreach (Capsule::$tables['mod_securiacevps_schema'] as &$setting) {
+            if ($setting['key'] === 'provider_writes_enabled') {
+                $setting['value'] = '1';
+            }
+        }
+        unset($setting);
+        foreach (['snapshot_list', 'snapshot_create', 'snapshot_delete', 'snapshot_rollback'] as $capability) {
+            Capsule::$tables['mod_securiacevps_capabilities'][] = [
+                'provider_account_id' => $account,
+                'capability' => $capability,
+                'state' => 'requires_polling',
+            ];
+            Capsule::$tables['mod_securiacevps_schema'][] = [
+                'key' => 'capability.' . $capability . '.enabled',
+                'value' => '1',
+            ];
+        }
+        Capsule::$tables['mod_securiacevps_snapshot_inventory'][] = [
+            'service_id' => 300,
+            'provider_account_id' => $account,
+            'provider_resource_id' => '9001',
+            'snapshot_id' => 'snap-1',
+            'name' => 'Before release',
+            'description' => '',
+            'image_id' => 'image-1',
+            'image_name' => 'Ubuntu',
+            'provider_created_at' => '2026-07-30 02:00:00',
+            'provider_auto_delete_at' => '2026-08-29 02:00:00',
+            'payload_hash' => str_repeat('a', 64),
+            'observed_at' => '2026-07-30 02:00:00',
+        ];
+        $callsBefore = count($this->h->http->calls);
+
+        $out = securiacevps_ClientArea(Harness::params());
+
+        $this->assertTrue($out['vars']['snapshot_list_certified']);
+        $this->assertCount(1, $out['vars']['snapshots']);
+        $this->assertSame('snap-1', $out['vars']['snapshots'][0]['snapshot_id']);
+        $this->assertSame(
+            ['create' => true, 'delete' => true, 'rollback' => true],
+            $out['vars']['snapshot_actions']
+        );
+        $this->assertSame($callsBefore, count($this->h->http->calls), 'render must use local snapshot data');
+    }
+
     private function seedLocalProjection(): void
     {
         foreach ([
@@ -143,13 +192,14 @@ final class SyncFlowTest extends TestCase
             'mod_securiacevps_operator_commands',
             'mod_securiacevps_secrets',
             'mod_securiacevps_communications',
+            'mod_securiacevps_snapshot_inventory',
         ] as $table) {
             Capsule::$columns[$table] = ['id'];
             Capsule::$tables[$table] = [];
         }
         $account = hash('sha256', 'contabo|0|');
         Capsule::$tables['mod_securiacevps_schema'] = [
-            ['key' => 'schema_version', 'value' => '3'],
+            ['key' => 'schema_version', 'value' => '4'],
             ['key' => 'installation_id', 'value' => 'test-installation'],
             ['key' => 'provider_writes_enabled', 'value' => '0'],
         ];

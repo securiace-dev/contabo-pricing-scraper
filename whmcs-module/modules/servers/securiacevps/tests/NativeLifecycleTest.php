@@ -5,6 +5,7 @@ namespace SecuriAceVps\Tests;
 
 use PHPUnit\Framework\TestCase;
 use SecuriAceVps\CanonicalJson;
+use SecuriAceVps\ContaboApiClient;
 use SecuriAceVps\ContaboProvisioningException;
 use SecuriAceVps\OneTimeSecretStore;
 use SecuriAceVps\Runtime;
@@ -337,6 +338,298 @@ final class NativeLifecycleTest extends TestCase
         );
     }
 
+    public function testSnapshotCreateUsesDurableRequestAndProjectsInventory(): void
+    {
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('snapshot_list');
+        $this->seedCapability('snapshot_create');
+        $instance = ['data' => [$this->providerInstance('image-1', 'running')]];
+        $snapshot = $this->providerSnapshot('snap-100', 'Before release');
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'POST /v1/compute/instances/9001/snapshots',
+            201,
+            ['data' => [$snapshot]]
+        );
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'GET /v1/compute/instances/9001/snapshots?',
+            200,
+            ['data' => [$snapshot], '_pagination' => ['totalPages' => 1]]
+        );
+
+        $result = Runtime::lifecycle()->createSnapshot(
+            Harness::params(),
+            'Before release',
+            'Known-good application state'
+        );
+
+        $this->assertSame('success', $result);
+        $this->assertSame('succeeded', Capsule::$tables['mod_securiacevps_operations'][0]['state']);
+        $this->assertSame('snap-100', Capsule::$tables['mod_securiacevps_operations'][0]['provider_resource_id']);
+        $this->assertSame('snap-100', Capsule::$tables['mod_securiacevps_snapshot_inventory'][0]['snapshot_id']);
+        $calls = $this->harness->http->callsMatching(
+            'POST https://api.contabo.com/v1/compute/instances/9001/snapshots'
+        );
+        $this->assertCount(1, $calls);
+        $requestHeaders = implode("\n", $calls[0]['headers']);
+        $this->assertMatchesRegularExpression(
+            '/x-request-id: [0-9a-f-]{36}/',
+            $requestHeaders
+        );
+    }
+
+    public function testSnapshotDeleteVerifiesAbsenceAndNeverBlindlyRepeats(): void
+    {
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('snapshot_list');
+        $this->seedCapability('snapshot_delete');
+        $row = $this->seedSnapshotInventory('snap-200', 'Disposable');
+        $instance = ['data' => [$this->providerInstance('image-1', 'running')]];
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'DELETE /v1/compute/instances/9001/snapshots/snap-200',
+            204,
+            ''
+        );
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'GET /v1/compute/instances/9001/snapshots?',
+            200,
+            ['data' => [], '_pagination' => ['totalPages' => 1]]
+        );
+
+        $result = Runtime::lifecycle()->deleteSnapshot(
+            Harness::params(),
+            'snap-200',
+            (string) $row['payload_hash']
+        );
+
+        $this->assertSame('success', $result);
+        $this->assertSame([], Capsule::$tables['mod_securiacevps_snapshot_inventory']);
+        $this->assertCount(
+            1,
+            $this->harness->http->callsMatching(
+                'DELETE https://api.contabo.com/v1/compute/instances/9001/snapshots/snap-200'
+            )
+        );
+    }
+
+    public function testSnapshotRollbackRequiresExactAuditAndRefreshesInventory(): void
+    {
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('snapshot_list');
+        $this->seedCapability('snapshot_rollback');
+        $row = $this->seedSnapshotInventory('snap-300', 'Known good');
+        $requestId = $this->snapshotRequestId('snapshot_rollback');
+        $instance = ['data' => [$this->providerInstance('image-1', 'running')]];
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'POST /v1/compute/instances/9001/snapshots/snap-300/rollback',
+            200,
+            ['_links' => ['self' => '/v1/compute/instances/9001/snapshots/snap-300']]
+        );
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue('GET /v1/compute/snapshots/audits?', 200, [
+            'data' => [[
+                'action' => 'ROLLED_BACK',
+                'requestId' => $requestId,
+                'instanceId' => 9001,
+                'snapshotId' => 'snap-300',
+            ]],
+        ]);
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'GET /v1/compute/instances/9001/snapshots?',
+            200,
+            [
+                'data' => [$this->providerSnapshot('snap-300', 'Known good')],
+                '_pagination' => ['totalPages' => 1],
+            ]
+        );
+
+        $result = Runtime::lifecycle()->rollbackSnapshot(
+            Harness::params(),
+            'snap-300',
+            (string) $row['payload_hash']
+        );
+
+        $this->assertSame('success', $result);
+        $this->assertSame('succeeded', Capsule::$tables['mod_securiacevps_operations'][0]['state']);
+        $this->assertSame(
+            $requestId,
+            Capsule::$tables['mod_securiacevps_provider_requests'][0]['provider_request_id']
+        );
+    }
+
+    public function testAmbiguousSnapshotCreateReconcilesAuditWithoutSecondPost(): void
+    {
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('snapshot_list');
+        $this->seedCapability('snapshot_create');
+        $requestId = $this->snapshotRequestId('snapshot_create');
+        $instance = ['data' => [$this->providerInstance('image-1', 'running')]];
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'POST /v1/compute/instances/9001/snapshots',
+            0,
+            '',
+            28,
+            'timeout after provider acceptance'
+        );
+
+        $first = Runtime::lifecycle()->createSnapshot(Harness::params(), 'Ambiguous');
+        $this->assertStringContainsString('being reconciled', $first);
+
+        Capsule::$tables['mod_securiacevps_operations'][0]['next_attempt_at'] =
+            date('Y-m-d H:i:s', time() - 1);
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue('GET /v1/compute/snapshots/audits?', 200, [
+            'data' => [[
+                'action' => 'CREATED',
+                'requestId' => $requestId,
+                'instanceId' => 9001,
+                'snapshotId' => 'snap-400',
+            ]],
+        ]);
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'GET /v1/compute/instances/9001/snapshots?',
+            200,
+            [
+                'data' => [$this->providerSnapshot('snap-400', 'Ambiguous')],
+                '_pagination' => ['totalPages' => 1],
+            ]
+        );
+
+        $second = Runtime::lifecycle()->createSnapshot(Harness::params(), 'Ambiguous');
+
+        $this->assertSame('success', $second);
+        $this->assertCount(
+            1,
+            $this->harness->http->callsMatching(
+                'POST https://api.contabo.com/v1/compute/instances/9001/snapshots'
+            )
+        );
+    }
+
+    public function testAmbiguousSnapshotDeleteVerifiesAbsenceWithoutSecondDelete(): void
+    {
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('snapshot_list');
+        $this->seedCapability('snapshot_delete');
+        $row = $this->seedSnapshotInventory('snap-500', 'Disposable');
+        $instance = ['data' => [$this->providerInstance('image-1', 'running')]];
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'DELETE /v1/compute/instances/9001/snapshots/snap-500',
+            0,
+            '',
+            28,
+            'timeout after provider acceptance'
+        );
+
+        $first = Runtime::lifecycle()->deleteSnapshot(
+            Harness::params(),
+            'snap-500',
+            (string) $row['payload_hash']
+        );
+        $this->assertStringContainsString('being reconciled', $first);
+
+        Capsule::$tables['mod_securiacevps_operations'][0]['next_attempt_at'] =
+            date('Y-m-d H:i:s', time() - 1);
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'GET /v1/compute/instances/9001/snapshots?',
+            200,
+            ['data' => [], '_pagination' => ['totalPages' => 1]]
+        );
+
+        $second = Runtime::lifecycle()->deleteSnapshot(
+            Harness::params(),
+            'snap-500',
+            (string) $row['payload_hash']
+        );
+
+        $this->assertSame('success', $second);
+        $this->assertCount(
+            1,
+            $this->harness->http->callsMatching(
+                'DELETE https://api.contabo.com/v1/compute/instances/9001/snapshots/snap-500'
+            )
+        );
+    }
+
+    public function testSnapshotRollbackWaitsForAuditWithoutSecondPost(): void
+    {
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('snapshot_list');
+        $this->seedCapability('snapshot_rollback');
+        $row = $this->seedSnapshotInventory('snap-600', 'Known good');
+        $requestId = $this->snapshotRequestId('snapshot_rollback');
+        $instance = ['data' => [$this->providerInstance('image-1', 'running')]];
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'POST /v1/compute/instances/9001/snapshots/snap-600/rollback',
+            200,
+            ['_links' => ['self' => '/v1/compute/instances/9001/snapshots/snap-600']]
+        );
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'GET /v1/compute/snapshots/audits?',
+            200,
+            ['data' => []]
+        );
+
+        $first = Runtime::lifecycle()->rollbackSnapshot(
+            Harness::params(),
+            'snap-600',
+            (string) $row['payload_hash']
+        );
+        $this->assertStringContainsString('still in progress', $first);
+
+        Capsule::$tables['mod_securiacevps_operations'][0]['next_attempt_at'] =
+            date('Y-m-d H:i:s', time() - 1);
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue('GET /v1/compute/snapshots/audits?', 200, [
+            'data' => [[
+                'action' => 'ROLLED_BACK',
+                'requestId' => $requestId,
+                'instanceId' => 9001,
+                'snapshotId' => 'snap-600',
+            ]],
+        ]);
+        $this->harness->http->queue('GET /v1/compute/instances/9001', 200, $instance);
+        $this->harness->http->queue(
+            'GET /v1/compute/instances/9001/snapshots?',
+            200,
+            [
+                'data' => [$this->providerSnapshot('snap-600', 'Known good')],
+                '_pagination' => ['totalPages' => 1],
+            ]
+        );
+
+        $second = Runtime::lifecycle()->rollbackSnapshot(
+            Harness::params(),
+            'snap-600',
+            (string) $row['payload_hash']
+        );
+
+        $this->assertSame('success', $second);
+        $this->assertCount(
+            1,
+            $this->harness->http->callsMatching(
+                'POST https://api.contabo.com/v1/compute/instances/9001/snapshots/snap-600/rollback'
+            )
+        );
+    }
+
     /** @return array<string,mixed> */
     private function providerInstance(string $image, string $status): array
     {
@@ -349,6 +642,54 @@ final class NativeLifecycleTest extends TestCase
             'createdDate' => '2026-07-30T00:00:00Z',
             'ipConfig' => ['v4' => [['ip' => '203.0.113.10']]],
         ];
+    }
+
+    /** @return array<string,mixed> */
+    private function providerSnapshot(string $snapshotId, string $name): array
+    {
+        return [
+            'snapshotId' => $snapshotId,
+            'name' => $name,
+            'description' => 'Test snapshot',
+            'instanceId' => 9001,
+            'createdDate' => '2026-07-30T02:00:00Z',
+            'autoDeleteDate' => '2026-08-29T02:00:00Z',
+            'imageId' => 'image-1',
+            'imageName' => 'Ubuntu',
+        ];
+    }
+
+    /** @return array<string,mixed> */
+    private function seedSnapshotInventory(string $snapshotId, string $name): array
+    {
+        $safe = [
+            'snapshot_id' => $snapshotId,
+            'name' => $name,
+            'description' => 'Test snapshot',
+            'image_id' => 'image-1',
+            'image_name' => 'Ubuntu',
+            'provider_created_at' => '2026-07-30 02:00:00',
+            'provider_auto_delete_at' => '2026-08-29 02:00:00',
+        ];
+        $row = array_merge($safe, [
+            'id' => count(Capsule::$tables['mod_securiacevps_snapshot_inventory']) + 1,
+            'service_id' => 300,
+            'provider_account_id' => hash('sha256', 'contabo|0|'),
+            'provider_resource_id' => '9001',
+            'payload_hash' => hash('sha256', CanonicalJson::encode($safe)),
+            'observed_at' => '2026-07-30 02:00:00',
+        ]);
+        Capsule::$tables['mod_securiacevps_snapshot_inventory'][] = $row;
+        return $row;
+    }
+
+    private function snapshotRequestId(string $type): string
+    {
+        $command = hash(
+            'sha256',
+            implode('|', ['test-installation', '300', '', $type, '1'])
+        );
+        return ContaboApiClient::requestIdForIdentity(hash('sha256', 'provider|' . $command));
     }
 
     private function seedVerifiedOwnership(string $resourceId): void
@@ -449,13 +790,14 @@ final class NativeLifecycleTest extends TestCase
             'mod_securiacevps_operator_commands',
             'mod_securiacevps_secrets',
             'mod_securiacevps_communications',
+            'mod_securiacevps_snapshot_inventory',
         ];
         foreach ($tables as $table) {
             Capsule::$columns[$table] = ['id'];
             Capsule::$tables[$table] = [];
         }
         Capsule::$tables['mod_securiacevps_schema'] = [
-            ['key' => 'schema_version', 'value' => '3'],
+            ['key' => 'schema_version', 'value' => '4'],
             ['key' => 'installation_id', 'value' => 'test-installation'],
             ['key' => 'provider_writes_enabled', 'value' => '1'],
             ['key' => 'operation_lease_seconds', 'value' => '120'],

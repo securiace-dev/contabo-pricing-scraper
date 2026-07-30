@@ -65,6 +65,12 @@ final class OperationProcessor
                 $this->processTerminate($operation, $params, $instances);
             } elseif (in_array($type, ['reset_password', 'reinstall'], true)) {
                 $this->processCredentialAction($operation, $params, $instances, $payload);
+            } elseif (in_array(
+                $type,
+                ['snapshot_create', 'snapshot_delete', 'snapshot_rollback'],
+                true
+            )) {
+                $this->processSnapshot($operation, $params, $instances, $payload);
             } else {
                 throw new ContaboProvisioningException(
                     'Unsupported durable VPS operation',
@@ -675,6 +681,179 @@ final class OperationProcessor
             'safe_error_code' => null,
             'retry_classification' => null,
         ]);
+    }
+
+    /**
+     * Snapshot mutations use Contabo's request audit as the ambiguity-safe
+     * reconciliation identity. A persisted provider request is never blindly
+     * submitted a second time.
+     *
+     * @param array<string,mixed> $operation
+     * @param array<string,mixed> $params
+     * @param array<string,mixed> $payload
+     */
+    private function processSnapshot(
+        array $operation,
+        array $params,
+        InstanceService $instances,
+        array $payload
+    ): void {
+        $uuid = (string) $operation['operation_uuid'];
+        $token = (int) $operation['fencing_token'];
+        $type = (string) $operation['operation_type'];
+        $requestIdentity = (string) $operation['idempotency_key'];
+        $snapshotId = trim((string) ($payload['snapshot_id'] ?? ''));
+        $providerRequest = Capsule::table('mod_securiacevps_provider_requests')
+            ->where('operation_uuid', $uuid)
+            ->first();
+
+        if ($providerRequest === null) {
+            $now = date('Y-m-d H:i:s');
+            Capsule::table('mod_securiacevps_provider_requests')->insert([
+                'operation_uuid' => $uuid,
+                'provider_request_id' => ContaboApiClient::requestIdForIdentity($requestIdentity),
+                'request_fingerprint' => (string) $operation['request_fingerprint'],
+                'idempotency_key' => $requestIdentity,
+                'state' => 'submitting',
+                'provider_resource_id' => $snapshotId !== '' ? $snapshotId : null,
+                'unknown_outcome' => 1,
+                'submitted_at' => $now,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+            $response = [];
+            if ($type === 'snapshot_create') {
+                $response = $instances->submitSnapshotCreateWithIdentity(
+                    $params,
+                    $payload,
+                    $requestIdentity
+                );
+                $snapshotId = trim((string) ($response['data'][0]['snapshotId'] ?? ''));
+            } elseif ($type === 'snapshot_delete') {
+                $instances->submitSnapshotDeleteWithIdentity(
+                    $params,
+                    $snapshotId,
+                    $requestIdentity
+                );
+            } else {
+                $instances->submitSnapshotRollbackWithIdentity(
+                    $params,
+                    $snapshotId,
+                    $requestIdentity
+                );
+            }
+            Capsule::table('mod_securiacevps_provider_requests')
+                ->where('operation_uuid', $uuid)
+                ->update([
+                    'state' => 'accepted',
+                    'provider_resource_id' => $snapshotId !== '' ? $snapshotId : null,
+                    'unknown_outcome' => 0,
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            $this->operations->transition($uuid, $token, 'submitted', [
+                'submitted_at' => date('Y-m-d H:i:s'),
+                'provider_resource_id' => $snapshotId !== '' ? $snapshotId : null,
+                'unknown_outcome' => 0,
+            ]);
+            $providerRequest = Capsule::table('mod_securiacevps_provider_requests')
+                ->where('operation_uuid', $uuid)
+                ->first();
+        }
+        $providerRequest = $providerRequest !== null ? (array) $providerRequest : [];
+        if ($snapshotId === '') {
+            $snapshotId = trim((string) ($providerRequest['provider_resource_id'] ?? ''));
+        }
+
+        if ($type === 'snapshot_create' && $snapshotId === '') {
+            $audit = $instances->snapshotAudit($params, '', $requestIdentity);
+            $snapshotId = trim((string) ($audit['snapshotId'] ?? ''));
+            if ($snapshotId !== '') {
+                Capsule::table('mod_securiacevps_provider_requests')
+                    ->where('operation_uuid', $uuid)
+                    ->update([
+                        'provider_resource_id' => $snapshotId,
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]);
+                $this->operations->transition($uuid, $token, 'reconciling', [
+                    'provider_resource_id' => $snapshotId,
+                    'reconciled_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+        }
+
+        if ($type === 'snapshot_rollback') {
+            $audit = $instances->snapshotAudit($params, $snapshotId, $requestIdentity);
+            if ($audit === null) {
+                $this->schedule(
+                    $operation,
+                    'provider_pending',
+                    'snapshot_rollback_pending',
+                    'provider_pending',
+                    false,
+                    20
+                );
+                return;
+            }
+            $instances->refreshSnapshotsProjection($params);
+            $this->completeSnapshotOperation($operation, $snapshotId);
+            return;
+        }
+
+        $snapshots = $instances->refreshSnapshotsProjection($params);
+        $found = false;
+        foreach ($snapshots as $snapshot) {
+            if (hash_equals($snapshotId, (string) ($snapshot['snapshot_id'] ?? ''))) {
+                $found = true;
+                break;
+            }
+        }
+        $verified = $type === 'snapshot_create' ? $found : !$found;
+        if (!$verified) {
+            $this->schedule(
+                $operation,
+                'provider_pending',
+                $type === 'snapshot_create'
+                    ? 'snapshot_create_pending'
+                    : 'snapshot_delete_pending',
+                'provider_pending',
+                false,
+                20
+            );
+            return;
+        }
+        $this->completeSnapshotOperation($operation, $snapshotId);
+    }
+
+    /** @param array<string,mixed> $operation */
+    private function completeSnapshotOperation(array $operation, string $snapshotId): void
+    {
+        $uuid = (string) $operation['operation_uuid'];
+        Capsule::table('mod_securiacevps_provider_requests')
+            ->where('operation_uuid', $uuid)
+            ->update([
+                'state' => 'reconciled',
+                'unknown_outcome' => 0,
+                'last_checked_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+        $this->operations->transition(
+            $uuid,
+            (int) $operation['fencing_token'],
+            'succeeded',
+            [
+                'provider_resource_id' => $snapshotId !== '' ? $snapshotId : null,
+                'result_json' => CanonicalJson::encode([
+                    'snapshot_id' => $snapshotId,
+                    'operation' => (string) $operation['operation_type'],
+                ]),
+                'reconciled_at' => date('Y-m-d H:i:s'),
+                'completed_at' => date('Y-m-d H:i:s'),
+                'next_attempt_at' => null,
+                'safe_error_code' => null,
+                'retry_classification' => null,
+                'unknown_outcome' => 0,
+            ]
+        );
     }
 
     /**

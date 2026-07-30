@@ -307,9 +307,31 @@ function securiacevps_ClientArea(array $params): array
             }
             $action = (string) $_POST['securiacevps_action'];
             if ($action === 'refresh') {
-                \SecuriAceVps\Runtime::instanceService($params)->refreshProjection($params);
-                $flash = 'Server details refreshed.';
-                $flashTone = 'success';
+                $instances = \SecuriAceVps\Runtime::instanceService($params);
+                $instances->refreshProjection($params);
+                $providerAccountId = \SecuriAceVps\ProviderAccount::id($params);
+                if ((new \SecuriAceVps\CapabilityRegistry())->canRead(
+                    $providerAccountId,
+                    'snapshot_list'
+                )) {
+                    try {
+                        $instances->refreshSnapshotsProjection($params);
+                        $flash = 'Server details and snapshots refreshed.';
+                        $flashTone = 'success';
+                    } catch (\Throwable $snapshotError) {
+                        $flash = 'Server details refreshed, but snapshot inventory is temporarily unavailable.';
+                        $flashTone = 'warning';
+                        _securiacevps_log(
+                            'clientRefreshSnapshots',
+                            (int) ($params['serviceid'] ?? 0),
+                            $snapshotError->getMessage(),
+                            'error'
+                        );
+                    }
+                } else {
+                    $flash = 'Server details refreshed.';
+                    $flashTone = 'success';
+                }
             } elseif (in_array($action, ['start', 'stop', 'restart'], true)) {
                 $result = \SecuriAceVps\Runtime::lifecycle()->power($params, $action);
                 $flash = $result === 'success'
@@ -338,6 +360,48 @@ function securiacevps_ClientArea(array $params): array
                 $result = \SecuriAceVps\Runtime::lifecycle()->reinstall($params);
                 $flash = $result === 'success'
                     ? 'Reinstall completed. Reveal the new credential once below.'
+                    : $result;
+                $flashTone = $result === 'success' ? 'success' : 'warning';
+            } elseif ($action === 'snapshot_create') {
+                $result = \SecuriAceVps\Runtime::lifecycle()->createSnapshot(
+                    $params,
+                    (string) ($_POST['snapshot_name'] ?? ''),
+                    (string) ($_POST['snapshot_description'] ?? '')
+                );
+                $flash = $result === 'success'
+                    ? 'Snapshot created and verified.'
+                    : $result;
+                $flashTone = $result === 'success' ? 'success' : 'warning';
+            } elseif ($action === 'snapshot_delete') {
+                if ((string) ($_POST['confirmation'] ?? '') !== 'DELETE SNAPSHOT') {
+                    throw new \SecuriAceVps\ContaboProvisioningException(
+                        'Type DELETE SNAPSHOT to confirm this action',
+                        'confirmation_required'
+                    );
+                }
+                $result = \SecuriAceVps\Runtime::lifecycle()->deleteSnapshot(
+                    $params,
+                    (string) ($_POST['snapshot_id'] ?? ''),
+                    (string) ($_POST['snapshot_evidence'] ?? '')
+                );
+                $flash = $result === 'success'
+                    ? 'Snapshot deletion was verified.'
+                    : $result;
+                $flashTone = $result === 'success' ? 'success' : 'warning';
+            } elseif ($action === 'snapshot_rollback') {
+                if ((string) ($_POST['confirmation'] ?? '') !== 'ROLL BACK SNAPSHOT') {
+                    throw new \SecuriAceVps\ContaboProvisioningException(
+                        'Type ROLL BACK SNAPSHOT to confirm this action',
+                        'confirmation_required'
+                    );
+                }
+                $result = \SecuriAceVps\Runtime::lifecycle()->rollbackSnapshot(
+                    $params,
+                    (string) ($_POST['snapshot_id'] ?? ''),
+                    (string) ($_POST['snapshot_evidence'] ?? '')
+                );
+                $flash = $result === 'success'
+                    ? 'Snapshot rollback was accepted and verified in the provider audit.'
                     : $result;
                 $flashTone = $result === 'success' ? 'success' : 'warning';
             } elseif ($action === 'reveal_credential') {
@@ -380,6 +444,9 @@ function securiacevps_ClientArea(array $params): array
             'actions' => [],
             'credential' => null,
             'writes_enabled' => false,
+            'snapshots' => [],
+            'snapshot_list_certified' => false,
+            'snapshot_actions' => ['create' => false, 'delete' => false, 'rollback' => false],
         ];
     }
     $view['flash'] = $flash;
@@ -425,6 +492,11 @@ function _securiacevps_safe_error(\Throwable $error): string
             'client_action_not_available' => 'The requested VPS action is not available.',
             'resource_ownership_not_adopted' => 'This server is awaiting ownership verification.',
             'operation_credential_unavailable' => 'This credential is no longer available.',
+            'snapshot_name_invalid' => $error->getMessage(),
+            'snapshot_description_invalid' => 'The snapshot description is invalid.',
+            'snapshot_selection_invalid' => 'The selected snapshot is invalid. Refresh and try again.',
+            'snapshot_selection_stale' => 'The snapshot inventory changed. Refresh before continuing.',
+            'snapshot_inventory_not_certified' => 'Snapshot management is not available for this server.',
         ];
         return $safe[$error->safeCode()]
             ?? 'The VPS operation could not be completed safely. An administrator can review the operation record.';
