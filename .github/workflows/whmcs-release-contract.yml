@@ -7,10 +7,13 @@ on:
       - 'scripts/package-whmcs-suite.sh'
       - 'scripts/extract-changelog-section.sh'
       - 'scripts/inspect-github-release.sh'
+      - 'scripts/check-workflow-trust.rb'
+      - 'scripts/resolve-scraper-release.sh'
+      - 'scripts/test-resolve-scraper-release.sh'
+      - 'scripts/test-workflow-trust-contract.sh'
       - 'scripts/test-whmcs-release-contract.sh'
-      - '.github/workflows/release-contabo-pricing.yml'
-      - '.github/workflows/release-contabo-vps.yml'
-      - '.github/workflows/whmcs-release-contract.yml'
+      - '.github/actionlint.yaml'
+      - '.github/workflows/**'
   push:
     branches: [main]
     paths:
@@ -18,10 +21,13 @@ on:
       - 'scripts/package-whmcs-suite.sh'
       - 'scripts/extract-changelog-section.sh'
       - 'scripts/inspect-github-release.sh'
+      - 'scripts/check-workflow-trust.rb'
+      - 'scripts/resolve-scraper-release.sh'
+      - 'scripts/test-resolve-scraper-release.sh'
+      - 'scripts/test-workflow-trust-contract.sh'
       - 'scripts/test-whmcs-release-contract.sh'
-      - '.github/workflows/release-contabo-pricing.yml'
-      - '.github/workflows/release-contabo-vps.yml'
-      - '.github/workflows/whmcs-release-contract.yml'
+      - '.github/actionlint.yaml'
+      - '.github/workflows/**'
 
 permissions:
   contents: read
@@ -29,35 +35,61 @@ permissions:
 jobs:
   validate:
     name: Workflows and installable artifacts
-    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: contabo-ci-pr
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify runner capabilities
+        run: |
+          set -euo pipefail
+          for command in go ruby shellcheck sha256sum unzip zip; do
+            command -v "$command"
+          done
 
       - name: Install pinned actionlint
         env:
           ACTIONLINT_COMMIT: 914e7df21a07ef503a81201c76d2b11c789d3fca
+          GOBIN: ${{ runner.temp }}/actionlint-bin
+          GOCACHE: ${{ runner.temp }}/go-build
+          GOMODCACHE: ${{ runner.temp }}/go-mod
         run: go install "github.com/rhysd/actionlint/cmd/actionlint@${ACTIONLINT_COMMIT}"
 
       - name: Validate workflow syntax and expressions
         run: |
-          "$(go env GOPATH)/bin/actionlint" \
-            .github/workflows/release-contabo-pricing.yml \
-            .github/workflows/release-contabo-vps.yml \
-            .github/workflows/whmcs-release-contract.yml
+          "${RUNNER_TEMP}/actionlint-bin/actionlint" .github/workflows/*.yml
+
+      - name: Enforce runner trust boundary
+        run: |
+          ruby scripts/check-workflow-trust.rb .
+          bash scripts/test-workflow-trust-contract.sh
 
       - name: Validate release shell
         run: |
           set -euo pipefail
+          ruby -c scripts/check-workflow-trust.rb
           bash -n \
             scripts/package-whmcs-suite.sh \
             scripts/extract-changelog-section.sh \
             scripts/inspect-github-release.sh \
+            scripts/resolve-scraper-release.sh \
+            scripts/test-resolve-scraper-release.sh \
+            scripts/test-workflow-trust-contract.sh \
             scripts/test-whmcs-release-contract.sh
           shellcheck --severity=style \
             scripts/package-whmcs-suite.sh \
             scripts/extract-changelog-section.sh \
             scripts/inspect-github-release.sh \
+            scripts/resolve-scraper-release.sh \
+            scripts/test-resolve-scraper-release.sh \
+            scripts/test-workflow-trust-contract.sh \
             scripts/test-whmcs-release-contract.sh
 
       - name: Validate changelog and package contracts
         run: bash scripts/test-whmcs-release-contract.sh
+
+      - name: Validate scraper release selection
+        run: bash scripts/test-resolve-scraper-release.sh

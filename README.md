@@ -278,30 +278,54 @@ flowchart LR
 flowchart TD
   PR["Pull request"] --> PAR["parity.yml\nRust ↔ Node output equivalence\n(blocks merge on drift)"]
   PR --> TEST["PHP/Rust/module contract checks"]
-  CRON["schedule 06:00/18:00 UTC + dispatch"] --> SCR["scrape.yml @ self-hosted runner\n(STAGING box 'securiace-zoss')"]
+  PR --> DRY["release-validation.yml\nLinux x86_64/ARM64 + QEMU + WHMCS"]
+  PR --> TRUST["fork-policy.yml\ntrusted-base fork rejection"]
+  CRON["schedule 06:00/18:00 UTC + dispatch"] --> SCR["scrape.yml @ contabo-ci-release\n(STAGING box 'securiace-zoss')"]
   SCR --> PUSH["race-safe commit&push\n(per-ref concurrency, fetch→rebase→push ×3,\nallowlist guard, never force-push)"]
   TAGV["push tag v*"] --> RELY["release.yml\n→ binaries + GHCR image + checksums"]
   MAIN["runtime version change on main"] --> ADDONREL["contabo_pricing release ZIP"]
   MAIN --> VPSREL["securiacevps suite release ZIP"]
+  MAIN --> OCI["container-validation.yml\ntrusted Linux OCI + browser runtime"]
 ```
 
-- **`scrape.yml`** runs on a **self-hosted runner that is a _staging_ box**, not prod.
+- All workflows run on repository-scoped Linux self-hosted runners. Pull-request
+  validation targets the Dockerless `contabo-ci-pr` identity; trusted release and
+  scrape jobs target `contabo-ci-release`. Fork pull requests cannot claim either
+  workflow. A trusted-base `pull_request_target` policy check fails closed for
+  external forks without checking out or executing their code. See the
+  [runner operations contract](docs/operations/self-hosted-runners.md).
+- **`scrape.yml`** runs on the trusted **staging** identity, not prod.
   Its commit step was hardened (2026-05): per-ref `concurrency`, `fetch-depth: 0`,
   fetch→rebase→push retry (×3), an allowlist guard that refuses anything outside
   `data/output/**`, `data/plan_urls.json`, `PRICES.md`, `report.html`, and it **never
-  force-pushes**. Note: this runner is also a datacenter IP, so its scrapes are subject
-  to the same Cloudflare 403.
+  force-pushes**. Its `latest` selector accepts only a non-draft, non-prerelease
+  semantic-version scraper release containing the Linux x86_64 binary and checksum
+  manifest, so WHMCS-only release tags cannot be selected. Note: this runner is also
+  a datacenter IP, so its scrapes are subject to the same Cloudflare 403.
 - **`parity.yml`** runs on PRs touching scraper code (excluding `src/api/**`, the
   Rust-only web server) and fails on Rust↔Node output drift. Both scrapers fetch
   through **`SCRAPER_PROXY`** — a GitHub *environment* secret in the **`Build`**
   environment — which bypasses the Cloudflare datacenter-IP 403, so the check does
-  a **real** diff on stock GitHub-hosted runners (no self-hosted runner needed).
+  a **real** diff on the repository PR runner.
   It reports `plans scraped — rust=N node=M`, fails if either side pulls 0 plans,
   and skips **neutrally** only when *both* scrapers are upstream-blocked (proxy
   absent/down) so it never false-fails. A schemeless proxy value is normalized to
   `http://` in both scrapers.
-- **`release.yml`** fires on `v*` tags → builds binaries (zigbuild for musl) and a
-  multi-arch GHCR image.
+- **`release.yml`** fires on `v*` tags → builds Linux x86_64 and ARM64 static
+  binaries (zigbuild for musl) and a multi-arch Linux GHCR image. macOS and
+  Windows artifacts are not part of the supported release contract. Immutable
+  `:vX.Y.Z` and `:X.Y.Z` image tags are smoke-tested before `:latest` is promoted;
+  the GitHub Release is created only after both binaries and the image pass.
+- **`release-validation.yml`** is the non-publishing release gate: it cross-builds
+  both supported Linux binary architectures, executes them through native/QEMU
+  paths, validates the current scraper release checksum, and builds both WHMCS
+  package streams on the Dockerless PR identity.
+- **`container-validation.yml`** builds multi-arch OCI and exercises the real
+  browser runtime on the Docker-enabled release identity only for trusted
+  `main` source or an explicit maintainer dispatch. It has no pull-request trigger.
+  A YAML-aware contract follows local reusable workflows and blocks direct,
+  matrix, inline-trigger, and unauditable external-reusable paths from PR code
+  to the release runner.
 - **`release-contabo-pricing.yml`** publishes the runtime-only addon archive
   when `AdminController::VERSION` changes.
 - **`release-contabo-vps.yml`** publishes the canonical module, migration shim,
@@ -561,6 +585,10 @@ Response:
 - Persist `CONTABO_DATA_DIR` on durable storage; do not rely on ephemeral container FS for production snapshots.
 - Add an external freshness probe against `/api/v1/meta` and alert when `snapshot_generated_at` exceeds your SLA.
 - Pin image tags/releases in production; avoid implicit `latest` rollouts.
+- The container includes the optional CloakBrowser wrapper and its Linux shared
+  libraries, but not the separately licensed browser binary. Cloak mode downloads
+  that binary into `/home/contabo/.cloakbrowser` on first use; mount that path if
+  the cache must survive container replacement.
 
 ### Troubleshooting matrix
 

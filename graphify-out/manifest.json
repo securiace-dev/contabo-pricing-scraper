@@ -650,8 +650,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785381852.7370934,
-    "ast_hash": "22f83396a9921b865de4d2f9598e01e6",
+    "mtime": 1785409800.8133905,
+    "ast_hash": "bee91dda0e32903738355c900af70319",
     "semantic_hash": ""
   },
   "SCHEMA_VERSION.md": {
@@ -775,7 +775,7 @@
     "semantic_hash": ""
   },
   "scripts/predeploy-check.sh": {
-    "mtime": 1785385503.751853,
+    "mtime": 1785386607.6071916,
     "ast_hash": "7c33a7e354d229530462d6da1881c9b1",
     "semantic_hash": ""
   },
@@ -870,7 +870,7 @@
     "semantic_hash": ""
   },
   "scripts/package-whmcs-suite.sh": {
-    "mtime": 1785385300.6185584,
+    "mtime": 1785386607.606963,
     "ast_hash": "76de5cba75059693ec951ba8838ccfbd",
     "semantic_hash": ""
   },
@@ -1280,18 +1280,43 @@
     "semantic_hash": ""
   },
   "scripts/extract-changelog-section.sh": {
-    "mtime": 1785385300.7538064,
+    "mtime": 1785386607.6066072,
     "ast_hash": "65f5b71c236589f9cd983645a43ab63a",
     "semantic_hash": ""
   },
   "scripts/test-whmcs-release-contract.sh": {
-    "mtime": 1785386490.6809103,
+    "mtime": 1785386607.6074195,
     "ast_hash": "d5661383791278a5f4fa76011a0d6f38",
     "semantic_hash": ""
   },
   "scripts/inspect-github-release.sh": {
-    "mtime": 1785386457.3618512,
+    "mtime": 1785386607.6067474,
     "ast_hash": "2e7e8fdd979866681257830e803f1beb",
+    "semantic_hash": ""
+  },
+  "docs/operations/self-hosted-runners.md": {
+    "mtime": 1785409800.6646712,
+    "ast_hash": "392ccafafdb2dfbd32c1d2ee7829e9e8",
+    "semantic_hash": ""
+  },
+  "scripts/resolve-scraper-release.sh": {
+    "mtime": 1785407696.8404584,
+    "ast_hash": "86235e86bfcc0f03983fece4c832bdf2",
+    "semantic_hash": ""
+  },
+  "scripts/test-resolve-scraper-release.sh": {
+    "mtime": 1785407904.6640456,
+    "ast_hash": "c008a7148620c9f01a657c62089e01f6",
+    "semantic_hash": ""
+  },
+  "scripts/check-workflow-trust.rb": {
+    "mtime": 1785409780.0338626,
+    "ast_hash": "ca56e3038f6132f404bfde100a738342",
+    "semantic_hash": ""
+  },
+  "scripts/test-workflow-trust-contract.sh": {
+    "mtime": 1785409780.1816516,
+    "ast_hash": "9f75f4baa3551d42da1ef60d37c359d4",
     "semantic_hash": ""
   }
 }

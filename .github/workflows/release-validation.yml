@@ -1,0 +1,181 @@
+name: Linux Release Validation
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'Dockerfile'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/package-whmcs-suite.sh'
+      - 'scripts/resolve-scraper-release.sh'
+      - 'scripts/test-resolve-scraper-release.sh'
+      - 'whmcs-module/**'
+      - '.github/workflows/release.yml'
+      - '.github/workflows/release-contabo-pricing.yml'
+      - '.github/workflows/release-contabo-vps.yml'
+      - '.github/workflows/release-validation.yml'
+      - '.github/workflows/scrape.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'Dockerfile'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/package-whmcs-suite.sh'
+      - 'scripts/resolve-scraper-release.sh'
+      - 'scripts/test-resolve-scraper-release.sh'
+      - 'whmcs-module/**'
+      - '.github/workflows/release.yml'
+      - '.github/workflows/release-contabo-pricing.yml'
+      - '.github/workflows/release-contabo-vps.yml'
+      - '.github/workflows/release-validation.yml'
+      - '.github/workflows/scrape.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-binaries:
+    name: Linux binaries and scraper assets
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: contabo-ci-pr
+    timeout-minutes: 30
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Initialize job-local build paths
+        run: echo "CARGO_TARGET_DIR=${RUNNER_TEMP}/release-target" >> "$GITHUB_ENV"
+
+      - name: Verify Dockerless release runner capabilities
+        run: |
+          set -euo pipefail
+          for command in file gh qemu-aarch64 readelf sha256sum; do
+            command -v "$command"
+          done
+
+      - name: Set up Rust 1.96.0
+        uses: dtolnay/rust-toolchain@191af2e1955bbe165f9bbacff2d2438002dff4d4 # 1.96.0
+        with:
+          targets: x86_64-unknown-linux-musl,aarch64-unknown-linux-musl
+
+      - name: Set up Zig 0.15.1
+        uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2
+        with:
+          version: 0.15.1
+
+      - name: Set up cargo-zigbuild 0.23.0
+        uses: taiki-e/install-action@065d6a08a14e61e89fb0a4c10eecdbdef39c7d8e # v2
+        with:
+          tool: cargo-zigbuild@0.23.0
+
+      - name: Build Linux x86_64 and ARM64 binaries
+        run: |
+          cargo zigbuild --locked --release --target x86_64-unknown-linux-musl
+          cargo zigbuild --locked --release --target aarch64-unknown-linux-musl
+
+      - name: Verify binary architecture and execution
+        run: |
+          set -euo pipefail
+          X86="$CARGO_TARGET_DIR/x86_64-unknown-linux-musl/release/contabo-scraper"
+          ARM="$CARGO_TARGET_DIR/aarch64-unknown-linux-musl/release/contabo-scraper"
+          file "$X86" | grep -F 'x86-64'
+          file "$ARM" | grep -F 'ARM aarch64'
+          readelf -h "$X86" | grep -E 'Machine:.*X86-64'
+          readelf -h "$ARM" | grep -E 'Machine:.*AArch64'
+          "$X86" --version
+          qemu-aarch64 "$ARM" --version
+
+      - name: Validate scraper release resolver
+        run: bash scripts/test-resolve-scraper-release.sh
+
+      - name: Verify current immutable scraper release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          RELEASE_DIR="$RUNNER_TEMP/current-scraper-release"
+          mkdir -p "$RELEASE_DIR"
+          TAG="$(scripts/resolve-scraper-release.sh latest)"
+          gh release download "$TAG" \
+            --pattern contabo-scraper-linux-x86_64 \
+            --pattern SHA256SUMS.txt \
+            --dir "$RELEASE_DIR"
+          EXPECTED="$(
+            awk '$2 == "contabo-scraper-linux-x86_64" { print $1 }' \
+              "$RELEASE_DIR/SHA256SUMS.txt"
+          )"
+          ACTUAL="$(sha256sum "$RELEASE_DIR/contabo-scraper-linux-x86_64" | awk '{print $1}')"
+          test -n "$EXPECTED"
+          test "$ACTUAL" = "$EXPECTED"
+          chmod 0700 "$RELEASE_DIR/contabo-scraper-linux-x86_64"
+          "$RELEASE_DIR/contabo-scraper-linux-x86_64" --version
+
+  whmcs-release:
+    name: WHMCS packages without publication
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: contabo-ci-pr
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify host PHP 8.2 and Composer
+        run: |
+          test "$(/usr/bin/php8.2 -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')" = "8.2"
+          /usr/bin/php8.2 /usr/local/bin/composer --version
+
+      - name: Install test dependencies
+        working-directory: whmcs-module/modules/addons/contabo_pricing
+        run: /usr/bin/php8.2 /usr/local/bin/composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run addon and provisioning suites
+        run: |
+          /usr/bin/php8.2 \
+            whmcs-module/modules/addons/contabo_pricing/vendor/bin/phpunit \
+            -c whmcs-module/modules/addons/contabo_pricing/phpunit.xml \
+            --do-not-cache-result
+          /usr/bin/php8.2 \
+            whmcs-module/modules/addons/contabo_pricing/vendor/bin/phpunit \
+            -c whmcs-module/modules/servers/securiacevps/phpunit.xml \
+            --do-not-cache-result
+
+      - name: Build and verify installable archives
+        run: |
+          set -euo pipefail
+          bash scripts/package-whmcs-suite.sh --all
+          shopt -s nullglob
+          ARCHIVES=(
+            dist/contabo_pricing-v*.zip
+            dist/securiacevps-v*.zip
+          )
+          test "${#ARCHIVES[@]}" -eq 2
+          for archive in "${ARCHIVES[@]}"; do
+            test -s "$archive"
+            test -s "$archive.sha256"
+            test -s "$archive.manifest"
+            unzip -t "$archive"
+            (
+              cd dist
+              sha256sum -c "$(basename "$archive").sha256"
+            )
+          done

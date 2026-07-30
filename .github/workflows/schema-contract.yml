@@ -18,20 +18,25 @@ concurrency:
   group: schema-contract-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   php74-runtime-lint:
     name: PHP 7.4 runtime syntax
-    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: contabo-ci-pr
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up PHP 7.4
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          php-version: '7.4'
-          coverage: none
+          persist-credentials: false
+
+      - name: Verify host PHP 7.4 runtime
+        run: |
+          test "$(/usr/bin/php7.4 -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')" = "7.4"
+          /usr/bin/php7.4 --version
 
       - name: Lint WHMCS runtime sources
         run: |
@@ -45,17 +50,19 @@ jobs:
             -not -path '*/tests/*' \
             -print0 \
             | sort -z \
-            | xargs -0 -n1 php -l
+            | xargs -0 -n1 /usr/bin/php7.4 -l
 
   contract:
     name: Rust producer ↔ WHMCS consumer
-    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: contabo-ci-pr
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Require deliberate schema documentation
         if: github.event_name == 'pull_request'
@@ -82,26 +89,26 @@ jobs:
             fi
           fi
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Set up Rust 1.96.0
+        uses: dtolnay/rust-toolchain@191af2e1955bbe165f9bbacff2d2438002dff4d4 # 1.96.0
 
       - name: Cache Cargo
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        with:
+          shared-key: contabo-ci-pr-${{ runner.arch }}-rust-1.96.0
 
       - name: Verify Rust producer contract
         run: cargo test --test schema_contract
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          tools: composer:v2
-          coverage: none
+      - name: Verify host PHP 8.2 and Composer
+        run: |
+          test "$(/usr/bin/php8.2 -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')" = "8.2"
+          /usr/bin/php8.2 /usr/local/bin/composer --version
 
       - name: Install WHMCS addon test dependencies
         working-directory: whmcs-module/modules/addons/contabo_pricing
-        run: composer install --no-interaction --prefer-dist --no-progress
+        run: /usr/bin/php8.2 /usr/local/bin/composer install --no-interaction --prefer-dist --no-progress
 
       - name: Verify WHMCS consumer contract
         working-directory: whmcs-module/modules/addons/contabo_pricing
-        run: vendor/bin/phpunit tests/GoldenApiContractTest.php
+        run: /usr/bin/php8.2 vendor/bin/phpunit tests/GoldenApiContractTest.php
