@@ -24,6 +24,7 @@ on:
       - '!whmcs-module/modules/addons/contabo_pricing/graphify-out/**'
       - 'scripts/package-whmcs-suite.sh'
       - 'scripts/extract-changelog-section.sh'
+      - 'scripts/inspect-github-release.sh'
       - '.github/workflows/release-contabo-pricing.yml'
   workflow_dispatch:
 
@@ -34,6 +35,7 @@ concurrency:
 jobs:
   build:
     name: Verify and package contabo_pricing
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -65,7 +67,14 @@ jobs:
             exit 1
           fi
           TAG="contabo_pricing-v${VERSION}"
-          if gh release view "$TAG" >/dev/null 2>&1; then
+          STATE="$(
+            scripts/inspect-github-release.sh \
+              "$TAG" \
+              "contabo_pricing-v${VERSION}.zip" \
+              "contabo_pricing-v${VERSION}.zip.sha256" \
+              "contabo_pricing-v${VERSION}.zip.manifest"
+          )"
+          if [ "$STATE" = "complete" ]; then
             EXISTS=true
           else
             EXISTS=false

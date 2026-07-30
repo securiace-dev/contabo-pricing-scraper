@@ -32,6 +32,7 @@ on:
       - 'whmcs-module/templates/orderforms/securiace-vps/**'
       - 'scripts/package-whmcs-suite.sh'
       - 'scripts/extract-changelog-section.sh'
+      - 'scripts/inspect-github-release.sh'
       - '.github/workflows/release-contabo-vps.yml'
   workflow_dispatch:
 
@@ -42,6 +43,7 @@ concurrency:
 jobs:
   build:
     name: Verify and package SecuriAce VPS
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -75,7 +77,14 @@ jobs:
             exit 1
           fi
           TAG="securiacevps-v${VERSION}"
-          if gh release view "$TAG" >/dev/null 2>&1; then
+          STATE="$(
+            scripts/inspect-github-release.sh \
+              "$TAG" \
+              "securiacevps-v${VERSION}.zip" \
+              "securiacevps-v${VERSION}.zip.sha256" \
+              "securiacevps-v${VERSION}.zip.manifest"
+          )"
+          if [ "$STATE" = "complete" ]; then
             EXISTS=true
           else
             EXISTS=false

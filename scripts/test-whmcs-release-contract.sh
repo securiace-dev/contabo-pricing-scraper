@@ -5,6 +5,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+JQ_BIN="${JQ_BIN:-jq}"
 FIXTURE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/securiace-release-contract.XXXXXX")"
 
 cleanup() {
@@ -68,12 +69,101 @@ if bash "$SCRIPT_DIR/package-whmcs-suite.sh" --invalid >/dev/null 2>&1; then
   fail "invalid package mode did not fail closed"
 fi
 
+FAKE_SHA="0123456789abcdef0123456789abcdef01234567"
+cat > "$FIXTURE_DIR/fake-gh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+if [ "$1" != "api" ]; then
+  exit 2
+fi
+case "$2" in
+  repos/*/releases/tags/*)
+    if [ "${FAKE_RELEASE_STATE:-complete}" = "absent" ]; then
+      echo "gh: Not Found (HTTP 404)" >&2
+      exit 1
+    fi
+    cat "$FAKE_RELEASE_JSON"
+    ;;
+  repos/*/git/ref/tags/*)
+    printf '{"object":{"type":"commit","sha":"%s"}}\n' "$FAKE_TAG_SHA"
+    ;;
+  *)
+    exit 2
+    ;;
+esac
+EOF
+chmod +x "$FIXTURE_DIR/fake-gh"
+
+cat > "$FIXTURE_DIR/release.json" <<EOF
+{
+  "tag_name": "contabo_pricing-v1.0.0",
+  "target_commitish": "$FAKE_SHA",
+  "draft": false,
+  "prerelease": false,
+  "assets": [
+    {"name": "module.zip", "state": "uploaded"},
+    {"name": "module.zip.sha256", "state": "uploaded"},
+    {"name": "module.zip.manifest", "state": "uploaded"}
+  ]
+}
+EOF
+
+release_state="$(
+  GH_TOKEN="fixture-token" \
+  GH_REPO="fixture/repository" \
+  GH_CLI="$FIXTURE_DIR/fake-gh" \
+  FAKE_RELEASE_JSON="$FIXTURE_DIR/release.json" \
+  FAKE_TAG_SHA="$FAKE_SHA" \
+  "$SCRIPT_DIR/inspect-github-release.sh" \
+    "contabo_pricing-v1.0.0" \
+    "module.zip" "module.zip.sha256" "module.zip.manifest"
+)"
+[ "$release_state" = "complete" ] || fail "complete release was not accepted"
+
+release_state="$(
+  GH_TOKEN="fixture-token" \
+  GH_REPO="fixture/repository" \
+  GH_CLI="$FIXTURE_DIR/fake-gh" \
+  FAKE_RELEASE_STATE="absent" \
+  FAKE_RELEASE_JSON="$FIXTURE_DIR/release.json" \
+  FAKE_TAG_SHA="$FAKE_SHA" \
+  "$SCRIPT_DIR/inspect-github-release.sh" \
+    "contabo_pricing-v1.0.0" "module.zip"
+)"
+[ "$release_state" = "absent" ] || fail "absent release was not classified safely"
+
+"$JQ_BIN" 'del(.assets[] | select(.name == "module.zip.manifest"))' \
+  "$FIXTURE_DIR/release.json" > "$FIXTURE_DIR/incomplete-release.json"
+if GH_TOKEN="fixture-token" \
+  GH_REPO="fixture/repository" \
+  GH_CLI="$FIXTURE_DIR/fake-gh" \
+  FAKE_RELEASE_JSON="$FIXTURE_DIR/incomplete-release.json" \
+  FAKE_TAG_SHA="$FAKE_SHA" \
+  "$SCRIPT_DIR/inspect-github-release.sh" \
+    "contabo_pricing-v1.0.0" \
+    "module.zip" "module.zip.sha256" "module.zip.manifest" >/dev/null 2>&1; then
+  fail "incomplete release did not fail closed"
+fi
+
+if GH_TOKEN="fixture-token" \
+  GH_REPO="fixture/repository" \
+  GH_CLI="$FIXTURE_DIR/fake-gh" \
+  FAKE_RELEASE_JSON="$FIXTURE_DIR/release.json" \
+  FAKE_TAG_SHA="abcdef0123456789abcdef0123456789abcdef01" \
+  "$SCRIPT_DIR/inspect-github-release.sh" \
+    "contabo_pricing-v1.0.0" \
+    "module.zip" "module.zip.sha256" "module.zip.manifest" >/dev/null 2>&1; then
+  fail "release/tag target mismatch did not fail closed"
+fi
+
 PRICING_WORKFLOW="$REPO_ROOT/.github/workflows/release-contabo-pricing.yml"
 SUITE_WORKFLOW="$REPO_ROOT/.github/workflows/release-contabo-vps.yml"
 for required in \
   "whmcs-module/modules/addons/contabo_pricing/**" \
   "scripts/package-whmcs-suite.sh" \
-  "scripts/extract-changelog-section.sh"; do
+  "scripts/extract-changelog-section.sh" \
+  "scripts/inspect-github-release.sh" \
+  "github.ref == 'refs/heads/main'"; do
   grep -Fq "$required" "$PRICING_WORKFLOW" ||
     fail "pricing workflow does not watch required release input: $required"
 done
@@ -82,7 +172,9 @@ for required in \
   "whmcs-module/modules/servers/contabo_vps/**" \
   "whmcs-module/templates/orderforms/securiace-vps/**" \
   "scripts/package-whmcs-suite.sh" \
-  "scripts/extract-changelog-section.sh"; do
+  "scripts/extract-changelog-section.sh" \
+  "scripts/inspect-github-release.sh" \
+  "github.ref == 'refs/heads/main'"; do
   grep -Fq "$required" "$SUITE_WORKFLOW" ||
     fail "suite workflow does not watch required release input: $required"
 done
