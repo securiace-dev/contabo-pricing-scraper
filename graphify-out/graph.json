@@ -27090,7 +27090,7 @@
       "label": "Release contract",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L54",
+      "source_location": "L56",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_release_contract",
       "community": 123,
@@ -27100,7 +27100,7 @@
       "label": "Services and paths",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L81",
+      "source_location": "L83",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_services_and_paths",
       "community": 123,
@@ -27110,7 +27110,7 @@
       "label": "Verification",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L96",
+      "source_location": "L98",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_verification",
       "community": 123,
@@ -27120,7 +27120,7 @@
       "label": "Incident handling",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L113",
+      "source_location": "L115",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_incident_handling",
       "community": 123,
@@ -27130,7 +27130,7 @@
       "label": "Rollback",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L126",
+      "source_location": "L128",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_rollback",
       "community": 123,
@@ -95429,5 +95429,5 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_CONFIGURABLE_OPTIONS.md"
     }
   ],
-  "built_at_commit": "74b2e45916b13fc864aa7bd56a3fb356cd06a9e8"
+  "built_at_commit": "324b7a4b82470bcdd8a17fbf878f68b539c7a753"
 }
