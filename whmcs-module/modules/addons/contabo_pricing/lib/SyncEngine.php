@@ -44,6 +44,26 @@ class SyncEngine
     /** @var float Hard threshold (50%) above which a change is "suspicious" */
     private const SUSPICIOUS_CHANGE_RATIO = 0.50;
 
+    /** @var list<string> */
+    private const RECURRING_COLUMNS = [
+        'monthly',
+        'quarterly',
+        'semiannually',
+        'annually',
+        'biennially',
+        'triennially',
+    ];
+
+    /** @var list<string> */
+    private const SETUP_FEE_COLUMNS = [
+        'msetupfee',
+        'qsetupfee',
+        'ssetupfee',
+        'asetupfee',
+        'bsetupfee',
+        'tsetupfee',
+    ];
+
     public function __construct(
         Settings $settings,
         ApiClient $api,
@@ -348,6 +368,16 @@ class SyncEngine
                     try {
                         list($preRound, $rounded, $markupStrategy, $markupValue) =
                             $this->computeCyclePrice($version, $mapping, $cycle, $cycleMonths, $roundingMode);
+                    } catch (PricingInvariantViolation $e) {
+                        $this->catalogAudit->insert(array_merge($auditBase, [
+                            'applied'             => 0,
+                            'skipped_reason'      => $e->reason(),
+                            'old_price'           => $currentValue,
+                            'price_status_before' => $priceStatus,
+                            'cycle_pricing_notes' => $e->getMessage(),
+                        ]));
+                        $stats['cycles_skipped']++;
+                        continue;
                     } catch (\Throwable $e) {
                         $this->catalogAudit->insert(array_merge($auditBase, [
                             'applied'             => 0,
@@ -382,10 +412,9 @@ class SyncEngine
                         continue;
                     }
 
-                    // 5) Write the recurring column (catalog only).
-                    $this->writeTblpricingCell($productId, $currencyId, $recurringColumn, $rounded);
-
-                    // 6) Optional setup-fee write.
+                    // 5) Compute every value before opening the local write
+                    // transaction. An invalid setup fee must not leave the
+                    // recurring price updated on its own.
                     $oldSetupFee = null;
                     $newSetupFee = null;
                     if ($syncSetupFees && $setupFeeColumn !== null) {
@@ -393,10 +422,73 @@ class SyncEngine
                             $rawSetup = $tblpricingRow[$setupFeeColumn];
                             $oldSetupFee = ($rawSetup === null || $rawSetup === '') ? null : (float) $rawSetup;
                         }
-                        $newSetupFee = $this->computeSetupFee($version, $mapping, $cycle, $cycleMonths, $roundingMode);
-                        if ($newSetupFee !== null) {
-                            $this->writeTblpricingCell($productId, $currencyId, $setupFeeColumn, $newSetupFee);
+                        try {
+                            $newSetupFee = $this->computeSetupFee(
+                                $version,
+                                $mapping,
+                                $cycle,
+                                $cycleMonths,
+                                $roundingMode
+                            );
+                        } catch (PricingInvariantViolation $e) {
+                            $this->catalogAudit->insert(array_merge($auditBase, [
+                                'applied'             => 0,
+                                'skipped_reason'      => $e->reason(),
+                                'old_price'           => $currentValue,
+                                'price_status_before' => $priceStatus,
+                                'cycle_pricing_notes' => $e->getMessage(),
+                            ]));
+                            $stats['cycles_skipped']++;
+                            continue;
                         }
+                    }
+
+                    // 6) Apply the recurring price and optional setup fee as
+                    // one local MySQL transaction.
+                    try {
+                        Capsule::connection()->transaction(function () use (
+                            $productId,
+                            $currencyId,
+                            $recurringColumn,
+                            $rounded,
+                            $setupFeeColumn,
+                            $newSetupFee
+                        ): void {
+                            $this->writeTblpricingCell(
+                                $productId,
+                                $currencyId,
+                                $recurringColumn,
+                                $rounded
+                            );
+                            if ($setupFeeColumn !== null && $newSetupFee !== null) {
+                                $this->writeTblpricingCell(
+                                    $productId,
+                                    $currencyId,
+                                    $setupFeeColumn,
+                                    $newSetupFee
+                                );
+                            }
+                        });
+                    } catch (PricingInvariantViolation $e) {
+                        $this->catalogAudit->insert(array_merge($auditBase, [
+                            'applied'             => 0,
+                            'skipped_reason'      => $e->reason(),
+                            'old_price'           => $currentValue,
+                            'price_status_before' => $priceStatus,
+                            'cycle_pricing_notes' => $e->getMessage(),
+                        ]));
+                        $stats['cycles_skipped']++;
+                        continue;
+                    } catch (\Throwable $e) {
+                        $this->catalogAudit->insert(array_merge($auditBase, [
+                            'applied'             => 0,
+                            'skipped_reason'      => 'price_write_error',
+                            'old_price'           => $currentValue,
+                            'price_status_before' => $priceStatus,
+                            'cycle_pricing_notes' => 'Catalog pricing transaction failed',
+                        ]));
+                        $stats['cycles_skipped']++;
+                        continue;
                     }
 
                     $this->catalogAudit->insert(array_merge($auditBase, [
@@ -463,6 +555,11 @@ class SyncEngine
         // sync repopulates the vector.
         $sourceEur = $this->resolveCycleSourceEur($version, $mapping, $cycle, $cycleMonths);
         if ($sourceEur !== null) {
+            PriceInvariant::requirePositiveFinite(
+                $sourceEur,
+                'missing_source_price',
+                'Provider source price'
+            );
             $landedMonthly = ProfileVersionInput::toLocalMonthly(
                 $sourceEur,
                 $version->fxRate,
@@ -473,6 +570,11 @@ class SyncEngine
         } else {
             $landedMonthly = (float) $version->finalMonthly;
         }
+        PriceInvariant::requirePositiveFinite(
+            $landedMonthly,
+            'missing_source_price',
+            'Landed monthly source price'
+        );
 
         // For 'fixed' strategy, $value is the admin-set total sell price for
         // this cycle. Convert to monthly so sellPriceForCycle can use it.
@@ -488,10 +590,20 @@ class SyncEngine
             $fixedCycleTotal,
             $cycleMonths
         );
+        PriceInvariant::requirePositiveFinite(
+            $preRoundCycle,
+            'price_invariant_violation',
+            'Computed cycle price'
+        );
 
         // sellPriceForCycle already rounds to 2dp; pre-round-of-final-write is
         // the same number prior to mapping-level rounding mode.
-        $rounded = $this->applyRounding($preRoundCycle, $roundingMode);
+        $rounded = Rounding::apply($preRoundCycle, $roundingMode);
+        PriceInvariant::requirePositiveFinite(
+            $rounded,
+            'price_invariant_violation',
+            'Rounded cycle price'
+        );
 
         return [$preRoundCycle, $rounded, $strategy, (float) $value];
     }
@@ -518,10 +630,21 @@ class SyncEngine
         unset($mapping, $cycle, $cycleMonths); // accepted for symmetry / future use
 
         $fee = (float) $version->finalSetup;
-        if ($fee <= 0.0) {
+        if ($fee === 0.0) {
             return null;
         }
-        return $this->applyRounding($fee, $roundingMode);
+        PriceInvariant::requireNonNegativeFinite(
+            $fee,
+            'price_invariant_violation',
+            'Setup fee'
+        );
+        $rounded = Rounding::apply($fee, $roundingMode);
+        PriceInvariant::requireNonNegativeFinite(
+            $rounded,
+            'price_invariant_violation',
+            'Rounded setup fee'
+        );
+        return $rounded;
     }
 
     /**
@@ -583,57 +706,6 @@ class SyncEngine
     }
 
     /**
-     * Mapping-level rounding modes. Reads inputs as float, returns a float.
-     */
-    private function applyRounding(float $price, string $mode): float
-    {
-        switch ($mode) {
-            case 'exact_2_decimals':
-                return round($price, 2);
-
-            case 'nearest_rupee':
-                return round($price, 0);
-
-            case 'nearest_9':
-                // Hits the next "9-tail" at the tens place: 1234 → 1239,
-                // 1234.567 → 1239, 1230 → 1239 (we don't go DOWN to 1229).
-                $base = (int) floor($price / 10.0) * 10;
-                $candidate = (float) ($base + 9);
-                if ($candidate < $price) {
-                    $candidate += 10.0;
-                }
-                return $candidate;
-
-            case 'nearest_99':
-                // Next "99-tail" at the hundreds place: 1234.567 → 1299.
-                $base = (int) floor($price / 100.0) * 100;
-                $candidate = (float) ($base + 99);
-                if ($candidate < $price) {
-                    $candidate += 100.0;
-                }
-                return $candidate;
-
-            case 'nearest_100':
-                return round($price / 100.0) * 100.0;
-
-            case 'custom':
-                // TODO(phase-a.6): take a printf-style template from
-                // settings.setup_fee_overrides_json / a sibling settings JSON
-                // and apply it here. For now degrades to exact_2_decimals.
-                return round($price, 2);
-
-            default:
-                if (function_exists('logActivity')) {
-                    logActivity(sprintf(
-                        'Contabo Pricing: unknown rounding_mode "%s", falling back to exact_2_decimals.',
-                        $mode
-                    ));
-                }
-                return round($price, 2);
-        }
-    }
-
-    /**
      * 50% absolute-jump guard. Tests it both ways (up and down) — large
      * decreases are equally suspicious from a catalog hygiene standpoint.
      *
@@ -671,11 +743,30 @@ class SyncEngine
     }
 
     /**
-     * Single-cell `tblpricing` UPDATE. Wrapped so static greps for the
-     * `Capsule::table('tblpricing')` write surface land here.
+     * Single-cell `tblpricing` UPDATE with a final price invariant. Recurring
+     * computed prices must be positive; setup fees may legitimately be zero.
      */
     private function writeTblpricingCell(int $productId, int $currencyId, string $column, float $value): void
     {
+        if (in_array($column, self::RECURRING_COLUMNS, true)) {
+            PriceInvariant::requirePositiveFinite(
+                $value,
+                'price_invariant_violation',
+                'Recurring catalog write'
+            );
+        } elseif (in_array($column, self::SETUP_FEE_COLUMNS, true)) {
+            PriceInvariant::requireNonNegativeFinite(
+                $value,
+                'price_invariant_violation',
+                'Setup-fee catalog write'
+            );
+        } else {
+            throw new PricingInvariantViolation(
+                'price_invariant_violation',
+                'Unknown tblpricing column is not eligible for a write'
+            );
+        }
+
         Capsule::table('tblpricing')
             ->where('type', 'product')
             ->where('currency', $currencyId)

@@ -15,24 +15,23 @@ namespace ContaboPricing;
  * "same" cycle depending on whether you're a new buyer or an existing
  * customer).
  *
- * Supported modes (snapshotted into `metadata_json.rounding_mode` of every
- * decision / catalog_audit row so historical reconstructions can replay):
+ * Supported modes are the values persisted by the WHMCS mapping editor and
+ * snapshotted into `metadata_json.rounding_mode` / catalog audit rows:
  *
  *   - 'exact_2_decimals' (default): round half-up to 2 decimal places.
  *     1234.567 → 1234.57. The most common mode and what the engine used in
  *     Phase A before per-cycle pricing landed.
  *
- *   - 'nearest_99': round UP to the next *.99 boundary in the major unit.
- *     1234.00 → 1234.99; 1234.50 → 1234.99; 1235.00 → 1235.99. Useful for
- *     INR/USD storefronts that always quote `.99` prices.
+ *   - 'nearest_rupee': round to the nearest whole currency unit.
  *
- *   - 'nearest_95': same idea but to `.95`. 1234.00 → 1234.95; 1235.10 → 1235.95.
+ *   - 'nearest_9': round UP to the next integer ending in 9.
  *
- *   - 'nearest_50': round UP to the next 50-paise / 50-cent boundary.
- *     1234.00 → 1234.50; 1234.51 → 1235.00. Used in cash-handling
- *     jurisdictions where sub-50 units don't exist.
+ *   - 'nearest_99': round UP to the next integer ending in 99.
  *
- *   - 'nearest_integer': round UP to the next whole unit. 1234.01 → 1235.
+ *   - 'nearest_100': round to the nearest hundred currency units.
+ *
+ *   - 'custom': reserved for existing persisted mappings. Until a versioned
+ *     custom rule contract exists, it safely degrades to exact two decimals.
  *
  * Any unknown mode falls back to 'exact_2_decimals' AND emits a logActivity()
  * warning so admins notice misconfiguration without breaking the cron.
@@ -42,10 +41,11 @@ namespace ContaboPricing;
 final class Rounding
 {
     public const MODE_EXACT_2_DECIMALS = 'exact_2_decimals';
+    public const MODE_NEAREST_RUPEE    = 'nearest_rupee';
+    public const MODE_NEAREST_9        = 'nearest_9';
     public const MODE_NEAREST_99       = 'nearest_99';
-    public const MODE_NEAREST_95       = 'nearest_95';
-    public const MODE_NEAREST_50       = 'nearest_50';
-    public const MODE_NEAREST_INTEGER  = 'nearest_integer';
+    public const MODE_NEAREST_100      = 'nearest_100';
+    public const MODE_CUSTOM           = 'custom';
 
     /**
      * All recognised modes in canonical display order.
@@ -56,10 +56,29 @@ final class Rounding
     {
         return [
             self::MODE_EXACT_2_DECIMALS,
+            self::MODE_NEAREST_RUPEE,
+            self::MODE_NEAREST_9,
             self::MODE_NEAREST_99,
-            self::MODE_NEAREST_95,
-            self::MODE_NEAREST_50,
-            self::MODE_NEAREST_INTEGER,
+            self::MODE_NEAREST_100,
+            self::MODE_CUSTOM,
+        ];
+    }
+
+    /**
+     * Modes administrators may select for new or updated mappings. `custom`
+     * remains readable for legacy rows but cannot be newly selected until its
+     * versioned rule contract exists.
+     *
+     * @return list<string>
+     */
+    public static function selectableModes(): array
+    {
+        return [
+            self::MODE_EXACT_2_DECIMALS,
+            self::MODE_NEAREST_RUPEE,
+            self::MODE_NEAREST_9,
+            self::MODE_NEAREST_99,
+            self::MODE_NEAREST_100,
         ];
     }
 
@@ -71,11 +90,15 @@ final class Rounding
         return in_array($mode, self::supportedModes(), true);
     }
 
+    public static function isSelectableMode(string $mode): bool
+    {
+        return in_array($mode, self::selectableModes(), true);
+    }
+
     /**
-     * Round a price according to the given mode. Negative prices are passed
-     * through as-is (the engine should never compute negatives — bug elsewhere
-     * if you see one) but we don't crash on them. Zero is always returned as
-     * 0.00 regardless of mode (free-cycle gets no rounding surprise).
+     * Round a price according to the given mode. Non-positive values are
+     * normalized to 0.00 so this pure formatter remains total; pricing engines
+     * must separately enforce their positive-price write invariant.
      *
      * @param float  $price Pre-round price (typically the output of
      *                      MarginCalculator::sellPriceForCycle()).
@@ -93,33 +116,30 @@ final class Rounding
             case self::MODE_EXACT_2_DECIMALS:
                 return round($price, 2);
 
+            case self::MODE_NEAREST_RUPEE:
+                return round($price, 0);
+
+            case self::MODE_NEAREST_9:
+                $base = (int) floor($price / 10.0) * 10;
+                $candidate = (float) ($base + 9);
+                if ($candidate < $price) {
+                    $candidate += 10.0;
+                }
+                return $candidate;
+
             case self::MODE_NEAREST_99:
-                // Round UP to the next *.99 boundary.
-                // 1234.00 → 1234.99; 1234.99 → 1234.99; 1235.00 → 1235.99.
-                $whole = (int) floor($price);
-                $candidate = $whole + 0.99;
+                $base = (int) floor($price / 100.0) * 100;
+                $candidate = (float) ($base + 99);
                 if ($candidate < $price) {
-                    $candidate += 1.0;
+                    $candidate += 100.0;
                 }
-                return round($candidate, 2);
+                return $candidate;
 
-            case self::MODE_NEAREST_95:
-                $whole = (int) floor($price);
-                $candidate = $whole + 0.95;
-                if ($candidate < $price) {
-                    $candidate += 1.0;
-                }
-                return round($candidate, 2);
+            case self::MODE_NEAREST_100:
+                return round($price / 100.0) * 100.0;
 
-            case self::MODE_NEAREST_50:
-                // Round UP to the next .00 or .50 boundary.
-                $doubled = $price * 2.0;
-                $candidate = ceil($doubled - 1e-9) / 2.0;
-                return round($candidate, 2);
-
-            case self::MODE_NEAREST_INTEGER:
-                $candidate = ceil($price - 1e-9);
-                return round($candidate, 2);
+            case self::MODE_CUSTOM:
+                return round($price, 2);
 
             default:
                 if (function_exists('logActivity')) {

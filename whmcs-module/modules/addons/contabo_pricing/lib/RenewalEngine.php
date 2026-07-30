@@ -369,11 +369,35 @@ class RenewalEngine
         // the quarterly source, not a single base monthly. Falls back to
         // base_monthly_eur for legacy versions with no vector.
         $eurMonthly    = self::resolveCycleEurMonthly($version, $cycleMonths);
+        if (!PriceInvariant::isPositiveFinite($eurMonthly)) {
+            return $this->buildDecision(
+                $service, $now, $oldPrice, $oldPrice, $cycle, $cycleMonths,
+                'unknown', false, 'missing_source_price',
+                false, false,
+                null, null, null, null, null,
+                null, null, null, null, null, null, null,
+                $meta
+            );
+        }
         $landedMonthly = MarginCalculator::landedCostMonthly(
             $eurMonthly, $fxRate, $fxBufferPct, $paymentBufferPct,
             $vendorTaxRatePct, $vendorTaxRecoverable
         );
         $landedForCycle = $landedMonthly * $cycleMonths;
+        if (!PriceInvariant::isPositiveFinite($landedMonthly)
+            || !PriceInvariant::isPositiveFinite($landedForCycle)
+        ) {
+            return $this->buildDecision(
+                $service, $now, $oldPrice, $oldPrice, $cycle, $cycleMonths,
+                'unknown', false, 'price_invariant_violation',
+                false, false,
+                null, null, $eurMonthly, $fxRate, $fxBufferPct,
+                $taxMode, $vendorTaxRatePct, $vendorTaxRecoverable,
+                $pricesIncludeOutput, $outputTaxRatePct,
+                null, null,
+                $meta
+            );
+        }
 
         // Phase B (§13) — whole-config margin. When a snapshot supplied the
         // selected options' EUR deltas, compute the landed cost + margin ratio of
@@ -435,6 +459,19 @@ class RenewalEngine
             );
         }
 
+        if (!PriceInvariant::isPositiveFinite($preRound)) {
+            return $this->buildDecision(
+                $service, $now, $oldPrice, $oldPrice, $cycle, $cycleMonths,
+                'unknown', false, 'price_invariant_violation',
+                false, false,
+                $landedForCycle, $landedMonthly, $eurMonthly, $fxRate, $fxBufferPct,
+                $taxMode, $vendorTaxRatePct, $vendorTaxRecoverable,
+                $pricesIncludeOutput, $outputTaxRatePct,
+                null, null,
+                $meta
+            );
+        }
+
         $roundingMode = (string) ($mapping['rounding_mode'] ?? Rounding::MODE_EXACT_2_DECIMALS);
         $candidate    = Rounding::apply($preRound, $roundingMode);
         $meta['pre_round_price'] = round($preRound, 4);
@@ -447,8 +484,33 @@ class RenewalEngine
         if ($forcedCandidate !== null) {
             $meta['forced_candidate_source'] = 'scheduled_change';
             $meta['computed_candidate_pre_force'] = round($candidate, 4);
+            if (!PriceInvariant::isPositiveFinite($forcedCandidate)) {
+                return $this->buildDecision(
+                    $service, $now, $oldPrice, $oldPrice, $cycle, $cycleMonths,
+                    'unknown', false, 'price_invariant_violation',
+                    false, false,
+                    $landedForCycle, $landedMonthly, $eurMonthly, $fxRate, $fxBufferPct,
+                    $taxMode, $vendorTaxRatePct, $vendorTaxRecoverable,
+                    $pricesIncludeOutput, $outputTaxRatePct,
+                    null, null,
+                    $meta
+                );
+            }
             $candidate = Rounding::apply($forcedCandidate, $roundingMode);
             $meta['rounded_price'] = round($candidate, 4);
+        }
+
+        if (!PriceInvariant::isPositiveFinite($candidate)) {
+            return $this->buildDecision(
+                $service, $now, $oldPrice, $oldPrice, $cycle, $cycleMonths,
+                'unknown', false, 'price_invariant_violation',
+                false, false,
+                $landedForCycle, $landedMonthly, $eurMonthly, $fxRate, $fxBufferPct,
+                $taxMode, $vendorTaxRatePct, $vendorTaxRecoverable,
+                $pricesIncludeOutput, $outputTaxRatePct,
+                null, null,
+                $meta
+            );
         }
 
         $netRevenue   = MarginCalculator::netRevenueForCycle($oldPrice, $pricesIncludeOutput, $outputTaxRatePct);
@@ -784,6 +846,19 @@ class RenewalEngine
         array $profile,
         array $meta
     ): array {
+        if (!PriceInvariant::isPositiveFinite($newPrice)) {
+            return $this->buildDecision(
+                $service, $now, $oldPrice, $newPrice, $cycle, $cycleMonths,
+                $policy, false, 'price_invariant_violation',
+                $requiresNotice, false,
+                $landedForCycle, $landedMonthly, $eurMonthly, $fxRate, $fxBufferPct,
+                $taxMode, $vendorTaxRatePct, $vendorTaxRecoverable,
+                $pricesIncludeOutput, $outputTaxRatePct,
+                $netRevenue, $currentRatio,
+                $meta
+            );
+        }
+
         $allowDecrease = (bool) $sp['allow_auto_decrease'];
 
         // Decrease-without-permission guard.

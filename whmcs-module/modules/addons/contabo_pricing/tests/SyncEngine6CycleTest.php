@@ -8,6 +8,7 @@ use ContaboPricing\CatalogAuditLog;
 use ContaboPricing\CycleSet;
 use ContaboPricing\ProfileManager;
 use ContaboPricing\ProfileVersionInput;
+use ContaboPricing\Rounding;
 use ContaboPricing\Settings;
 use ContaboPricing\SyncEngine;
 use PHPUnit\Framework\TestCase;
@@ -517,6 +518,47 @@ final class SyncEngine6CycleTest extends TestCase
             $this->assertNotSame('tblhosting', $ins['table'],
                 'SyncEngine emitted an insert against tblhosting');
         }
+    }
+
+    /**
+     * @dataProvider invalidCatalogSources
+     */
+    public function testInvalidSourcePriceCannotOverwriteCatalogWithFreePrice(float $source): void
+    {
+        $mask = CycleSet::fromCycles(['Monthly'])->toMask();
+        $this->seedCurrency(1, 'EUR');
+        $this->seedMapping([
+            'id' => 10, 'profile_id' => 1, 'product_id' => 100, 'active' => 1,
+            'catalog_cycles_mask' => $mask,
+            'respect_disabled_cycles' => 1,
+            'overwrite_free_cycles' => 1,
+            'sync_setup_fees' => 0,
+            'rounding_mode' => Rounding::MODE_EXACT_2_DECIMALS,
+            'markup_overrides_json' => '',
+        ]);
+        $this->seedTblpricingRow(100, 1, ['monthly' => 1000.00]);
+
+        $engine = $this->makeEngine();
+        $version = $this->makeVersion($source, 0.0);
+        $stats = $engine->applyCatalogForProfile(
+            1,
+            $this->loadMapping(10),
+            $version,
+            'batch-missing-source'
+        );
+
+        $this->assertSame(0, $stats['cycles_applied']);
+        $this->assertCount(0, $this->tblpricingUpdates());
+        $row = $this->findAuditRow('Monthly');
+        $this->assertNotNull($row);
+        $this->assertSame('missing_source_price', $row['skipped_reason']);
+        $this->assertSame(0, (int) $row['applied']);
+    }
+
+    /** @return list<array{0:float}> */
+    public static function invalidCatalogSources(): array
+    {
+        return [[0.0], [-1.0], [INF], [NAN]];
     }
 
     // ─────────────────────────────────────────────────────────────────────
