@@ -1,7 +1,7 @@
 # Graph Report - contabo-pricing-scraper-whmcs-native  (2026-07-30)
 
 ## Corpus Check
-- 258 files · ~225,428 words
+- 258 files · ~225,459 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c7a720c8`
+- Built from commit: `74b2e459`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

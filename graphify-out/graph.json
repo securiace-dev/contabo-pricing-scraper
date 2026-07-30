@@ -27090,7 +27090,7 @@
       "label": "Release contract",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L51",
+      "source_location": "L54",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_release_contract",
       "community": 123,
@@ -27100,7 +27100,7 @@
       "label": "Services and paths",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L78",
+      "source_location": "L81",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_services_and_paths",
       "community": 123,
@@ -27110,7 +27110,7 @@
       "label": "Verification",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L93",
+      "source_location": "L96",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_verification",
       "community": 123,
@@ -27120,7 +27120,7 @@
       "label": "Incident handling",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L110",
+      "source_location": "L113",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_incident_handling",
       "community": 123,
@@ -27130,7 +27130,7 @@
       "label": "Rollback",
       "file_type": "document",
       "source_file": "docs/operations/self-hosted-runners.md",
-      "source_location": "L123",
+      "source_location": "L126",
       "_origin": "ast",
       "id": "operations_self_hosted_runners_rollback",
       "community": 123,
@@ -33226,9 +33226,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L48",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust",
-      "target": "scripts_check_workflow_trust_contains_release_runner",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_contains_release_runner"
     },
     {
       "relation": "contains",
@@ -33236,9 +33236,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust",
-      "target": "scripts_check_workflow_trust_load_workflow",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_load_workflow"
     },
     {
       "relation": "contains",
@@ -33246,9 +33246,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust",
-      "target": "scripts_check_workflow_trust_local_reusable_path",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_local_reusable_path"
     },
     {
       "relation": "contains",
@@ -33256,9 +33256,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust",
-      "target": "scripts_check_workflow_trust_pr_triggered",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_pr_triggered"
     },
     {
       "relation": "contains",
@@ -33266,9 +33266,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L76",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust",
-      "target": "scripts_check_workflow_trust_privileged_path",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_privileged_path"
     },
     {
       "relation": "contains",
@@ -33276,9 +33276,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust",
-      "target": "scripts_check_workflow_trust_workflow_value",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_workflow_value"
     },
     {
       "relation": "calls",
@@ -33287,9 +33287,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust_pr_triggered",
-      "target": "scripts_check_workflow_trust_workflow_value",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_workflow_value"
     },
     {
       "relation": "calls",
@@ -33298,9 +33298,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L80",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust_privileged_path",
-      "target": "scripts_check_workflow_trust_workflow_value",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_workflow_value"
     },
     {
       "relation": "calls",
@@ -33309,9 +33309,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L79",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust_privileged_path",
-      "target": "scripts_check_workflow_trust_load_workflow",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_load_workflow"
     },
     {
       "relation": "calls",
@@ -33320,9 +33320,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust_privileged_path",
-      "target": "scripts_check_workflow_trust_contains_release_runner",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_contains_release_runner"
     },
     {
       "relation": "calls",
@@ -33331,9 +33331,9 @@
       "source_file": "scripts/check-workflow-trust.rb",
       "source_location": "L90",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_check_workflow_trust_privileged_path",
-      "target": "scripts_check_workflow_trust_local_reusable_path",
-      "confidence_score": 1.0
+      "target": "scripts_check_workflow_trust_local_reusable_path"
     },
     {
       "relation": "contains",
@@ -34494,9 +34494,9 @@
       "source_file": "scripts/test-workflow-trust-contract.sh",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_workflow_trust_contract",
-      "target": "scripts_test_workflow_trust_contract_expect_fail",
-      "confidence_score": 1.0
+      "target": "scripts_test_workflow_trust_contract_expect_fail"
     },
     {
       "relation": "defines",
@@ -34504,9 +34504,9 @@
       "source_file": "scripts/test-workflow-trust-contract.sh",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_workflow_trust_contract",
-      "target": "scripts_test_workflow_trust_contract_expect_pass",
-      "confidence_score": 1.0
+      "target": "scripts_test_workflow_trust_contract_expect_pass"
     },
     {
       "relation": "defines",
@@ -34514,9 +34514,9 @@
       "source_file": "scripts/test-workflow-trust-contract.sh",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_workflow_trust_contract",
-      "target": "scripts_test_workflow_trust_contract_new_case",
-      "confidence_score": 1.0
+      "target": "scripts_test_workflow_trust_contract_new_case"
     },
     {
       "relation": "defines",
@@ -34524,9 +34524,9 @@
       "source_file": "scripts/test-workflow-trust-contract.sh",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_workflow_trust_contract",
-      "target": "scripts_test_workflow_trust_contract_validator",
-      "confidence_score": 1.0
+      "target": "scripts_test_workflow_trust_contract_validator"
     },
     {
       "relation": "contains",
@@ -34534,9 +34534,9 @@
       "source_file": "scripts/test-workflow-trust-contract.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_workflow_trust_contract",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry"
     },
     {
       "relation": "calls",
@@ -34545,9 +34545,9 @@
       "source_location": "L66",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry",
-      "target": "scripts_test_workflow_trust_contract_expect_fail",
-      "confidence_score": 1.0
+      "target": "scripts_test_workflow_trust_contract_expect_fail"
     },
     {
       "relation": "calls",
@@ -34556,9 +34556,9 @@
       "source_location": "L41",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry",
-      "target": "scripts_test_workflow_trust_contract_expect_pass",
-      "confidence_score": 1.0
+      "target": "scripts_test_workflow_trust_contract_expect_pass"
     },
     {
       "relation": "contains",
@@ -95429,5 +95429,5 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_CONFIGURABLE_OPTIONS.md"
     }
   ],
-  "built_at_commit": "c7a720c801b4ad31574c3d092e587c730d20b7f4"
+  "built_at_commit": "74b2e45916b13fc864aa7bd56a3fb356cd06a9e8"
 }
