@@ -1850,9 +1850,8 @@ class AdminController
         $syncSetupFees = !empty($req['sync_setup_fees']);
 
         $rounding = (string) ($req['rounding_mode'] ?? 'exact_2_decimals');
-        $allowedRounding = ['exact_2_decimals', 'nearest_rupee', 'nearest_9', 'nearest_99', 'nearest_100'];
-        if (!in_array($rounding, $allowedRounding, true)) {
-            $rounding = 'exact_2_decimals';
+        if (!Rounding::isSelectableMode($rounding)) {
+            $rounding = Rounding::MODE_EXACT_2_DECIMALS;
         }
 
         try {
@@ -2139,9 +2138,11 @@ class AdminController
 
     private function syncRun(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
+        $observeOnly = (string) ($req['mode'] ?? 'observe') !== 'apply';
         $engine = new SyncEngine($this->settings, new ApiClient($this->settings), new ProfileManager($this->settings));
-        $summary = $engine->run('manual');
+        $summary = $engine->run('manual', $observeOnly);
         $this->render('sync_run_result.tpl', ['summary' => $summary]);
     }
 

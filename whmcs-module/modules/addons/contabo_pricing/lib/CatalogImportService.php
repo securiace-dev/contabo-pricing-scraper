@@ -19,6 +19,7 @@ final class CatalogImportService
     private const VERSION_TABLE = 'mod_contabo_catalog_versions';
     private const ITEM_TABLE = 'mod_contabo_catalog_items';
     private const MAX_ITEMS = 50000;
+    public const SUPPORTED_SCHEMA_VERSION = '1.0';
 
     /**
      * @param array<string,mixed> $catalog
@@ -35,7 +36,7 @@ final class CatalogImportService
         if ($catalogVersion === '' || !preg_match('/^[A-Za-z0-9._:-]{1,120}$/', $catalogVersion)) {
             throw new InvalidArgumentException('The Rust catalog version is missing or invalid.');
         }
-        if ($schemaVersion !== '1.0') {
+        if ($schemaVersion !== self::SUPPORTED_SCHEMA_VERSION) {
             throw new RuntimeException('Unsupported Rust catalog schema version: ' . $schemaVersion);
         }
         if (!is_array($items) || count($items) > self::MAX_ITEMS) {

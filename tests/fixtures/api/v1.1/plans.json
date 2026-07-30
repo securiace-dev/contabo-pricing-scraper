@@ -1,0 +1,18 @@
+[
+  {
+    "product_slug": "cloud-vps-10",
+    "provider_sku_id": "V45",
+    "family": "Cloud VPS",
+    "product_name": "Cloud VPS 10",
+    "base_monthly_price": 3.6,
+    "fetched_at": "2026-07-30T10:20:30Z",
+    "periods": [
+      {
+        "months": 12,
+        "effective_monthly": 3.6,
+        "setup_fee": 0.0,
+        "total_period_cost": 43.2
+      }
+    ]
+  }
+]

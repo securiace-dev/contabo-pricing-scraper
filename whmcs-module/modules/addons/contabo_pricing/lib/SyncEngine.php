@@ -43,6 +43,27 @@ class SyncEngine
 
     /** @var float Hard threshold (50%) above which a change is "suspicious" */
     private const SUSPICIOUS_CHANGE_RATIO = 0.50;
+    private const PRICE_EQUAL_EPSILON = 0.00001;
+
+    /** @var list<string> */
+    private const RECURRING_COLUMNS = [
+        'monthly',
+        'quarterly',
+        'semiannually',
+        'annually',
+        'biennially',
+        'triennially',
+    ];
+
+    /** @var list<string> */
+    private const SETUP_FEE_COLUMNS = [
+        'msetupfee',
+        'qsetupfee',
+        'ssetupfee',
+        'asetupfee',
+        'bsetupfee',
+        'tsetupfee',
+    ];
 
     public function __construct(
         Settings $settings,
@@ -58,16 +79,21 @@ class SyncEngine
 
     /**
      * @param string $trigger 'cron' | 'manual' | 'webhook'
+     * @param bool $observeOnly When true, compute a plan without changing any
+     *                          database table, including logs and audit tables.
      * @return array<string, mixed> summary
      */
-    public function run(string $trigger = 'manual'): array
+    public function run(string $trigger = 'manual', bool $observeOnly = false): array
     {
         $startedAt = date('Y-m-d H:i:s');
-        $logId = (int) Capsule::table('mod_contabo_sync_log')->insertGetId([
-            'trigger'    => $trigger,
-            'status'     => 'running',
-            'started_at' => $startedAt,
-        ]);
+        $logId = null;
+        if (!$observeOnly) {
+            $logId = (int) Capsule::table('mod_contabo_sync_log')->insertGetId([
+                'trigger'    => $trigger,
+                'status'     => 'running',
+                'started_at' => $startedAt,
+            ]);
+        }
 
         $syncBatchId = self::uuidV4();
 
@@ -78,9 +104,13 @@ class SyncEngine
             'profiles_checked'  => 0,
             'profiles_changed'  => 0,
             'products_updated'  => 0,
+            'products_planned'  => 0,
             'cycles_evaluated'  => 0,
             'cycles_applied'    => 0,
+            'cycles_planned'    => 0,
             'cycles_skipped'    => 0,
+            'observe_only'      => $observeOnly,
+            'planned_writes'    => [],
             'errors'            => [],
             'change_list'       => [],
         ];
@@ -96,9 +126,10 @@ class SyncEngine
             if ($lastSuccess && $sourceGeneratedAt !== '') {
                 $lastSummary = json_decode((string) ($lastSuccess->summary ?? '[]'), true);
                 if (is_array($lastSummary) && ($lastSummary['snapshot_generated_at'] ?? null) === $sourceGeneratedAt) {
-                    $summary['snapshot_generated_at'] = $sourceGeneratedAt;
-                    $summary['status'] = 'no-change';
-                    return $this->finalise($logId, 'no-change', $summary, null);
+                    // Upstream data is unchanged, but local mapping flags,
+                    // rounding, or existing tblpricing cells may have changed.
+                    // Continue through the catalog traversal.
+                    $summary['snapshot_unchanged'] = true;
                 }
             }
             $summary['snapshot_generated_at'] = $sourceGeneratedAt;
@@ -150,11 +181,11 @@ class SyncEngine
                     );
 
                     $latest = $this->profiles->latestVersion((int) $profile['id']);
-                    $appended = false;
                     if ($version->differsFrom($latest)) {
-                        $this->profiles->appendVersion((int) $profile['id'], $version);
+                        if (!$observeOnly) {
+                            $this->profiles->appendVersion((int) $profile['id'], $version);
+                        }
                         $summary['profiles_changed']++;
-                        $appended = true;
                         $summary['change_list'][] = [
                             'profile_slug'   => $profile['slug'],
                             'plan_slug'      => $planSlug,
@@ -170,56 +201,116 @@ class SyncEngine
                     // (catalog_cycles_mask, rounding_mode, …) can have changed
                     // independently of the upstream vendor price.
                     if ((string) ($profile['sync_strategy'] ?? '') === 'auto-apply') {
-                        $catalogStats = $this->applyCatalogForProfile(
-                            (int) $profile['id'],
-                            (array) $profile,
-                            $version,
-                            $syncBatchId
-                        );
-                        $summary['products_updated'] += $catalogStats['products_touched'];
+                        $catalogStats = $observeOnly
+                            ? $this->previewCatalogForProfile(
+                                (int) $profile['id'],
+                                (array) $profile,
+                                $version,
+                                $syncBatchId
+                            )
+                            : $this->applyCatalogForProfile(
+                                (int) $profile['id'],
+                                (array) $profile,
+                                $version,
+                                $syncBatchId
+                            );
+                        if ($observeOnly) {
+                            $summary['products_planned'] += $catalogStats['products_touched'];
+                            $summary['cycles_planned'] += $catalogStats['cycles_planned'];
+                            $summary['planned_writes'] = array_merge(
+                                $summary['planned_writes'],
+                                $catalogStats['planned_writes']
+                            );
+                        } else {
+                            $summary['products_updated'] += $catalogStats['products_touched'];
+                        }
                         $summary['cycles_evaluated'] += $catalogStats['cycles_evaluated'];
                         $summary['cycles_applied']  += $catalogStats['cycles_applied'];
                         $summary['cycles_skipped']  += $catalogStats['cycles_skipped'];
                     }
-
-                    unset($appended); // documentation marker; not needed downstream
                 } catch (\Throwable $e) {
                     $summary['errors'][] = "profile {$profile['slug']}: " . $e->getMessage();
                 }
             }
 
-            $status = $summary['profiles_changed'] > 0 ? 'succeeded' : 'no-change';
-            if (!empty($summary['errors']) && $summary['profiles_changed'] === 0) {
-                $status = 'failed';
+            $status = !empty($summary['errors'])
+                ? 'failed'
+                : (
+                    ($summary['profiles_changed'] > 0 || $summary['products_updated'] > 0)
+                        ? 'succeeded'
+                        : 'no-change'
+                );
+            if ($observeOnly) {
+                $status = empty($summary['errors']) ? 'preview' : 'failed';
+                return $this->finishWithoutWrite($status, $summary, null);
             }
-            return $this->finalise($logId, $status, $summary, null);
+            return $this->finalise((int) $logId, $status, $summary, null);
         } catch (\Throwable $e) {
-            return $this->finalise($logId, 'failed', $summary, $e->getMessage());
+            return $observeOnly
+                ? $this->finishWithoutWrite('failed', $summary, $e->getMessage())
+                : $this->finalise((int) $logId, 'failed', $summary, $e->getMessage());
         }
     }
 
-    /**
-     * Walk every mapping × currency × cycle for a profile and apply the new
-     * version's price to `tblpricing` (catalog only — NEVER `tblhosting`),
-     * honouring the sentinel rules and emitting one audit row per decision.
-     *
-     * Public so tests can drive a single profile without round-tripping the
-     * entire run() pipeline.
-     *
-     * @param array<string,mixed> $profile
-     * @return array{products_touched:int,cycles_evaluated:int,cycles_applied:int,cycles_skipped:int}
-     */
+    /** @param array<string,mixed> $profile */
     public function applyCatalogForProfile(
         int $profileId,
         array $profile,
         ProfileVersionInput $version,
         string $syncBatchId
     ): array {
+        return $this->walkCatalogForProfile(
+            $profileId,
+            $profile,
+            $version,
+            $syncBatchId,
+            false
+        );
+    }
+
+    /**
+     * Generate the exact catalog write plan without changing pricing, sync-log,
+     * profile-version, or audit tables.
+     *
+     * @param array<string,mixed> $profile
+     */
+    public function previewCatalogForProfile(
+        int $profileId,
+        array $profile,
+        ProfileVersionInput $version,
+        string $syncBatchId
+    ): array {
+        return $this->walkCatalogForProfile(
+            $profileId,
+            $profile,
+            $version,
+            $syncBatchId,
+            true
+        );
+    }
+
+    /**
+     * Shared preview/apply traversal. Preview records in-memory decisions and
+     * proposed writes; apply persists the same decisions and writes.
+     *
+     * @param array<string,mixed> $profile
+     * @return array<string,mixed>
+     */
+    private function walkCatalogForProfile(
+        int $profileId,
+        array $profile,
+        ProfileVersionInput $version,
+        string $syncBatchId,
+        bool $observeOnly
+    ): array {
         $stats = [
             'products_touched' => 0,
             'cycles_evaluated' => 0,
             'cycles_applied'   => 0,
+            'cycles_planned'   => 0,
             'cycles_skipped'   => 0,
+            'planned_writes'   => [],
+            'decisions'        => [],
         ];
 
         $mappings = Capsule::table('mod_contabo_mapping')
@@ -286,7 +377,7 @@ class SyncEngine
                     // 0) Publish gate (profile-owned). A cycle the profile does
                     //    not publish is skipped before any per-product mask.
                     if (!$publishedSet->contains($cycle)) {
-                        $this->catalogAudit->insert(array_merge($auditBase, [
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
                             'applied'        => 0,
                             'skipped_reason' => 'cycle_not_published',
                         ]));
@@ -296,7 +387,7 @@ class SyncEngine
 
                     // 1) Catalog mask gate. Out-of-mask cycles audit-skipped.
                     if (!$catalogSet->contains($cycle)) {
-                        $this->catalogAudit->insert(array_merge($auditBase, [
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
                             'applied'        => 0,
                             'skipped_reason' => 'catalog_not_in_mask',
                         ]));
@@ -307,7 +398,7 @@ class SyncEngine
                     // Recurring column always exists for in-mask cycles
                     // (the six canonical cycles all map). Defensive check.
                     if ($recurringColumn === null || $cycleMonths === null) {
-                        $this->catalogAudit->insert(array_merge($auditBase, [
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
                             'applied'        => 0,
                             'skipped_reason' => 'cycle_unsupported',
                         ]));
@@ -324,7 +415,7 @@ class SyncEngine
 
                     // 2) Sentinel guards
                     if ($priceStatus === 'disabled' && $respectDisabled) {
-                        $this->catalogAudit->insert(array_merge($auditBase, [
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
                             'applied'              => 0,
                             'skipped_reason'       => 'catalog_skip_disabled_cycle',
                             'old_price'            => $currentValue,
@@ -334,7 +425,7 @@ class SyncEngine
                         continue;
                     }
                     if ($priceStatus === 'free' && !$overwriteFree) {
-                        $this->catalogAudit->insert(array_merge($auditBase, [
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
                             'applied'              => 0,
                             'skipped_reason'       => 'catalog_skip_free_cycle',
                             'old_price'            => $currentValue,
@@ -348,8 +439,18 @@ class SyncEngine
                     try {
                         list($preRound, $rounded, $markupStrategy, $markupValue) =
                             $this->computeCyclePrice($version, $mapping, $cycle, $cycleMonths, $roundingMode);
+                    } catch (PricingInvariantViolation $e) {
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
+                            'applied'             => 0,
+                            'skipped_reason'      => $e->reason(),
+                            'old_price'           => $currentValue,
+                            'price_status_before' => $priceStatus,
+                            'cycle_pricing_notes' => $e->getMessage(),
+                        ]));
+                        $stats['cycles_skipped']++;
+                        continue;
                     } catch (\Throwable $e) {
-                        $this->catalogAudit->insert(array_merge($auditBase, [
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
                             'applied'             => 0,
                             'skipped_reason'      => 'price_compute_error',
                             'old_price'           => $currentValue,
@@ -367,7 +468,7 @@ class SyncEngine
                         && $currentValue > 0
                         && $this->isSuspicious((float) $currentValue, $rounded)
                     ) {
-                        $this->catalogAudit->insert(array_merge($auditBase, [
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
                             'applied'              => 0,
                             'skipped_reason'       => 'suspicious_change_blocked',
                             'old_price'            => $currentValue,
@@ -382,10 +483,9 @@ class SyncEngine
                         continue;
                     }
 
-                    // 5) Write the recurring column (catalog only).
-                    $this->writeTblpricingCell($productId, $currencyId, $recurringColumn, $rounded);
-
-                    // 6) Optional setup-fee write.
+                    // 5) Compute every value before opening the local write
+                    // transaction. An invalid setup fee must not leave the
+                    // recurring price updated on its own.
                     $oldSetupFee = null;
                     $newSetupFee = null;
                     if ($syncSetupFees && $setupFeeColumn !== null) {
@@ -393,13 +493,99 @@ class SyncEngine
                             $rawSetup = $tblpricingRow[$setupFeeColumn];
                             $oldSetupFee = ($rawSetup === null || $rawSetup === '') ? null : (float) $rawSetup;
                         }
-                        $newSetupFee = $this->computeSetupFee($version, $mapping, $cycle, $cycleMonths, $roundingMode);
-                        if ($newSetupFee !== null) {
-                            $this->writeTblpricingCell($productId, $currencyId, $setupFeeColumn, $newSetupFee);
+                        try {
+                            $newSetupFee = $this->computeSetupFee(
+                                $version,
+                                $mapping,
+                                $cycle,
+                                $cycleMonths,
+                                $roundingMode
+                            );
+                        } catch (PricingInvariantViolation $e) {
+                            $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
+                                'applied'             => 0,
+                                'skipped_reason'      => $e->reason(),
+                                'old_price'           => $currentValue,
+                                'price_status_before' => $priceStatus,
+                                'cycle_pricing_notes' => $e->getMessage(),
+                            ]));
+                            $stats['cycles_skipped']++;
+                            continue;
                         }
                     }
 
-                    $this->catalogAudit->insert(array_merge($auditBase, [
+                    $recurringChanged = $currentValue === null
+                        || abs($currentValue - $rounded) > self::PRICE_EQUAL_EPSILON;
+                    $setupChanged = $newSetupFee !== null
+                        && (
+                            $oldSetupFee === null
+                            || abs($oldSetupFee - $newSetupFee) > self::PRICE_EQUAL_EPSILON
+                        );
+                    if (!$recurringChanged && !$setupChanged) {
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
+                            'applied'              => 0,
+                            'skipped_reason'       => 'price_unchanged',
+                            'old_price'            => $currentValue,
+                            'new_price'            => $rounded,
+                            'old_setup_fee'        => $oldSetupFee,
+                            'new_setup_fee'        => $newSetupFee,
+                            'price_status_before'  => $priceStatus,
+                            'markup_strategy_used' => $markupStrategy,
+                            'markup_value_used'    => $markupValue,
+                            'pre_round_price'      => $preRound,
+                            'rounded_price'        => $rounded,
+                            'rounding_mode'        => $roundingMode,
+                        ]));
+                        $stats['cycles_skipped']++;
+                        continue;
+                    }
+
+                    // 6) Observation stops here with a typed, in-memory plan.
+                    // No audit, log, profile-version, or pricing row is written.
+                    if ($observeOnly) {
+                        if ($recurringChanged) {
+                            $stats['planned_writes'][] = [
+                                'product_id'  => $productId,
+                                'currency_id' => $currencyId,
+                                'cycle'       => $cycle,
+                                'kind'        => 'recurring',
+                                'column'      => $recurringColumn,
+                                'old_value'   => $currentValue,
+                                'new_value'   => $rounded,
+                            ];
+                        }
+                        if ($setupFeeColumn !== null && $setupChanged) {
+                            $stats['planned_writes'][] = [
+                                'product_id'  => $productId,
+                                'currency_id' => $currencyId,
+                                'cycle'       => $cycle,
+                                'kind'        => 'setup_fee',
+                                'column'      => $setupFeeColumn,
+                                'old_value'   => $oldSetupFee,
+                                'new_value'   => $newSetupFee,
+                            ];
+                        }
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
+                            'applied'              => 0,
+                            'would_apply'          => 1,
+                            'skipped_reason'       => 'observe_only',
+                            'old_price'            => $currentValue,
+                            'new_price'            => $rounded,
+                            'old_setup_fee'        => $oldSetupFee,
+                            'new_setup_fee'        => $newSetupFee,
+                            'price_status_before'  => $priceStatus,
+                            'markup_strategy_used' => $markupStrategy,
+                            'markup_value_used'    => $markupValue,
+                            'pre_round_price'      => $preRound,
+                            'rounded_price'        => $rounded,
+                            'rounding_mode'        => $roundingMode,
+                        ]));
+                        $stats['cycles_planned']++;
+                        $touchedThisMapping = true;
+                        continue;
+                    }
+
+                    $appliedDecision = array_merge($auditBase, [
                         'applied'              => 1,
                         'old_price'            => $currentValue,
                         'new_price'            => $rounded,
@@ -411,7 +597,63 @@ class SyncEngine
                         'pre_round_price'      => $preRound,
                         'rounded_price'        => $rounded,
                         'rounding_mode'        => $roundingMode,
-                    ]));
+                    ]);
+
+                    // 7) Apply recurring/setup prices and their mandatory
+                    // audit row in one local MySQL transaction. An audit
+                    // failure must roll every pricing cell back.
+                    try {
+                        Capsule::connection()->transaction(function () use (
+                            $productId,
+                            $currencyId,
+                            $recurringColumn,
+                            $rounded,
+                            $setupFeeColumn,
+                            $newSetupFee,
+                            $recurringChanged,
+                            $setupChanged,
+                            $appliedDecision
+                        ): void {
+                            if ($recurringChanged) {
+                                $this->writeTblpricingCell(
+                                    $productId,
+                                    $currencyId,
+                                    $recurringColumn,
+                                    $rounded
+                                );
+                            }
+                            if ($setupFeeColumn !== null && $newSetupFee !== null && $setupChanged) {
+                                $this->writeTblpricingCell(
+                                    $productId,
+                                    $currencyId,
+                                    $setupFeeColumn,
+                                    $newSetupFee
+                                );
+                            }
+                            $this->catalogAudit->insert($appliedDecision);
+                        });
+                    } catch (PricingInvariantViolation $e) {
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
+                            'applied'             => 0,
+                            'skipped_reason'      => $e->reason(),
+                            'old_price'           => $currentValue,
+                            'price_status_before' => $priceStatus,
+                            'cycle_pricing_notes' => $e->getMessage(),
+                        ]));
+                        $stats['cycles_skipped']++;
+                        continue;
+                    } catch (\Throwable $e) {
+                        $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
+                            'applied'             => 0,
+                            'skipped_reason'      => 'price_write_error',
+                            'old_price'           => $currentValue,
+                            'price_status_before' => $priceStatus,
+                            'cycle_pricing_notes' => 'Catalog pricing transaction failed',
+                        ]));
+                        $stats['cycles_skipped']++;
+                        continue;
+                    }
+
                     $stats['cycles_applied']++;
                     $touchedThisMapping = true;
                 }
@@ -442,6 +684,13 @@ class SyncEngine
         int $cycleMonths,
         string $roundingMode
     ): array {
+        if (!Rounding::isSupportedMode($roundingMode)) {
+            throw new PricingInvariantViolation(
+                'invalid_rounding_mode',
+                'Mapping rounding mode is not supported'
+            );
+        }
+
         $markup = $this->resolveMarkup($mapping, $cycle);
 
         $strategy = $markup['strategy'];
@@ -463,6 +712,11 @@ class SyncEngine
         // sync repopulates the vector.
         $sourceEur = $this->resolveCycleSourceEur($version, $mapping, $cycle, $cycleMonths);
         if ($sourceEur !== null) {
+            PriceInvariant::requirePositiveFinite(
+                $sourceEur,
+                'missing_source_price',
+                'Provider source price'
+            );
             $landedMonthly = ProfileVersionInput::toLocalMonthly(
                 $sourceEur,
                 $version->fxRate,
@@ -473,6 +727,11 @@ class SyncEngine
         } else {
             $landedMonthly = (float) $version->finalMonthly;
         }
+        PriceInvariant::requirePositiveFinite(
+            $landedMonthly,
+            'missing_source_price',
+            'Landed monthly source price'
+        );
 
         // For 'fixed' strategy, $value is the admin-set total sell price for
         // this cycle. Convert to monthly so sellPriceForCycle can use it.
@@ -488,10 +747,20 @@ class SyncEngine
             $fixedCycleTotal,
             $cycleMonths
         );
+        PriceInvariant::requirePositiveFinite(
+            $preRoundCycle,
+            'price_invariant_violation',
+            'Computed cycle price'
+        );
 
         // sellPriceForCycle already rounds to 2dp; pre-round-of-final-write is
         // the same number prior to mapping-level rounding mode.
-        $rounded = $this->applyRounding($preRoundCycle, $roundingMode);
+        $rounded = Rounding::apply($preRoundCycle, $roundingMode);
+        PriceInvariant::requirePositiveFinite(
+            $rounded,
+            'price_invariant_violation',
+            'Rounded cycle price'
+        );
 
         return [$preRoundCycle, $rounded, $strategy, (float) $value];
     }
@@ -503,8 +772,8 @@ class SyncEngine
      * value (WHMCS stores per-cycle setup fees, but the upstream snapshot only
      * gives us one number).
      *
-     * Returns null when the version carries no setup fee — caller skips the
-     * column write entirely in that case.
+     * Zero is an explicit source value. When setup-fee synchronization is
+     * enabled it must clear a stale positive WHMCS setup fee.
      *
      * @param array<string,mixed> $mapping
      */
@@ -518,10 +787,18 @@ class SyncEngine
         unset($mapping, $cycle, $cycleMonths); // accepted for symmetry / future use
 
         $fee = (float) $version->finalSetup;
-        if ($fee <= 0.0) {
-            return null;
-        }
-        return $this->applyRounding($fee, $roundingMode);
+        PriceInvariant::requireNonNegativeFinite(
+            $fee,
+            'price_invariant_violation',
+            'Setup fee'
+        );
+        $rounded = Rounding::apply($fee, $roundingMode);
+        PriceInvariant::requireNonNegativeFinite(
+            $rounded,
+            'price_invariant_violation',
+            'Rounded setup fee'
+        );
+        return $rounded;
     }
 
     /**
@@ -583,57 +860,6 @@ class SyncEngine
     }
 
     /**
-     * Mapping-level rounding modes. Reads inputs as float, returns a float.
-     */
-    private function applyRounding(float $price, string $mode): float
-    {
-        switch ($mode) {
-            case 'exact_2_decimals':
-                return round($price, 2);
-
-            case 'nearest_rupee':
-                return round($price, 0);
-
-            case 'nearest_9':
-                // Hits the next "9-tail" at the tens place: 1234 → 1239,
-                // 1234.567 → 1239, 1230 → 1239 (we don't go DOWN to 1229).
-                $base = (int) floor($price / 10.0) * 10;
-                $candidate = (float) ($base + 9);
-                if ($candidate < $price) {
-                    $candidate += 10.0;
-                }
-                return $candidate;
-
-            case 'nearest_99':
-                // Next "99-tail" at the hundreds place: 1234.567 → 1299.
-                $base = (int) floor($price / 100.0) * 100;
-                $candidate = (float) ($base + 99);
-                if ($candidate < $price) {
-                    $candidate += 100.0;
-                }
-                return $candidate;
-
-            case 'nearest_100':
-                return round($price / 100.0) * 100.0;
-
-            case 'custom':
-                // TODO(phase-a.6): take a printf-style template from
-                // settings.setup_fee_overrides_json / a sibling settings JSON
-                // and apply it here. For now degrades to exact_2_decimals.
-                return round($price, 2);
-
-            default:
-                if (function_exists('logActivity')) {
-                    logActivity(sprintf(
-                        'Contabo Pricing: unknown rounding_mode "%s", falling back to exact_2_decimals.',
-                        $mode
-                    ));
-                }
-                return round($price, 2);
-        }
-    }
-
-    /**
      * 50% absolute-jump guard. Tests it both ways (up and down) — large
      * decreases are equally suspicious from a catalog hygiene standpoint.
      *
@@ -671,11 +897,30 @@ class SyncEngine
     }
 
     /**
-     * Single-cell `tblpricing` UPDATE. Wrapped so static greps for the
-     * `Capsule::table('tblpricing')` write surface land here.
+     * Single-cell `tblpricing` UPDATE with a final price invariant. Recurring
+     * computed prices must be positive; setup fees may legitimately be zero.
      */
     private function writeTblpricingCell(int $productId, int $currencyId, string $column, float $value): void
     {
+        if (in_array($column, self::RECURRING_COLUMNS, true)) {
+            PriceInvariant::requirePositiveFinite(
+                $value,
+                'price_invariant_violation',
+                'Recurring catalog write'
+            );
+        } elseif (in_array($column, self::SETUP_FEE_COLUMNS, true)) {
+            PriceInvariant::requireNonNegativeFinite(
+                $value,
+                'price_invariant_violation',
+                'Setup-fee catalog write'
+            );
+        } else {
+            throw new PricingInvariantViolation(
+                'price_invariant_violation',
+                'Unknown tblpricing column is not eligible for a write'
+            );
+        }
+
         Capsule::table('tblpricing')
             ->where('type', 'product')
             ->where('currency', $currencyId)
@@ -829,6 +1074,40 @@ class SyncEngine
         // Vector is normally pre-expanded to all six cycles; this is a defensive
         // path for a sparse vector — same rule as the builder (longest ≤ target).
         return self::nearestSourceRate($vector, $cycleMonths);
+    }
+
+    /**
+     * @param array<string,mixed> $stats
+     * @param array<string,mixed> $decision
+     */
+    private function recordCatalogDecision(
+        bool $observeOnly,
+        array &$stats,
+        array $decision
+    ): void {
+        if ($observeOnly) {
+            $stats['decisions'][] = $decision;
+            return;
+        }
+        $this->catalogAudit->insert($decision);
+    }
+
+    /**
+     * Finish an absolute no-write observation. This deliberately mirrors the
+     * summary fields from finalise() without touching mod_contabo_sync_log.
+     *
+     * @param array<string,mixed> $summary
+     * @return array<string,mixed>
+     */
+    private function finishWithoutWrite(
+        string $status,
+        array $summary,
+        ?string $err
+    ): array {
+        $summary['status'] = $status;
+        $summary['finished_at'] = date('Y-m-d H:i:s');
+        $summary['error_message'] = $err;
+        return $summary;
     }
 
     /**

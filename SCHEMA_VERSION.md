@@ -6,6 +6,7 @@ addon, dashboards, billing tools) pin to whichever one is relevant to their use.
 | Constant | Defined in | Scope |
 |---|---|---|
 | `SCHEMA_VERSION` | `src/main.rs` (const) | JSON/CSV output files + REST API payloads |
+| `CATALOG_SCHEMA_VERSION` | `src/api/catalog.rs` (const) | Rust → WHMCS catalog exchange envelope |
 | `Installer::SCHEMA_VERSION` | `whmcs-module/.../lib/Installer.php` | `mod_contabo_*` database tables |
 
 When making a schema-touching change, **bump the relevant constant and add an
@@ -22,12 +23,36 @@ sections (Added / Renamed / Removed / Migration).
 ### Added
 - `contabo_view_model.json` — flat row-per-period view with `options_summary` per dimension. Emitted natively by the Rust scraper; synthesized by `enrich_output.js` (STEP 7) when the Node scraper is used. Consumers should treat this as the canonical analytics surface.
 - API endpoints under `/api/v1/*` introduced in 2.3.0-dev. See [README.md](README.md#api-quick-start) for the inventory.
+- Complete OpenAPI 3.0.3 route inventory at `/api/v1/openapi.json`.
+- Required producer/consumer golden contracts under `tests/fixtures/api/v1.1/`.
+
+### Contract fixtures
+
+The Rust producer test and WHMCS PHP consumer test load the same five required
+fixtures: `meta`, `plans`, `catalog`, `quote`, and `openapi`. Missing fixtures,
+nested type drift, route drift, hash drift, or an undocumented version mismatch
+fails the release gate. Fixture changes must update this document in the same
+pull request, even when the change is additive and does not require a version
+bump.
 
 ### Renamed / Removed
 (none since 1.0)
 
 ### Migration
 None required. Pin to schema_version `1.x` to remain stable across additive changes.
+
+---
+
+## Catalog exchange 1.0 — current
+
+The `/api/v1/catalog` envelope is an independently versioned contract consumed
+by `CatalogImportService::SUPPORTED_SCHEMA_VERSION`. It includes immutable
+catalog and item hashes, stable machine/provider identifiers, observation and
+effective timestamps, compatibility metadata, and the source plan payload.
+
+The catalog version is intentionally independent from API/output schema 1.1.
+An additive API change therefore cannot silently change the catalog importer
+contract.
 
 ---
 
@@ -41,10 +66,12 @@ Initial JSON/CSV emission schema covering `contabo_base_plans.json`,
 
 ---
 
-## WHMCS DB 7 — current (`Installer::SCHEMA_VERSION = 7`)
+## WHMCS DB 14 — current
+
+`Installer::SCHEMA_VERSION = 14`.
 
 `install()` creates the v1 tables, stamps `schema_version = 1`, then runs the
-idempotent `migrateTo2..7` chain — so both fresh installs and step-by-step
+idempotent `migrateTo2..14` chain — so both fresh installs and step-by-step
 upgrades converge to the current shape. Each `migrateToN` is guarded by
 `hasTable`/`hasColumn`.
 
@@ -60,14 +87,26 @@ Highlights by version:
 - **v7 (Phase C)** — `mod_contabo_profile.expose_configurable_options`
   (`TINYINT NOT NULL DEFAULT 1`). Master switch: when 0,
   `ConfigurableOptionsSyncer::apply()` skips WHMCS config-option group creation.
-
-### Added (v7)
-- `mod_contabo_profile.expose_configurable_options` — via `migrateTo7`.
+- **v8** — source/customer pricing separation, per-period source vectors,
+  recoverable profile deletion, and mapping source overrides.
+- **v9** — WHMCS-native SecuriAce VPS schema: sealed order snapshots,
+  resources, durable operations/attempts/provider requests, leases,
+  capabilities, reconciliation, adoption, billing sagas, audit events, and
+  operator commands.
+- **v10** — versioned catalog imports/publications, approval history,
+  one-time secrets, communications, and additive provisioning controls.
+- **v11** — operation-bound encrypted one-time reveal tokens.
+- **v12** — idempotent customer lifecycle email-template installation.
+- **v13** — WHMCS-owned provider snapshot inventory projection.
+- **v14** — expiring fenced claims for operator-command and communication
+  workers plus explicit lease defaults.
 
 ### Migration
-`migrateTo7` is idempotent (`hasColumn` guard). It is a **separate** migration
-on purpose: installs already at v6 never re-run earlier migrations, so folding
-the column into `migrateTo2` would have left upgraded installs without it.
+
+Every migration remains additive and idempotent. Fresh installs and upgrades
+must both finish at addon schema 14 and VPS suite schema 5. Rollback of
+application code does not drop columns or tables; it requires a compatible
+previous release artifact and the documented deployment runbook.
 
 ---
 

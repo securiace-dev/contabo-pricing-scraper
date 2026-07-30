@@ -3,6 +3,10 @@ use sha2::{Digest, Sha256};
 
 use super::state::Snapshot;
 
+/// Wire contract consumed by the WHMCS catalog importer. This version is
+/// intentionally independent from the scraper/output API schema.
+pub const CATALOG_SCHEMA_VERSION: &str = "1.0";
+
 /// Build the read-only, versioned catalog contract consumed by the WHMCS
 /// pricing addon. Provider IDs are emitted only when the scraper actually
 /// observed one; a marketing slug is never relabelled as a Customer API SKU.
@@ -62,7 +66,7 @@ pub fn build(snapshot: &Snapshot) -> Value {
     append_configuration_items(snapshot, &observed_at, &mut items);
 
     let payload = json!({
-        "schema_version": "1.0",
+        "schema_version": CATALOG_SCHEMA_VERSION,
         "source_version": source_version,
         "source_observed_at": observed_at,
         "effective_at": observed_at,

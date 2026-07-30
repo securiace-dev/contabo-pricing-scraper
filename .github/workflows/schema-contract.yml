@@ -1,0 +1,107 @@
+name: Producer Consumer Schema Contract
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'SCHEMA_VERSION.md'
+      - 'whmcs-module/modules/addons/contabo_pricing/**/*.php'
+      - 'whmcs-module/modules/servers/**/*.php'
+      - 'whmcs-module/**/*.tpl'
+      - 'scripts/**/*.php'
+      - 'scripts/predeploy-check.sh'
+      - '.github/workflows/schema-contract.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: schema-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php74-runtime-lint:
+    name: PHP 7.4 runtime syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 7.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          coverage: none
+
+      - name: Lint WHMCS runtime sources
+        run: |
+          find \
+            whmcs-module/modules/addons/contabo_pricing \
+            whmcs-module/modules/servers/securiacevps \
+            whmcs-module/modules/servers/contabo_vps \
+            scripts \
+            -type f \( -name '*.php' -o -name '*.tpl' \) \
+            -not -path '*/vendor/*' \
+            -not -path '*/tests/*' \
+            -print0 \
+            | sort -z \
+            | xargs -0 -n1 php -l
+
+  contract:
+    name: Rust producer ↔ WHMCS consumer
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require deliberate schema documentation
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          fixture_changed=0
+          constant_changed=0
+          if grep -q '^tests/fixtures/api/' <<<"$changed"; then
+            fixture_changed=1
+          fi
+          if git diff -U0 "$BASE_SHA"...HEAD -- \
+            src/main.rs \
+            src/api/catalog.rs \
+            whmcs-module/modules/addons/contabo_pricing/lib/Installer.php \
+            | grep -Eq '^[+-][^+-].*(SCHEMA_VERSION|CATALOG_SCHEMA_VERSION)'; then
+            constant_changed=1
+          fi
+          if [ "$fixture_changed" -eq 1 ] || [ "$constant_changed" -eq 1 ]; then
+            if ! grep -qx 'SCHEMA_VERSION.md' <<<"$changed"; then
+              echo "Schema constants or golden fixtures changed without SCHEMA_VERSION.md." >&2
+              exit 1
+            fi
+          fi
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Verify Rust producer contract
+        run: cargo test --test schema_contract
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install WHMCS addon test dependencies
+        working-directory: whmcs-module/modules/addons/contabo_pricing
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Verify WHMCS consumer contract
+        working-directory: whmcs-module/modules/addons/contabo_pricing
+        run: vendor/bin/phpunit tests/GoldenApiContractTest.php

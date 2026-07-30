@@ -8,6 +8,7 @@ use ContaboPricing\CatalogAuditLog;
 use ContaboPricing\CycleSet;
 use ContaboPricing\ProfileManager;
 use ContaboPricing\ProfileVersionInput;
+use ContaboPricing\Rounding;
 use ContaboPricing\Settings;
 use ContaboPricing\SyncEngine;
 use PHPUnit\Framework\TestCase;
@@ -68,9 +69,9 @@ final class SyncEngine6CycleTest extends TestCase
         ]);
         // Existing tblpricing row with all three cycles already priced.
         $this->seedTblpricingRow(100, 1, [
-            'monthly'      => 1000.00,
-            'annually'     => 10000.00,
-            'biennially'   => 20000.00,
+            'monthly'      => 900.00,
+            'annually'     => 9000.00,
+            'biennially'   => 19000.00,
         ]);
 
         $engine = $this->makeEngine();
@@ -218,7 +219,7 @@ final class SyncEngine6CycleTest extends TestCase
             'markup_overrides_json'   => '',
         ]);
         $this->seedTblpricingRow(100, 1, [
-            'monthly'      => 1000.00,
+            'monthly'      => 900.00,
             'annually'     => 10000.00,
         ]);
 
@@ -300,6 +301,50 @@ final class SyncEngine6CycleTest extends TestCase
         $row = $this->findAuditRow('Monthly');
         $this->assertSame(99.00, (float) $row['new_setup_fee']);
         $this->assertSame(250.00, (float) $row['old_setup_fee']);
+    }
+
+    public function testAppliedAuditFailureRollsBackRecurringAndSetupWrites(): void
+    {
+        $mask = CycleSet::fromCycles(['Monthly'])->toMask();
+        $this->seedCurrency(1, 'INR');
+        $this->seedMapping([
+            'id' => 10, 'profile_id' => 1, 'product_id' => 100, 'active' => 1,
+            'catalog_cycles_mask' => $mask,
+            'respect_disabled_cycles' => 1,
+            'overwrite_free_cycles' => 0,
+            'sync_setup_fees' => 1,
+            'rounding_mode' => 'exact_2_decimals',
+            'markup_overrides_json' => '',
+        ]);
+        $this->seedTblpricingRow(100, 1, [
+            'monthly' => 900.00,
+            'msetupfee' => 250.00,
+        ]);
+        $before = Capsule::$tables['tblpricing'];
+        $failingAudit = new FailingAppliedCatalogAuditLog();
+
+        $engine = $this->makeEngine($failingAudit);
+        $version = $this->makeVersion(1000.00, 99.00);
+        $stats = $engine->applyCatalogForProfile(
+            1,
+            $this->loadMapping(10),
+            $version,
+            'batch-audit-rollback'
+        );
+
+        $this->assertSame($before, Capsule::$tables['tblpricing']);
+        $this->assertCount(0, $this->tblpricingUpdates());
+        $this->assertSame(0, $stats['cycles_applied']);
+        $this->assertSame(6, $stats['cycles_skipped']);
+
+        $monthlyFailures = array_values(array_filter(
+            $failingAudit->rows,
+            static function (array $row): bool {
+                return ($row['cycle'] ?? '') === 'Monthly'
+                    && ($row['skipped_reason'] ?? '') === 'price_write_error';
+            }
+        ));
+        $this->assertCount(1, $monthlyFailures);
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -519,11 +564,52 @@ final class SyncEngine6CycleTest extends TestCase
         }
     }
 
+    /**
+     * @dataProvider invalidCatalogSources
+     */
+    public function testInvalidSourcePriceCannotOverwriteCatalogWithFreePrice(float $source): void
+    {
+        $mask = CycleSet::fromCycles(['Monthly'])->toMask();
+        $this->seedCurrency(1, 'EUR');
+        $this->seedMapping([
+            'id' => 10, 'profile_id' => 1, 'product_id' => 100, 'active' => 1,
+            'catalog_cycles_mask' => $mask,
+            'respect_disabled_cycles' => 1,
+            'overwrite_free_cycles' => 1,
+            'sync_setup_fees' => 0,
+            'rounding_mode' => Rounding::MODE_EXACT_2_DECIMALS,
+            'markup_overrides_json' => '',
+        ]);
+        $this->seedTblpricingRow(100, 1, ['monthly' => 1000.00]);
+
+        $engine = $this->makeEngine();
+        $version = $this->makeVersion($source, 0.0);
+        $stats = $engine->applyCatalogForProfile(
+            1,
+            $this->loadMapping(10),
+            $version,
+            'batch-missing-source'
+        );
+
+        $this->assertSame(0, $stats['cycles_applied']);
+        $this->assertCount(0, $this->tblpricingUpdates());
+        $row = $this->findAuditRow('Monthly');
+        $this->assertNotNull($row);
+        $this->assertSame('missing_source_price', $row['skipped_reason']);
+        $this->assertSame(0, (int) $row['applied']);
+    }
+
+    /** @return list<array{0:float}> */
+    public static function invalidCatalogSources(): array
+    {
+        return [[0.0], [-1.0], [INF], [NAN]];
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────────────────────────────────
 
-    private function makeEngine(): SyncEngine
+    private function makeEngine(?CatalogAuditLog $audit = null): SyncEngine
     {
         $settings = new Settings(
             'http://localhost:8080/api/v1', // apiBaseUrl
@@ -543,7 +629,7 @@ final class SyncEngine6CycleTest extends TestCase
             public function latestVersion(int $profileId): ?array { return null; }
             public function appendVersion(int $profileId, ProfileVersionInput $v): int { return 0; }
         };
-        return new SyncEngine($settings, $api, $profileMgr, $this->audit);
+        return new SyncEngine($settings, $api, $profileMgr, $audit ?? $this->audit);
     }
 
     /**
@@ -655,6 +741,26 @@ final class CatalogAuditLogSpy extends CatalogAuditLog
         $row['id'] = $id;
         $this->rows[] = $row;
         return $id;
+    }
+
+    protected function fetchRecentBatches(int $limit): array
+    {
+        return [];
+    }
+}
+
+final class FailingAppliedCatalogAuditLog extends CatalogAuditLog
+{
+    /** @var list<array<string,mixed>> */
+    public array $rows = [];
+
+    protected function storeRow(array $row): int
+    {
+        if (!empty($row['applied'])) {
+            throw new \RuntimeException('forced applied-audit failure');
+        }
+        $this->rows[] = $row;
+        return count($this->rows);
     }
 
     protected function fetchRecentBatches(int $limit): array

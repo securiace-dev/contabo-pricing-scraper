@@ -34,7 +34,7 @@ pub async fn meta(State(s): State<AppState>) -> Json<Value> {
 // ── GET /api/v1/plans ────────────────────────────────────────────────────────
 #[derive(Deserialize)]
 pub struct PlansQuery {
-    family: Option<String>,
+    pub family: Option<String>,
 }
 
 pub async fn list_plans(State(s): State<AppState>, Query(q): Query<PlansQuery>) -> Json<Value> {
@@ -393,12 +393,176 @@ pub async fn get_job(
 
 // ── GET /api/v1/openapi.json ─────────────────────────────────────────────────
 pub async fn openapi() -> Json<Value> {
-    // Phase 2 will generate via utoipa; for now ship a hand-written stub
-    Json(json!({
-        "openapi": "3.0.0",
-        "info":    { "title": "Contabo Pricing API", "version": crate::VERSION },
-        "paths":   { /* populated in Phase 2 */ },
-    }))
+    Json(openapi_document())
+}
+
+/// Keep the published OpenAPI document executable and deterministic so both
+/// the Rust producer and PHP consumer can lock the same route contract.
+pub fn openapi_document() -> Value {
+    json!({
+        "openapi": "3.0.3",
+        "info": {
+            "title": "Contabo Pricing API",
+            "version": crate::VERSION,
+            "x-api-schema-version": crate::SCHEMA_VERSION,
+            "x-catalog-schema-version": super::catalog::CATALOG_SCHEMA_VERSION,
+        },
+        "paths": {
+            "/api/v1/health": {
+                "get": {
+                    "operationId": "health",
+                    "summary": "Report API readiness and schema version",
+                    "responses": { "200": { "description": "API is ready" } },
+                },
+            },
+            "/api/v1/meta": {
+                "get": {
+                    "operationId": "meta",
+                    "summary": "Read scraper and loaded-snapshot metadata",
+                    "responses": { "200": { "description": "Runtime metadata" } },
+                },
+            },
+            "/api/v1/plans": {
+                "get": {
+                    "operationId": "listPlans",
+                    "summary": "List observed plans",
+                    "parameters": [{
+                        "in": "query",
+                        "name": "family",
+                        "required": false,
+                        "schema": { "type": "string" },
+                    }],
+                    "responses": { "200": { "description": "Observed plans" } },
+                },
+            },
+            "/api/v1/plans/{slug}": {
+                "get": {
+                    "operationId": "getPlan",
+                    "summary": "Read one observed plan",
+                    "parameters": [{
+                        "in": "path",
+                        "name": "slug",
+                        "required": true,
+                        "schema": { "type": "string" },
+                    }],
+                    "responses": {
+                        "200": { "description": "Observed plan" },
+                        "404": { "description": "Plan was not observed" },
+                    },
+                },
+            },
+            "/api/v1/plans/{slug}/configurator": {
+                "get": {
+                    "operationId": "getPlanConfigurator",
+                    "summary": "Read the observed configuration dimensions for a plan",
+                    "parameters": [{
+                        "in": "path",
+                        "name": "slug",
+                        "required": true,
+                        "schema": { "type": "string" },
+                    }],
+                    "responses": {
+                        "200": { "description": "Observed configuration dimensions" },
+                        "404": { "description": "Configuration was not observed" },
+                    },
+                },
+            },
+            "/api/v1/options": {
+                "get": {
+                    "operationId": "listOptions",
+                    "summary": "List observed configuration options",
+                    "responses": { "200": { "description": "Observed options" } },
+                },
+            },
+            "/api/v1/catalog": {
+                "get": {
+                    "operationId": "catalog",
+                    "summary": "Read the versioned WHMCS catalog exchange contract",
+                    "responses": { "200": { "description": "Versioned catalog" } },
+                },
+            },
+            "/api/v1/fx": {
+                "get": {
+                    "operationId": "fx",
+                    "summary": "Read current or cached foreign-exchange rates",
+                    "responses": { "200": { "description": "Foreign-exchange observation" } },
+                },
+            },
+            "/api/v1/quote": {
+                "post": {
+                    "operationId": "quote",
+                    "summary": "Calculate a read-only plan quotation",
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": ["plan_slug", "period_months"],
+                                    "properties": {
+                                        "plan_slug": { "type": "string" },
+                                        "period_months": { "type": "integer", "minimum": 1 },
+                                        "selections": { "type": "object" },
+                                        "currency": { "type": "string" },
+                                        "gst": { "type": "boolean" },
+                                        "fx_markup": { "type": "number" },
+                                        "fx_rate": { "type": "number", "nullable": true },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "responses": {
+                        "200": { "description": "Calculated quotation" },
+                        "404": { "description": "Plan and billing period were not observed" },
+                        "503": { "description": "Pricing snapshot is unavailable" },
+                    },
+                },
+            },
+            "/api/v1/jobs/{id}": {
+                "get": {
+                    "operationId": "getRefreshJob",
+                    "summary": "Read catalog refresh-job status",
+                    "parameters": [{
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": { "type": "string" },
+                    }],
+                    "responses": {
+                        "200": { "description": "Refresh-job status" },
+                        "404": { "description": "Refresh job was not found" },
+                    },
+                },
+            },
+            "/api/v1/openapi.json": {
+                "get": {
+                    "operationId": "openApi",
+                    "summary": "Read this OpenAPI contract",
+                    "responses": { "200": { "description": "OpenAPI document" } },
+                },
+            },
+            "/api/v1/refresh": {
+                "post": {
+                    "operationId": "refresh",
+                    "summary": "Request an authenticated catalog refresh",
+                    "security": [{ "bearerAuth": [] }],
+                    "responses": {
+                        "202": { "description": "Refresh request accepted" },
+                        "401": { "description": "Bearer token is missing or invalid" },
+                    },
+                },
+            },
+        },
+        "components": {
+            "securitySchemes": {
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                },
+            },
+        },
+    })
 }
 
 // Unused import suppressor — Arc is referenced once auth wiring lands

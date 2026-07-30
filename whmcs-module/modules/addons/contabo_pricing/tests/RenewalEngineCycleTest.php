@@ -256,7 +256,7 @@ final class RenewalEngineCycleTest extends TestCase
 
     /**
      * 31. nearest_99 rounding mode on a computed price of 1234.00 →
-     *     rounded_price=1234.99, pre_round_price=1234.00, both visible in
+     *     rounded_price=1299, pre_round_price=1234.00, both visible in
      *     metadata_json, rounding_mode='nearest_99'.
      *
      *     We force pre_round=1234 by using a 'fixed' override with as_total
@@ -282,6 +282,87 @@ final class RenewalEngineCycleTest extends TestCase
         $meta = json_decode((string) $d['metadata_json'], true);
         $this->assertSame('nearest_99', $meta['rounding_mode']);
         $this->assertEqualsWithDelta(1234.00, (float) $meta['pre_round_price'], 0.0001);
-        $this->assertEqualsWithDelta(1234.99, (float) $meta['rounded_price'], 0.0001);
+        $this->assertEqualsWithDelta(1299.0, (float) $meta['rounded_price'], 0.0001);
+    }
+
+    /**
+     * @dataProvider invalidSourcePrices
+     */
+    public function testInvalidSourcePriceFailsClosed($source): void
+    {
+        $mask = CycleSet::fromCycles(['Monthly'])->toMask();
+        $svc = $this->baseService('Monthly', $mask, $mask);
+        if ($source === null) {
+            unset($svc['profile_version']['base_monthly_eur']);
+        } else {
+            $svc['profile_version']['base_monthly_eur'] = $source;
+        }
+
+        $engine = new RenewalEngine($this->settings(), $this->stubResolver());
+        $decision = $engine->decide($svc, new \DateTimeImmutable('2026-05-22'));
+
+        $this->assertFalse((bool) $decision['applied']);
+        $this->assertSame('missing_source_price', $decision['skip_reason']);
+        $this->assertSame(1200.0, (float) $decision['proposed_new_price']);
+    }
+
+    /** @return list<array{0:mixed}> */
+    public static function invalidSourcePrices(): array
+    {
+        return [[null], [0.0], [-1.0], ['malformed']];
+    }
+
+    public function testMalformedPeriodVectorFailsClosed(): void
+    {
+        $mask = CycleSet::fromCycles(['Monthly'])->toMask();
+        $svc = $this->baseService('Monthly', $mask, $mask);
+        $svc['profile_version']['period_prices_json'] = '{"1":"malformed"}';
+
+        $engine = new RenewalEngine($this->settings(), $this->stubResolver());
+        $decision = $engine->decide($svc, new \DateTimeImmutable('2026-05-22'));
+
+        $this->assertFalse((bool) $decision['applied']);
+        $this->assertSame('missing_source_price', $decision['skip_reason']);
+    }
+
+    /**
+     * @dataProvider invalidForcedCandidates
+     */
+    public function testScheduledCandidateCannotBypassPriceInvariant(float $candidate): void
+    {
+        $mask = CycleSet::fromCycles(['Monthly'])->toMask();
+        $svc = $this->baseService('Monthly', $mask, $mask);
+
+        $engine = new RenewalEngine($this->settings(), $this->stubResolver());
+        $decision = $engine->decideForScheduledChange(
+            $svc,
+            $candidate,
+            new \DateTimeImmutable('2026-05-22')
+        );
+
+        $this->assertFalse((bool) $decision['applied']);
+        $this->assertSame('price_invariant_violation', $decision['skip_reason']);
+        $this->assertSame(1200.0, (float) $decision['proposed_new_price']);
+    }
+
+    /** @return list<array{0:float}> */
+    public static function invalidForcedCandidates(): array
+    {
+        return [[0.0], [-1.0], [INF], [NAN]];
+    }
+
+    public function testUnknownPersistedRoundingModeFailsClosed(): void
+    {
+        $mask = CycleSet::fromCycles(['Monthly'])->toMask();
+        $svc = $this->baseService('Monthly', $mask, $mask);
+        $svc['mapping']['rounding_mode'] = 'corrupt-mode';
+
+        $engine = new RenewalEngine($this->settings(), $this->stubResolver());
+        $decision = $engine->decide($svc, new \DateTimeImmutable('2026-05-22'));
+
+        $this->assertFalse((bool) $decision['applied']);
+        $this->assertSame('invalid_rounding_mode', $decision['skip_reason']);
+        $meta = json_decode((string) $decision['metadata_json'], true);
+        $this->assertSame('corrupt-mode', $meta['rounding_mode']);
     }
 }
