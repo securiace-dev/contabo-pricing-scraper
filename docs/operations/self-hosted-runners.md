@@ -43,6 +43,9 @@ until one-job ephemeral runners and external log retention are available.
 - Node and Rust: exact workflow versions installed into the owning runner's
   tool cache by commit-pinned actions
 - Docker: available only to `contabo-ci-release`
+- Trusted multi-architecture jobs pin Buildx `v0.35.0` and binfmt
+  `qemu-v10.2.3-68` by OCI index digest, register only the required `arm64`
+  emulator, and do not store the privileged binfmt image in Actions cache
 
 Workflow jobs must not use `sudo`, mutate apt repositories, or install system
 packages. Third-party actions must use full commit SHAs. Release permissions
