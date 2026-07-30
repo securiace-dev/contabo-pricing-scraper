@@ -1045,8 +1045,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/OperationRepository.php": {
-    "mtime": 1785380952.3813915,
-    "ast_hash": "69d86c7aee389341e974b42026be5f6a",
+    "mtime": 1785381518.6341898,
+    "ast_hash": "3c55ab27f454198797f6a1cb0a48e1bd",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/OrderSnapshotRepository.php": {
@@ -1155,8 +1155,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/NativeFoundationTest.php": {
-    "mtime": 1785381121.9952655,
-    "ast_hash": "9d22462e4a07ddc9220ba8d91c20a354",
+    "mtime": 1785381525.917005,
+    "ast_hash": "0319993c2c98819e5abbb8e267d5bc32",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/NativeLifecycleTest.php": {

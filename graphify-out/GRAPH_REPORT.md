@@ -1,7 +1,7 @@
 # Graph Report - contabo-pricing-scraper-whmcs-native  (2026-07-30)
 
 ## Corpus Check
-- 239 files · ~217,018 words
+- 239 files · ~217,129 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `74546f70`
+- Built from commit: `b5e4929d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -41,6 +41,7 @@
 - [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
+- [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
@@ -169,7 +170,6 @@
 - [[_COMMUNITY_Community 154|Community 154]]
 - [[_COMMUNITY_Community 155|Community 155]]
 - [[_COMMUNITY_Community 156|Community 156]]
-- [[_COMMUNITY_Community 157|Community 157]]
 - [[_COMMUNITY_Community 158|Community 158]]
 - [[_COMMUNITY_Community 159|Community 159]]
 - [[_COMMUNITY_Community 160|Community 160]]
@@ -208,10 +208,10 @@
 - [[_COMMUNITY_Community 200|Community 200]]
 - [[_COMMUNITY_Community 201|Community 201]]
 - [[_COMMUNITY_Community 202|Community 202]]
+- [[_COMMUNITY_Community 203|Community 203]]
 - [[_COMMUNITY_Community 204|Community 204]]
 - [[_COMMUNITY_Community 206|Community 206]]
 - [[_COMMUNITY_Community 207|Community 207]]
-- [[_COMMUNITY_Community 208|Community 208]]
 - [[_COMMUNITY_Community 209|Community 209]]
 - [[_COMMUNITY_Community 210|Community 210]]
 - [[_COMMUNITY_Community 212|Community 212]]
@@ -297,7 +297,7 @@ Nodes (4): DimensionParser, OptionTypeMapper, DimensionParserTest, OptionTypeMap
 
 ### Community 7 - "Community 7"
 Cohesion: 0.04
-Nodes (14): CapsuleConnection, CapsuleQuery, CapsuleSchema, AuditLog, ConfigOptionLinkRepository, ConfigOptionResolver, ProfileManager, TaxRuleManager (+6 more)
+Nodes (14): CapsuleConnection, CapsuleQuery, CapsuleSchema, AuditLog, BackfillCommand, ConfigOptionResolver, Installer, ProfileManager (+6 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.07
@@ -328,16 +328,16 @@ Cohesion: 0.20
 Nodes (30): _arc_marker(), catalog(), default_currency(), fx(), get_configurator(), get_job(), get_plan(), health() (+22 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.14
-Nodes (23): _contabo_vps_auth(), contabo_vps_AdminServicesTabFields(), contabo_vps_buttonReinstall(), contabo_vps_buttonResetPassword(), contabo_vps_buttonRestart(), contabo_vps_ChangePackage(), contabo_vps_clientResetPassword(), contabo_vps_ConfigOptions() (+15 more)
+Cohesion: 0.16
+Nodes (20): _contabo_vps_auth(), contabo_vps_AdminServicesTabFields(), contabo_vps_buttonResetPassword(), contabo_vps_buttonRestart(), contabo_vps_ChangePackage(), contabo_vps_ConfigOptions(), contabo_vps_CreateAccount(), contabo_vps_MetaData() (+12 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.09
 Nodes (8): ApiClientTest, ApiClient, CurlRequestExecutor, MockRequestExecutor, RequestExecutor, Settings, Settings, ApiClientTest
 
 ### Community 17 - "Community 17"
-Cohesion: 0.04
-Nodes (13): ConfigOptionCompatibilityRepository, TestCase, BackfillCommandTest, CompatibilityShimTest, DashboardCycleTilesTest, DirectMutationBypassTest, EmailTemplateSeederTest, MaintenanceTest (+5 more)
+Cohesion: 0.05
+Nodes (12): ConfigOptionCompatibilityRepository, TestCase, BackfillCommandTest, CompatibilityShimTest, DashboardCycleTilesTest, DirectMutationBypassTest, LegacyFieldGrepTest, MaintenanceTest (+4 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.07
@@ -404,7 +404,7 @@ Cohesion: 0.11
 Nodes (7): ClientAreaPresenter, LifecycleOrchestrator, OwnershipGuard, ProviderAccount, OperationProcessor, CapabilityRegistry, OperationRepository
 
 ### Community 45 - "Community 45"
-Cohesion: 0.27
+Cohesion: 0.31
 Nodes (3): _securiacevps_sanitize(), LogRedactionTest, Harness
 
 ### Community 48 - "Community 48"
@@ -424,8 +424,8 @@ Cohesion: 0.21
 Nodes (3): ContaboApiClient, FakeHttpExecutor, ApiClientTest
 
 ### Community 56 - "Community 56"
-Cohesion: 0.26
-Nodes (6): contabo_vps_buttonSync(), contabo_vps_ClientArea(), securiacevps_buttonSync(), securiacevps_ClientArea(), SyncFlowTest, Harness
+Cohesion: 0.23
+Nodes (8): contabo_vps_buttonSync(), contabo_vps_ClientArea(), securiacevps_AdminServicesTabFields(), securiacevps_buttonSync(), _securiacevps_cached_ip(), securiacevps_ClientArea(), SyncFlowTest, Harness
 
 ### Community 57 - "Community 57"
 Cohesion: 0.16
@@ -532,12 +532,12 @@ Cohesion: 0.33
 Nodes (6): check_no_match(), hex_luminance(), linear_to_srgb(), oklch_luminance(), relative(), srgb_channel()
 
 ### Community 90 - "Community 90"
-Cohesion: 0.13
-Nodes (6): contabo_vps_AdminCustomButtonArray(), contabo_vps_ClientAreaCustomButtonArray(), securiacevps_AdminCustomButtonArray(), securiacevps_ClientAreaCustomButtonArray(), ReinstallFlowTest, ResetPasswordFlowTest
+Cohesion: 0.11
+Nodes (9): contabo_vps_AdminCustomButtonArray(), contabo_vps_buttonReinstall(), contabo_vps_ClientAreaCustomButtonArray(), securiacevps_AdminCustomButtonArray(), securiacevps_buttonReinstall(), securiacevps_buttonResetPassword(), securiacevps_ClientAreaCustomButtonArray(), ReinstallFlowTest (+1 more)
 
 ### Community 91 - "Community 91"
-Cohesion: 0.14
-Nodes (25): contabo_vps_buttonStart(), contabo_vps_buttonStop(), contabo_vps_clientRestart(), contabo_vps_clientStart(), contabo_vps_clientStop(), securiacevps_AdminServicesTabFields(), securiacevps_buttonReinstall(), securiacevps_buttonResetPassword() (+17 more)
+Cohesion: 0.11
+Nodes (23): contabo_vps_buttonStart(), contabo_vps_buttonStop(), contabo_vps_clientResetPassword(), contabo_vps_clientRestart(), contabo_vps_clientStart(), contabo_vps_clientStop(), securiacevps_buttonRestart(), securiacevps_buttonStart() (+15 more)
 
 ### Community 92 - "Community 92"
 Cohesion: 0.13
@@ -759,7 +759,7 @@ Nodes (3): 0.4.9 — 2026-05-23 (capability + compatibility matrix repositories)
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Capsule` connect `Community 7` to `Community 1`, `Community 5`, `Community 10`, `Community 13`, `Community 17`, `Community 19`, `Community 20`, `Community 26`, `Community 28`, `Community 30`, `Community 31`, `Community 33`, `Community 36`, `Community 37`, `Community 39`, `Community 41`, `Community 42`, `Community 44`, `Community 45`, `Community 46`, `Community 47`, `Community 49`, `Community 50`, `Community 51`, `Community 52`, `Community 53`, `Community 54`, `Community 58`, `Community 68`, `Community 72`, `Community 73`, `Community 79`, `Community 82`, `Community 84`, `Community 85`, `Community 92`, `Community 97`, `Community 98`, `Community 100`, `Community 101`, `Community 102`, `Community 103`, `Community 107`, `Community 108`, `Community 109`, `Community 112`, `Community 113`, `Community 115`, `Community 117`, `Community 120`, `Community 121`, `Community 122`, `Community 123`, `Community 126`, `Community 127`, `Community 128`, `Community 135`, `Community 137`, `Community 139`, `Community 140`, `Community 142`, `Community 144`, `Community 145`, `Community 149`, `Community 155`, `Community 156`, `Community 165`, `Community 166`, `Community 174`, `Community 175`, `Community 193`, `Community 194`, `Community 197`, `Community 198`, `Community 199`, `Community 208`, `Community 216`, `Community 217`?**
+- **Why does `Capsule` connect `Community 7` to `Community 1`, `Community 5`, `Community 10`, `Community 13`, `Community 17`, `Community 19`, `Community 20`, `Community 26`, `Community 28`, `Community 30`, `Community 31`, `Community 33`, `Community 36`, `Community 37`, `Community 39`, `Community 41`, `Community 42`, `Community 44`, `Community 45`, `Community 46`, `Community 47`, `Community 49`, `Community 50`, `Community 51`, `Community 52`, `Community 53`, `Community 54`, `Community 58`, `Community 68`, `Community 72`, `Community 73`, `Community 79`, `Community 82`, `Community 84`, `Community 85`, `Community 91`, `Community 92`, `Community 97`, `Community 98`, `Community 100`, `Community 101`, `Community 102`, `Community 103`, `Community 107`, `Community 108`, `Community 109`, `Community 112`, `Community 113`, `Community 115`, `Community 117`, `Community 120`, `Community 121`, `Community 122`, `Community 123`, `Community 126`, `Community 127`, `Community 128`, `Community 135`, `Community 137`, `Community 139`, `Community 140`, `Community 142`, `Community 144`, `Community 145`, `Community 148`, `Community 149`, `Community 155`, `Community 156`, `Community 165`, `Community 166`, `Community 174`, `Community 175`, `Community 193`, `Community 194`, `Community 197`, `Community 198`, `Community 199`, `Community 203`, `Community 216`, `Community 217`?**
   _High betweenness centrality (0.178) - this node is a cross-community bridge._
 - **Why does `CycleSet` connect `Community 1` to `Community 102`, `Community 9`, `Community 10`, `Community 46`, `Community 19`, `Community 117`, `Community 85`, `Community 157`?**
   _High betweenness centrality (0.029) - this node is a cross-community bridge._
