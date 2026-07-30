@@ -39,13 +39,15 @@ until one-job ephemeral runners and external log retention are available.
   `04cf0be1aff4c3ec3554466c39124ca250e3effd8873bb7e8d68535aa9505d5d`
 - PHP: `/usr/bin/php7.4` and `/usr/bin/php8.2`
 - Composer: `/usr/local/bin/composer`
-- Go, QEMU user-mode emulation, and ShellCheck: distro-managed
+- Go and ShellCheck: distro-managed
 - Node and Rust: exact workflow versions installed into the owning runner's
   tool cache by commit-pinned actions
 - Docker: available only to `contabo-ci-release`
-- Trusted multi-architecture jobs pin Buildx `v0.35.0` and binfmt
-  `qemu-v10.2.3-68` by OCI index digest, register only the required `arm64`
-  emulator, and do not store the privileged binfmt image in Actions cache
+- Trusted multi-architecture jobs pin the Buildx client to `v0.35.0`, the
+  BuildKit daemon to `v0.31.2` by OCI index digest, and binfmt
+  `qemu-v10.2.3-68` by OCI index digest. The action-managed QEMU registration
+  enables only the required `arm64` emulator and does not store the privileged
+  binfmt image in Actions cache.
 
 Workflow jobs must not use `sudo`, mutate apt repositories, or install system
 packages. Third-party actions must use full commit SHAs. Release permissions
