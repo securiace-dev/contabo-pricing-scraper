@@ -1,7 +1,26 @@
-name: Linux Release Dry Run
+name: Linux Release Validation
 
 on:
   pull_request:
+    paths:
+      - 'src/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'Dockerfile'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/package-whmcs-suite.sh'
+      - 'scripts/resolve-scraper-release.sh'
+      - 'scripts/test-resolve-scraper-release.sh'
+      - 'whmcs-module/**'
+      - '.github/workflows/release.yml'
+      - '.github/workflows/release-contabo-pricing.yml'
+      - '.github/workflows/release-contabo-vps.yml'
+      - '.github/workflows/release-validation.yml'
+      - '.github/workflows/scrape.yml'
+  push:
+    branches:
+      - main
     paths:
       - 'src/**'
       - 'Cargo.toml'
@@ -28,11 +47,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  linux-release:
-    name: Linux binaries, image, and scraper assets
+  linux-binaries:
+    name: Linux binaries and scraper assets
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: contabo-ci-release
-    timeout-minutes: 60
+    runs-on: contabo-ci-pr
+    timeout-minutes: 30
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -44,10 +63,10 @@ jobs:
       - name: Initialize job-local build paths
         run: echo "CARGO_TARGET_DIR=${RUNNER_TEMP}/release-target" >> "$GITHUB_ENV"
 
-      - name: Verify release runner capabilities
+      - name: Verify Dockerless release runner capabilities
         run: |
           set -euo pipefail
-          for command in docker file gh readelf sha256sum; do
+          for command in file gh qemu-aarch64 readelf sha256sum; do
             command -v "$command"
           done
 
@@ -66,9 +85,6 @@ jobs:
         with:
           tool: cargo-zigbuild@0.23.0
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
-
       - name: Build Linux x86_64 and ARM64 binaries
         run: |
           cargo zigbuild --locked --release --target x86_64-unknown-linux-musl
@@ -84,7 +100,7 @@ jobs:
           readelf -h "$X86" | grep -E 'Machine:.*X86-64'
           readelf -h "$ARM" | grep -E 'Machine:.*AArch64'
           "$X86" --version
-          "$ARM" --version
+          qemu-aarch64 "$ARM" --version
 
       - name: Validate scraper release resolver
         run: bash scripts/test-resolve-scraper-release.sh
@@ -112,50 +128,10 @@ jobs:
           chmod 0700 "$RELEASE_DIR/contabo-scraper-linux-x86_64"
           "$RELEASE_DIR/contabo-scraper-linux-x86_64" --version
 
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
-
-      - name: Build multi-architecture OCI image without publishing
-        run: |
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --output "type=oci,dest=${RUNNER_TEMP}/contabo-multiarch.tar" \
-            .
-          test -s "${RUNNER_TEMP}/contabo-multiarch.tar"
-
-      - name: Build and smoke native image without publishing
-        run: |
-          set -euo pipefail
-          IMAGE="contabo-release-validation:${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          NAME="contabo-release-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          BROWSER_VOLUME="contabo-release-validation-browser-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          trap 'docker rm -f "$NAME" >/dev/null 2>&1 || true; docker volume rm -f "$BROWSER_VOLUME" >/dev/null 2>&1 || true; docker image rm -f "$IMAGE" >/dev/null 2>&1 || true' EXIT
-
-          docker build --tag "$IMAGE" .
-          docker run --rm "$IMAGE" --version
-          docker volume create "$BROWSER_VOLUME"
-          docker run --rm \
-            --mount "source=${BROWSER_VOLUME},target=/home/contabo/.cloakbrowser" \
-            --entrypoint /usr/local/bin/node \
-            "$IMAGE" \
-            --input-type=module \
-            --eval "const { launch } = await import('/app/node_modules/cloakbrowser/dist/index.js'); const browser = await launch({ headless: true }); await browser.close()"
-          docker run --rm -d --name "$NAME" -p 127.0.0.1::8080 "$IMAGE"
-          PORT="$(docker port "$NAME" 8080/tcp | sed -n 's/.*://p' | head -n 1)"
-          test -n "$PORT"
-          for _ in 1 2 3 4 5 6; do
-            if curl -fsS "http://127.0.0.1:${PORT}/api/v1/health"; then
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Dry-run image health endpoint did not become ready" >&2
-          exit 1
-
   whmcs-release:
     name: WHMCS packages without publication
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: contabo-ci-release
+    runs-on: contabo-ci-pr
     timeout-minutes: 20
 
     steps:

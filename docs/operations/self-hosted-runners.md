@@ -39,7 +39,7 @@ until one-job ephemeral runners and external log retention are available.
   `04cf0be1aff4c3ec3554466c39124ca250e3effd8873bb7e8d68535aa9505d5d`
 - PHP: `/usr/bin/php7.4` and `/usr/bin/php8.2`
 - Composer: `/usr/local/bin/composer`
-- Go and ShellCheck: distro-managed
+- Go, QEMU user-mode emulation, and ShellCheck: distro-managed
 - Node and Rust: exact workflow versions installed into the owning runner's
   tool cache by commit-pinned actions
 - Docker: available only to `contabo-ci-release`
@@ -56,8 +56,13 @@ Supported executable builds are Linux only:
 - `aarch64-unknown-linux-musl`
 - multi-architecture `linux/amd64,linux/arm64` OCI images
 
-`release-validation.yml` exercises these paths without publishing. It also
-validates the current scraper asset checksum and both WHMCS package streams.
+`release-validation.yml` cross-builds and executes the two binaries, validates
+the current scraper asset checksum, and builds both WHMCS package streams on the
+Dockerless PR identity. The separate `container-validation.yml` has no
+pull-request trigger; Docker, multi-architecture OCI, and real browser runtime
+validation run only for trusted `main` source or an explicit maintainer dispatch.
+Pull-request source must never execute on the Docker-enabled release identity.
+
 Tagged releases publish immutable `:vX.Y.Z` and `:X.Y.Z` image aliases first,
 smoke-test the immutable digest, promote `:latest` only after success, and create
 the GitHub Release only after the Docker and binary jobs pass.

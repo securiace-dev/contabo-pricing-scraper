@@ -278,13 +278,14 @@ flowchart LR
 flowchart TD
   PR["Pull request"] --> PAR["parity.yml\nRust ↔ Node output equivalence\n(blocks merge on drift)"]
   PR --> TEST["PHP/Rust/module contract checks"]
-  PR --> DRY["release-validation.yml\nLinux x86_64/ARM64 + OCI + WHMCS dry run"]
+  PR --> DRY["release-validation.yml\nLinux x86_64/ARM64 + QEMU + WHMCS"]
   PR --> TRUST["fork-policy.yml\ntrusted-base fork rejection"]
   CRON["schedule 06:00/18:00 UTC + dispatch"] --> SCR["scrape.yml @ contabo-ci-release\n(STAGING box 'securiace-zoss')"]
   SCR --> PUSH["race-safe commit&push\n(per-ref concurrency, fetch→rebase→push ×3,\nallowlist guard, never force-push)"]
   TAGV["push tag v*"] --> RELY["release.yml\n→ binaries + GHCR image + checksums"]
   MAIN["runtime version change on main"] --> ADDONREL["contabo_pricing release ZIP"]
   MAIN --> VPSREL["securiacevps suite release ZIP"]
+  MAIN --> OCI["container-validation.yml\ntrusted Linux OCI + browser runtime"]
 ```
 
 - All workflows run on repository-scoped Linux self-hosted runners. Pull-request
@@ -317,8 +318,11 @@ flowchart TD
   the GitHub Release is created only after both binaries and the image pass.
 - **`release-validation.yml`** is the non-publishing release gate: it cross-builds
   both supported Linux binary architectures, executes them through native/QEMU
-  paths, builds a multi-arch OCI archive, smoke-tests the native image, validates
-  the current scraper release checksum, and builds both WHMCS package streams.
+  paths, validates the current scraper release checksum, and builds both WHMCS
+  package streams on the Dockerless PR identity.
+- **`container-validation.yml`** builds multi-arch OCI and exercises the real
+  browser runtime on the Docker-enabled release identity only for trusted
+  `main` source or an explicit maintainer dispatch. It has no pull-request trigger.
 - **`release-contabo-pricing.yml`** publishes the runtime-only addon archive
   when `AdminController::VERSION` changes.
 - **`release-contabo-vps.yml`** publishes the canonical module, migration shim,
