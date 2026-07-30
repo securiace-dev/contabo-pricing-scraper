@@ -2,16 +2,36 @@ name: Release SecuriAce VPS suite
 
 # Publishes the canonical WHMCS provisioning runtime as one installable archive:
 # securiacevps + contabo_vps compatibility shim + VPS Standard Cart child theme.
-# This workflow builds release artifacts only. It never deploys WHMCS.
+# Verification and packaging are read-only; only the minimal publish job gets
+# contents:write. This workflow never deploys WHMCS or calls Contabo.
 
 on:
   push:
     branches: [main]
     paths:
       - 'whmcs-module/modules/servers/securiacevps/**'
+      - '!whmcs-module/modules/servers/securiacevps/tests/**'
+      - '!whmcs-module/modules/servers/securiacevps/docs/**'
+      - '!whmcs-module/modules/servers/securiacevps/.phpunit.cache/**'
+      - '!whmcs-module/modules/servers/securiacevps/.phpunit.result.cache'
+      - '!whmcs-module/modules/servers/securiacevps/phpunit.xml'
+      - '!whmcs-module/modules/servers/securiacevps/composer.lock'
+      - '!whmcs-module/modules/servers/securiacevps/.git*'
+      - '!whmcs-module/modules/servers/securiacevps/.claude-flow/**'
+      - '!whmcs-module/modules/servers/securiacevps/graphify-out/**'
       - 'whmcs-module/modules/servers/contabo_vps/**'
+      - '!whmcs-module/modules/servers/contabo_vps/tests/**'
+      - '!whmcs-module/modules/servers/contabo_vps/docs/**'
+      - '!whmcs-module/modules/servers/contabo_vps/.phpunit.cache/**'
+      - '!whmcs-module/modules/servers/contabo_vps/.phpunit.result.cache'
+      - '!whmcs-module/modules/servers/contabo_vps/phpunit.xml'
+      - '!whmcs-module/modules/servers/contabo_vps/composer.lock'
+      - '!whmcs-module/modules/servers/contabo_vps/.git*'
+      - '!whmcs-module/modules/servers/contabo_vps/.claude-flow/**'
+      - '!whmcs-module/modules/servers/contabo_vps/graphify-out/**'
       - 'whmcs-module/templates/orderforms/securiace-vps/**'
       - 'scripts/package-whmcs-suite.sh'
+      - 'scripts/extract-changelog-section.sh'
       - '.github/workflows/release-contabo-vps.yml'
   workflow_dispatch:
 
@@ -19,50 +39,39 @@ concurrency:
   group: release-securiacevps
   cancel-in-progress: false
 
-permissions:
-  contents: write
-
 jobs:
-  release:
-    name: Package and release SecuriAce VPS
+  build:
+    name: Verify and package SecuriAce VPS
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+      exists: ${{ steps.meta.outputs.exists }}
     env:
       MODULE_DIR: whmcs-module/modules/servers/securiacevps
       SHIM_DIR: whmcs-module/modules/servers/contabo_vps
       ADDON_DIR: whmcs-module/modules/addons/contabo_pricing
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up PHP 8.2
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: '8.2'
           extensions: json, curl, mbstring
           tools: composer
 
-      - name: Install test dependencies
-        working-directory: ${{ env.ADDON_DIR }}
-        run: composer install --no-interaction --no-progress
-
-      - name: Lint canonical module and shim
-        run: |
-          set -euo pipefail
-          find "$MODULE_DIR" "$SHIM_DIR" -type f -name '*.php' \
-            -not -path '*/tests/*' -print0 |
-            xargs -0 -n1 php -l >/dev/null
-
-      - name: Unit and contract tests
-        working-directory: ${{ env.MODULE_DIR }}
-        run: ../../addons/contabo_pricing/vendor/bin/phpunit -c phpunit.xml
-
       - name: Resolve version and release state
         id: meta
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           VERSION="$(sed -n "s/.*SECURIACE_VPS_VERSION', '\\([^']*\\)'.*/\\1/p" "$MODULE_DIR/securiacevps.php" | head -n 1)"
-          if [ -z "$VERSION" ]; then
-            echo "::error::could not read SECURIACE_VPS_VERSION"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z][0-9A-Za-z.-]*)?$ ]]; then
+            echo "::error::invalid SECURIACE_VPS_VERSION: $VERSION"
             exit 1
           fi
           TAG="securiacevps-v${VERSION}"
@@ -78,66 +87,103 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "SecuriAce VPS $VERSION -> $TAG (already released: $EXISTS)"
 
-      - name: Existing release notice
-        if: steps.meta.outputs.exists == 'true'
-        run: echo "::notice::${{ steps.meta.outputs.tag }} already exists. Bump SECURIACE_VPS_VERSION for a new release."
+      - name: Install test dependencies
+        working-directory: ${{ env.ADDON_DIR }}
+        run: composer install --no-interaction --no-progress
+
+      - name: Lint canonical module, shim, and templates
+        run: |
+          set -euo pipefail
+          find "$MODULE_DIR" "$SHIM_DIR" -type f \( -name '*.php' -o -name '*.tpl' \) \
+            -not -path '*/tests/*' \
+            -print0 |
+            xargs -0 -n1 php -l >/dev/null
+
+      - name: Unit and contract tests
+        working-directory: ${{ env.MODULE_DIR }}
+        run: ../../addons/contabo_pricing/vendor/bin/phpunit -c phpunit.xml
 
       - name: Build and inspect installable package
         if: steps.meta.outputs.exists == 'false'
-        id: package
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
         run: |
           set -euo pipefail
-          bash scripts/package-whmcs-suite.sh
-          ZIP="dist/securiacevps-v${{ steps.meta.outputs.version }}.zip"
+          bash scripts/package-whmcs-suite.sh --suite
+          ZIP="dist/securiacevps-v${VERSION}.zip"
           test -s "$ZIP"
           test -s "$ZIP.sha256"
           test -s "$ZIP.manifest"
           unzip -t "$ZIP"
-          {
-            echo "zip=$ZIP"
-            echo "checksum=$ZIP.sha256"
-            echo "manifest=$ZIP.manifest"
-          } >> "$GITHUB_OUTPUT"
 
-      - name: Extract release notes
+      - name: Build exact release notes
         if: steps.meta.outputs.exists == 'false'
-        id: notes
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
         run: |
           set -euo pipefail
-          VERSION="${{ steps.meta.outputs.version }}"
-          BODY="$(awk -v ver="securiacevps ${VERSION}" '
-            $0 ~ "^## " && index($0, ver) {flag=1; print; next}
-            flag && /^## / {exit}
-            flag {print}
-          ' "$ADDON_DIR/CHANGELOG.md")"
-          {
-            echo "body<<EOF"
-            if [ -n "$BODY" ]; then
-              echo "$BODY"
-            else
-              echo "See the addon CHANGELOG for details."
-            fi
-            echo ""
-            echo "### Contents"
-            echo "- \`modules/servers/securiacevps/\` canonical module"
-            echo "- \`modules/servers/contabo_vps/\` staged migration shim"
-            echo "- \`templates/orderforms/securiace-vps/\` Standard Cart child"
-            echo ""
-            echo "Install or upgrade \`contabo_pricing\` first because it owns the shared schema. Follow the operator-controlled migration runbook; this release performs no deployment."
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+          NOTES="dist/securiacevps-notes.md"
+          scripts/extract-changelog-section.sh \
+            "$ADDON_DIR/CHANGELOG.md" "securiacevps " "$VERSION" > "$NOTES"
+          cat >> "$NOTES" <<'EOF'
 
-      - name: Publish release
+          ### Contents
+          - `modules/servers/securiacevps/` canonical module
+          - `modules/servers/contabo_vps/` staged migration shim
+          - `templates/orderforms/securiace-vps/` Standard Cart child
+
+          Install or upgrade `contabo_pricing` first because it owns the shared schema. Follow the operator-controlled migration runbook; this release performs no deployment.
+
+          Verify the ZIP against `.sha256` and inspect `.manifest` before installation.
+          EOF
+
+      - name: Stage verified release payload
         if: steps.meta.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          tag_name: ${{ steps.meta.outputs.tag }}
-          target_commitish: ${{ github.sha }}
-          name: SecuriAce VPS ${{ steps.meta.outputs.version }}
-          body: ${{ steps.notes.outputs.body }}
-          files: |
-            ${{ steps.package.outputs.zip }}
-            ${{ steps.package.outputs.checksum }}
-            ${{ steps.package.outputs.manifest }}
-          draft: false
-          prerelease: false
+          name: securiacevps-release
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            dist/securiacevps-v${{ steps.meta.outputs.version }}.zip
+            dist/securiacevps-v${{ steps.meta.outputs.version }}.zip.sha256
+            dist/securiacevps-v${{ steps.meta.outputs.version }}.zip.manifest
+            dist/securiacevps-notes.md
+
+      - name: Existing release notice
+        if: steps.meta.outputs.exists == 'true'
+        run: echo "::notice::${{ steps.meta.outputs.tag }} already exists. Bump SECURIACE_VPS_VERSION for a new release."
+
+  publish:
+    name: Publish SecuriAce VPS
+    needs: build
+    if: needs.build.outputs.exists == 'false'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download verified payload
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: securiacevps-release
+          path: release
+
+      - name: Publish immutable version payload
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.build.outputs.tag }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          set -euo pipefail
+          test -s "release/securiacevps-v${VERSION}.zip"
+          test -s "release/securiacevps-v${VERSION}.zip.sha256"
+          test -s "release/securiacevps-v${VERSION}.zip.manifest"
+          test -s "release/securiacevps-notes.md"
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "SecuriAce VPS ${VERSION}" \
+            --notes-file "release/securiacevps-notes.md" \
+            "release/securiacevps-v${VERSION}.zip" \
+            "release/securiacevps-v${VERSION}.zip.sha256" \
+            "release/securiacevps-v${VERSION}.zip.manifest"
