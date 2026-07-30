@@ -1,0 +1,31 @@
+name: Pull Request Trust Policy
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+permissions:
+  contents: read
+
+jobs:
+  trust-policy:
+    name: Reject external fork execution
+    runs-on: contabo-ci-pr
+    timeout-minutes: 2
+    steps:
+      # pull_request_target loads this workflow from the trusted base branch.
+      # Never checkout, source, or execute the pull request head in this job.
+      - name: Enforce same-repository CI boundary
+        env:
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [ "$HEAD_REPOSITORY" != "$GITHUB_REPOSITORY" ]; then
+            echo "::error::External fork code is not permitted on SecuriAce self-hosted runners."
+            echo "A maintainer must reproduce the change on a trusted same-repository branch."
+            exit 1
+          fi
+          echo "Trusted same-repository pull request."

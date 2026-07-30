@@ -86,7 +86,9 @@ jobs:
 
   release:
     name: Publish GitHub Release
-    needs: build
+    needs:
+      - build
+      - docker
     runs-on: contabo-ci-release
     timeout-minutes: 10
     permissions:
@@ -176,12 +178,14 @@ jobs:
         id: tags
         run: |
           IMG="ghcr.io/${{ github.repository }}"
-          VER="${{ github.ref_name }}"
-          VER="${VER#v}"   # strip leading v
+          RELEASE_TAG="${{ github.ref_name }}"
+          VER="${RELEASE_TAG#v}"
           {
-            echo "tags=${IMG}:${VER},${IMG}:latest"
+            echo "tags=${IMG}:${RELEASE_TAG},${IMG}:${VER}"
             echo "image=${IMG}"
             echo "version=${VER}"
+            echo "smoke=${IMG}:${RELEASE_TAG}"
+            echo "latest=${IMG}:latest"
           } >> "$GITHUB_OUTPUT"
 
       - name: Build & push (linux/amd64, linux/arm64)
@@ -202,7 +206,8 @@ jobs:
       - name: Smoke-test the published image
         run: |
           set -euo pipefail
-          IMAGE="${{ steps.tags.outputs.image }}:${{ steps.tags.outputs.version }}"
+          IMAGE="${{ steps.tags.outputs.smoke }}"
+          LATEST="${{ steps.tags.outputs.latest }}"
           NAME="cv-smoke-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           trap 'docker rm -f "$NAME" >/dev/null 2>&1 || true' EXIT
 
@@ -213,11 +218,19 @@ jobs:
           docker run --rm -d --name "$NAME" -p 127.0.0.1::8080 "$DIGEST"
           PORT="$(docker port "$NAME" 8080/tcp | sed -n 's/.*://p' | head -n 1)"
           test -n "$PORT"
+          READY=false
           for _ in 1 2 3 4 5 6; do
             if curl -fsS "http://127.0.0.1:${PORT}/api/v1/health"; then
-              exit 0
+              READY=true
+              break
             fi
             sleep 2
           done
-          echo "Container health endpoint did not become ready" >&2
-          exit 1
+          if [ "$READY" != true ]; then
+            echo "Container health endpoint did not become ready" >&2
+            exit 1
+          fi
+
+          # Promote the compatibility alias only after the immutable version
+          # digest passes both CLI and HTTP smoke tests.
+          docker buildx imagetools create --tag "$LATEST" "$DIGEST"

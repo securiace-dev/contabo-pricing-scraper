@@ -76,11 +76,7 @@ jobs:
       - name: Resolve binary version
         id: ver
         run: |
-          if [ "$BINARY_VERSION" = "latest" ]; then
-            TAG=$(gh release view --json tagName -q '.tagName')
-          else
-            TAG="$BINARY_VERSION"
-          fi
+          TAG="$(scripts/resolve-scraper-release.sh "$BINARY_VERSION")"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
