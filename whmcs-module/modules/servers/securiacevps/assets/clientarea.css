@@ -305,7 +305,7 @@ body:has(.sav-panel) {
 
 .sav-risk-copy {
   background: var(--sav-color-soft-amber);
-  border-left: 3px solid var(--sav-color-warn);
+  border: var(--sav-rule) solid var(--sav-color-warn);
   margin-bottom: var(--sav-space-3);
   padding: var(--sav-space-3);
 }
