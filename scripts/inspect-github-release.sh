@@ -65,10 +65,10 @@ while [ "$tag_type" = "tag" ]; do
   tag_sha="$("$JQ_BIN" -r '.object.sha // empty' "$TAG_JSON")"
 done
 
-[ "$tag_type" = "commit" ] && [[ "$tag_sha" =~ ^[0-9a-f]{40}$ ]] || {
+if [ "$tag_type" != "commit" ] || [[ ! "$tag_sha" =~ ^[0-9a-f]{40}$ ]]; then
   echo "Release tag $TAG does not resolve to a commit" >&2
   exit 1
-}
+fi
 [ "$release_target" = "$tag_sha" ] || {
   echo "Release $TAG target does not match its tag commit" >&2
   exit 1

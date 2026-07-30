@@ -53,7 +53,7 @@ jobs:
             scripts/extract-changelog-section.sh \
             scripts/inspect-github-release.sh \
             scripts/test-whmcs-release-contract.sh
-          shellcheck \
+          shellcheck --severity=style \
             scripts/package-whmcs-suite.sh \
             scripts/extract-changelog-section.sh \
             scripts/inspect-github-release.sh \
