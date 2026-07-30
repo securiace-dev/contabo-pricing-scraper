@@ -323,10 +323,6 @@ final class OperationRepository
         int $leaseSeconds = self::MIN_LEASE_SECONDS
     ): bool {
         $now = date('Y-m-d H:i:s');
-        $expires = date(
-            'Y-m-d H:i:s',
-            time() + max(self::MIN_LEASE_SECONDS, $leaseSeconds)
-        );
 
         return Capsule::connection()->transaction(function () use (
             $uuid,
@@ -334,7 +330,7 @@ final class OperationRepository
             $fencingToken,
             $worker,
             $now,
-            $expires
+            $leaseSeconds
         ): bool {
             $operationQuery = Capsule::table('mod_securiacevps_operations')
                 ->where('operation_uuid', $uuid)
@@ -345,7 +341,8 @@ final class OperationRepository
             if (method_exists($operationQuery, 'lockForUpdate')) {
                 $operationQuery->lockForUpdate();
             }
-            if ($operationQuery->first() === null) {
+            $operation = $operationQuery->first();
+            if ($operation === null) {
                 return false;
             }
 
@@ -358,11 +355,26 @@ final class OperationRepository
             if (method_exists($serviceLockQuery, 'lockForUpdate')) {
                 $serviceLockQuery->lockForUpdate();
             }
-            if ($serviceLockQuery->first() === null) {
+            $serviceLock = $serviceLockQuery->first();
+            if ($serviceLock === null) {
                 return false;
             }
 
-            $operationUpdated = Capsule::table('mod_securiacevps_operations')
+            $operation = (array) $operation;
+            $serviceLock = (array) $serviceLock;
+            $currentExpiry = max(
+                (int) strtotime((string) ($operation['lease_expires_at'] ?? $now)),
+                (int) strtotime((string) ($serviceLock['lease_expires_at'] ?? $now))
+            );
+            $expires = date(
+                'Y-m-d H:i:s',
+                max(
+                    time() + max(self::MIN_LEASE_SECONDS, $leaseSeconds),
+                    $currentExpiry + 1
+                )
+            );
+
+            Capsule::table('mod_securiacevps_operations')
                 ->where('operation_uuid', $uuid)
                 ->where('service_id', $serviceId)
                 ->where('fencing_token', $fencingToken)
@@ -372,7 +384,7 @@ final class OperationRepository
                     'lease_expires_at' => $expires,
                     'updated_at' => $now,
                 ]);
-            $lockUpdated = Capsule::table('mod_securiacevps_service_locks')
+            Capsule::table('mod_securiacevps_service_locks')
                 ->where('service_id', $serviceId)
                 ->where('operation_uuid', $uuid)
                 ->where('fencing_token', $fencingToken)
@@ -383,7 +395,25 @@ final class OperationRepository
                     'updated_at' => $now,
                 ]);
 
-            return (int) $operationUpdated === 1 && (int) $lockUpdated === 1;
+            // MySQL reports zero affected rows when values do not change. Lease
+            // ownership is therefore proven by locked-row readback, not by an
+            // affected-row count.
+            $operationRetained = Capsule::table('mod_securiacevps_operations')
+                ->where('operation_uuid', $uuid)
+                ->where('service_id', $serviceId)
+                ->where('fencing_token', $fencingToken)
+                ->where('lease_owner', $worker)
+                ->where('lease_expires_at', '>=', $expires)
+                ->first();
+            $lockRetained = Capsule::table('mod_securiacevps_service_locks')
+                ->where('service_id', $serviceId)
+                ->where('operation_uuid', $uuid)
+                ->where('fencing_token', $fencingToken)
+                ->where('lease_owner', $worker)
+                ->where('lease_expires_at', '>=', $expires)
+                ->first();
+
+            return $operationRetained !== null && $lockRetained !== null;
         });
     }
 

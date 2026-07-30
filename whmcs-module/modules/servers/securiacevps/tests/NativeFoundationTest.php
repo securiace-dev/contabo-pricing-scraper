@@ -200,6 +200,20 @@ final class NativeFoundationTest extends TestCase
         );
         $this->assertNotNull($claimed);
 
+        $this->assertTrue($repo->renew(
+            (string) $operation['operation_uuid'],
+            44,
+            (int) $claimed['fencing_token'],
+            'worker-one',
+            120
+        ));
+        $immediatelyRenewed = $repo->byUuid((string) $operation['operation_uuid']);
+        $this->assertGreaterThan(
+            strtotime((string) $claimed['lease_expires_at']),
+            strtotime((string) $immediatelyRenewed['lease_expires_at']),
+            'same-second renewal must still advance expiry and retain ownership'
+        );
+
         $nearExpiry = date('Y-m-d H:i:s', time() + 5);
         Capsule::table('mod_securiacevps_operations')
             ->where('operation_uuid', (string) $operation['operation_uuid'])
