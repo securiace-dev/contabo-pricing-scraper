@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "scripts/live-schema-smoke.php": {
-    "mtime": 1785365847.6328373,
-    "ast_hash": "3c89359b2f620895498e9fdd57095f60",
+    "mtime": 1785378369.292837,
+    "ast_hash": "a4072ab83a59bb571f7c369f6d90ea57",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/hooks.php": {
