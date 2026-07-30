@@ -1290,8 +1290,8 @@
     "semantic_hash": ""
   },
   "scripts/inspect-github-release.sh": {
-    "mtime": 1785386067.8648725,
-    "ast_hash": "f5eac334929693347c7cf98b47a0e43d",
+    "mtime": 1785386301.3239584,
+    "ast_hash": "04d5c50bb581082973d16606bfda2652",
     "semantic_hash": ""
   }
 }
