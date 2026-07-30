@@ -797,7 +797,7 @@ final class NativeLifecycleTest extends TestCase
             Capsule::$tables[$table] = [];
         }
         Capsule::$tables['mod_securiacevps_schema'] = [
-            ['key' => 'schema_version', 'value' => '4'],
+            ['key' => 'schema_version', 'value' => '5'],
             ['key' => 'installation_id', 'value' => 'test-installation'],
             ['key' => 'provider_writes_enabled', 'value' => '1'],
             ['key' => 'operation_lease_seconds', 'value' => '120'],

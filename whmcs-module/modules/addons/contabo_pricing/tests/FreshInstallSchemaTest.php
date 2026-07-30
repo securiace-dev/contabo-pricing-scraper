@@ -39,7 +39,7 @@ final class FreshInstallSchemaTest extends TestCase
             $recorded,
             'a fresh install must record the current schema version'
         );
-        $this->assertSame(13, $recorded);
+        $this->assertSame(14, $recorded);
     }
 
     public function testFreshInstallSchemaIsHealthy(): void
@@ -101,11 +101,18 @@ final class FreshInstallSchemaTest extends TestCase
         }
 
         $this->assertSame(
-            '4',
+            '5',
             Capsule::table('mod_securiacevps_schema')
                 ->where('key', 'schema_version')
                 ->value('value')
         );
+        foreach ([
+            'mod_securiacevps_operator_commands',
+            'mod_securiacevps_communications',
+        ] as $claimTable) {
+            $this->assertTrue($schema->hasColumn($claimTable, 'claim_token'));
+            $this->assertTrue($schema->hasColumn($claimTable, 'claim_expires_at'));
+        }
     }
 
     public function testProvisioningSuiteMigrationIsIdempotent(): void

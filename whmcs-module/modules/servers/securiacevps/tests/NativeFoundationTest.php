@@ -132,6 +132,52 @@ final class NativeFoundationTest extends TestCase
         );
     }
 
+    public function testOperationClaimHonorsLeaseThenRecoversExpiredWorker(): void
+    {
+        $repo = new OperationRepository();
+        $operation = $repo->accept(
+            44,
+            'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+            'provider-account',
+            'create',
+            ['sku_id' => 'V45']
+        );
+        $first = $repo->claim((string) $operation['operation_uuid'], 'worker-one', 120);
+
+        $this->assertNotNull($first);
+        $this->assertNull(
+            $repo->claim((string) $operation['operation_uuid'], 'worker-two', 120),
+            'an unexpired lease must block a second claim even for the same operation'
+        );
+        $this->assertSame([], $repo->due(10), 'an active claim must not be selected as due');
+
+        Capsule::table('mod_securiacevps_operations')
+            ->where('operation_uuid', (string) $operation['operation_uuid'])
+            ->update(['lease_expires_at' => date('Y-m-d H:i:s', time() - 5)]);
+        Capsule::table('mod_securiacevps_service_locks')
+            ->where('service_id', 44)
+            ->update(['lease_expires_at' => date('Y-m-d H:i:s', time() - 5)]);
+
+        $due = $repo->due(10);
+        $this->assertCount(1, $due, 'an expired claimed operation must become recoverable');
+
+        $reclaimed = $repo->claim((string) $operation['operation_uuid'], 'worker-two', 120);
+        $this->assertNotNull($reclaimed);
+        $this->assertSame('worker-two', $reclaimed['lease_owner']);
+        $this->assertGreaterThan(
+            (int) $first['fencing_token'],
+            (int) $reclaimed['fencing_token']
+        );
+        $this->assertFalse(
+            $repo->transition(
+                (string) $operation['operation_uuid'],
+                (int) $first['fencing_token'],
+                'succeeded'
+            ),
+            'the expired worker fencing token must no longer be able to write'
+        );
+    }
+
     public function testOneTimeSecretCannotBeReplayed(): void
     {
         $store = new OneTimeSecretStore();
@@ -171,7 +217,7 @@ final class NativeFoundationTest extends TestCase
             Capsule::$tables[$table] = [];
         }
         Capsule::$tables['mod_securiacevps_schema'] = [
-            ['key' => 'schema_version', 'value' => '4'],
+            ['key' => 'schema_version', 'value' => '5'],
             ['key' => 'installation_id', 'value' => 'test-installation'],
             ['key' => 'provider_writes_enabled', 'value' => '0'],
         ];

@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 13;
+    public const SCHEMA_VERSION = 14;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -1961,6 +1961,60 @@ class Installer
         Capsule::table('mod_securiacevps_schema')->updateOrInsert(
             ['key' => 'schema_version'],
             ['value' => '4', 'updated_at' => $now]
+        );
+    }
+
+    /**
+     * Schema v14 — add expiring, fenced claims to the operator-command and
+     * communication queues. A worker crash can then be reclaimed without an
+     * older worker overwriting the newer worker's result.
+     */
+    public function migrateTo14(): void
+    {
+        $schema = Capsule::schema();
+        $claimTables = [
+            'mod_securiacevps_operator_commands' => 'savps_command_claim_expiry_ix',
+            'mod_securiacevps_communications' => 'savps_comm_claim_expiry_ix',
+        ];
+        foreach ($claimTables as $table => $indexName) {
+            if (!$schema->hasTable($table)) {
+                continue;
+            }
+            $schema->table($table, static function (Blueprint $t) use ($schema, $table): void {
+                if (!$schema->hasColumn($table, 'claim_token')) {
+                    $t->char('claim_token', 36)->nullable();
+                }
+                if (!$schema->hasColumn($table, 'claim_expires_at')) {
+                    $t->timestamp('claim_expires_at')->nullable();
+                }
+            });
+            $this->ensureIndex(
+                $table,
+                $indexName,
+                ['state', 'claim_expires_at']
+            );
+        }
+
+        $now = date('Y-m-d H:i:s');
+        foreach ([
+            'operator_command_lease_seconds' => '300',
+            'communication_lease_seconds' => '300',
+        ] as $key => $value) {
+            if (Capsule::table('mod_securiacevps_schema')->where('key', $key)->value('value') === null) {
+                Capsule::table('mod_securiacevps_schema')->insert([
+                    'key' => $key,
+                    'value' => $value,
+                    'updated_at' => $now,
+                ]);
+            }
+        }
+        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
+            ['key' => 'suite_schema_version'],
+            ['value' => '5', 'updated_at' => $now]
+        );
+        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
+            ['key' => 'schema_version'],
+            ['value' => '5', 'updated_at' => $now]
         );
     }
 

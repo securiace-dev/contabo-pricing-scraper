@@ -7,7 +7,7 @@ use WHMCS\Database\Capsule;
 
 final class SchemaGuard
 {
-    public const SUITE_SCHEMA_VERSION = 4;
+    public const SUITE_SCHEMA_VERSION = 5;
 
     /** @var list<string> */
     private const REQUIRED_TABLES = [

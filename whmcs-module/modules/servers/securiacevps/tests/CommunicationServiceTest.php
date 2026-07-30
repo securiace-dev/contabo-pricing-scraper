@@ -109,6 +109,34 @@ final class CommunicationServiceTest extends TestCase
         $this->assertStringNotContainsString('transport detail', json_encode($row));
     }
 
+    public function testExpiredSendingClaimIsRecoveredWithNewFencingToken(): void
+    {
+        $operation = $this->operation('create', 'succeeded');
+        Capsule::$tables['mod_securiacevps_operations'][] = $operation;
+        $GLOBALS['__local_api_handler'] = static function (): array {
+            return ['result' => 'success'];
+        };
+        $service = new CommunicationService();
+        $service->queueForOperation($operation);
+        Capsule::$tables['mod_securiacevps_communications'][0] = array_merge(
+            Capsule::$tables['mod_securiacevps_communications'][0],
+            [
+                'state' => 'sending',
+                'claim_token' => 'expired-worker-token',
+                'claim_expires_at' => date('Y-m-d H:i:s', time() - 5),
+            ]
+        );
+
+        $service->processQueue();
+
+        $row = Capsule::$tables['mod_securiacevps_communications'][0];
+        $this->assertSame('sent', $row['state']);
+        $this->assertSame(1, $row['attempt_count']);
+        $this->assertNull($row['claim_token']);
+        $this->assertNull($row['claim_expires_at']);
+        $this->assertCount(1, $GLOBALS['__local_api_calls']);
+    }
+
     /**
      * @return array<string,mixed>
      */

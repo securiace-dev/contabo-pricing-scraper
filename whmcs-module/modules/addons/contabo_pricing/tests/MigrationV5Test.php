@@ -217,8 +217,8 @@ final class MigrationV5Test extends TestCase
             ->where('key', 'schema_version')
             ->value('value');
 
-        $this->assertSame(13, $recorded, 'upgrade() must record schema_version=13 (full chain through migrateTo13)');
-        $this->assertSame(13, Installer::SCHEMA_VERSION, 'SCHEMA_VERSION constant must be 13');
+        $this->assertSame(14, $recorded, 'upgrade() must record schema_version=14 (full chain through migrateTo14)');
+        $this->assertSame(14, Installer::SCHEMA_VERSION, 'SCHEMA_VERSION constant must be 14');
 
         // The v5 tables came along for the ride.
         foreach (self::V5_TABLES as $table) {

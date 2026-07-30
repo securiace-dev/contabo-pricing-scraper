@@ -43,7 +43,7 @@ final class AdoptionServiceTest extends TestCase
             Capsule::$tables[$table] = [];
         }
         Capsule::$tables['mod_securiacevps_schema'] = [
-            ['key' => 'schema_version', 'value' => '4'],
+            ['key' => 'schema_version', 'value' => '5'],
             ['key' => 'installation_id', 'value' => 'test-installation'],
         ];
         $auth = new ContaboAuth('cid', 'cs', 'u@example.com', 'pw', $this->harness->http);

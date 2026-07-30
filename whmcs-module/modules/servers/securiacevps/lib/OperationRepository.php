@@ -160,13 +160,18 @@ final class OperationRepository
             if (in_array((string) ($op['state'] ?? ''), self::TERMINAL_STATES, true)) {
                 return null;
             }
+            $operationLeaseExpires = trim((string) ($op['lease_expires_at'] ?? ''));
+            if ($operationLeaseExpires !== ''
+                && strtotime($operationLeaseExpires) >= time()
+            ) {
+                return null;
+            }
             $serviceId = (int) $op['service_id'];
             $lock = Capsule::table('mod_securiacevps_service_locks')
                 ->where('service_id', $serviceId)
                 ->first();
             $lock = $lock !== null ? (array) $lock : null;
             if ($lock !== null
-                && (string) ($lock['operation_uuid'] ?? '') !== $uuid
                 && strtotime((string) ($lock['lease_expires_at'] ?? '1970-01-01')) >= time()
             ) {
                 return null;
@@ -250,6 +255,7 @@ final class OperationRepository
         $rows = Capsule::table('mod_securiacevps_operations')
             ->whereIn('state', [
                 'accepted',
+                'claimed',
                 'retry_scheduled',
                 'failed_retryable',
                 'provider_pending',
@@ -262,6 +268,12 @@ final class OperationRepository
         $out = [];
         foreach ($rows as $item) {
             $row = (array) $item;
+            if ((string) ($row['state'] ?? '') === 'claimed') {
+                $leaseExpires = trim((string) ($row['lease_expires_at'] ?? ''));
+                if ($leaseExpires !== '' && strtotime($leaseExpires) >= time()) {
+                    continue;
+                }
+            }
             $next = trim((string) ($row['next_attempt_at'] ?? ''));
             if ($next !== '' && strtotime($next) > time()) {
                 continue;

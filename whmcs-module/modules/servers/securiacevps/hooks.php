@@ -226,26 +226,57 @@ function _securiacevps_process_operator_commands(): void
     try {
         \SecuriAceVps\SchemaGuard::assertReady();
         $rows = \WHMCS\Database\Capsule::table('mod_securiacevps_operator_commands')
-            ->where('state', 'pending_validation')
+            ->whereIn('state', ['pending_validation', 'claimed'])
             ->orderBy('id')
-            ->limit(25)
+            ->limit(75)
             ->get();
+        $processed = 0;
         foreach ($rows as $item) {
             $command = (array) $item;
-            $claimed = \WHMCS\Database\Capsule::table('mod_securiacevps_operator_commands')
+            $state = (string) ($command['state'] ?? '');
+            $claimExpiresAt = trim((string) ($command['claim_expires_at'] ?? ''));
+            if ($state === 'claimed'
+                && $claimExpiresAt !== ''
+                && strtotime($claimExpiresAt) > time()
+            ) {
+                continue;
+            }
+            if ($processed >= 25) {
+                break;
+            }
+            $claimToken = \SecuriAceVps\Uuid::v4();
+            $claimedAt = date('Y-m-d H:i:s');
+            $claimQuery = \WHMCS\Database\Capsule::table('mod_securiacevps_operator_commands')
                 ->where('id', (int) ($command['id'] ?? 0))
-                ->where('state', 'pending_validation')
-                ->update([
-                    'state' => 'claimed',
-                    'claimed_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s'),
-                ]);
+                ->where('state', $state);
+            if ($state === 'claimed') {
+                $claimQuery->where('claim_token', $command['claim_token'] ?? null)
+                    ->where('claim_expires_at', $command['claim_expires_at'] ?? null);
+            }
+            $claimed = $claimQuery->update([
+                'state' => 'claimed',
+                'claim_token' => $claimToken,
+                'claim_expires_at' => date(
+                    'Y-m-d H:i:s',
+                    time() + max(
+                        60,
+                        (int) \SecuriAceVps\SchemaGuard::setting(
+                            'operator_command_lease_seconds',
+                            '300'
+                        )
+                    )
+                ),
+                'claimed_at' => $claimedAt,
+                'updated_at' => $claimedAt,
+            ]);
             if ($claimed !== 1) {
                 continue;
             }
+            $processed++;
             $command['state'] = 'claimed';
+            $command['claim_token'] = $claimToken;
             try {
-                _securiacevps_process_operator_command($command);
+                _securiacevps_process_operator_command($command, $claimToken);
             } catch (\Throwable $e) {
                 $safeCode = $e instanceof \SecuriAceVps\ContaboProvisioningException
                     ? $e->safeCode()
@@ -253,7 +284,8 @@ function _securiacevps_process_operator_commands(): void
                 _securiacevps_finish_operator_command(
                     (int) ($command['id'] ?? 0),
                     'rejected',
-                    $safeCode
+                    $safeCode,
+                    $claimToken
                 );
             }
         }
@@ -265,14 +297,19 @@ function _securiacevps_process_operator_commands(): void
 }
 
 /** @param array<string,mixed> $command */
-function _securiacevps_process_operator_command(array $command): void
+function _securiacevps_process_operator_command(array $command, string $claimToken): void
 {
     $id = (int) ($command['id'] ?? 0);
     $payloadJson = (string) ($command['payload_json'] ?? '{}');
     $payload = json_decode($payloadJson, true);
     $payload = is_array($payload) ? $payload : [];
     if (!hash_equals((string) ($command['payload_hash'] ?? ''), hash('sha256', \SecuriAceVps\CanonicalJson::encode($payload)))) {
-        _securiacevps_finish_operator_command($id, 'rejected', 'command_payload_hash_mismatch');
+        _securiacevps_finish_operator_command(
+            $id,
+            'rejected',
+            'command_payload_hash_mismatch',
+            $claimToken
+        );
         return;
     }
     $type = (string) ($command['command_type'] ?? '');
@@ -284,12 +321,22 @@ function _securiacevps_process_operator_command(array $command): void
             ->where('operation_uuid', $operationUuid)
             ->first();
         if ($operation === null) {
-            _securiacevps_finish_operator_command($id, 'rejected', 'operation_not_found');
+            _securiacevps_finish_operator_command(
+                $id,
+                'rejected',
+                'operation_not_found',
+                $claimToken
+            );
             return;
         }
         $operation = (array) $operation;
         if (in_array((string) ($operation['state'] ?? ''), ['succeeded', 'cancelled', 'superseded'], true)) {
-            _securiacevps_finish_operator_command($id, 'rejected', 'operation_already_terminal');
+            _securiacevps_finish_operator_command(
+                $id,
+                'rejected',
+                'operation_already_terminal',
+                $claimToken
+            );
             return;
         }
         // Even an explicit retry is converted to reconciliation when a
@@ -306,7 +353,7 @@ function _securiacevps_process_operator_command(array $command): void
                 'safe_error_code' => null,
                 'updated_at' => $now,
             ]);
-        _securiacevps_finish_operator_command($id, 'completed', null);
+        _securiacevps_finish_operator_command($id, 'completed', null, $claimToken);
         return;
     }
 
@@ -315,28 +362,38 @@ function _securiacevps_process_operator_command(array $command): void
             ->where('operation_uuid', $operationUuid)
             ->count() > 0;
         if ($hasProviderRequest) {
-            _securiacevps_finish_operator_command($id, 'rejected', 'provider_request_already_submitted');
+            _securiacevps_finish_operator_command(
+                $id,
+                'rejected',
+                'provider_request_already_submitted',
+                $claimToken
+            );
             return;
         }
         \WHMCS\Database\Capsule::table('mod_securiacevps_operations')
             ->where('operation_uuid', $operationUuid)
             ->whereIn('state', ['accepted', 'retry_scheduled', 'failed_retryable'])
             ->update(['state' => 'cancelled', 'completed_at' => $now, 'updated_at' => $now]);
-        _securiacevps_finish_operator_command($id, 'completed', null);
+        _securiacevps_finish_operator_command($id, 'completed', null, $claimToken);
         return;
     }
 
     if ($type === 'set_global_write_state') {
         $enabled = !empty($payload['enabled']);
         if ($enabled && (string) ($payload['confirmation'] ?? '') !== 'ENABLE PROVIDER WRITES') {
-            _securiacevps_finish_operator_command($id, 'rejected', 'write_enable_confirmation_missing');
+            _securiacevps_finish_operator_command(
+                $id,
+                'rejected',
+                'write_enable_confirmation_missing',
+                $claimToken
+            );
             return;
         }
         \WHMCS\Database\Capsule::table('mod_securiacevps_schema')->updateOrInsert(
             ['key' => 'provider_writes_enabled'],
             ['value' => $enabled ? '1' : '0', 'updated_at' => $now]
         );
-        _securiacevps_finish_operator_command($id, 'completed', null);
+        _securiacevps_finish_operator_command($id, 'completed', null, $claimToken);
         return;
     }
 
@@ -348,7 +405,12 @@ function _securiacevps_process_operator_command(array $command): void
             || $providerAccountId === ''
             || ($enabled && (string) ($payload['confirmation'] ?? '') !== 'ENABLE CAPABILITY WRITE')
         ) {
-            _securiacevps_finish_operator_command($id, 'rejected', 'capability_command_invalid');
+            _securiacevps_finish_operator_command(
+                $id,
+                'rejected',
+                'capability_command_invalid',
+                $claimToken
+            );
             return;
         }
         if ($enabled) {
@@ -361,7 +423,8 @@ function _securiacevps_process_operator_command(array $command): void
                 _securiacevps_finish_operator_command(
                     $id,
                     'rejected',
-                    'capability_not_certified_for_provider'
+                    'capability_not_certified_for_provider',
+                    $claimToken
                 );
                 return;
             }
@@ -370,7 +433,7 @@ function _securiacevps_process_operator_command(array $command): void
             ['key' => 'capability.' . $capability . '.enabled'],
             ['value' => $enabled ? '1' : '0', 'updated_at' => $now]
         );
-        _securiacevps_finish_operator_command($id, 'completed', null);
+        _securiacevps_finish_operator_command($id, 'completed', null, $claimToken);
         return;
     }
 
@@ -380,7 +443,12 @@ function _securiacevps_process_operator_command(array $command): void
         if ($params === null
             || (string) ($payload['confirmation'] ?? '') !== 'VERIFY OWNERSHIP'
         ) {
-            _securiacevps_finish_operator_command($id, 'rejected', 'adoption_command_invalid');
+            _securiacevps_finish_operator_command(
+                $id,
+                'rejected',
+                'adoption_command_invalid',
+                $claimToken
+            );
             return;
         }
         $client = new \SecuriAceVps\ContaboApiClient(\SecuriAceVps\Runtime::auth($params));
@@ -390,14 +458,24 @@ function _securiacevps_process_operator_command(array $command): void
             trim((string) ($payload['evidence_hash'] ?? '')),
             (int) ($command['requested_by_admin_id'] ?? 0)
         );
-        _securiacevps_finish_operator_command($id, 'completed', null);
+        _securiacevps_finish_operator_command($id, 'completed', null, $claimToken);
         return;
     }
 
-    _securiacevps_finish_operator_command($id, 'rejected', 'command_type_not_supported');
+    _securiacevps_finish_operator_command(
+        $id,
+        'rejected',
+        'command_type_not_supported',
+        $claimToken
+    );
 }
 
-function _securiacevps_finish_operator_command(int $id, string $state, ?string $safeErrorCode): void
+function _securiacevps_finish_operator_command(
+    int $id,
+    string $state,
+    ?string $safeErrorCode,
+    string $claimToken
+): void
 {
     $command = \WHMCS\Database\Capsule::table('mod_securiacevps_operator_commands')
         ->where('id', $id)
@@ -406,9 +484,12 @@ function _securiacevps_finish_operator_command(int $id, string $state, ?string $
     $updated = \WHMCS\Database\Capsule::table('mod_securiacevps_operator_commands')
         ->where('id', $id)
         ->where('state', 'claimed')
+        ->where('claim_token', $claimToken)
         ->update([
             'state' => $state,
             'safe_error_code' => $safeErrorCode,
+            'claim_token' => null,
+            'claim_expires_at' => null,
             'completed_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);

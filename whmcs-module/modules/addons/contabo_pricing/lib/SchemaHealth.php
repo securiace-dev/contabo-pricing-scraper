@@ -171,6 +171,8 @@ final class SchemaHealth
             'requested_by_admin_id',
             'state',
             'payload_hash',
+            'claim_token',
+            'claim_expires_at',
         ],
         'mod_contabo_catalog_versions' => [
             'catalog_version',
@@ -219,6 +221,8 @@ final class SchemaHealth
             'message_type',
             'state',
             'payload_hash',
+            'claim_token',
+            'claim_expires_at',
         ],
         'mod_securiacevps_snapshot_inventory' => [
             'service_id',

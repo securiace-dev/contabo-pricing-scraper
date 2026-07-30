@@ -63,6 +63,8 @@ final class CommunicationService
             'payload_hash' => hash('sha256', CanonicalJson::encode($payload)),
             'attempt_count' => 0,
             'next_attempt_at' => $now,
+            'claim_token' => null,
+            'claim_expires_at' => null,
             'sent_at' => null,
             'safe_error_code' => null,
             'created_at' => $now,
@@ -72,22 +74,48 @@ final class CommunicationService
 
     public function processQueue(int $limit = 25): void
     {
+        $now = date('Y-m-d H:i:s');
         $rows = Capsule::table('mod_securiacevps_communications')
-            ->whereIn('state', ['pending', 'retry_scheduled'])
-            ->where('next_attempt_at', '<=', date('Y-m-d H:i:s'))
+            ->whereIn('state', ['pending', 'retry_scheduled', 'sending'])
             ->orderBy('id')
-            ->limit(max(1, min(100, $limit)))
+            ->limit(max(1, min(300, $limit * 3)))
             ->get();
+        $processed = 0;
         foreach ($rows as $item) {
             $row = (array) $item;
+            $state = (string) ($row['state'] ?? '');
+            $dueAt = $state === 'sending'
+                ? (string) ($row['claim_expires_at'] ?? '')
+                : (string) ($row['next_attempt_at'] ?? '');
+            if ($dueAt !== '' && strtotime($dueAt) > time()) {
+                continue;
+            }
+            if ($processed >= max(1, min(100, $limit))) {
+                break;
+            }
             $id = (int) ($row['id'] ?? 0);
-            $claimed = Capsule::table('mod_securiacevps_communications')
+            $claimToken = Uuid::v4();
+            $claimExpiresAt = date(
+                'Y-m-d H:i:s',
+                time() + max(60, (int) SchemaGuard::setting('communication_lease_seconds', '300'))
+            );
+            $claimQuery = Capsule::table('mod_securiacevps_communications')
                 ->where('id', $id)
-                ->whereIn('state', ['pending', 'retry_scheduled'])
-                ->update(['state' => 'sending', 'updated_at' => date('Y-m-d H:i:s')]);
+                ->where('state', $state);
+            if ($state === 'sending') {
+                $claimQuery->where('claim_token', $row['claim_token'] ?? null)
+                    ->where('claim_expires_at', $row['claim_expires_at'] ?? null);
+            }
+            $claimed = $claimQuery->update([
+                'state' => 'sending',
+                'claim_token' => $claimToken,
+                'claim_expires_at' => $claimExpiresAt,
+                'updated_at' => $now,
+            ]);
             if ($claimed !== 1) {
                 continue;
             }
+            $processed++;
             $attempt = ((int) ($row['attempt_count'] ?? 0)) + 1;
             try {
                 if (!function_exists('localAPI')) {
@@ -112,10 +140,13 @@ final class CommunicationService
                 Capsule::table('mod_securiacevps_communications')
                     ->where('id', $id)
                     ->where('state', 'sending')
+                    ->where('claim_token', $claimToken)
                     ->update([
                         'state' => 'sent',
                         'attempt_count' => $attempt,
                         'next_attempt_at' => null,
+                        'claim_token' => null,
+                        'claim_expires_at' => null,
                         'sent_at' => date('Y-m-d H:i:s'),
                         'safe_error_code' => null,
                         'updated_at' => date('Y-m-d H:i:s'),
@@ -125,12 +156,15 @@ final class CommunicationService
                 Capsule::table('mod_securiacevps_communications')
                     ->where('id', $id)
                     ->where('state', 'sending')
+                    ->where('claim_token', $claimToken)
                     ->update([
                         'state' => $terminal ? 'failed' : 'retry_scheduled',
                         'attempt_count' => $attempt,
                         'next_attempt_at' => $terminal
                             ? null
                             : date('Y-m-d H:i:s', time() + (60 * $attempt)),
+                        'claim_token' => null,
+                        'claim_expires_at' => null,
                         'safe_error_code' => 'email_delivery_failed',
                         'updated_at' => date('Y-m-d H:i:s'),
                     ]);

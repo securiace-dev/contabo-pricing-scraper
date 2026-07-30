@@ -199,7 +199,7 @@ final class SyncFlowTest extends TestCase
         }
         $account = hash('sha256', 'contabo|0|');
         Capsule::$tables['mod_securiacevps_schema'] = [
-            ['key' => 'schema_version', 'value' => '4'],
+            ['key' => 'schema_version', 'value' => '5'],
             ['key' => 'installation_id', 'value' => 'test-installation'],
             ['key' => 'provider_writes_enabled', 'value' => '0'],
         ];
