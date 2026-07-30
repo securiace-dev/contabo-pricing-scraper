@@ -11,8 +11,10 @@ namespace SecuriAceVps;
  * Resilience:
  *   - 401 → force-refresh the token once (does NOT consume the retry budget),
  *     then replay the request.
- *   - 429 → linear backoff, up to MAX_RETRIES.
- *   - 5xx → exponential backoff, up to MAX_RETRIES.
+ *   - Read-only 429 → linear backoff, up to MAX_RETRIES.
+ *   - Read-only 5xx → exponential backoff, up to MAX_RETRIES.
+ *   - Mutation 429/5xx → return an ambiguous outcome immediately so the
+ *     durable operation reconciles instead of replaying the provider effect.
  *   - Total backoff sleep is capped at MAX_TOTAL_SLEEP_SEC so a flapping API
  *     can never stall a WHMCS admin/client page load for long.
  * Every request carries an x-request-id (UUID v4) for Contabo-side tracing.
@@ -115,6 +117,7 @@ class ContaboApiClient
     private function request(string $method, string $path, ?array $body, ?string $requestIdentity = null): array
     {
         $url     = self::BASE_URL . $path;
+        $isMutation = in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true);
         $encoded = null;
         if ($body !== null) {
             // An empty PHP array must serialise as a JSON OBJECT ({}), not [] —
@@ -146,7 +149,7 @@ class ContaboApiClient
                     'API transport error: ' . ($err !== '' ? $err : ('curl errno ' . $errno)),
                     'provider_transport_error',
                     'transient',
-                    in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)
+                    $isMutation
                 );
             }
 
@@ -159,7 +162,11 @@ class ContaboApiClient
                 continue;
             }
 
-            $retryable = ($code === 429 || $code >= 500);
+            // Contabo's x-request-id is a tracing identity, not a universal
+            // idempotency guarantee. Retrying a mutation here could duplicate
+            // a chargeable or destructive effect before the durable operation
+            // gets a chance to reconcile it.
+            $retryable = !$isMutation && ($code === 429 || $code >= 500);
             if ($retryable && $attempt < self::MAX_RETRIES) {
                 $delay = $code === 429 ? (1 + $attempt) : (2 ** $attempt);
                 $delay = (int) min($delay, max(0, self::MAX_TOTAL_SLEEP_SEC - $slept));
@@ -179,7 +186,7 @@ class ContaboApiClient
                     'API error (HTTP ' . $code . '): ' . substr($msg, 0, 300),
                     'provider_http_' . $code,
                     $retry,
-                    $code >= 500 && in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)
+                    $isMutation && ($code === 429 || $code >= 500)
                 );
             }
 

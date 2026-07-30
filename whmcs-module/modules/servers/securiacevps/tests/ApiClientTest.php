@@ -87,6 +87,55 @@ final class ApiClientTest extends TestCase
         $this->assertLessThanOrEqual(6, array_sum($this->sleeps), 'total backoff must respect the cap');
     }
 
+    public function testMutationServerErrorReturnsAmbiguousOutcomeWithoutReplay(): void
+    {
+        $this->http->queue('POST api.contabo.com', 503, ['message' => 'upstream uncertain']);
+        $this->http->queue('POST api.contabo.com', 201, ['data' => [['instanceId' => 9999]]]);
+
+        try {
+            $this->client()->postWithIdentity(
+                '/v1/compute/instances',
+                ['productId' => 'V45'],
+                'durable-create-command'
+            );
+            $this->fail('expected ambiguous provider exception');
+        } catch (ContaboProvisioningException $e) {
+            $this->assertTrue($e->hasAmbiguousOutcome());
+            $this->assertSame('provider_http_503', $e->safeCode());
+            $this->assertSame('transient', $e->retryClassification());
+        }
+
+        $this->assertCount(
+            1,
+            $this->http->callsMatching('POST https://api.contabo.com/v1/compute/instances')
+        );
+        $this->assertSame([], $this->sleeps);
+    }
+
+    public function testMutationRateLimitIsReconciledInsteadOfReplayed(): void
+    {
+        $this->http->queue('DELETE api.contabo.com', 429, ['message' => 'rate limited']);
+
+        try {
+            $this->client()->deleteWithIdentity(
+                '/v1/compute/instances/9001/snapshots/snap-1',
+                'durable-delete-command'
+            );
+            $this->fail('expected ambiguous provider exception');
+        } catch (ContaboProvisioningException $e) {
+            $this->assertTrue($e->hasAmbiguousOutcome());
+            $this->assertSame('provider_http_429', $e->safeCode());
+        }
+
+        $this->assertCount(
+            1,
+            $this->http->callsMatching(
+                'DELETE https://api.contabo.com/v1/compute/instances/9001/snapshots/snap-1'
+            )
+        );
+        $this->assertSame([], $this->sleeps);
+    }
+
     public function testTransportErrorThrows(): void
     {
         $this->http->queue('GET api.contabo.com', 0, '', 28, 'Connection timed out');
