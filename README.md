@@ -323,6 +323,9 @@ flowchart TD
 - **`container-validation.yml`** builds multi-arch OCI and exercises the real
   browser runtime on the Docker-enabled release identity only for trusted
   `main` source or an explicit maintainer dispatch. It has no pull-request trigger.
+  A YAML-aware contract follows local reusable workflows and blocks direct,
+  matrix, inline-trigger, and unauditable external-reusable paths from PR code
+  to the release runner.
 - **`release-contabo-pricing.yml`** publishes the runtime-only addon archive
   when `AdminController::VERSION` changes.
 - **`release-contabo-vps.yml`** publishes the canonical module, migration shim,

@@ -7,8 +7,10 @@ on:
       - 'scripts/package-whmcs-suite.sh'
       - 'scripts/extract-changelog-section.sh'
       - 'scripts/inspect-github-release.sh'
+      - 'scripts/check-workflow-trust.rb'
       - 'scripts/resolve-scraper-release.sh'
       - 'scripts/test-resolve-scraper-release.sh'
+      - 'scripts/test-workflow-trust-contract.sh'
       - 'scripts/test-whmcs-release-contract.sh'
       - '.github/actionlint.yaml'
       - '.github/workflows/**'
@@ -19,8 +21,10 @@ on:
       - 'scripts/package-whmcs-suite.sh'
       - 'scripts/extract-changelog-section.sh'
       - 'scripts/inspect-github-release.sh'
+      - 'scripts/check-workflow-trust.rb'
       - 'scripts/resolve-scraper-release.sh'
       - 'scripts/test-resolve-scraper-release.sh'
+      - 'scripts/test-workflow-trust-contract.sh'
       - 'scripts/test-whmcs-release-contract.sh'
       - '.github/actionlint.yaml'
       - '.github/workflows/**'
@@ -42,7 +46,7 @@ jobs:
       - name: Verify runner capabilities
         run: |
           set -euo pipefail
-          for command in go shellcheck sha256sum unzip zip; do
+          for command in go ruby shellcheck sha256sum unzip zip; do
             command -v "$command"
           done
 
@@ -60,27 +64,20 @@ jobs:
 
       - name: Enforce runner trust boundary
         run: |
-          set -euo pipefail
-          mapfile -t PR_WORKFLOWS < <(
-            grep -El '^  pull_request(_target)?:' .github/workflows/*.yml
-          )
-          RELEASE_RUNNER="contabo-ci-re""lease"
-          for workflow in "${PR_WORKFLOWS[@]}"; do
-            if grep -Fq "runs-on: ${RELEASE_RUNNER}" "$workflow"; then
-              echo "::error file=${workflow}::PR-triggered workflows cannot use the Docker-enabled release runner."
-              exit 1
-            fi
-          done
+          ruby scripts/check-workflow-trust.rb .
+          bash scripts/test-workflow-trust-contract.sh
 
       - name: Validate release shell
         run: |
           set -euo pipefail
+          ruby -c scripts/check-workflow-trust.rb
           bash -n \
             scripts/package-whmcs-suite.sh \
             scripts/extract-changelog-section.sh \
             scripts/inspect-github-release.sh \
             scripts/resolve-scraper-release.sh \
             scripts/test-resolve-scraper-release.sh \
+            scripts/test-workflow-trust-contract.sh \
             scripts/test-whmcs-release-contract.sh
           shellcheck --severity=style \
             scripts/package-whmcs-suite.sh \
@@ -88,6 +85,7 @@ jobs:
             scripts/inspect-github-release.sh \
             scripts/resolve-scraper-release.sh \
             scripts/test-resolve-scraper-release.sh \
+            scripts/test-workflow-trust-contract.sh \
             scripts/test-whmcs-release-contract.sh
 
       - name: Validate changelog and package contracts

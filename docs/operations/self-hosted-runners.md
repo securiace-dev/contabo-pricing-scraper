@@ -62,6 +62,10 @@ Dockerless PR identity. The separate `container-validation.yml` has no
 pull-request trigger; Docker, multi-architecture OCI, and real browser runtime
 validation run only for trusted `main` source or an explicit maintainer dispatch.
 Pull-request source must never execute on the Docker-enabled release identity.
+The release contract parses workflow YAML, covers block/inline/scalar PR event
+forms, follows local reusable-workflow calls, and rejects external reusable
+workflows from PR entrypoints because their runner selection cannot be audited
+from this repository. Regression fixtures exercise each bypass class.
 
 Tagged releases publish immutable `:vX.Y.Z` and `:X.Y.Z` image aliases first,
 smoke-test the immutable digest, promote `:latest` only after success, and create
