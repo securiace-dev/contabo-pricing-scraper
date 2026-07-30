@@ -100,9 +100,16 @@ final class ApiClientTest extends TestCase
         $client = $this->client();
         $client->put('/v1/compute/instances/1', ['imageId' => 'x']);
         $client->delete('/v1/secrets/9');
+        $client->deleteWithIdentity('/v1/compute/instances/1/snapshots/snap-1', 'durable-command');
 
         $this->assertCount(1, $this->http->callsMatching('PUT https://api.contabo.com/v1/compute/instances/1'));
         $this->assertCount(1, $this->http->callsMatching('DELETE https://api.contabo.com/v1/secrets/9'));
+        $this->assertCount(
+            1,
+            $this->http->callsMatching(
+                'DELETE https://api.contabo.com/v1/compute/instances/1/snapshots/snap-1'
+            )
+        );
     }
 
     public function testTimeoutOverridePropagatesToExecutor(): void
@@ -125,5 +132,22 @@ final class ApiClientTest extends TestCase
             }
         }
         $this->assertTrue($found, 'x-request-id UUID header missing');
+    }
+
+    public function testDurableIdentityMapsToStableUuidRequestId(): void
+    {
+        $identity = str_repeat('a', 64);
+        $expected = ContaboApiClient::requestIdForIdentity($identity);
+        $this->assertMatchesRegularExpression(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/',
+            $expected
+        );
+        $this->assertSame($expected, ContaboApiClient::requestIdForIdentity($identity));
+
+        $this->client()->postWithIdentity('/v1/compute/instances/1/actions/start', [], $identity);
+        $calls = $this->http->callsMatching(
+            'POST https://api.contabo.com/v1/compute/instances/1/actions/start'
+        );
+        $this->assertContains('x-request-id: ' . $expected, $calls[0]['headers']);
     }
 }

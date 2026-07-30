@@ -74,6 +74,14 @@ class ContaboApiClient
     }
 
     /**
+     * @return array<string,mixed>
+     */
+    public function deleteWithIdentity(string $path, string $requestIdentity): array
+    {
+        return $this->request('DELETE', $path, null, $requestIdentity);
+    }
+
+    /**
      * @param array<string,mixed> $body
      * @return array<string,mixed>
      */
@@ -122,7 +130,7 @@ class ContaboApiClient
 
         while (true) {
             $requestId = $requestIdentity !== null && $requestIdentity !== ''
-                ? substr($requestIdentity, 0, 64)
+                ? self::requestIdForIdentity($requestIdentity)
                 : $this->generateRequestId();
             $headers = [
                 'Authorization: Bearer ' . $this->auth->getToken(),
@@ -177,6 +185,24 @@ class ContaboApiClient
 
             return is_array($data) ? $data : [];
         }
+    }
+
+    /**
+     * Contabo requires x-request-id to be UUID-shaped. Durable operations use a
+     * SHA-256 command identity internally, so map that identity to a stable
+     * UUIDv4-form value instead of sending the hash directly.
+     */
+    public static function requestIdForIdentity(string $identity): string
+    {
+        $hex = hash('sha256', $identity);
+        $hex[12] = '4';
+        $variant = hexdec($hex[16]);
+        $hex[16] = dechex(($variant & 0x3) | 0x8);
+        return substr($hex, 0, 8)
+            . '-' . substr($hex, 8, 4)
+            . '-' . substr($hex, 12, 4)
+            . '-' . substr($hex, 16, 4)
+            . '-' . substr($hex, 20, 12);
     }
 
     /** UUID v4 without an extension dependency. */
