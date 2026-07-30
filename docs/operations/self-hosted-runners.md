@@ -14,8 +14,11 @@ jobs are routed to repository-scoped runners on the disposable
 The runners were registered with `--no-default-labels`. Generic
 `self-hosted`, `Linux`, or `X64` jobs cannot claim them.
 
-Pull-request jobs contain an explicit same-repository guard. External fork code
-must not run on either self-hosted identity. Same-repository branches are a
+Pull-request jobs contain an explicit same-repository guard. In addition,
+`fork-policy.yml` runs from the trusted base branch through
+`pull_request_target` and deliberately fails for an external fork without
+checking out, sourcing, or executing its head. External fork code must not run
+on either self-hosted identity. Same-repository branches are a
 trusted-maintainer boundary because a maintainer who can edit workflow YAML can
 request either repository runner label.
 
@@ -44,6 +47,24 @@ until one-job ephemeral runners and external log retention are available.
 Workflow jobs must not use `sudo`, mutate apt repositories, or install system
 packages. Third-party actions must use full commit SHAs. Release permissions
 belong only to the publish job that needs them.
+
+## Release contract
+
+Supported executable builds are Linux only:
+
+- `x86_64-unknown-linux-musl`
+- `aarch64-unknown-linux-musl`
+- multi-architecture `linux/amd64,linux/arm64` OCI images
+
+`release-validation.yml` exercises these paths without publishing. It also
+validates the current scraper asset checksum and both WHMCS package streams.
+Tagged releases publish immutable `:vX.Y.Z` and `:X.Y.Z` image aliases first,
+smoke-test the immutable digest, promote `:latest` only after success, and create
+the GitHub Release only after the Docker and binary jobs pass.
+
+The optional CloakBrowser binary is downloaded by the runtime user on first use
+and is not embedded in the image. Persist `/home/contabo/.cloakbrowser` only when
+that cache is required.
 
 ## Services and paths
 
