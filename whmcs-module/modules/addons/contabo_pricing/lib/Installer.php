@@ -1837,7 +1837,7 @@ class Installer
         $defaults = [
             'provider_writes_enabled' => '0',
             'operation_batch_size' => '25',
-            'operation_lease_seconds' => '120',
+            'operation_lease_seconds' => '600',
             'suite_schema_version' => '2',
         ];
         foreach ($defaults as $key => $value) {
@@ -1997,15 +1997,21 @@ class Installer
 
         $now = date('Y-m-d H:i:s');
         foreach ([
+            'operation_lease_seconds' => '600',
             'operator_command_lease_seconds' => '300',
             'communication_lease_seconds' => '300',
         ] as $key => $value) {
-            if (Capsule::table('mod_securiacevps_schema')->where('key', $key)->value('value') === null) {
+            $current = Capsule::table('mod_securiacevps_schema')->where('key', $key)->value('value');
+            if ($current === null) {
                 Capsule::table('mod_securiacevps_schema')->insert([
                     'key' => $key,
                     'value' => $value,
                     'updated_at' => $now,
                 ]);
+            } elseif ($key === 'operation_lease_seconds' && (int) $current < 600) {
+                Capsule::table('mod_securiacevps_schema')
+                    ->where('key', $key)
+                    ->update(['value' => $value, 'updated_at' => $now]);
             }
         }
         Capsule::table('mod_securiacevps_schema')->updateOrInsert(

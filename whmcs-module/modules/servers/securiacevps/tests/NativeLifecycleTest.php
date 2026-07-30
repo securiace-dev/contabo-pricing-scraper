@@ -98,6 +98,70 @@ final class NativeLifecycleTest extends TestCase
         $this->assertSame('1999.00', Capsule::$tables['mod_securiacevps_billing_sagas'][0]['amount']);
     }
 
+    public function testCreatePreflightFailureDoesNotStrandSubmissionMarker(): void
+    {
+        for ($attempt = 0; $attempt < 4; $attempt++) {
+            $this->harness->http->queue(
+                'GET /v1/compute/instances?',
+                503,
+                ['message' => 'catalog temporarily unavailable']
+            );
+        }
+
+        $first = securiacevps_CreateAccount(Harness::params());
+
+        $this->assertStringContainsString('still in progress', $first);
+        $this->assertSame([], Capsule::$tables['mod_securiacevps_provider_requests']);
+        $this->assertCount(
+            0,
+            $this->harness->http->callsMatching(
+                'POST https://api.contabo.com/v1/compute/instances'
+            )
+        );
+
+        Capsule::$tables['mod_securiacevps_operations'][0]['next_attempt_at'] =
+            date('Y-m-d H:i:s', time() - 1);
+        $this->harness->http->stub(
+            'GET /v1/compute/instances?',
+            200,
+            ['data' => [], '_pagination' => ['totalElements' => 0]]
+        );
+        $this->harness->http->stub('GET /v1/secrets?', 200, ['data' => []]);
+        $this->harness->http->queue(
+            'POST /v1/secrets',
+            201,
+            ['data' => [['secretId' => 78]]]
+        );
+        $this->harness->http->queue('POST /v1/compute/instances', 201, [
+            'data' => [['instanceId' => 9003]],
+        ]);
+        $this->harness->http->stub('GET /v1/compute/instances/9003', 200, [
+            'data' => [[
+                'instanceId' => 9003,
+                'displayName' => 'whmcs-300 vps.example.com',
+                'status' => 'running',
+                'region' => 'EU',
+                'imageId' => 'image-1',
+                'createdDate' => '2026-07-30T00:00:00Z',
+                'ipConfig' => ['v4' => [['ip' => '203.0.113.30']]],
+            ]],
+        ]);
+
+        $second = securiacevps_CreateAccount(Harness::params());
+
+        $this->assertSame('success', $second);
+        $this->assertCount(
+            1,
+            $this->harness->http->callsMatching(
+                'POST https://api.contabo.com/v1/compute/instances'
+            )
+        );
+        $this->assertSame(
+            'reconciled',
+            Capsule::$tables['mod_securiacevps_provider_requests'][0]['state']
+        );
+    }
+
     public function testDelayedCreateCannotReactivateCancelledService(): void
     {
         Capsule::$tables['tblhosting'][0]['domainstatus'] = 'Cancelled';
@@ -174,6 +238,54 @@ final class NativeLifecycleTest extends TestCase
         );
 
         $this->assertSame('success', securiacevps_SuspendAccount(Harness::params()));
+        $this->assertSame('Suspended', Capsule::$tables['tblhosting'][0]['domainstatus']);
+        $this->assertCount(
+            1,
+            $this->harness->http->callsMatching(
+                'POST https://api.contabo.com/v1/compute/instances/9001/actions/stop'
+            )
+        );
+    }
+
+    public function testPowerPreflightFailureRetriesWithoutFalseSubmissionMarker(): void
+    {
+        Capsule::$tables['tblhosting'][0]['domainstatus'] = 'Active';
+        $this->harness->linkService('9001');
+        $this->seedVerifiedOwnership('9001');
+        $this->seedCapability('stop');
+        for ($attempt = 0; $attempt < 4; $attempt++) {
+            $this->harness->http->queue(
+                'GET /v1/compute/instances/9001',
+                503,
+                ['message' => 'provider temporarily unavailable']
+            );
+        }
+
+        $first = securiacevps_SuspendAccount(Harness::params());
+
+        $this->assertStringContainsString('still in progress', $first);
+        $this->assertSame([], Capsule::$tables['mod_securiacevps_provider_requests']);
+        $this->assertCount(
+            0,
+            $this->harness->http->callsMatching(
+                'POST https://api.contabo.com/v1/compute/instances/9001/actions/stop'
+            )
+        );
+
+        Capsule::$tables['mod_securiacevps_operations'][0]['next_attempt_at'] =
+            date('Y-m-d H:i:s', time() - 1);
+        $this->harness->http->stub('GET /v1/compute/instances/9001', 200, [
+            'data' => [$this->providerInstance('image-1', 'stopped')],
+        ]);
+        $this->harness->http->queue(
+            'POST /v1/compute/instances/9001/actions/stop',
+            200,
+            ['data' => []]
+        );
+
+        $second = securiacevps_SuspendAccount(Harness::params());
+
+        $this->assertSame('success', $second);
         $this->assertSame('Suspended', Capsule::$tables['tblhosting'][0]['domainstatus']);
         $this->assertCount(
             1,

@@ -57,13 +57,16 @@ final class InstanceService
      *
      * @param array<string,mixed> $params
      * @param array<string,mixed> $snapshotPayload
+     * @param callable|null $beforeMutation Invoked after preflight, immediately
+     *        before the customer-resource mutation.
      * @return array<string,mixed>
      */
     public function submitCreateFromSnapshot(
         array $params,
         array $snapshotPayload,
         string $requestIdentity,
-        string $operationUuid
+        string $operationUuid,
+        ?callable $beforeMutation = null
     ): array {
         $serviceId = (int) ($params['serviceid'] ?? 0);
         $productId = (int) ($params['pid'] ?? ($params['packageid'] ?? 0));
@@ -123,6 +126,9 @@ final class InstanceService
                 : '',
         ];
         $body = $this->mapper->mapCreate($sealedParams, [], $secretId);
+        if ($beforeMutation !== null) {
+            $beforeMutation();
+        }
         $resp = $this->client->postWithIdentity('/v1/compute/instances', $body, $requestIdentity);
         $instanceId = trim((string) ($resp['data'][0]['instanceId'] ?? ''));
         if ($instanceId === '') {
@@ -234,8 +240,12 @@ final class InstanceService
     }
 
     /** @param array<string,mixed> $params */
-    public function submitPowerWithIdentity(array $params, string $action, string $requestIdentity): void
-    {
+    public function submitPowerWithIdentity(
+        array $params,
+        string $action,
+        string $requestIdentity,
+        ?callable $beforeMutation = null
+    ): void {
         if (!in_array($action, ['start', 'stop', 'restart', 'shutdown'], true)) {
             throw new ContaboProvisioningException('Unsupported power action');
         }
@@ -248,6 +258,9 @@ final class InstanceService
                 'resource_ownership_mismatch',
                 'manual_review'
             );
+        }
+        if ($beforeMutation !== null) {
+            $beforeMutation();
         }
         $this->client->postWithIdentity(
             '/v1/compute/instances/' . rawurlencode($instanceId) . '/actions/' . $action,
@@ -265,7 +278,8 @@ final class InstanceService
     public function submitPasswordResetWithIdentity(
         array $params,
         string $requestIdentity,
-        string $operationUuid
+        string $operationUuid,
+        ?callable $beforeMutation = null
     ): array {
         $serviceId = (int) ($params['serviceid'] ?? 0);
         $instanceId = $this->verifiedInstanceId($params);
@@ -275,6 +289,9 @@ final class InstanceService
             $operationUuid
         );
         $secretId = $this->secrets->ensureRootPasswordSecret($serviceId, $prepared['plaintext']);
+        if ($beforeMutation !== null) {
+            $beforeMutation();
+        }
         $this->client->postWithIdentity(
             '/v1/compute/instances/' . rawurlencode($instanceId) . '/actions/resetPassword',
             ['rootPassword' => $secretId],
@@ -295,7 +312,8 @@ final class InstanceService
         array $params,
         array $snapshotPayload,
         string $requestIdentity,
-        string $operationUuid
+        string $operationUuid,
+        ?callable $beforeMutation = null
     ): array {
         $serviceId = (int) ($params['serviceid'] ?? 0);
         $instanceId = $this->verifiedInstanceId($params);
@@ -326,6 +344,9 @@ final class InstanceService
             : [];
         if (!empty($configuration['cloud_init'])) {
             $body['userData'] = (string) $configuration['cloud_init'];
+        }
+        if ($beforeMutation !== null) {
+            $beforeMutation();
         }
         $this->client->putWithIdentity(
             '/v1/compute/instances/' . rawurlencode($instanceId),
@@ -435,8 +456,11 @@ final class InstanceService
     }
 
     /** @param array<string,mixed> $params */
-    public function submitTerminateWithIdentity(array $params, string $requestIdentity): bool
-    {
+    public function submitTerminateWithIdentity(
+        array $params,
+        string $requestIdentity,
+        ?callable $beforeMutation = null
+    ): bool {
         $serviceId = (int) ($params['serviceid'] ?? 0);
         $instanceId = $this->requireInstanceId($params);
         $owned = $this->linker->verifyOwnership($this->client, $instanceId, $serviceId);
@@ -449,6 +473,9 @@ final class InstanceService
                 'resource_ownership_mismatch',
                 'manual_review'
             );
+        }
+        if ($beforeMutation !== null) {
+            $beforeMutation();
         }
         $this->client->postWithIdentity(
             '/v1/compute/instances/' . rawurlencode($instanceId) . '/cancel',
@@ -565,12 +592,16 @@ final class InstanceService
     public function submitSnapshotCreateWithIdentity(
         array $params,
         array $payload,
-        string $requestIdentity
+        string $requestIdentity,
+        ?callable $beforeMutation = null
     ): array {
         $instanceId = $this->verifiedInstanceId($params);
         $body = ['name' => (string) ($payload['name'] ?? '')];
         if (trim((string) ($payload['description'] ?? '')) !== '') {
             $body['description'] = (string) $payload['description'];
+        }
+        if ($beforeMutation !== null) {
+            $beforeMutation();
         }
         return $this->client->postWithIdentity(
             '/v1/compute/instances/' . rawurlencode($instanceId) . '/snapshots',
@@ -583,10 +614,14 @@ final class InstanceService
     public function submitSnapshotDeleteWithIdentity(
         array $params,
         string $snapshotId,
-        string $requestIdentity
+        string $requestIdentity,
+        ?callable $beforeMutation = null
     ): void {
         $instanceId = $this->verifiedInstanceId($params);
         $this->assertSnapshotId($snapshotId);
+        if ($beforeMutation !== null) {
+            $beforeMutation();
+        }
         $this->client->deleteWithIdentity(
             '/v1/compute/instances/' . rawurlencode($instanceId)
                 . '/snapshots/' . rawurlencode($snapshotId),
@@ -598,10 +633,14 @@ final class InstanceService
     public function submitSnapshotRollbackWithIdentity(
         array $params,
         string $snapshotId,
-        string $requestIdentity
+        string $requestIdentity,
+        ?callable $beforeMutation = null
     ): void {
         $instanceId = $this->verifiedInstanceId($params);
         $this->assertSnapshotId($snapshotId);
+        if ($beforeMutation !== null) {
+            $beforeMutation();
+        }
         $this->client->postWithIdentity(
             '/v1/compute/instances/' . rawurlencode($instanceId)
                 . '/snapshots/' . rawurlencode($snapshotId) . '/rollback',

@@ -145,6 +145,11 @@ final class NativeFoundationTest extends TestCase
         $first = $repo->claim((string) $operation['operation_uuid'], 'worker-one', 120);
 
         $this->assertNotNull($first);
+        $this->assertGreaterThanOrEqual(
+            time() + 590,
+            strtotime((string) $first['lease_expires_at']),
+            'the bounded provider-call budget requires a ten-minute minimum lease'
+        );
         $this->assertNull(
             $repo->claim((string) $operation['operation_uuid'], 'worker-two', 120),
             'an unexpired lease must block a second claim even for the same operation'
@@ -176,6 +181,56 @@ final class NativeFoundationTest extends TestCase
             ),
             'the expired worker fencing token must no longer be able to write'
         );
+    }
+
+    public function testActiveWorkerCanRenewLeaseBeforeProviderMutation(): void
+    {
+        $repo = new OperationRepository();
+        $operation = $repo->accept(
+            44,
+            'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+            'provider-account',
+            'create',
+            ['sku_id' => 'V45']
+        );
+        $claimed = $repo->claim(
+            (string) $operation['operation_uuid'],
+            'worker-one',
+            120
+        );
+        $this->assertNotNull($claimed);
+
+        $nearExpiry = date('Y-m-d H:i:s', time() + 5);
+        Capsule::table('mod_securiacevps_operations')
+            ->where('operation_uuid', (string) $operation['operation_uuid'])
+            ->update(['lease_expires_at' => $nearExpiry]);
+        Capsule::table('mod_securiacevps_service_locks')
+            ->where('service_id', 44)
+            ->update(['lease_expires_at' => $nearExpiry]);
+
+        $this->assertTrue($repo->renew(
+            (string) $operation['operation_uuid'],
+            44,
+            (int) $claimed['fencing_token'],
+            'worker-one',
+            120
+        ));
+        $renewed = $repo->byUuid((string) $operation['operation_uuid']);
+        $this->assertGreaterThanOrEqual(
+            time() + 590,
+            strtotime((string) $renewed['lease_expires_at'])
+        );
+        $this->assertSame([], $repo->due(10));
+        $this->assertNull(
+            $repo->claim((string) $operation['operation_uuid'], 'worker-two', 120)
+        );
+        $this->assertFalse($repo->renew(
+            (string) $operation['operation_uuid'],
+            44,
+            (int) $claimed['fencing_token'],
+            'worker-two',
+            120
+        ));
     }
 
     public function testNewLifecycleIntentSupersedesAndFencesClaimedOlderIntent(): void

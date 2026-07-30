@@ -7,6 +7,8 @@ use WHMCS\Database\Capsule;
 
 final class OperationRepository
 {
+    public const MIN_LEASE_SECONDS = 600;
+
     /** @var list<string> */
     private const TERMINAL_STATES = [
         'succeeded',
@@ -239,7 +241,7 @@ final class OperationRepository
      *
      * @return array<string,mixed>|null
      */
-    public function claim(string $uuid, string $worker, int $leaseSeconds = 120): ?array
+    public function claim(string $uuid, string $worker, int $leaseSeconds = self::MIN_LEASE_SECONDS): ?array
     {
         $op = $this->byUuid($uuid);
         $lockName = 'securiacevps:' . (int) $op['service_id'];
@@ -276,7 +278,10 @@ final class OperationRepository
                 return null;
             }
             $token = $lock === null ? 1 : ((int) ($lock['fencing_token'] ?? 0)) + 1;
-            $expires = date('Y-m-d H:i:s', time() + max(30, $leaseSeconds));
+            $expires = date(
+                'Y-m-d H:i:s',
+                time() + max(self::MIN_LEASE_SECONDS, $leaseSeconds)
+            );
             Capsule::table('mod_securiacevps_service_locks')->updateOrInsert(
                 ['service_id' => $serviceId],
                 [
@@ -303,6 +308,83 @@ final class OperationRepository
                 $connection->select('SELECT RELEASE_LOCK(?) AS released', [$lockName]);
             }
         }
+    }
+
+    /**
+     * Extend an active operation and service lease only while the same worker
+     * still owns the same fencing generation. An expired lease is never
+     * revived: another worker may already be eligible to claim it.
+     */
+    public function renew(
+        string $uuid,
+        int $serviceId,
+        int $fencingToken,
+        string $worker,
+        int $leaseSeconds = self::MIN_LEASE_SECONDS
+    ): bool {
+        $now = date('Y-m-d H:i:s');
+        $expires = date(
+            'Y-m-d H:i:s',
+            time() + max(self::MIN_LEASE_SECONDS, $leaseSeconds)
+        );
+
+        return Capsule::connection()->transaction(function () use (
+            $uuid,
+            $serviceId,
+            $fencingToken,
+            $worker,
+            $now,
+            $expires
+        ): bool {
+            $operationQuery = Capsule::table('mod_securiacevps_operations')
+                ->where('operation_uuid', $uuid)
+                ->where('service_id', $serviceId)
+                ->where('fencing_token', $fencingToken)
+                ->where('lease_owner', $worker)
+                ->where('lease_expires_at', '>=', $now);
+            if (method_exists($operationQuery, 'lockForUpdate')) {
+                $operationQuery->lockForUpdate();
+            }
+            if ($operationQuery->first() === null) {
+                return false;
+            }
+
+            $serviceLockQuery = Capsule::table('mod_securiacevps_service_locks')
+                ->where('service_id', $serviceId)
+                ->where('operation_uuid', $uuid)
+                ->where('fencing_token', $fencingToken)
+                ->where('lease_owner', $worker)
+                ->where('lease_expires_at', '>=', $now);
+            if (method_exists($serviceLockQuery, 'lockForUpdate')) {
+                $serviceLockQuery->lockForUpdate();
+            }
+            if ($serviceLockQuery->first() === null) {
+                return false;
+            }
+
+            $operationUpdated = Capsule::table('mod_securiacevps_operations')
+                ->where('operation_uuid', $uuid)
+                ->where('service_id', $serviceId)
+                ->where('fencing_token', $fencingToken)
+                ->where('lease_owner', $worker)
+                ->where('lease_expires_at', '>=', $now)
+                ->update([
+                    'lease_expires_at' => $expires,
+                    'updated_at' => $now,
+                ]);
+            $lockUpdated = Capsule::table('mod_securiacevps_service_locks')
+                ->where('service_id', $serviceId)
+                ->where('operation_uuid', $uuid)
+                ->where('fencing_token', $fencingToken)
+                ->where('lease_owner', $worker)
+                ->where('lease_expires_at', '>=', $now)
+                ->update([
+                    'lease_expires_at' => $expires,
+                    'updated_at' => $now,
+                ]);
+
+            return (int) $operationUpdated === 1 && (int) $lockUpdated === 1;
+        });
     }
 
     /**

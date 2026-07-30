@@ -18,6 +18,9 @@ retained only as a delegation shim for phased service reassignment.
 - Retries transient responses only for reads. A mutation that receives a
   transport, rate-limit, or 5xx ambiguity returns immediately to durable
   reconciliation instead of being replayed inside the HTTP client.
+- Completes provider ownership and request preflight before persisting the
+  provider-effect marker, and renews a ten-minute minimum fenced lease
+  immediately before each effect so an expired worker cannot submit.
 - Keeps WHMCS Pending until create readiness is read back and verified; changes
   commercial lifecycle state only after the provider effect is verified.
 - Serializes commercial intents on the WHMCS service row, fences and supersedes

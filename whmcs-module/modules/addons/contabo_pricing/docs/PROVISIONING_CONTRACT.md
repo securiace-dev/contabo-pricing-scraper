@@ -162,6 +162,13 @@ Rules:
 13. A newer create/suspend/unsuspend/terminate intent supersedes and fences
     older non-terminal commercial intents. Projection is serialized on the
     WHMCS service row and accepts only the documented predecessor state.
+14. Read-only ownership and request preflight completes before the durable
+    provider-effect marker is written. A failed preflight therefore remains
+    safely retryable instead of suppressing a mutation that was never sent.
+15. Operation leases have a ten-minute minimum and are renewed before provider
+    phases and immediately before a provider effect. Renewal requires the same
+    worker, operation, service, and fencing token; an expired lease is never
+    revived.
 
 WHMCS cron claims bounded due work, polls provider requests, classifies retries,
 releases expired leases, reconciles ambiguity, progresses cancellation, and
@@ -178,8 +185,9 @@ reclaimed without allowing its later completion write to win.
    global/capability write switches.
 2. Load and verify the sealed snapshot and its published mapping hashes.
 3. Create or return the deterministic create operation.
-4. Submit only if no equivalent provider request or adopted resource exists.
-5. Persist the request reference before progressing.
+4. Complete ownership, tag, snapshot, and request preflight.
+5. Submit only if no equivalent provider request or adopted resource exists,
+   persisting the request reference immediately before the provider effect.
 6. Verify resource identity, strict tag, configuration, and readiness.
 7. Return `success` only after the verified result has been persisted and the
    service is Active.

@@ -53,6 +53,7 @@ final class OperationProcessor
         $startedAt = date('Y-m-d H:i:s');
 
         try {
+            $this->renewLeaseOrFail($operation);
             $this->capabilities->assertWriteAllowed(
                 (string) $operation['provider_account_id'],
                 $this->capabilityForOperation($type)
@@ -332,37 +333,13 @@ final class OperationProcessor
         }
 
         if ($resourceId === '') {
-            if ($providerRequest !== null && (string) ($providerRequest['state'] ?? '') === 'rejected') {
-                Capsule::table('mod_securiacevps_provider_requests')
-                    ->where('operation_uuid', $uuid)
-                    ->update([
-                        'state' => 'submitting',
-                        'unknown_outcome' => 1,
-                        'submitted_at' => date('Y-m-d H:i:s'),
-                        'last_checked_at' => null,
-                        'updated_at' => date('Y-m-d H:i:s'),
-                    ]);
-            } else {
-                Capsule::table('mod_securiacevps_provider_requests')->insert([
-                    'operation_uuid' => $uuid,
-                    'provider_request_id' => null,
-                    'request_fingerprint' => (string) $operation['request_fingerprint'],
-                    'idempotency_key' => $requestIdentity,
-                    'state' => 'submitting',
-                    'provider_resource_id' => null,
-                    'unknown_outcome' => 1,
-                    'submitted_at' => date('Y-m-d H:i:s'),
-                    'last_checked_at' => null,
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s'),
-                ]);
-            }
             try {
                 $result = $instances->submitCreateFromSnapshot(
                     $params,
                     $payload,
                     $requestIdentity,
-                    $uuid
+                    $uuid,
+                    $this->beforeProviderMutation($operation)
                 );
             } catch (ContaboProvisioningException $e) {
                 if ($e->hasAmbiguousOutcome()) {
@@ -442,6 +419,14 @@ final class OperationProcessor
                 'created_at' => date('Y-m-d H:i:s'),
             ]
         );
+        Capsule::table('mod_securiacevps_provider_requests')
+            ->where('operation_uuid', $uuid)
+            ->update([
+                'state' => 'reconciled',
+                'unknown_outcome' => 0,
+                'last_checked_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
         $this->operations->transition($uuid, $token, 'succeeded', [
             'reconciled_at' => date('Y-m-d H:i:s'),
             'completed_at' => date('Y-m-d H:i:s'),
@@ -488,42 +473,20 @@ final class OperationProcessor
         }
 
         if ($marker === null || $markerState === 'rejected') {
-            $markerValues = [
-                'state' => 'submitting',
-                'provider_resource_id' => (string) ($operation['provider_resource_id'] ?? ''),
-                'unknown_outcome' => 1,
-                'submitted_at' => date('Y-m-d H:i:s'),
-                'last_checked_at' => null,
-                'updated_at' => date('Y-m-d H:i:s'),
-            ];
-            if ($marker === null) {
-                Capsule::table('mod_securiacevps_provider_requests')->insert(array_merge(
-                    [
-                        'operation_uuid' => $uuid,
-                        'provider_request_id' => null,
-                        'request_fingerprint' => (string) $operation['request_fingerprint'],
-                        'idempotency_key' => (string) $operation['idempotency_key'],
-                        'created_at' => date('Y-m-d H:i:s'),
-                    ],
-                    $markerValues
-                ));
-            } else {
-                Capsule::table('mod_securiacevps_provider_requests')
-                    ->where('operation_uuid', $uuid)
-                    ->update($markerValues);
-            }
             try {
                 $result = $type === 'reset_password'
                     ? $instances->submitPasswordResetWithIdentity(
                         $params,
                         (string) $operation['idempotency_key'],
-                        $uuid
+                        $uuid,
+                        $this->beforeProviderMutation($operation)
                     )
                     : $instances->submitReinstallWithIdentity(
                         $params,
                         $payload,
                         (string) $operation['idempotency_key'],
-                        $uuid
+                        $uuid,
+                        $this->beforeProviderMutation($operation)
                     );
             } catch (ContaboProvisioningException $e) {
                 Capsule::table('mod_securiacevps_provider_requests')
@@ -614,27 +577,22 @@ final class OperationProcessor
         $type = (string) $operation['operation_type'];
         $desired = in_array($type, ['suspend', 'stop'], true) ? 'stopped' : 'running';
         $action = $type === 'suspend' ? 'stop' : ($type === 'unsuspend' ? 'start' : $type);
-        $providerRequest = Capsule::table('mod_securiacevps_provider_requests')
+        $providerRequestObject = Capsule::table('mod_securiacevps_provider_requests')
             ->where('operation_uuid', $uuid)
             ->first();
-        if ($providerRequest === null) {
-            Capsule::table('mod_securiacevps_provider_requests')->insert([
-                'operation_uuid' => $uuid,
-                'provider_request_id' => null,
-                'request_fingerprint' => (string) $operation['request_fingerprint'],
-                'idempotency_key' => (string) $operation['idempotency_key'],
-                'state' => 'submitting',
-                'provider_resource_id' => (string) ($operation['provider_resource_id'] ?? ''),
-                'unknown_outcome' => 1,
-                'submitted_at' => date('Y-m-d H:i:s'),
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
-            $instances->submitPowerWithIdentity(
-                $params,
-                $action,
-                (string) $operation['idempotency_key']
-            );
+        $providerRequest = $providerRequestObject !== null ? (array) $providerRequestObject : null;
+        if ($providerRequest === null || (string) ($providerRequest['state'] ?? '') === 'rejected') {
+            try {
+                $instances->submitPowerWithIdentity(
+                    $params,
+                    $action,
+                    (string) $operation['idempotency_key'],
+                    $this->beforeProviderMutation($operation)
+                );
+            } catch (ContaboProvisioningException $e) {
+                $this->markProviderMutationFailure($operation, $e);
+                throw $e;
+            }
             Capsule::table('mod_securiacevps_provider_requests')
                 ->where('operation_uuid', $uuid)
                 ->update(['state' => 'accepted', 'unknown_outcome' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
@@ -665,33 +623,25 @@ final class OperationProcessor
     {
         $uuid = (string) $operation['operation_uuid'];
         $token = (int) $operation['fencing_token'];
-        $providerRequest = Capsule::table('mod_securiacevps_provider_requests')
+        $providerRequestObject = Capsule::table('mod_securiacevps_provider_requests')
             ->where('operation_uuid', $uuid)
             ->first();
-        if ($providerRequest === null) {
-            Capsule::table('mod_securiacevps_provider_requests')->insert([
-                'operation_uuid' => $uuid,
-                'provider_request_id' => null,
-                'request_fingerprint' => (string) $operation['request_fingerprint'],
-                'idempotency_key' => (string) $operation['idempotency_key'],
-                'state' => 'submitting',
-                'provider_resource_id' => (string) ($operation['provider_resource_id'] ?? ''),
-                'unknown_outcome' => 1,
-                'submitted_at' => date('Y-m-d H:i:s'),
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
-            $submitted = $instances->submitTerminateWithIdentity(
-                $params,
-                (string) $operation['idempotency_key']
+        $providerRequest = $providerRequestObject !== null ? (array) $providerRequestObject : null;
+        if ($providerRequest === null || (string) ($providerRequest['state'] ?? '') === 'rejected') {
+            try {
+                $submitted = $instances->submitTerminateWithIdentity(
+                    $params,
+                    (string) $operation['idempotency_key'],
+                    $this->beforeProviderMutation($operation)
+                );
+            } catch (ContaboProvisioningException $e) {
+                $this->markProviderMutationFailure($operation, $e);
+                throw $e;
+            }
+            $this->recordProviderResolution(
+                $operation,
+                $submitted ? 'accepted' : 'already_absent'
             );
-            Capsule::table('mod_securiacevps_provider_requests')
-                ->where('operation_uuid', $uuid)
-                ->update([
-                    'state' => $submitted ? 'accepted' : 'already_absent',
-                    'unknown_outcome' => 0,
-                    'updated_at' => date('Y-m-d H:i:s'),
-                ]);
         }
         if (!$instances->verifyAbsent($params)) {
             $this->schedule($operation, 'provider_pending', null, 'deletion_pending', false, 300);
@@ -745,44 +695,45 @@ final class OperationProcessor
         $type = (string) $operation['operation_type'];
         $requestIdentity = (string) $operation['idempotency_key'];
         $snapshotId = trim((string) ($payload['snapshot_id'] ?? ''));
-        $providerRequest = Capsule::table('mod_securiacevps_provider_requests')
+        $providerRequestObject = Capsule::table('mod_securiacevps_provider_requests')
             ->where('operation_uuid', $uuid)
             ->first();
+        $providerRequest = $providerRequestObject !== null ? (array) $providerRequestObject : null;
 
-        if ($providerRequest === null) {
-            $now = date('Y-m-d H:i:s');
-            Capsule::table('mod_securiacevps_provider_requests')->insert([
-                'operation_uuid' => $uuid,
-                'provider_request_id' => ContaboApiClient::requestIdForIdentity($requestIdentity),
-                'request_fingerprint' => (string) $operation['request_fingerprint'],
-                'idempotency_key' => $requestIdentity,
-                'state' => 'submitting',
-                'provider_resource_id' => $snapshotId !== '' ? $snapshotId : null,
-                'unknown_outcome' => 1,
-                'submitted_at' => $now,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
+        if ($providerRequest === null || (string) ($providerRequest['state'] ?? '') === 'rejected') {
             $response = [];
-            if ($type === 'snapshot_create') {
-                $response = $instances->submitSnapshotCreateWithIdentity(
-                    $params,
-                    $payload,
-                    $requestIdentity
-                );
-                $snapshotId = trim((string) ($response['data'][0]['snapshotId'] ?? ''));
-            } elseif ($type === 'snapshot_delete') {
-                $instances->submitSnapshotDeleteWithIdentity(
-                    $params,
-                    $snapshotId,
-                    $requestIdentity
-                );
-            } else {
-                $instances->submitSnapshotRollbackWithIdentity(
-                    $params,
-                    $snapshotId,
-                    $requestIdentity
-                );
+            $beforeMutation = $this->beforeProviderMutation(
+                $operation,
+                $snapshotId !== '' ? $snapshotId : null,
+                ContaboApiClient::requestIdForIdentity($requestIdentity)
+            );
+            try {
+                if ($type === 'snapshot_create') {
+                    $response = $instances->submitSnapshotCreateWithIdentity(
+                        $params,
+                        $payload,
+                        $requestIdentity,
+                        $beforeMutation
+                    );
+                    $snapshotId = trim((string) ($response['data'][0]['snapshotId'] ?? ''));
+                } elseif ($type === 'snapshot_delete') {
+                    $instances->submitSnapshotDeleteWithIdentity(
+                        $params,
+                        $snapshotId,
+                        $requestIdentity,
+                        $beforeMutation
+                    );
+                } else {
+                    $instances->submitSnapshotRollbackWithIdentity(
+                        $params,
+                        $snapshotId,
+                        $requestIdentity,
+                        $beforeMutation
+                    );
+                }
+            } catch (ContaboProvisioningException $e) {
+                $this->markProviderMutationFailure($operation, $e);
+                throw $e;
             }
             Capsule::table('mod_securiacevps_provider_requests')
                 ->where('operation_uuid', $uuid)
@@ -797,11 +748,14 @@ final class OperationProcessor
                 'provider_resource_id' => $snapshotId !== '' ? $snapshotId : null,
                 'unknown_outcome' => 0,
             ]);
-            $providerRequest = Capsule::table('mod_securiacevps_provider_requests')
+            $providerRequestObject = Capsule::table('mod_securiacevps_provider_requests')
                 ->where('operation_uuid', $uuid)
                 ->first();
+            $providerRequest = $providerRequestObject !== null
+                ? (array) $providerRequestObject
+                : null;
         }
-        $providerRequest = $providerRequest !== null ? (array) $providerRequest : [];
+        $providerRequest = $providerRequest !== null ? $providerRequest : [];
         if ($snapshotId === '') {
             $snapshotId = trim((string) ($providerRequest['provider_resource_id'] ?? ''));
         }
@@ -896,6 +850,151 @@ final class OperationProcessor
                 'unknown_outcome' => 0,
             ]
         );
+    }
+
+    /**
+     * Return a hook which InstanceService invokes only after all read-only
+     * ownership and request preflight has completed. Renewing the lease before
+     * writing the marker prevents an expired worker from reaching the provider.
+     *
+     * @param array<string,mixed> $operation
+     * @return callable():void
+     */
+    private function beforeProviderMutation(
+        array $operation,
+        ?string $providerResourceId = null,
+        ?string $providerRequestId = null
+    ): callable {
+        return function () use (
+            $operation,
+            $providerResourceId,
+            $providerRequestId
+        ): void {
+            $this->renewLeaseOrFail($operation);
+            $now = date('Y-m-d H:i:s');
+            $uuid = (string) $operation['operation_uuid'];
+            $existing = Capsule::table('mod_securiacevps_provider_requests')
+                ->where('operation_uuid', $uuid)
+                ->first();
+            $values = [
+                'provider_request_id' => $providerRequestId !== null
+                    ? $providerRequestId
+                    : ContaboApiClient::requestIdForIdentity(
+                        (string) $operation['idempotency_key']
+                    ),
+                'state' => 'submitting',
+                'provider_resource_id' => $providerResourceId !== null
+                    ? $providerResourceId
+                    : (string) ($operation['provider_resource_id'] ?? ''),
+                'unknown_outcome' => 1,
+                'submitted_at' => $now,
+                'last_checked_at' => null,
+                'updated_at' => $now,
+            ];
+            if ($existing === null) {
+                Capsule::table('mod_securiacevps_provider_requests')->insert(array_merge(
+                    [
+                        'operation_uuid' => $uuid,
+                        'request_fingerprint' => (string) $operation['request_fingerprint'],
+                        'idempotency_key' => (string) $operation['idempotency_key'],
+                        'created_at' => $now,
+                    ],
+                    $values
+                ));
+                return;
+            }
+            $updated = Capsule::table('mod_securiacevps_provider_requests')
+                ->where('operation_uuid', $uuid)
+                ->where('state', 'rejected')
+                ->update($values);
+            if ((int) $updated !== 1) {
+                throw new ContaboProvisioningException(
+                    'A provider submission marker already exists for this operation',
+                    'provider_submission_already_started',
+                    'manual_review'
+                );
+            }
+        };
+    }
+
+    /**
+     * @param array<string,mixed> $operation
+     */
+    private function markProviderMutationFailure(
+        array $operation,
+        ContaboProvisioningException $error
+    ): void {
+        Capsule::table('mod_securiacevps_provider_requests')
+            ->where('operation_uuid', (string) $operation['operation_uuid'])
+            ->update([
+                'state' => $error->hasAmbiguousOutcome() ? 'unknown_outcome' : 'rejected',
+                'unknown_outcome' => $error->hasAmbiguousOutcome() ? 1 : 0,
+                'last_checked_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+    }
+
+    /**
+     * Persist a verified no-op result such as an already-absent resource. The
+     * mutation hook is not invoked for these paths because no provider effect
+     * was submitted.
+     *
+     * @param array<string,mixed> $operation
+     */
+    private function recordProviderResolution(array $operation, string $state): void
+    {
+        $uuid = (string) $operation['operation_uuid'];
+        $now = date('Y-m-d H:i:s');
+        $existing = Capsule::table('mod_securiacevps_provider_requests')
+            ->where('operation_uuid', $uuid)
+            ->first();
+        $values = [
+            'state' => $state,
+            'provider_resource_id' => (string) ($operation['provider_resource_id'] ?? ''),
+            'unknown_outcome' => 0,
+            'last_checked_at' => $now,
+            'updated_at' => $now,
+        ];
+        if ($existing === null) {
+            Capsule::table('mod_securiacevps_provider_requests')->insert(array_merge(
+                [
+                    'operation_uuid' => $uuid,
+                    'provider_request_id' => null,
+                    'request_fingerprint' => (string) $operation['request_fingerprint'],
+                    'idempotency_key' => (string) $operation['idempotency_key'],
+                    'submitted_at' => null,
+                    'created_at' => $now,
+                ],
+                $values
+            ));
+            return;
+        }
+        Capsule::table('mod_securiacevps_provider_requests')
+            ->where('operation_uuid', $uuid)
+            ->update($values);
+    }
+
+    /** @param array<string,mixed> $operation */
+    private function renewLeaseOrFail(array $operation): void
+    {
+        $worker = trim((string) ($operation['lease_owner'] ?? ''));
+        $renewed = $worker !== '' && $this->operations->renew(
+            (string) $operation['operation_uuid'],
+            (int) $operation['service_id'],
+            (int) $operation['fencing_token'],
+            $worker,
+            (int) SchemaGuard::setting(
+                'operation_lease_seconds',
+                (string) OperationRepository::MIN_LEASE_SECONDS
+            )
+        );
+        if (!$renewed) {
+            throw new ContaboProvisioningException(
+                'The provisioning worker no longer owns the operation lease',
+                'operation_lease_lost',
+                'manual_review'
+            );
+        }
     }
 
     /**

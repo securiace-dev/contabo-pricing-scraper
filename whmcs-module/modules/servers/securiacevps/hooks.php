@@ -175,7 +175,10 @@ function _securiacevps_process_operations(): void
             $claimed = $repo->claim(
                 (string) $operation['operation_uuid'],
                 $worker,
-                (int) \SecuriAceVps\SchemaGuard::setting('operation_lease_seconds', '120')
+                (int) \SecuriAceVps\SchemaGuard::setting(
+                    'operation_lease_seconds',
+                    (string) \SecuriAceVps\OperationRepository::MIN_LEASE_SECONDS
+                )
             );
             if ($claimed === null) {
                 continue;

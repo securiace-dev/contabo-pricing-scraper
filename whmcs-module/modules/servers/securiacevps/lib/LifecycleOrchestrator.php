@@ -208,7 +208,10 @@ final class LifecycleOrchestrator
         $claimed = $this->operations->claim(
             (string) $operation['operation_uuid'],
             $worker,
-            (int) SchemaGuard::setting('operation_lease_seconds', '120')
+            (int) SchemaGuard::setting(
+                'operation_lease_seconds',
+                (string) OperationRepository::MIN_LEASE_SECONDS
+            )
         );
         if ($claimed !== null) {
             $operation = $this->progressClaimed($claimed, $params);
