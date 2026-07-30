@@ -1,16 +1,16 @@
 # Graph Report - contabo-pricing-scraper-whmcs-native  (2026-07-30)
 
 ## Corpus Check
-- 238 files · ~214,043 words
+- 239 files · ~215,958 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3063 nodes · 5653 edges · 217 communities (133 shown, 84 thin omitted)
-- Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 836 edges (avg confidence: 0.8)
+- 3080 nodes · 5699 edges · 220 communities (137 shown, 83 thin omitted)
+- Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 854 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fcee6f59`
+- Built from commit: `2400b9df`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -106,6 +106,7 @@
 - [[_COMMUNITY_Community 89|Community 89]]
 - [[_COMMUNITY_Community 90|Community 90]]
 - [[_COMMUNITY_Community 91|Community 91]]
+- [[_COMMUNITY_Community 92|Community 92]]
 - [[_COMMUNITY_Community 93|Community 93]]
 - [[_COMMUNITY_Community 94|Community 94]]
 - [[_COMMUNITY_Community 95|Community 95]]
@@ -169,7 +170,6 @@
 - [[_COMMUNITY_Community 154|Community 154]]
 - [[_COMMUNITY_Community 155|Community 155]]
 - [[_COMMUNITY_Community 156|Community 156]]
-- [[_COMMUNITY_Community 157|Community 157]]
 - [[_COMMUNITY_Community 158|Community 158]]
 - [[_COMMUNITY_Community 159|Community 159]]
 - [[_COMMUNITY_Community 160|Community 160]]
@@ -220,16 +220,19 @@
 - [[_COMMUNITY_Community 213|Community 213]]
 - [[_COMMUNITY_Community 215|Community 215]]
 - [[_COMMUNITY_Community 216|Community 216]]
+- [[_COMMUNITY_Community 217|Community 217]]
+- [[_COMMUNITY_Community 218|Community 218]]
+- [[_COMMUNITY_Community 219|Community 219]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `Capsule` - 346 edges
+1. `Capsule` - 352 edges
 2. `AdminController` - 97 edges
 3. `$()` - 56 edges
 4. `CycleSet` - 53 edges
 5. `InstanceService` - 35 edges
-6. `self` - 29 edges
-7. `ExposureResolver` - 28 edges
-8. `NativeLifecycleTest` - 28 edges
+6. `self` - 30 edges
+7. `NativeLifecycleTest` - 29 edges
+8. `ExposureResolver` - 28 edges
 9. `DimensionParser` - 26 edges
 10. `ProfileIdentityResolver` - 26 edges
 
@@ -265,7 +268,7 @@
 - **Fail-closed pre-deploy gate sequence** — predeploy_gate, php74_lint, live_schema_smoke, integration_smoke, fake_capsule [EXTRACTED 1.00]
 - **Configurable-options exposure flow** — expose_configurable_options_gate, config_apply_action, configurable_options_syncer, exposure_resolver, whmcs_config_options_adapter [INFERRED 0.80]
 
-## Communities (217 total, 84 thin omitted)
+## Communities (220 total, 83 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.12
@@ -288,16 +291,16 @@ Cohesion: 0.07
 Nodes (63): Command, Error, Command, ScrapeArgs, Ok, S, ScrapeArgs, asia_iso_code() (+55 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.08
+Cohesion: 0.07
 Nodes (8): CapsuleConnection, CapsuleQuery, CapsuleSchema, Blueprint, CapsuleConnection, CapsuleQuery, CapsuleSchema, self
 
 ### Community 6 - "Community 6"
 Cohesion: 0.07
-Nodes (4): DimensionParser, OptionTypeMapper, DimensionParserTest, OptionTypeMapperTest
+Nodes (4): ImageOptionNormalizer, OptionTypeMapper, ImageOptionNormalizerTest, OptionTypeMapperTest
 
 ### Community 7 - "Community 7"
 Cohesion: 0.05
-Nodes (10): CapsuleConnection, CapsuleQuery, CapsuleSchema, AuditLog, ConfigOptionLinkRepository, Installer, TaxRuleManager, CurrencySupportReportTest (+2 more)
+Nodes (12): CapsuleConnection, CapsuleQuery, CapsuleSchema, AuditLog, ConfigOptionLinkRepository, ConfigOptionResolver, Installer, OneTimeSecretStore (+4 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.07
@@ -306,10 +309,6 @@ Nodes (4): ExposureResolver, RetailVpsMinimalPreset, ExposureResolverTest, Retai
 ### Community 9 - "Community 9"
 Cohesion: 0.06
 Nodes (8): MarginCalculator, RenewalEngine, TaxModeEngine, MarginMathTest, DateTimeImmutable, PolicyResolver, ServiceConfigSnapshot, ServiceRevenueResolver
-
-### Community 10 - "Community 10"
-Cohesion: 0.09
-Nodes (7): CycleNormalizer, ScheduledChangeProcessor, SyncEngine, DateTimeImmutable, DecisionLog, PolicyResolver, ProfileVersionInput
 
 ### Community 11 - "Community 11"
 Cohesion: 0.05
@@ -328,8 +327,8 @@ Cohesion: 0.20
 Nodes (30): _arc_marker(), catalog(), default_currency(), fx(), get_configurator(), get_job(), get_plan(), health() (+22 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.16
-Nodes (20): _contabo_vps_auth(), contabo_vps_AdminServicesTabFields(), contabo_vps_buttonResetPassword(), contabo_vps_buttonRestart(), contabo_vps_ChangePackage(), contabo_vps_ConfigOptions(), contabo_vps_CreateAccount(), contabo_vps_MetaData() (+12 more)
+Cohesion: 0.14
+Nodes (23): _contabo_vps_auth(), contabo_vps_AdminServicesTabFields(), contabo_vps_buttonResetPassword(), contabo_vps_buttonRestart(), contabo_vps_buttonStart(), contabo_vps_buttonStop(), contabo_vps_ChangePackage(), contabo_vps_clientResetPassword() (+15 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.09
@@ -337,7 +336,7 @@ Nodes (8): ApiClientTest, ApiClient, CurlRequestExecutor, MockRequestExecutor, R
 
 ### Community 17 - "Community 17"
 Cohesion: 0.06
-Nodes (10): TestCase, BackfillCommandTest, CompatibilityShimTest, CronDriverTest, DashboardCycleTilesTest, MaintenanceTest, MappingCreateTest, MappingUpdateTest (+2 more)
+Nodes (11): ConfigOptionCompatibilityRepository, TestCase, BackfillCommandTest, CompatibilityShimTest, DashboardCycleTilesTest, DirectMutationBypassTest, MaintenanceTest, MappingCreateTest (+3 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.07
@@ -352,8 +351,8 @@ Cohesion: 0.08
 Nodes (25): autoload, autoload-dev, psr-4, psr-4, config, preferred-install, sort-packages, description (+17 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.14
-Nodes (3): ProfileManager, ProfileVersionInput, Settings
+Cohesion: 0.11
+Nodes (4): ProfileManager, ProfileSlugConflictException, ProfileVersionInput, Settings
 
 ### Community 24 - "Community 24"
 Cohesion: 0.14
@@ -368,8 +367,8 @@ Cohesion: 0.10
 Nodes (20): 0. Mental model (the one paragraph), 1. Image / OS is ONE choice **[OWNER]**, 2.1 What Contabo exposes, 2.2 The fallback rule (single rule, covers every gap), 2.3 EUR → local → customer, 2.4 GST placement — kept as-is, flagged for future **[OWNER]**, 2. Source pricing & fallbacks **[OWNER]**, 3. Modes — primary decision, drives the form **[OWNER]** (+12 more)
 
 ### Community 30 - "Community 30"
-Cohesion: 0.05
-Nodes (13): ClientAreaPresenter, InstanceService, LifecycleOrchestrator, OwnershipGuard, ProviderAccount, CapabilityRegistry, ConfigOptionResolver, ContaboApiClient (+5 more)
+Cohesion: 0.10
+Nodes (8): InstanceService, ConfigOptionResolver, ContaboApiClient, ContaboInstanceMapper, ContaboProvisioningException, ImageResolver, InstanceLinker, SecretManager
 
 ### Community 32 - "Community 32"
 Cohesion: 0.12
@@ -384,8 +383,8 @@ Cohesion: 0.33
 Nodes (3): ConfigurableOptionsSyncerTest, ConfigOptionPricingContext, ConfigurableOptionsSyncer
 
 ### Community 37 - "Community 37"
-Cohesion: 0.29
-Nodes (3): DateTimeInterface, Notifier, self
+Cohesion: 0.16
+Nodes (4): DateTimeInterface, Notifier, NoticeIdempotencyTest, self
 
 ### Community 38 - "Community 38"
 Cohesion: 0.12
@@ -396,16 +395,20 @@ Cohesion: 0.11
 Nodes (6): Runtime, Harness, ContaboApiClient, ContaboAuth, InstanceService, FakeHttpExecutor
 
 ### Community 42 - "Community 42"
-Cohesion: 0.14
-Nodes (5): CommunicationService, OperationProcessor, OperationRepository, ContaboProvisioningException, InstanceService
+Cohesion: 0.16
+Nodes (4): OperationProcessor, OperationRepository, ContaboProvisioningException, InstanceService
 
 ### Community 43 - "Community 43"
 Cohesion: 0.17
 Nodes (14): AuthConfig, constant_time_eq(), require_bearer(), Next, Request, AppState, Option, Response (+6 more)
 
 ### Community 44 - "Community 44"
-Cohesion: 0.14
-Nodes (4): OperationProcessor, OrderSnapshotRepository, NativeFoundationTest, OperationRepository
+Cohesion: 0.07
+Nodes (9): ClientAreaPresenter, LifecycleOrchestrator, OwnershipGuard, ProviderAccount, OperationProcessor, OrderSnapshotRepository, NativeFoundationTest, CapabilityRegistry (+1 more)
+
+### Community 45 - "Community 45"
+Cohesion: 0.27
+Nodes (3): _securiacevps_sanitize(), LogRedactionTest, Harness
 
 ### Community 48 - "Community 48"
 Cohesion: 0.12
@@ -420,7 +423,7 @@ Cohesion: 0.21
 Nodes (3): ServiceConfigSnapshot, ConfigOptionLinkRepository, ServiceRevenueResolver
 
 ### Community 55 - "Community 55"
-Cohesion: 0.23
+Cohesion: 0.21
 Nodes (3): ContaboApiClient, FakeHttpExecutor, ApiClientTest
 
 ### Community 56 - "Community 56"
@@ -516,7 +519,7 @@ Cohesion: 0.36
 Nodes (3): ScheduledChangeCycleTest, DecisionLog, PolicyResolver
 
 ### Community 86 - "Community 86"
-Cohesion: 0.20
+Cohesion: 0.22
 Nodes (3): check_token(), generate_token(), sendAdminNotification()
 
 ### Community 87 - "Community 87"
@@ -532,12 +535,16 @@ Cohesion: 0.33
 Nodes (6): check_no_match(), hex_luminance(), linear_to_srgb(), oklch_luminance(), relative(), srgb_channel()
 
 ### Community 90 - "Community 90"
-Cohesion: 0.11
-Nodes (9): contabo_vps_AdminCustomButtonArray(), contabo_vps_buttonReinstall(), contabo_vps_ClientAreaCustomButtonArray(), securiacevps_AdminCustomButtonArray(), securiacevps_buttonReinstall(), securiacevps_buttonResetPassword(), securiacevps_ClientAreaCustomButtonArray(), ReinstallFlowTest (+1 more)
+Cohesion: 0.12
+Nodes (8): contabo_vps_AdminCustomButtonArray(), contabo_vps_buttonReinstall(), contabo_vps_ClientAreaCustomButtonArray(), securiacevps_AdminCustomButtonArray(), securiacevps_buttonReinstall(), securiacevps_ClientAreaCustomButtonArray(), ReinstallFlowTest, ResetPasswordFlowTest
 
 ### Community 91 - "Community 91"
-Cohesion: 0.12
-Nodes (25): contabo_vps_buttonStart(), contabo_vps_buttonStop(), contabo_vps_clientResetPassword(), contabo_vps_clientRestart(), contabo_vps_clientStart(), contabo_vps_clientStop(), securiacevps_buttonRestart(), securiacevps_buttonStart() (+17 more)
+Cohesion: 0.18
+Nodes (18): securiacevps_buttonResetPassword(), securiacevps_buttonRestart(), securiacevps_buttonStart(), securiacevps_buttonStop(), securiacevps_clientResetPassword(), securiacevps_clientRestart(), securiacevps_clientStart(), securiacevps_clientStop() (+10 more)
+
+### Community 92 - "Community 92"
+Cohesion: 0.13
+Nodes (3): CatalogImportService, CatalogImportServiceTest, VpsOperationsWorkbenchTest
 
 ### Community 93 - "Community 93"
 Cohesion: 0.20
@@ -559,9 +566,9 @@ Nodes (10): Mapping (customer-facing sell layer), ProfilePurgeService (guarded h
 Cohesion: 0.24
 Nodes (5): ConfigurableOptionsSyncer, ConfigOptionLinkRepository, ConfigOptionPricingContext, OptionAuditLog, WhmcsConfigOptionsAdapter
 
-### Community 103 - "Community 103"
-Cohesion: 0.11
-Nodes (4): ConfigOptionCompatibilityRepository, SelectionValidator, SelectionValidatorTest, ConfigOptionCapabilityRepository
+### Community 101 - "Community 101"
+Cohesion: 0.26
+Nodes (4): ScheduledChangeProcessor, DateTimeImmutable, DecisionLog, PolicyResolver
 
 ### Community 104 - "Community 104"
 Cohesion: 0.25
@@ -576,16 +583,20 @@ Cohesion: 0.31
 Nodes (9): config-apply action (honours expose gate), ConfigOptionLinkRepository (link-table chokepoint), ConfigurableOptionsSyncer (observe/apply/diff), expose_configurable_options master switch, Exposure editor (config-exposure screen), ExposureResolver / RetailVpsMinimalPreset, Create/edit profile modal, ProfileIdentityResolver / mode-aware fingerprint (+1 more)
 
 ### Community 109 - "Community 109"
-Cohesion: 0.06
-Nodes (8): CatalogImportService, ContaboProvisioningException, MappingPublicationService, ProfileSlugConflictException, SchemaMismatchException, RuntimeException, CatalogImportServiceTest, MappingPublicationServiceTest
+Cohesion: 0.12
+Nodes (4): ContaboProvisioningException, SchemaMismatchException, RuntimeException, MappingPublicationServiceTest
+
+### Community 115 - "Community 115"
+Cohesion: 0.09
+Nodes (4): CatalogAuditLog, DecisionLog, MappingRepository, OptionAuditLog
 
 ### Community 116 - "Community 116"
 Cohesion: 0.33
 Nodes (9): run_serve(), serve_inner(), ServeArgs, shutdown_signal(), Option, PathBuf, Result, String (+1 more)
 
 ### Community 117 - "Community 117"
-Cohesion: 0.06
-Nodes (16): ApiClient, CatalogAuditLog, contabo_pricing_loadModuleVars(), generateOutput(), getData(), ProfileManager, PerCycleAuditSpy, PerCycleSourcePricingTest (+8 more)
+Cohesion: 0.16
+Nodes (6): CatalogAuditLog, PerCycleAuditSpy, PerCycleSourcePricingTest, CatalogAuditLogSpy, ProfileVersionInput, SyncEngine
 
 ### Community 118 - "Community 118"
 Cohesion: 0.29
@@ -635,6 +646,10 @@ Nodes (3): ConfigOptionPricingContext, ProfileVersionInput, self
 Cohesion: 0.33
 Nodes (6): Dev workflow: Node parity safety net, Dev workflow: parser/classification change, Incident workflow: Contabo HTML/payload drift, Ops workflow: production refresh lifecycle, Ops workflow: secure deployment bootstrap, Workflows (Ops + Dev)
 
+### Community 149 - "Community 149"
+Cohesion: 0.28
+Nodes (6): ApiClient, contabo_pricing_loadModuleVars(), generateOutput(), getData(), CatalogAuditLog, Settings
+
 ### Community 150 - "Community 150"
 Cohesion: 0.70
 Nodes (4): build_router(), Router, AppState, ServeArgs
@@ -659,10 +674,6 @@ Nodes (3): ConfigurableOptionsSyncerDiffTest, ConfigOptionLinkRepository, Config
 Cohesion: 0.40
 Nodes (5): Dev workflow, Ops workflow (recommended), What it does, WHMCS-native modules (Ops + Dev), WHMCS-specific operational lessons
 
-### Community 160 - "Community 160"
-Cohesion: 0.17
-Nodes (6): BillingSagaRepository, CommunicationService, CommunicationServiceTest, AuditLogger, CapabilityRegistry, OperationRepository
-
 ### Community 161 - "Community 161"
 Cohesion: 0.50
 Nodes (4): 0.2.0 — 2026-05-21 (UI/UX rebuild), Added, Changed, Fixed
@@ -680,8 +691,12 @@ Cohesion: 0.50
 Nodes (4): 0.6.1 — 2026-05-29 (A.6.3 admin UI — mode, exposure gate, capability/compat editors), Added — A.6.3 capability + compatibility editors, Added — profile create/edit form, Fixed / hardened
 
 ### Community 165 - "Community 165"
-Cohesion: 0.57
-Nodes (6): _securiacevps_cron_params(), _securiacevps_finish_operator_command(), _securiacevps_operation_params(), _securiacevps_process_operations(), _securiacevps_process_operator_command(), _securiacevps_process_operator_commands()
+Cohesion: 0.27
+Nodes (7): _securiacevps_cron_params(), _securiacevps_finish_operator_command(), _securiacevps_operation_params(), _securiacevps_process_operations(), _securiacevps_process_operator_command(), _securiacevps_process_operator_commands(), QueueRecoveryTest
+
+### Community 166 - "Community 166"
+Cohesion: 0.29
+Nodes (5): BillingSagaRepository, CommunicationService, AuditLogger, CapabilityRegistry, OperationRepository
 
 ### Community 167 - "Community 167"
 Cohesion: 0.50
@@ -712,8 +727,8 @@ Cohesion: 0.67
 Nodes (3): 0.4.8 — 2026-05-23 (Phase B: landedCostWithSelections — whole-config margin), Added, Notes
 
 ### Community 175 - "Community 175"
-Cohesion: 0.10
-Nodes (7): AdoptionService, CapabilityRegistry, OrderSnapshotRepository, SchemaGuard, AuditLogger, ContaboApiClient, InstanceLinker
+Cohesion: 0.08
+Nodes (8): AdoptionService, CapabilityRegistry, CommunicationService, OrderSnapshotRepository, SchemaGuard, AuditLogger, ContaboApiClient, InstanceLinker
 
 ### Community 176 - "Community 176"
 Cohesion: 0.33
@@ -751,22 +766,26 @@ Nodes (4): Addon-owned config link tables (mod_contabo_config_*_link), ConfigPur
 Cohesion: 0.67
 Nodes (3): 0.4.9 — 2026-05-23 (capability + compatibility matrix repositories), Added, Notes
 
+### Community 218 - "Community 218"
+Cohesion: 0.50
+Nodes (4): contabo_vps_ConfigOptions(), contabo_vps_MetaData(), securiacevps_ConfigOptions(), securiacevps_MetaData()
+
 ## Knowledge Gaps
 - **527 isolated node(s):** `mempalace-mcp`, `name`, `version`, `description`, `license` (+522 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **84 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **83 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Capsule` connect `Community 7` to `Community 1`, `Community 5`, `Community 10`, `Community 13`, `Community 17`, `Community 19`, `Community 20`, `Community 22`, `Community 26`, `Community 28`, `Community 30`, `Community 31`, `Community 33`, `Community 36`, `Community 37`, `Community 39`, `Community 41`, `Community 42`, `Community 44`, `Community 46`, `Community 47`, `Community 49`, `Community 50`, `Community 51`, `Community 52`, `Community 53`, `Community 54`, `Community 58`, `Community 68`, `Community 72`, `Community 73`, `Community 79`, `Community 82`, `Community 84`, `Community 85`, `Community 91`, `Community 92`, `Community 97`, `Community 98`, `Community 100`, `Community 101`, `Community 102`, `Community 103`, `Community 107`, `Community 108`, `Community 109`, `Community 112`, `Community 113`, `Community 115`, `Community 117`, `Community 120`, `Community 121`, `Community 122`, `Community 123`, `Community 126`, `Community 127`, `Community 128`, `Community 135`, `Community 137`, `Community 139`, `Community 140`, `Community 142`, `Community 144`, `Community 145`, `Community 149`, `Community 155`, `Community 156`, `Community 157`, `Community 166`, `Community 174`, `Community 175`, `Community 193`, `Community 194`, `Community 197`, `Community 198`, `Community 199`, `Community 203`, `Community 208`, `Community 216`?**
-  _High betweenness centrality (0.185) - this node is a cross-community bridge._
-- **Why does `CycleSet` connect `Community 1` to `Community 102`, `Community 9`, `Community 10`, `Community 46`, `Community 19`, `Community 117`, `Community 85`, `Community 92`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
-- **Why does `ConfigOptionCapabilityRepositoryTest` connect `Community 50` to `Community 17`?**
-  _High betweenness centrality (0.015) - this node is a cross-community bridge._
-- **Are the 328 inferred relationships involving `Capsule` (e.g. with `contabo_pricing_loadModuleVars()` and `getData()`) actually correct?**
-  _`Capsule` has 328 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `Capsule` connect `Community 7` to `Community 1`, `Community 5`, `Community 10`, `Community 13`, `Community 17`, `Community 19`, `Community 20`, `Community 22`, `Community 26`, `Community 28`, `Community 30`, `Community 31`, `Community 33`, `Community 36`, `Community 37`, `Community 39`, `Community 41`, `Community 42`, `Community 44`, `Community 45`, `Community 46`, `Community 47`, `Community 49`, `Community 50`, `Community 51`, `Community 52`, `Community 53`, `Community 54`, `Community 58`, `Community 68`, `Community 72`, `Community 73`, `Community 79`, `Community 82`, `Community 84`, `Community 85`, `Community 91`, `Community 92`, `Community 97`, `Community 98`, `Community 100`, `Community 101`, `Community 102`, `Community 103`, `Community 107`, `Community 108`, `Community 109`, `Community 112`, `Community 113`, `Community 115`, `Community 117`, `Community 120`, `Community 121`, `Community 122`, `Community 126`, `Community 127`, `Community 128`, `Community 135`, `Community 137`, `Community 139`, `Community 140`, `Community 142`, `Community 144`, `Community 145`, `Community 149`, `Community 155`, `Community 156`, `Community 165`, `Community 174`, `Community 175`, `Community 193`, `Community 194`, `Community 197`, `Community 198`, `Community 199`, `Community 203`, `Community 208`, `Community 216`, `Community 217`?**
+  _High betweenness centrality (0.176) - this node is a cross-community bridge._
+- **Why does `CycleSet` connect `Community 1` to `Community 101`, `Community 102`, `Community 9`, `Community 10`, `Community 205`, `Community 46`, `Community 19`, `Community 117`, `Community 85`, `Community 157`?**
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
+- **Why does `SyncFlowTest` connect `Community 56` to `Community 17`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Are the 334 inferred relationships involving `Capsule` (e.g. with `contabo_pricing_loadModuleVars()` and `getData()`) actually correct?**
+  _`Capsule` has 334 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 43 inferred relationships involving `CycleSet` (e.g. with `.ajaxProductCycles()` and `.computeCycleStats()`) actually correct?**
   _`CycleSet` has 43 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `mempalace-mcp`, `name`, `version` to the rest of the system?**
