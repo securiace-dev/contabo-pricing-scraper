@@ -1,7 +1,7 @@
 # Graph Report - contabo-pricing-scraper-whmcs-native  (2026-07-30)
 
 ## Corpus Check
-- 256 files · ~224,717 words
+- 256 files · ~224,794 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4aa3a7a2`
+- Built from commit: `ac576547`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -261,7 +261,7 @@
   tests/schema_contract.rs → src/api/handlers.rs
 - `☁️ Cloud VPS` --shares_data_with--> `scrape subcommand (one-shot)`  [INFERRED]
   PRICES.md → README.md
-- `SyncEngine (catalog price sync, tblpricing only)` --rationale_for--> `Catalog (tblpricing) and renewal (tblhosting) kept separate`  [EXTRACTED]
+- `ProfileManager (CRUD profiles + versions)` --conceptually_related_to--> `Profile (cost-basis SOURCE layer)`  [INFERRED]
   whmcs-module-deepdive.md → CLAUDE.md
 
 ## Import Cycles
@@ -288,8 +288,8 @@
 ## Communities (237 total, 97 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.10
-Nodes (25): Fallback rule (longest scraped period months <= M), Mapping (customer-facing sell layer), ProfilePurgeService (guarded hard-delete), Profile (cost-basis SOURCE layer), profile_version (immutable snapshot, period_prices_json), published_cycles_mask (offered superset, default 63), Soft-delete / Trash / Restore (deleted_at), AdminController (route dispatcher + page handlers) (+17 more)
+Cohesion: 0.12
+Nodes (20): Fallback rule (longest scraped period months <= M), profile_version (immutable snapshot, period_prices_json), published_cycles_mask (offered superset, default 63), ScheduledChangeProcessor (renewal writes), mod_contabo_catalog_audit (per mapping/currency/cycle), catalog_cycles_mask (customer-facing cycle gate), CronDriver (renewal observe sweep), CycleSet (6-bit billing cycle bitmask) (+12 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.06
@@ -364,8 +364,8 @@ Cohesion: 0.08
 Nodes (25): autoload, autoload-dev, psr-4, psr-4, config, preferred-install, sort-packages, description (+17 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.25
-Nodes (8): ScheduledChangeProcessor (renewal writes), CronDriver (renewal observe sweep), DailyCronJob hooks (catalog sync + renewal observe), mod_contabo_price_decision (immutable decision log), RenewalEngine (per-service renewal decisions), tblhosting (per-service recurring amount), Watchdog (invoice amount drift detection), Catalog (tblpricing) and renewal (tblhosting) kept separate
+Cohesion: 0.20
+Nodes (10): Mapping (customer-facing sell layer), ProfilePurgeService (guarded hard-delete), Profile (cost-basis SOURCE layer), Soft-delete / Trash / Restore (deleted_at), CyclePricingMap (cycle name to tblpricing column), MappingRepository (profile-product mapping CRUD), ProfileManager (CRUD profiles + versions), ProfileRepository (low-level profile DB + conflict resolution) (+2 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.13
@@ -389,7 +389,7 @@ Nodes (8): InstanceService, ConfigOptionResolver, ContaboApiClient, ContaboInsta
 
 ### Community 32 - "Community 32"
 Cohesion: 0.12
-Nodes (17): Grandfathering (existing customers held to cycle boundary), mod_contabo_service_policy (renewal gating), Axum HTTP server on :8080, Three-layer architecture (acquisition/API/WHMCS), Docker compose overlays (Caddy/Traefik/Coolify), Billing/renewal path uses no API call (outage-safe), AppState in-memory snapshot (RwLock), Fail-closed auth (503 when no token) (+9 more)
+Nodes (20): Grandfathering (existing customers held to cycle boundary), mod_contabo_service_policy (renewal gating), AdminController (route dispatcher + page handlers), ApiClient (HTTP client to Rust API), Axum HTTP server on :8080, Three-layer architecture (acquisition/API/WHMCS), Docker compose overlays (Caddy/Traefik/Coolify), Billing/renewal path uses no API call (outage-safe) (+12 more)
 
 ### Community 34 - "Community 34"
 Cohesion: 0.11
@@ -816,4 +816,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `mempalace-mcp`, `name`, `version` to the rest of the system?**
   _541 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11578947368421053 - nodes in this community are weakly interconnected._
