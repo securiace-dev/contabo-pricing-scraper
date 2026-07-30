@@ -85,6 +85,10 @@ case "$2" in
     cat "$FAKE_RELEASE_JSON"
     ;;
   repos/*/git/ref/tags/*)
+    if [ "${FAKE_TAG_STATE:-present}" = "absent" ]; then
+      echo "gh: Not Found (HTTP 404)" >&2
+      exit 1
+    fi
     printf '{"object":{"type":"commit","sha":"%s"}}\n' "$FAKE_TAG_SHA"
     ;;
   *)
@@ -127,10 +131,36 @@ release_state="$(
   FAKE_RELEASE_STATE="absent" \
   FAKE_RELEASE_JSON="$FIXTURE_DIR/release.json" \
   FAKE_TAG_SHA="$FAKE_SHA" \
+  EXPECTED_NEW_TARGET="$FAKE_SHA" \
   "$SCRIPT_DIR/inspect-github-release.sh" \
     "contabo_pricing-v1.0.0" "module.zip"
 )"
 [ "$release_state" = "absent" ] || fail "absent release was not classified safely"
+
+if GH_TOKEN="fixture-token" \
+  GH_REPO="fixture/repository" \
+  GH_CLI="$FIXTURE_DIR/fake-gh" \
+  FAKE_RELEASE_STATE="absent" \
+  FAKE_RELEASE_JSON="$FIXTURE_DIR/release.json" \
+  FAKE_TAG_SHA="$FAKE_SHA" \
+  EXPECTED_NEW_TARGET="abcdef0123456789abcdef0123456789abcdef01" \
+  "$SCRIPT_DIR/inspect-github-release.sh" \
+    "contabo_pricing-v1.0.0" "module.zip" >/dev/null 2>&1; then
+  fail "existing tag without release bypassed intended-target validation"
+fi
+
+release_state="$(
+  GH_TOKEN="fixture-token" \
+  GH_REPO="fixture/repository" \
+  GH_CLI="$FIXTURE_DIR/fake-gh" \
+  FAKE_RELEASE_STATE="absent" \
+  FAKE_TAG_STATE="absent" \
+  FAKE_RELEASE_JSON="$FIXTURE_DIR/release.json" \
+  FAKE_TAG_SHA="$FAKE_SHA" \
+  "$SCRIPT_DIR/inspect-github-release.sh" \
+    "contabo_pricing-v1.0.0" "module.zip"
+)"
+[ "$release_state" = "absent" ] || fail "absent release and tag were not classified safely"
 
 "$JQ_BIN" 'del(.assets[] | select(.name == "module.zip.manifest"))' \
   "$FIXTURE_DIR/release.json" > "$FIXTURE_DIR/incomplete-release.json"

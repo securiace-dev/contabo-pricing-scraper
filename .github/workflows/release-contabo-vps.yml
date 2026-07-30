@@ -69,6 +69,8 @@ jobs:
         id: meta
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          EXPECTED_NEW_TARGET: ${{ github.sha }}
         run: |
           set -euo pipefail
           VERSION="$(sed -n "s/.*SECURIACE_VPS_VERSION', '\\([^']*\\)'.*/\\1/p" "$MODULE_DIR/securiacevps.php" | head -n 1)"
