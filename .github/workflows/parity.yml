@@ -11,6 +11,7 @@ on:
       - 'scripts/contabo_scraper.js'
       - '.github/scripts/enrich_output.js'
       - '.github/scripts/parity_check.sh'
+      - '.github/workflows/parity.yml'
       - 'Cargo.toml'
       - 'Cargo.lock'
   workflow_dispatch:
