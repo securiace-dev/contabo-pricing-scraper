@@ -8,6 +8,7 @@ on:
       - 'SCHEMA_VERSION.md'
       - 'whmcs-module/modules/addons/contabo_pricing/**/*.php'
       - 'whmcs-module/modules/servers/**/*.php'
+      - 'whmcs-module/**/*.tpl'
       - 'scripts/**/*.php'
       - 'scripts/predeploy-check.sh'
       - '.github/workflows/schema-contract.yml'
@@ -39,7 +40,7 @@ jobs:
             whmcs-module/modules/servers/securiacevps \
             whmcs-module/modules/servers/contabo_vps \
             scripts \
-            -type f -name '*.php' \
+            -type f \( -name '*.php' -o -name '*.tpl' \) \
             -not -path '*/vendor/*' \
             -not -path '*/tests/*' \
             -print0 \

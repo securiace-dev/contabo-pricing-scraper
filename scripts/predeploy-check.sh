@@ -9,7 +9,7 @@
 # Stages (all run; gate fails if ANY stage fails):
 #   1. Unit suite (PHPUnit, FakeCapsule) — addon.
 #   2. Unit suite — canonical securiacevps module.
-#   3. PHP 7.4 runtime syntax plus PHP 8.2 / 8.3 full-source syntax.
+#   3. PHP 7.4 runtime/template syntax plus PHP 8.2 / 8.3 full-source syntax.
 #   4. Rust format, test, check, and Clippy.
 #   5. Rust producer ↔ WHMCS consumer schema contract.
 #   6. Hallmark static UI regression audit.
@@ -40,14 +40,14 @@ stage "2/8 securiacevps server-module unit suite (phpunit)"
 ( cd "$SERVER" && "$ADDON/vendor/bin/phpunit" -c phpunit.xml ); record "server-module unit suite" $?
 
 # ── 3) PHP syntax matrix ─────────────────────────────────────────────────────
-stage "3/8 PHP 7.4 runtime + PHP 8.2 / 8.3 full-source syntax lint"
+stage "3/8 PHP 7.4 runtime/templates + PHP 8.2 / 8.3 full-source syntax lint"
 lint_status=0
 files=()
 while IFS= read -r file; do
   files+=("$file")
 done < <(
   find "$ADDON" "$SERVER" "$SHIM" "$SCRIPT_DIR" \
-    -type f -name '*.php' \
+    -type f \( -name '*.php' -o -name '*.tpl' \) \
     -not -path '*/vendor/*' \
     -print | LC_ALL=C sort
 )
@@ -60,7 +60,7 @@ while IFS= read -r file; do
   runtime_files+=("$file")
 done < <(
   find "$ADDON" "$SERVER" "$SHIM" "$SCRIPT_DIR" \
-    -type f -name '*.php' \
+    -type f \( -name '*.php' -o -name '*.tpl' \) \
     -not -path '*/vendor/*' \
     -not -path '*/tests/*' \
     -print | LC_ALL=C sort
