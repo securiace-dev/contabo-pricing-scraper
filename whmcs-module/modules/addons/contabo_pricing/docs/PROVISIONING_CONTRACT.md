@@ -156,11 +156,19 @@ Rules:
 11. The internal deterministic identity is mapped to a stable UUIDv4-form
     `x-request-id` before calling Contabo. The internal identity remains the
     WHMCS idempotency key; the UUID is the exact provider-audit identity.
+12. A 429/5xx or transport ambiguity on a provider mutation is returned to the
+    durable operation immediately. Only read-only requests retry inside the
+    HTTP client.
+13. A newer create/suspend/unsuspend/terminate intent supersedes and fences
+    older non-terminal commercial intents. Projection is serialized on the
+    WHMCS service row and accepts only the documented predecessor state.
 
 WHMCS cron claims bounded due work, polls provider requests, classifies retries,
 releases expired leases, reconciles ambiguity, progresses cancellation, and
 emits operator findings. Cron interruption cannot create a new intent and
-cannot permanently abandon a lease.
+cannot permanently abandon a lease. Operator-command and customer-communication
+claims also carry an opaque fencing token and expiry so a crashed worker can be
+reclaimed without allowing its later completion write to win.
 
 ## 6. WHMCS callback semantics
 

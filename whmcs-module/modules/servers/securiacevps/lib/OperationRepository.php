@@ -16,6 +16,14 @@ final class OperationRepository
         'superseded',
     ];
 
+    /** @var list<string> */
+    private const COMMERCIAL_LIFECYCLE_TYPES = [
+        'create',
+        'suspend',
+        'unsuspend',
+        'terminate',
+    ];
+
     /**
      * @param array<string,mixed> $payload
      * @return array<string,mixed>
@@ -29,6 +37,54 @@ final class OperationRepository
         ?int $generation = null
     ): array {
         SchemaGuard::assertReady();
+        if (in_array($type, self::COMMERCIAL_LIFECYCLE_TYPES, true)) {
+            return Capsule::connection()->transaction(function () use (
+                $serviceId,
+                $snapshotUuid,
+                $providerAccountId,
+                $type,
+                $payload,
+                $generation
+            ): array {
+                // Serialize intent creation with commercial-state projection.
+                // tblhosting always exists for a valid WHMCS service and gives
+                // both paths one stable row to lock.
+                $serviceQuery = Capsule::table('tblhosting')->where('id', $serviceId);
+                if (method_exists($serviceQuery, 'lockForUpdate')) {
+                    $serviceQuery->lockForUpdate()->first();
+                }
+                return $this->acceptUnlocked(
+                    $serviceId,
+                    $snapshotUuid,
+                    $providerAccountId,
+                    $type,
+                    $payload,
+                    $generation
+                );
+            });
+        }
+        return $this->acceptUnlocked(
+            $serviceId,
+            $snapshotUuid,
+            $providerAccountId,
+            $type,
+            $payload,
+            $generation
+        );
+    }
+
+    /**
+     * @param array<string,mixed> $payload
+     * @return array<string,mixed>
+     */
+    private function acceptUnlocked(
+        int $serviceId,
+        ?string $snapshotUuid,
+        string $providerAccountId,
+        string $type,
+        array $payload,
+        ?int $generation
+    ): array {
         $payloadJson = CanonicalJson::encode($payload);
         $fingerprint = hash('sha256', $payloadJson);
         if ($type === 'create') {
@@ -108,7 +164,11 @@ final class OperationRepository
             }
             return $winner;
         }
-        return $this->byUuid($uuid);
+        $created = $this->byUuid($uuid);
+        if (in_array($type, self::COMMERCIAL_LIFECYCLE_TYPES, true)) {
+            $this->supersedeOlderLifecycleIntents($created);
+        }
+        return $created;
     }
 
     /** @return array<string,mixed> */
@@ -132,6 +192,45 @@ final class OperationRepository
             ->orderByDesc('id')
             ->first();
         return $row !== null ? (array) $row : null;
+    }
+
+    /** @return array<string,mixed>|null */
+    public function latestLifecycleIntent(int $serviceId): ?array
+    {
+        $row = Capsule::table('mod_securiacevps_operations')
+            ->where('service_id', $serviceId)
+            ->whereIn('operation_type', self::COMMERCIAL_LIFECYCLE_TYPES)
+            ->orderByDesc('id')
+            ->first();
+        return $row !== null ? (array) $row : null;
+    }
+
+    /** @param array<string,mixed> $newIntent */
+    private function supersedeOlderLifecycleIntents(array $newIntent): void
+    {
+        $rows = Capsule::table('mod_securiacevps_operations')
+            ->where('service_id', (int) ($newIntent['service_id'] ?? 0))
+            ->whereIn('operation_type', self::COMMERCIAL_LIFECYCLE_TYPES)
+            ->where('id', '<', (int) ($newIntent['id'] ?? 0))
+            ->whereNotIn('state', self::TERMINAL_STATES)
+            ->get();
+        foreach ($rows as $item) {
+            $older = (array) $item;
+            Capsule::table('mod_securiacevps_operations')
+                ->where('operation_uuid', (string) ($older['operation_uuid'] ?? ''))
+                ->where('state', (string) ($older['state'] ?? ''))
+                ->where('fencing_token', (int) ($older['fencing_token'] ?? 0))
+                ->update([
+                    'state' => 'superseded',
+                    // Invalidate an in-flight worker. Its provider effect may
+                    // still complete, but it cannot project stale state; the
+                    // newer intent waits for the service lease and reconciles.
+                    'fencing_token' => ((int) ($older['fencing_token'] ?? 0)) + 1,
+                    'next_attempt_at' => null,
+                    'completed_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+        }
     }
 
     /**

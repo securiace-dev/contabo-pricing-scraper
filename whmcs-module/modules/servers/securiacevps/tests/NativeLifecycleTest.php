@@ -98,6 +98,51 @@ final class NativeLifecycleTest extends TestCase
         $this->assertSame('1999.00', Capsule::$tables['mod_securiacevps_billing_sagas'][0]['amount']);
     }
 
+    public function testDelayedCreateCannotReactivateCancelledService(): void
+    {
+        Capsule::$tables['tblhosting'][0]['domainstatus'] = 'Cancelled';
+        $this->harness->http->stub(
+            'GET /v1/compute/instances?',
+            200,
+            ['data' => [], '_pagination' => ['totalElements' => 0]]
+        );
+        $this->harness->http->stub('GET /v1/secrets?', 200, ['data' => []]);
+        $this->harness->http->queue('POST /v1/secrets', 201, ['data' => [['secretId' => 79]]]);
+        $this->harness->http->queue('POST /v1/compute/instances', 201, [
+            'data' => [['instanceId' => 9002]],
+        ]);
+        $ready = [
+            'data' => [[
+                'instanceId' => 9002,
+                'displayName' => 'whmcs-300 vps.example.com',
+                'status' => 'running',
+                'region' => 'EU',
+                'imageId' => 'image-1',
+                'createdDate' => '2026-07-30T00:00:00Z',
+                'ipConfig' => ['v4' => [['ip' => '203.0.113.20']]],
+            ]],
+        ];
+        $this->harness->http->stub('GET /v1/compute/instances/9002', 200, $ready);
+
+        $result = securiacevps_CreateAccount(Harness::params());
+
+        $this->assertStringContainsString('requires administrator review', $result);
+        $this->assertSame('Cancelled', Capsule::$tables['tblhosting'][0]['domainstatus']);
+        $this->assertSame('succeeded', Capsule::$tables['mod_securiacevps_operations'][0]['state']);
+        $this->assertSame(
+            'service_status_projection_conflict',
+            Capsule::$tables['mod_securiacevps_operations'][0]['safe_error_code']
+        );
+        $this->assertSame(
+            'whmcs_service_projection',
+            Capsule::$tables['mod_securiacevps_reconciliation'][0]['finding_type']
+        );
+        $this->assertCount(
+            1,
+            $this->harness->http->callsMatching('POST https://api.contabo.com/v1/compute/instances')
+        );
+    }
+
     public function testProviderWriteKillSwitchBlocksBeforeSubmission(): void
     {
         Capsule::table('mod_securiacevps_schema')
@@ -115,6 +160,7 @@ final class NativeLifecycleTest extends TestCase
 
     public function testSuspendWaitsForProviderStateBeforeCommercialProjection(): void
     {
+        Capsule::$tables['tblhosting'][0]['domainstatus'] = 'Active';
         $this->harness->linkService('9001');
         $this->seedVerifiedOwnership('9001');
         $this->seedCapability('stop');

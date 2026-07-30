@@ -379,6 +379,11 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
             return $this;
         }
 
+        public function lockForUpdate(): self
+        {
+            return $this;
+        }
+
         /**
          * Column projection is a no-op here — FakeCapsule always returns full
          * rows, so callers read whatever columns they seeded. Accepts both

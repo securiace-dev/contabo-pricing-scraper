@@ -81,7 +81,14 @@ final class OperationProcessor
 
             $latest = $this->operations->byUuid($uuid);
             if ((string) $latest['state'] === 'succeeded') {
-                $this->projectVerifiedCommercialState($latest);
+                $projectionError = $this->projectVerifiedCommercialState($latest);
+                if ($projectionError !== null) {
+                    $this->operations->transition($uuid, $token, 'succeeded', [
+                        'safe_error_code' => $projectionError,
+                        'retry_classification' => 'manual_review',
+                    ]);
+                    $latest = $this->operations->byUuid($uuid);
+                }
             }
             $this->operations->attempt($uuid, $attempt, $token, (string) $latest['state'], [
                 'started_at' => $startedAt,
@@ -133,7 +140,7 @@ final class OperationProcessor
      *
      * @param array<string,mixed> $operation
      */
-    private function projectVerifiedCommercialState(array $operation): void
+    private function projectVerifiedCommercialState(array $operation): ?string
     {
         $targets = [
             'create' => 'Active',
@@ -141,40 +148,75 @@ final class OperationProcessor
             'unsuspend' => 'Active',
             'terminate' => 'Terminated',
         ];
+        $predecessors = [
+            'create' => ['Pending'],
+            'suspend' => ['Active'],
+            'unsuspend' => ['Suspended'],
+            'terminate' => ['Pending', 'Active', 'Suspended'],
+        ];
         $type = (string) ($operation['operation_type'] ?? '');
         if (!isset($targets[$type])) {
-            return;
+            return null;
         }
         $serviceId = (int) ($operation['service_id'] ?? 0);
-        $serviceObject = Capsule::table('tblhosting')->where('id', $serviceId)->first();
-        if ($serviceObject === null) {
-            $this->recordProjectionFinding($operation, 'service_record_missing');
-            throw new ContaboProvisioningException(
-                'WHMCS service projection requires operator review',
-                'service_record_missing',
-                'manual_review'
-            );
-        }
-        $service = (array) $serviceObject;
-        $target = $targets[$type];
-        if ((string) ($service['domainstatus'] ?? '') === $target) {
+        return Capsule::connection()->transaction(function () use (
+            $operation,
+            $serviceId,
+            $type,
+            $targets,
+            $predecessors
+        ): ?string {
+            $serviceQuery = Capsule::table('tblhosting')->where('id', $serviceId);
+            if (method_exists($serviceQuery, 'lockForUpdate')) {
+                $serviceQuery->lockForUpdate();
+            }
+            $serviceObject = $serviceQuery->first();
+            if ($serviceObject === null) {
+                // The provider mutation has already succeeded. Leave that
+                // durable fact intact and open a repair finding; never replay a
+                // provider effect to repair a missing WHMCS projection.
+                $this->recordProjectionFinding($operation, 'service_record_missing');
+                return 'service_record_missing';
+            }
+
+            $latestIntent = $this->operations->latestLifecycleIntent($serviceId);
+            if ($latestIntent === null
+                || !hash_equals(
+                    (string) ($latestIntent['operation_uuid'] ?? ''),
+                    (string) ($operation['operation_uuid'] ?? '')
+                )
+            ) {
+                $this->recordProjectionFinding($operation, 'service_projection_intent_superseded');
+                return 'service_projection_intent_superseded';
+            }
+
+            $service = (array) $serviceObject;
+            $current = (string) ($service['domainstatus'] ?? '');
+            $target = $targets[$type];
+            if ($current === $target) {
+                $this->resolveProjectionFinding($serviceId);
+                return null;
+            }
+            if (!in_array($current, $predecessors[$type], true)) {
+                // Cancelled, Terminated, or any newer manual state is protected
+                // from a delayed callback. The provider truth remains recorded
+                // and the operator gets an explicit reconciliation item.
+                $this->recordProjectionFinding($operation, 'service_status_projection_conflict');
+                return 'service_status_projection_conflict';
+            }
+
+            $updated = Capsule::table('tblhosting')
+                ->where('id', $serviceId)
+                ->where('domainstatus', $current)
+                ->update(['domainstatus' => $target]);
+            $readBack = Capsule::table('tblhosting')->where('id', $serviceId)->value('domainstatus');
+            if ($updated !== 1 && (string) $readBack !== $target) {
+                $this->recordProjectionFinding($operation, 'service_status_projection_failed');
+                return 'service_status_projection_failed';
+            }
             $this->resolveProjectionFinding($serviceId);
-            return;
-        }
-        $updated = Capsule::table('tblhosting')
-            ->where('id', $serviceId)
-            ->where('domainstatus', (string) ($service['domainstatus'] ?? ''))
-            ->update(['domainstatus' => $target]);
-        $readBack = Capsule::table('tblhosting')->where('id', $serviceId)->value('domainstatus');
-        if ($updated !== 1 && (string) $readBack !== $target) {
-            $this->recordProjectionFinding($operation, 'service_status_projection_failed');
-            throw new ContaboProvisioningException(
-                'WHMCS service state could not be projected after provider verification',
-                'service_status_projection_failed',
-                'transient'
-            );
-        }
-        $this->resolveProjectionFinding($serviceId);
+            return null;
+        });
     }
 
     /** @param array<string,mixed> $operation */

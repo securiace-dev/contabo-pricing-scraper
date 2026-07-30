@@ -178,6 +178,64 @@ final class NativeFoundationTest extends TestCase
         );
     }
 
+    public function testNewLifecycleIntentSupersedesAndFencesClaimedOlderIntent(): void
+    {
+        $repo = new OperationRepository();
+        $suspend = $repo->accept(
+            44,
+            null,
+            'provider-account',
+            'suspend',
+            ['operation' => 'suspend', 'service_id' => 44]
+        );
+        $claimedSuspend = $repo->claim(
+            (string) $suspend['operation_uuid'],
+            'worker-suspend',
+            120
+        );
+        $this->assertNotNull($claimedSuspend);
+
+        $terminate = $repo->accept(
+            44,
+            null,
+            'provider-account',
+            'terminate',
+            ['operation' => 'terminate', 'service_id' => 44]
+        );
+
+        $superseded = $repo->byUuid((string) $suspend['operation_uuid']);
+        $this->assertSame('superseded', $superseded['state']);
+        $this->assertGreaterThan(
+            (int) $claimedSuspend['fencing_token'],
+            (int) $superseded['fencing_token']
+        );
+        $this->assertFalse(
+            $repo->transition(
+                (string) $suspend['operation_uuid'],
+                (int) $claimedSuspend['fencing_token'],
+                'succeeded'
+            )
+        );
+        $this->assertSame(
+            $terminate['operation_uuid'],
+            $repo->latestLifecycleIntent(44)['operation_uuid']
+        );
+
+        // The newer intent cannot overlap the older provider call. Once that
+        // worker releases its service lease, the replacement can be claimed.
+        $this->assertNull(
+            $repo->claim((string) $terminate['operation_uuid'], 'worker-terminate', 120)
+        );
+        $repo->release(
+            (string) $suspend['operation_uuid'],
+            44,
+            (int) $claimedSuspend['fencing_token']
+        );
+        $this->assertNotNull(
+            $repo->claim((string) $terminate['operation_uuid'], 'worker-terminate', 120)
+        );
+    }
+
     public function testOneTimeSecretCannotBeReplayed(): void
     {
         $store = new OneTimeSecretStore();

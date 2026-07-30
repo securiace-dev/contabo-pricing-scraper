@@ -198,7 +198,7 @@ final class LifecycleOrchestrator
      */
     private function progress(array $operation, array $params): string
     {
-        if ((string) $operation['state'] === 'succeeded') {
+        if ($this->isWhmcsProjectionComplete($operation)) {
             return 'success';
         }
         if (in_array((string) $operation['state'], ['failed_terminal', 'manual_review'], true)) {
@@ -215,7 +215,7 @@ final class LifecycleOrchestrator
         } else {
             $operation = $this->operations->byUuid((string) $operation['operation_uuid']);
         }
-        return (string) $operation['state'] === 'succeeded'
+        return $this->isWhmcsProjectionComplete($operation)
             ? 'success'
             : $this->operatorMessage($operation);
     }
@@ -225,6 +225,16 @@ final class LifecycleOrchestrator
     {
         $reference = (string) ($operation['correlation_id'] ?? '');
         $state = (string) ($operation['state'] ?? 'pending');
+        $safeCode = (string) ($operation['safe_error_code'] ?? '');
+        if (in_array($safeCode, [
+            'service_record_missing',
+            'service_projection_intent_superseded',
+            'service_status_projection_conflict',
+            'service_status_projection_failed',
+        ], true)) {
+            return 'VPS provider action completed but WHMCS service state requires administrator review'
+                . ' (reference ' . $reference . ')';
+        }
         if ($state === 'manual_review' || $state === 'failed_terminal') {
             return 'VPS operation requires administrator review (reference ' . $reference . ')';
         }
@@ -232,6 +242,18 @@ final class LifecycleOrchestrator
             return 'Provider outcome is being reconciled; do not retry manually (reference ' . $reference . ')';
         }
         return 'VPS operation is still in progress (reference ' . $reference . ')';
+    }
+
+    /** @param array<string,mixed> $operation */
+    private function isWhmcsProjectionComplete(array $operation): bool
+    {
+        return (string) ($operation['state'] ?? '') === 'succeeded'
+            && !in_array((string) ($operation['safe_error_code'] ?? ''), [
+                'service_record_missing',
+                'service_projection_intent_superseded',
+                'service_status_projection_conflict',
+                'service_status_projection_failed',
+            ], true);
     }
 
     /** @param array<string,mixed> $params */

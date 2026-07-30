@@ -15,8 +15,14 @@ retained only as a delegation shim for phased service reassignment.
   WHMCS MySQL tables.
 - Treats accepted requests followed by timeouts as unknown outcomes and
   reconciles before retry; duplicate callbacks return the original operation.
+- Retries transient responses only for reads. A mutation that receives a
+  transport, rate-limit, or 5xx ambiguity returns immediately to durable
+  reconciliation instead of being replayed inside the HTTP client.
 - Keeps WHMCS Pending until create readiness is read back and verified; changes
   commercial lifecycle state only after the provider effect is verified.
+- Serializes commercial intents on the WHMCS service row, fences and supersedes
+  older in-flight intents, and projects only from explicit predecessor states,
+  so delayed callbacks cannot reactivate Cancelled or Terminated services.
 - Routes create, suspend, unsuspend, terminate, power, reinstall, and password
   reset through the same durable engine. Direct provider-mutation helpers now
   fail closed.
@@ -33,6 +39,9 @@ retained only as a delegation shim for phased service reassignment.
   persistence, exposing repair state without repeating the provider mutation.
 - Adds retry classification, crash recovery, expired-lock handling, manual
   review, safe operator commands, and global/per-capability write switches.
+- Adds expiring fenced claims to operation, operator-command, and communication
+  queues so cron interruption is recoverable and an expired worker cannot
+  overwrite its replacement.
 - Adds lifecycle communications with delivery state and customer-safe error
   references.
 
@@ -57,7 +66,7 @@ retained only as a delegation shim for phased service reassignment.
 
 ## 1.0.0 — 2026-07-30 (native catalog, pricing, mapping, and operations workbench)
 
-Schema **v12** is additive and idempotent.
+Schema **v14** is additive and idempotent.
 
 ### Catalog and order contracts
 
