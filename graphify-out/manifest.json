@@ -775,8 +775,8 @@
     "semantic_hash": ""
   },
   "scripts/predeploy-check.sh": {
-    "mtime": 1785383892.3572094,
-    "ast_hash": "ac2a078671a53881764468d8ab6fff2e",
+    "mtime": 1785384670.787793,
+    "ast_hash": "d7c62136d8aac018bb54feec4dc444fa",
     "semantic_hash": ""
   },
   "scripts/setup-memory-tools.sh": {
