@@ -1080,7 +1080,7 @@
       "label": "record()",
       "file_type": "code",
       "source_file": "scripts/predeploy-check.sh",
-      "source_location": "L30",
+      "source_location": "L31",
       "metadata": {
         "language": "bash",
         "kind": "bash_function"
@@ -1094,7 +1094,7 @@
       "label": "stage()",
       "file_type": "code",
       "source_file": "scripts/predeploy-check.sh",
-      "source_location": "L31",
+      "source_location": "L32",
       "metadata": {
         "language": "bash",
         "kind": "bash_function"
@@ -1348,7 +1348,7 @@
       "label": "build()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L9",
+      "source_location": "L13",
       "_origin": "ast",
       "id": "api_catalog_build",
       "community": 129,
@@ -1358,7 +1358,7 @@
       "label": "Snapshot",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L9",
+      "source_location": "L13",
       "_origin": "ast",
       "id": "src_api_catalog_rs_snapshot",
       "community": 129,
@@ -1368,7 +1368,7 @@
       "label": "Value",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L9",
+      "source_location": "L13",
       "_origin": "ast",
       "id": "src_api_catalog_rs_value",
       "community": 129,
@@ -1378,7 +1378,7 @@
       "label": "append_configuration_items()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L116",
+      "source_location": "L120",
       "_origin": "ast",
       "id": "api_catalog_append_configuration_items",
       "community": 129,
@@ -1388,7 +1388,7 @@
       "label": "Vec",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L116",
+      "source_location": "L120",
       "_origin": "ast",
       "id": "src_api_catalog_rs_vec",
       "community": 129,
@@ -1398,7 +1398,7 @@
       "label": "catalog_item()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L167",
+      "source_location": "L171",
       "_origin": "ast",
       "id": "api_catalog_catalog_item",
       "community": 129,
@@ -1408,7 +1408,7 @@
       "label": "String",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L167",
+      "source_location": "L171",
       "_origin": "ast",
       "id": "src_api_catalog_rs_string",
       "community": 129,
@@ -1418,7 +1418,7 @@
       "label": "Option",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L167",
+      "source_location": "L171",
       "_origin": "ast",
       "id": "src_api_catalog_rs_option",
       "community": 129,
@@ -1428,7 +1428,7 @@
       "label": "observed_provider_id()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L193",
+      "source_location": "L197",
       "_origin": "ast",
       "id": "api_catalog_observed_provider_id",
       "community": 129,
@@ -1438,7 +1438,7 @@
       "label": "source_observed_at()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L200",
+      "source_location": "L204",
       "_origin": "ast",
       "id": "api_catalog_source_observed_at",
       "community": 129,
@@ -1448,7 +1448,7 @@
       "label": "machine_part()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L211",
+      "source_location": "L215",
       "_origin": "ast",
       "id": "api_catalog_machine_part",
       "community": 129,
@@ -1458,7 +1458,7 @@
       "label": "sha256_hex()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L228",
+      "source_location": "L232",
       "_origin": "ast",
       "id": "api_catalog_sha256_hex",
       "community": 129,
@@ -1468,7 +1468,7 @@
       "label": "canonical_json()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L232",
+      "source_location": "L236",
       "_origin": "ast",
       "id": "api_catalog_canonical_json",
       "community": 129,
@@ -1478,7 +1478,7 @@
       "label": "canonicalize()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L236",
+      "source_location": "L240",
       "_origin": "ast",
       "id": "api_catalog_canonicalize",
       "community": 129,
@@ -1488,7 +1488,7 @@
       "label": "fixture()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L256",
+      "source_location": "L260",
       "_origin": "ast",
       "id": "api_catalog_fixture",
       "community": 129,
@@ -1498,7 +1498,7 @@
       "label": "catalog_is_versioned_and_deterministic()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L283",
+      "source_location": "L287",
       "_origin": "ast",
       "id": "api_catalog_catalog_is_versioned_and_deterministic",
       "community": 129,
@@ -1508,7 +1508,7 @@
       "label": "marketing_slug_is_not_presented_as_provider_id()",
       "file_type": "code",
       "source_file": "src/api/catalog.rs",
-      "source_location": "L292",
+      "source_location": "L296",
       "_origin": "ast",
       "id": "api_catalog_marketing_slug_is_not_presented_as_provider_id",
       "community": 129,
@@ -1895,10 +1895,20 @@
       "norm_label": "openapi()"
     },
     {
+      "label": "openapi_document()",
+      "file_type": "code",
+      "source_file": "src/api/handlers.rs",
+      "source_location": "L401",
+      "_origin": "ast",
+      "id": "api_handlers_openapi_document",
+      "community": 14,
+      "norm_label": "openapi_document()"
+    },
+    {
       "label": "_arc_marker()",
       "file_type": "code",
       "source_file": "src/api/handlers.rs",
-      "source_location": "L406",
+      "source_location": "L570",
       "_origin": "ast",
       "id": "api_handlers_arc_marker",
       "community": 14,
@@ -1908,7 +1918,7 @@
       "label": "Arc",
       "file_type": "code",
       "source_file": "src/api/handlers.rs",
-      "source_location": "L406",
+      "source_location": "L570",
       "_origin": "ast",
       "id": "src_api_handlers_rs_arc",
       "community": 14,
@@ -3483,6 +3493,176 @@
       "id": "common_mod_spawn_server",
       "community": 83,
       "norm_label": "spawn_server()"
+    },
+    {
+      "label": "schema_contract.rs",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tests_schema_contract",
+      "community": 14,
+      "norm_label": "schema_contract.rs"
+    },
+    {
+      "label": "FetchMode",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "tests_schema_contract_fetchmode",
+      "community": 14,
+      "norm_label": "fetchmode"
+    },
+    {
+      "label": "Opts",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "tests_schema_contract_opts",
+      "community": 14,
+      "norm_label": "opts"
+    },
+    {
+      "label": "PathBuf",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "tests_schema_contract_rs_pathbuf",
+      "community": 14,
+      "norm_label": "pathbuf"
+    },
+    {
+      "label": "Option",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "tests_schema_contract_rs_option",
+      "community": 14,
+      "norm_label": "option"
+    },
+    {
+      "label": "Vec",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "tests_schema_contract_rs_vec",
+      "community": 14,
+      "norm_label": "vec"
+    },
+    {
+      "label": "String",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "tests_schema_contract_rs_string",
+      "community": 14,
+      "norm_label": "string"
+    },
+    {
+      "label": "run_scrape()",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "tests_schema_contract_run_scrape",
+      "community": 14,
+      "norm_label": "run_scrape()"
+    },
+    {
+      "label": "fixture_dir()",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "tests_schema_contract_fixture_dir",
+      "community": 14,
+      "norm_label": "fixture_dir()"
+    },
+    {
+      "label": "load_fixture()",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "tests_schema_contract_load_fixture",
+      "community": 14,
+      "norm_label": "load_fixture()"
+    },
+    {
+      "label": "Value",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "tests_schema_contract_rs_value",
+      "community": 14,
+      "norm_label": "value"
+    },
+    {
+      "label": "write_json()",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L60",
+      "_origin": "ast",
+      "id": "tests_schema_contract_write_json",
+      "community": 14,
+      "norm_label": "write_json()"
+    },
+    {
+      "label": "Path",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L60",
+      "_origin": "ast",
+      "id": "tests_schema_contract_rs_path",
+      "community": 14,
+      "norm_label": "path"
+    },
+    {
+      "label": "create_snapshot_dir()",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L66",
+      "_origin": "ast",
+      "id": "tests_schema_contract_create_snapshot_dir",
+      "community": 14,
+      "norm_label": "create_snapshot_dir()"
+    },
+    {
+      "label": "assert_same_shape()",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L110",
+      "_origin": "ast",
+      "id": "tests_schema_contract_assert_same_shape",
+      "community": 14,
+      "norm_label": "assert_same_shape()"
+    },
+    {
+      "label": "runtime_responses_match_complete_golden_contract()",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L147",
+      "_origin": "ast",
+      "id": "tests_schema_contract_runtime_responses_match_complete_golden_contract",
+      "community": 14,
+      "norm_label": "runtime_responses_match_complete_golden_contract()"
+    },
+    {
+      "label": "schema_constants_and_documentation_are_aligned()",
+      "file_type": "code",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L246",
+      "_origin": "ast",
+      "id": "tests_schema_contract_schema_constants_and_documentation_are_aligned",
+      "community": 14,
+      "norm_label": "schema_constants_and_documentation_are_aligned()"
     },
     {
       "label": "ajax.php",
@@ -5731,7 +5911,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_catalogauditlog",
-      "community": 149,
+      "community": 37,
       "norm_label": "catalogauditlog.php"
     },
     {
@@ -5741,7 +5921,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "lib_catalogauditlog_catalogauditlog",
-      "community": 149,
+      "community": 37,
       "norm_label": "catalogauditlog"
     },
     {
@@ -5751,7 +5931,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "lib_catalogauditlog_catalogauditlog_insert",
-      "community": 149,
+      "community": 37,
       "norm_label": ".insert()"
     },
     {
@@ -5761,7 +5941,7 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "lib_catalogauditlog_catalogauditlog_recentbatches",
-      "community": 149,
+      "community": 37,
       "norm_label": ".recentbatches()"
     },
     {
@@ -5771,7 +5951,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "lib_catalogauditlog_catalogauditlog_storerow",
-      "community": 149,
+      "community": 37,
       "norm_label": ".storerow()"
     },
     {
@@ -5781,7 +5961,7 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "lib_catalogauditlog_catalogauditlog_fetchrecentbatches",
-      "community": 149,
+      "community": 37,
       "norm_label": ".fetchrecentbatches()"
     },
     {
@@ -5791,7 +5971,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "lib_catalogauditlog_catalogauditlog_validate",
-      "community": 149,
+      "community": 37,
       "norm_label": ".validate()"
     },
     {
@@ -5801,7 +5981,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_catalogimportservice",
-      "community": 109,
+      "community": 220,
       "norm_label": "catalogimportservice.php"
     },
     {
@@ -5811,57 +5991,57 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice",
-      "community": 109,
+      "community": 220,
       "norm_label": "catalogimportservice"
     },
     {
       "label": ".import()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/CatalogImportService.php",
-      "source_location": "L27",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_import",
-      "community": 109,
+      "community": 220,
       "norm_label": ".import()"
     },
     {
       "label": ".canonicalJson()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/CatalogImportService.php",
-      "source_location": "L173",
+      "source_location": "L174",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_canonicaljson",
-      "community": 109,
+      "community": 220,
       "norm_label": ".canonicaljson()"
     },
     {
       "label": ".normalize()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/CatalogImportService.php",
-      "source_location": "L189",
+      "source_location": "L190",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_normalize",
-      "community": 109,
+      "community": 220,
       "norm_label": ".normalize()"
     },
     {
       "label": ".isList()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/CatalogImportService.php",
-      "source_location": "L205",
+      "source_location": "L206",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_islist",
-      "community": 109,
+      "community": 220,
       "norm_label": ".islist()"
     },
     {
       "label": ".mysqlTimestamp()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/CatalogImportService.php",
-      "source_location": "L216",
+      "source_location": "L217",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_mysqltimestamp",
-      "community": 109,
+      "community": 220,
       "norm_label": ".mysqltimestamp()"
     },
     {
@@ -5971,7 +6151,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_configoptioncapabilityrepository",
-      "community": 7,
+      "community": 137,
       "norm_label": "configoptioncapabilityrepository.php"
     },
     {
@@ -5981,7 +6161,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "lib_configoptioncapabilityrepository_configoptioncapabilityrepository",
-      "community": 7,
+      "community": 137,
       "norm_label": "configoptioncapabilityrepository"
     },
     {
@@ -5991,7 +6171,7 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "lib_configoptioncapabilityrepository_configoptioncapabilityrepository_upsertcapability",
-      "community": 7,
+      "community": 137,
       "norm_label": ".upsertcapability()"
     },
     {
@@ -6001,7 +6181,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "lib_configoptioncapabilityrepository_configoptioncapabilityrepository_find",
-      "community": 7,
+      "community": 137,
       "norm_label": ".find()"
     },
     {
@@ -6011,7 +6191,7 @@
       "source_location": "L160",
       "_origin": "ast",
       "id": "lib_configoptioncapabilityrepository_configoptioncapabilityrepository_listforplan",
-      "community": 7,
+      "community": 137,
       "norm_label": ".listforplan()"
     },
     {
@@ -6021,7 +6201,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "lib_configoptioncapabilityrepository_configoptioncapabilityrepository_canautoapply",
-      "community": 7,
+      "community": 137,
       "norm_label": ".canautoapply()"
     },
     {
@@ -6121,7 +6301,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository",
-      "community": 7,
+      "community": 73,
       "norm_label": "configoptionlinkrepository.php"
     },
     {
@@ -6131,7 +6311,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository",
-      "community": 7,
+      "community": 73,
       "norm_label": "configoptionlinkrepository"
     },
     {
@@ -6141,7 +6321,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_upsertgrouplink",
-      "community": 7,
+      "community": 73,
       "norm_label": ".upsertgrouplink()"
     },
     {
@@ -6151,7 +6331,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findgrouplink",
-      "community": 7,
+      "community": 73,
       "norm_label": ".findgrouplink()"
     },
     {
@@ -6161,7 +6341,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_upsertoptionlink",
-      "community": 7,
+      "community": 73,
       "norm_label": ".upsertoptionlink()"
     },
     {
@@ -6171,7 +6351,7 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findoptionlink",
-      "community": 7,
+      "community": 73,
       "norm_label": ".findoptionlink()"
     },
     {
@@ -6181,7 +6361,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_listoptionlinksforprofile",
-      "community": 7,
+      "community": 73,
       "norm_label": ".listoptionlinksforprofile()"
     },
     {
@@ -6191,7 +6371,7 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_upsertvaluelink",
-      "community": 7,
+      "community": 73,
       "norm_label": ".upsertvaluelink()"
     },
     {
@@ -6201,7 +6381,7 @@
       "source_location": "L192",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findvaluelink",
-      "community": 7,
+      "community": 73,
       "norm_label": ".findvaluelink()"
     },
     {
@@ -6211,7 +6391,7 @@
       "source_location": "L207",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findvaluelinkbywhmcssubid",
-      "community": 7,
+      "community": 73,
       "norm_label": ".findvaluelinkbywhmcssubid()"
     },
     {
@@ -6351,7 +6531,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer",
-      "community": 123,
+      "community": 27,
       "norm_label": "configurableoptionssyncer.php"
     },
     {
@@ -6361,7 +6541,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer",
-      "community": 123,
+      "community": 27,
       "norm_label": "configurableoptionssyncer"
     },
     {
@@ -6371,7 +6551,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_construct",
-      "community": 123,
+      "community": 27,
       "norm_label": ".__construct()"
     },
     {
@@ -6381,7 +6561,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "whmcsconfigoptionsadapter",
-      "community": 123,
+      "community": 27,
       "norm_label": "whmcsconfigoptionsadapter"
     },
     {
@@ -6391,7 +6571,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_configurableoptionssyncer_php_optionauditlog",
-      "community": 123,
+      "community": 27,
       "norm_label": "optionauditlog"
     },
     {
@@ -6401,7 +6581,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_configurableoptionssyncer_php_configoptionlinkrepository",
-      "community": 123,
+      "community": 27,
       "norm_label": "configoptionlinkrepository"
     },
     {
@@ -6411,7 +6591,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_observe",
-      "community": 123,
+      "community": 27,
       "norm_label": ".observe()"
     },
     {
@@ -6421,7 +6601,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_configurableoptionssyncer_php_configoptionpricingcontext",
-      "community": 123,
+      "community": 27,
       "norm_label": "configoptionpricingcontext"
     },
     {
@@ -6431,7 +6611,7 @@
       "source_location": "L237",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_apply",
-      "community": 123,
+      "community": 27,
       "norm_label": ".apply()"
     },
     {
@@ -6441,7 +6621,7 @@
       "source_location": "L474",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_diff",
-      "community": 123,
+      "community": 27,
       "norm_label": ".diff()"
     },
     {
@@ -6451,7 +6631,7 @@
       "source_location": "L554",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_valuedriftfields",
-      "community": 123,
+      "community": 27,
       "norm_label": ".valuedriftfields()"
     },
     {
@@ -6461,7 +6641,7 @@
       "source_location": "L569",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_tally",
-      "community": 123,
+      "community": 27,
       "norm_label": ".tally()"
     },
     {
@@ -6471,7 +6651,7 @@
       "source_location": "L583",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_auditaction",
-      "community": 123,
+      "community": 27,
       "norm_label": ".auditaction()"
     },
     {
@@ -6481,7 +6661,7 @@
       "source_location": "L607",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_pricecycles",
-      "community": 123,
+      "community": 27,
       "norm_label": ".pricecycles()"
     },
     {
@@ -6491,7 +6671,7 @@
       "source_location": "L644",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_pricesetup",
-      "community": 123,
+      "community": 27,
       "norm_label": ".pricesetup()"
     },
     {
@@ -7061,7 +7241,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_dimensionparser",
-      "community": 92,
+      "community": 6,
       "norm_label": "dimensionparser.php"
     },
     {
@@ -7071,7 +7251,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser",
-      "community": 92,
+      "community": 6,
       "norm_label": "dimensionparser"
     },
     {
@@ -7091,7 +7271,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser_clampdelta",
-      "community": 92,
+      "community": 6,
       "norm_label": ".clampdelta()"
     },
     {
@@ -7101,7 +7281,7 @@
       "source_location": "L168",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser_splitnetworking",
-      "community": 92,
+      "community": 6,
       "norm_label": ".splitnetworking()"
     },
     {
@@ -7111,7 +7291,7 @@
       "source_location": "L198",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser_emitsinglechoice",
-      "community": 92,
+      "community": 6,
       "norm_label": ".emitsinglechoice()"
     },
     {
@@ -7131,7 +7311,7 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser_buildvalues",
-      "community": 92,
+      "community": 6,
       "norm_label": ".buildvalues()"
     },
     {
@@ -7481,7 +7661,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_installer",
-      "community": 7,
+      "community": 22,
       "norm_label": "installer.php"
     },
     {
@@ -7491,7 +7671,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_installer_installer",
-      "community": 7,
+      "community": 22,
       "norm_label": "installer"
     },
     {
@@ -7501,7 +7681,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "lib_installer_installer_install",
-      "community": 7,
+      "community": 22,
       "norm_label": ".install()"
     },
     {
@@ -7511,7 +7691,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "lib_installer_installer_upgrade",
-      "community": 7,
+      "community": 22,
       "norm_label": ".upgrade()"
     },
     {
@@ -7521,7 +7701,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto2",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto2()"
     },
     {
@@ -7531,7 +7711,7 @@
       "source_location": "L427",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto3",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto3()"
     },
     {
@@ -7541,7 +7721,7 @@
       "source_location": "L727",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto4",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto4()"
     },
     {
@@ -7551,7 +7731,7 @@
       "source_location": "L795",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto5",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto5()"
     },
     {
@@ -7561,7 +7741,7 @@
       "source_location": "L1046",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto6",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto6()"
     },
     {
@@ -7571,7 +7751,7 @@
       "source_location": "L1077",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto7",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto7()"
     },
     {
@@ -7581,7 +7761,7 @@
       "source_location": "L1120",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto8",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto8()"
     },
     {
@@ -7591,7 +7771,7 @@
       "source_location": "L1174",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto9",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto9()"
     },
     {
@@ -7601,7 +7781,7 @@
       "source_location": "L1589",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto10",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto10()"
     },
     {
@@ -7611,7 +7791,7 @@
       "source_location": "L1864",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto11",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto11()"
     },
     {
@@ -7621,7 +7801,7 @@
       "source_location": "L1900",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto12",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto12()"
     },
     {
@@ -7631,7 +7811,7 @@
       "source_location": "L1914",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto13",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto13()"
     },
     {
@@ -7641,7 +7821,7 @@
       "source_location": "L1972",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto14",
-      "community": 7,
+      "community": 22,
       "norm_label": ".migrateto14()"
     },
     {
@@ -7651,7 +7831,7 @@
       "source_location": "L2036",
       "_origin": "ast",
       "id": "lib_installer_installer_ensureindex",
-      "community": 7,
+      "community": 22,
       "norm_label": ".ensureindex()"
     },
     {
@@ -7741,7 +7921,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_mappingpublicationservice",
-      "community": 109,
+      "community": 101,
       "norm_label": "mappingpublicationservice.php"
     },
     {
@@ -7751,7 +7931,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_mappingpublicationservice_mappingpublicationservice",
-      "community": 109,
+      "community": 101,
       "norm_label": "mappingpublicationservice"
     },
     {
@@ -7761,7 +7941,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "lib_mappingpublicationservice_mappingpublicationservice_preview",
-      "community": 109,
+      "community": 101,
       "norm_label": ".preview()"
     },
     {
@@ -7771,7 +7951,7 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "lib_mappingpublicationservice_mappingpublicationservice_approve",
-      "community": 109,
+      "community": 101,
       "norm_label": ".approve()"
     },
     {
@@ -7781,7 +7961,7 @@
       "source_location": "L277",
       "_origin": "ast",
       "id": "lib_mappingpublicationservice_mappingpublicationservice_decodeobject",
-      "community": 109,
+      "community": 101,
       "norm_label": ".decodeobject()"
     },
     {
@@ -7791,7 +7971,7 @@
       "source_location": "L292",
       "_origin": "ast",
       "id": "lib_mappingpublicationservice_mappingpublicationservice_canonicaljson",
-      "community": 109,
+      "community": 101,
       "norm_label": ".canonicaljson()"
     },
     {
@@ -7801,7 +7981,7 @@
       "source_location": "L309",
       "_origin": "ast",
       "id": "lib_mappingpublicationservice_mappingpublicationservice_normalize",
-      "community": 109,
+      "community": 101,
       "norm_label": ".normalize()"
     },
     {
@@ -7811,7 +7991,7 @@
       "source_location": "L329",
       "_origin": "ast",
       "id": "lib_mappingpublicationservice_mappingpublicationservice_islist",
-      "community": 109,
+      "community": 101,
       "norm_label": ".islist()"
     },
     {
@@ -8781,7 +8961,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager",
-      "community": 22,
+      "community": 7,
       "norm_label": "profilemanager"
     },
     {
@@ -8791,7 +8971,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_construct",
-      "community": 22,
+      "community": 7,
       "norm_label": ".__construct()"
     },
     {
@@ -8801,7 +8981,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_profilemanager_php_settings",
-      "community": 22,
+      "community": 7,
       "norm_label": "settings"
     },
     {
@@ -8811,7 +8991,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listprofiles",
-      "community": 22,
+      "community": 7,
       "norm_label": ".listprofiles()"
     },
     {
@@ -8821,7 +9001,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listtrashed",
-      "community": 22,
+      "community": 7,
       "norm_label": ".listtrashed()"
     },
     {
@@ -8831,7 +9011,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_softdelete",
-      "community": 22,
+      "community": 7,
       "norm_label": ".softdelete()"
     },
     {
@@ -8841,7 +9021,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_restore",
-      "community": 22,
+      "community": 7,
       "norm_label": ".restore()"
     },
     {
@@ -8851,7 +9031,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_find",
-      "community": 22,
+      "community": 7,
       "norm_label": ".find()"
     },
     {
@@ -8861,7 +9041,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_findbyslug",
-      "community": 22,
+      "community": 7,
       "norm_label": ".findbyslug()"
     },
     {
@@ -8871,7 +9051,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_create",
-      "community": 22,
+      "community": 7,
       "norm_label": ".create()"
     },
     {
@@ -8881,7 +9061,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_update",
-      "community": 22,
+      "community": 7,
       "norm_label": ".update()"
     },
     {
@@ -8891,7 +9071,7 @@
       "source_location": "L199",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_setactive",
-      "community": 22,
+      "community": 7,
       "norm_label": ".setactive()"
     },
     {
@@ -8901,7 +9081,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_appendversion",
-      "community": 22,
+      "community": 7,
       "norm_label": ".appendversion()"
     },
     {
@@ -8911,7 +9091,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_profilemanager_php_profileversioninput",
-      "community": 22,
+      "community": 7,
       "norm_label": "profileversioninput"
     },
     {
@@ -8921,7 +9101,7 @@
       "source_location": "L243",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_latestversion",
-      "community": 22,
+      "community": 7,
       "norm_label": ".latestversion()"
     },
     {
@@ -8931,7 +9111,7 @@
       "source_location": "L253",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listversions",
-      "community": 22,
+      "community": 7,
       "norm_label": ".listversions()"
     },
     {
@@ -8941,7 +9121,7 @@
       "source_location": "L267",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_buildslug",
-      "community": 22,
+      "community": 13,
       "norm_label": ".buildslug()"
     },
     {
@@ -9221,7 +9401,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "lib_renewalengine_renewalengine_construct",
-      "community": 23,
+      "community": 198,
       "norm_label": ".__construct()"
     },
     {
@@ -9231,7 +9411,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_renewalengine_php_policyresolver",
-      "community": 23,
+      "community": 198,
       "norm_label": "policyresolver"
     },
     {
@@ -9241,7 +9421,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_renewalengine_php_servicerevenueresolver",
-      "community": 23,
+      "community": 198,
       "norm_label": "servicerevenueresolver"
     },
     {
@@ -9251,7 +9431,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_renewalengine_php_serviceconfigsnapshot",
-      "community": 23,
+      "community": 198,
       "norm_label": "serviceconfigsnapshot"
     },
     {
@@ -9751,7 +9931,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_selectionvalidator",
-      "community": 128,
+      "community": 58,
       "norm_label": "selectionvalidator.php"
     },
     {
@@ -9761,7 +9941,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "lib_selectionvalidator_selectionvalidator",
-      "community": 128,
+      "community": 58,
       "norm_label": "selectionvalidator"
     },
     {
@@ -9771,7 +9951,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "lib_selectionvalidator_selectionvalidator_construct",
-      "community": 128,
+      "community": 58,
       "norm_label": ".__construct()"
     },
     {
@@ -9781,7 +9961,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "configoptioncompatibilityrepository",
-      "community": 128,
+      "community": 58,
       "norm_label": "configoptioncompatibilityrepository"
     },
     {
@@ -9791,7 +9971,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_selectionvalidator_php_configoptioncapabilityrepository",
-      "community": 128,
+      "community": 58,
       "norm_label": "configoptioncapabilityrepository"
     },
     {
@@ -9801,7 +9981,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "lib_selectionvalidator_selectionvalidator_validate",
-      "community": 128,
+      "community": 58,
       "norm_label": ".validate()"
     },
     {
@@ -11271,7 +11451,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_backfillcommandtest",
-      "community": 17,
+      "community": 149,
       "norm_label": "backfillcommandtest.php"
     },
     {
@@ -11281,7 +11461,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "tests_backfillcommandtest_backfillcommandtest",
-      "community": 17,
+      "community": 149,
       "norm_label": "backfillcommandtest"
     },
     {
@@ -11291,7 +11471,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_backfillcommandtest_backfillcommandtest_setup",
-      "community": 17,
+      "community": 149,
       "norm_label": ".setup()"
     },
     {
@@ -11301,7 +11481,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_backfillcommandtest_backfillcommandtest_testruncreatespoliciesfromamountcolumn",
-      "community": 17,
+      "community": 149,
       "norm_label": ".testruncreatespoliciesfromamountcolumn()"
     },
     {
@@ -11311,7 +11491,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "tests_backfillcommandtest_backfillcommandtest_testcandidateloadfailureexitssafely",
-      "community": 17,
+      "community": 149,
       "norm_label": ".testcandidateloadfailureexitssafely()"
     },
     {
@@ -11491,7 +11671,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest",
-      "community": 109,
+      "community": 220,
       "norm_label": "catalogimportservicetest"
     },
     {
@@ -11501,7 +11681,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_setup",
-      "community": 109,
+      "community": 220,
       "norm_label": ".setup()"
     },
     {
@@ -11511,7 +11691,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testimportsonlyaddonownedversionanditems",
-      "community": 109,
+      "community": 220,
       "norm_label": ".testimportsonlyaddonownedversionanditems()"
     },
     {
@@ -11521,7 +11701,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testrepeatingsameversionandhashisnoop",
-      "community": 109,
+      "community": 220,
       "norm_label": ".testrepeatingsameversionandhashisnoop()"
     },
     {
@@ -11531,7 +11711,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testtamperedenvelopeisrejectedbeforewrite",
-      "community": 109,
+      "community": 220,
       "norm_label": ".testtamperedenvelopeisrejectedbeforewrite()"
     },
     {
@@ -11541,7 +11721,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_catalog",
-      "community": 109,
+      "community": 220,
       "norm_label": ".catalog()"
     },
     {
@@ -11841,7 +12021,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_configoptioncompatibilityrepositorytest",
-      "community": 128,
+      "community": 58,
       "norm_label": "configoptioncompatibilityrepositorytest.php"
     },
     {
@@ -12101,7 +12281,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest",
-      "community": 148,
+      "community": 7,
       "norm_label": "configpurgeservicetest.php"
     },
     {
@@ -12111,7 +12291,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest",
-      "community": 148,
+      "community": 7,
       "norm_label": "configpurgeservicetest"
     },
     {
@@ -12121,7 +12301,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_setup",
-      "community": 148,
+      "community": 7,
       "norm_label": ".setup()"
     },
     {
@@ -12131,7 +12311,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_seed",
-      "community": 148,
+      "community": 7,
       "norm_label": ".seed()"
     },
     {
@@ -12141,7 +12321,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testremovesonlyaddoncreatedobjects",
-      "community": 148,
+      "community": 7,
       "norm_label": ".testremovesonlyaddoncreatedobjects()"
     },
     {
@@ -12151,7 +12331,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testidempotentsecondrundeletesnothing",
-      "community": 148,
+      "community": 7,
       "norm_label": ".testidempotentsecondrundeletesnothing()"
     },
     {
@@ -12161,7 +12341,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testnolinksdeletesnothing",
-      "community": 148,
+      "community": 7,
       "norm_label": ".testnolinksdeletesnothing()"
     },
     {
@@ -12171,7 +12351,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testpreviewremovalcountsbutdeletesnothing",
-      "community": 148,
+      "community": 7,
       "norm_label": ".testpreviewremovalcountsbutdeletesnothing()"
     },
     {
@@ -12181,7 +12361,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testpreviewmatchesactualremovalcounts",
-      "community": 148,
+      "community": 7,
       "norm_label": ".testpreviewmatchesactualremovalcounts()"
     },
     {
@@ -12191,7 +12371,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testpreviewwithnolinksisallzeros",
-      "community": 148,
+      "community": 7,
       "norm_label": ".testpreviewwithnolinksisallzeros()"
     },
     {
@@ -12361,7 +12541,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest",
-      "community": 208,
+      "community": 27,
       "norm_label": "configurableoptionssyncerdifftest.php"
     },
     {
@@ -12371,7 +12551,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest",
-      "community": 208,
+      "community": 27,
       "norm_label": "configurableoptionssyncerdifftest"
     },
     {
@@ -12381,7 +12561,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_setup",
-      "community": 208,
+      "community": 27,
       "norm_label": ".setup()"
     },
     {
@@ -12391,7 +12571,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_syncer",
-      "community": 208,
+      "community": 27,
       "norm_label": ".syncer()"
     },
     {
@@ -12401,7 +12581,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_configurableoptionssyncerdifftest_php_configoptionlinkrepository",
-      "community": 208,
+      "community": 27,
       "norm_label": "configoptionlinkrepository"
     },
     {
@@ -12411,7 +12591,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_configurableoptionssyncerdifftest_php_configurableoptionssyncer",
-      "community": 208,
+      "community": 27,
       "norm_label": "configurableoptionssyncer"
     },
     {
@@ -12421,7 +12601,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_spec",
-      "community": 208,
+      "community": 27,
       "norm_label": ".spec()"
     },
     {
@@ -12431,7 +12611,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_seedliveoption",
-      "community": 208,
+      "community": 27,
       "norm_label": ".seedliveoption()"
     },
     {
@@ -12441,7 +12621,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_testdiffclassifieseachdimension",
-      "community": 208,
+      "community": 27,
       "norm_label": ".testdiffclassifieseachdimension()"
     },
     {
@@ -12451,7 +12631,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_testdiffwritesnothing",
-      "community": 208,
+      "community": 27,
       "norm_label": ".testdiffwritesnothing()"
     },
     {
@@ -12831,7 +13011,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest",
-      "community": 137,
+      "community": 7,
       "norm_label": "currencysupportreporttest.php"
     },
     {
@@ -12841,7 +13021,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest",
-      "community": 137,
+      "community": 7,
       "norm_label": "currencysupportreporttest"
     },
     {
@@ -12851,7 +13031,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_setup",
-      "community": 137,
+      "community": 7,
       "norm_label": ".setup()"
     },
     {
@@ -12861,7 +13041,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_seedcurrencies",
-      "community": 137,
+      "community": 7,
       "norm_label": ".seedcurrencies()"
     },
     {
@@ -12871,7 +13051,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testallinrservicescleanverdict",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testallinrservicescleanverdict()"
     },
     {
@@ -12881,7 +13061,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testonecancelledusdserviceonlystaysclean",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testonecancelledusdserviceonlystaysclean()"
     },
     {
@@ -12891,7 +13071,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testnoninractiveunmappedislatent",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testnoninractiveunmappedislatent()"
     },
     {
@@ -12901,7 +13081,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testnoninractivemappedisactiverisk",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testnoninractivemappedisactiverisk()"
     },
     {
@@ -12911,7 +13091,7 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testclassifypurelogic",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testclassifypurelogic()"
     },
     {
@@ -12921,7 +13101,7 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testbasecurrencyflaggedbyid",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testbasecurrencyflaggedbyid()"
     },
     {
@@ -13201,7 +13381,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_dimensionparsertest",
-      "community": 92,
+      "community": 6,
       "norm_label": "dimensionparsertest.php"
     },
     {
@@ -13211,7 +13391,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest",
-      "community": 92,
+      "community": 6,
       "norm_label": "dimensionparsertest"
     },
     {
@@ -13221,7 +13401,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_options",
-      "community": 92,
+      "community": 6,
       "norm_label": ".options()"
     },
     {
@@ -13231,7 +13411,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_indexbydimensionkey",
-      "community": 92,
+      "community": 6,
       "norm_label": ".indexbydimensionkey()"
     },
     {
@@ -13241,7 +13421,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testimagebecomesexactlyonespec",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testimagebecomesexactlyonespec()"
     },
     {
@@ -13251,7 +13431,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testnetworkingsplitsintothreespecs",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testnetworkingsplitsintothreespecs()"
     },
     {
@@ -13261,7 +13441,7 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testnetworkingconcernscarryonlytheirownrows",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testnetworkingconcernscarryonlytheirownrows()"
     },
     {
@@ -13271,7 +13451,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testnetworkingoptiontypes",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testnetworkingoptiontypes()"
     },
     {
@@ -13281,7 +13461,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testregionstoragedataprotectioneachonespec",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testregionstoragedataprotectioneachonespec()"
     },
     {
@@ -13291,7 +13471,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testsinglechoiceoptiontypes",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testsinglechoiceoptiontypes()"
     },
     {
@@ -13301,7 +13481,7 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testtotalspeccount",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testtotalspeccount()"
     },
     {
@@ -13311,7 +13491,7 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testsinglevaluedimensionisomitted",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testsinglevaluedimensionisomitted()"
     },
     {
@@ -13321,7 +13501,7 @@
       "source_location": "L182",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testsinglevaluenetworkingconcernomitted",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testsinglevaluenetworkingconcernomitted()"
     },
     {
@@ -13331,7 +13511,7 @@
       "source_location": "L202",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testdeltaspassedthroughunclamped",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testdeltaspassedthroughunclamped()"
     },
     {
@@ -13341,7 +13521,7 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testunknowndimensionstillsurfacesasspec",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testunknowndimensionstillsurfacesasspec()"
     },
     {
@@ -13351,7 +13531,7 @@
       "source_location": "L229",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testnonarraydimensionignored",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testnonarraydimensionignored()"
     },
     {
@@ -13361,7 +13541,7 @@
       "source_location": "L241",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testclampdeltafloorsnegativetozero",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testclampdeltafloorsnegativetozero()"
     },
     {
@@ -13371,7 +13551,7 @@
       "source_location": "L246",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testclampdeltazerostayszero",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testclampdeltazerostayszero()"
     },
     {
@@ -13381,7 +13561,7 @@
       "source_location": "L251",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testclampdeltapositivepassesthrough",
-      "community": 92,
+      "community": 6,
       "norm_label": ".testclampdeltapositivepassesthrough()"
     },
     {
@@ -13561,7 +13741,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest",
-      "community": 198,
+      "community": 17,
       "norm_label": "emailtemplateseedertest.php"
     },
     {
@@ -13571,7 +13751,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest",
-      "community": 198,
+      "community": 17,
       "norm_label": "emailtemplateseedertest"
     },
     {
@@ -13581,7 +13761,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_setup",
-      "community": 198,
+      "community": 17,
       "norm_label": ".setup()"
     },
     {
@@ -13591,7 +13771,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_testlifecycletemplatesareinstalledwithoutcredentials",
-      "community": 198,
+      "community": 17,
       "norm_label": ".testlifecycletemplatesareinstalledwithoutcredentials()"
     },
     {
@@ -13601,7 +13781,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_testseedingandmigrationareidempotent",
-      "community": 198,
+      "community": 17,
       "norm_label": ".testseedingandmigrationareidempotent()"
     },
     {
@@ -13611,7 +13791,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_testmigrationdoesnotoverwriteadministratorcustomisation",
-      "community": 198,
+      "community": 17,
       "norm_label": ".testmigrationdoesnotoverwriteadministratorcustomisation()"
     },
     {
@@ -14565,6 +14745,96 @@
       "norm_label": ".testprovisioningsuitemigrationisidempotent()"
     },
     {
+      "label": "GoldenApiContractTest.php",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tests_goldenapicontracttest",
+      "community": 92,
+      "norm_label": "goldenapicontracttest.php"
+    },
+    {
+      "label": "GoldenApiContractTest",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "tests_goldenapicontracttest_goldenapicontracttest",
+      "community": 92,
+      "norm_label": "goldenapicontracttest"
+    },
+    {
+      "label": ".setUp()",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "tests_goldenapicontracttest_goldenapicontracttest_setup",
+      "community": 92,
+      "norm_label": ".setup()"
+    },
+    {
+      "label": ".testAllRequiredGoldenFixturesArePresentAndNestedTypesAreStable()",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "tests_goldenapicontracttest_goldenapicontracttest_testallrequiredgoldenfixturesarepresentandnestedtypesarestable",
+      "community": 92,
+      "norm_label": ".testallrequiredgoldenfixturesarepresentandnestedtypesarestable()"
+    },
+    {
+      "label": ".testGoldenCatalogIsAcceptedByTheWhmcsConsumerWithoutProductWrites()",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L87",
+      "_origin": "ast",
+      "id": "tests_goldenapicontracttest_goldenapicontracttest_testgoldencatalogisacceptedbythewhmcsconsumerwithoutproductwrites",
+      "community": 92,
+      "norm_label": ".testgoldencatalogisacceptedbythewhmcsconsumerwithoutproductwrites()"
+    },
+    {
+      "label": ".testDocumentedWhmcsSchemaVersionMatchesInstaller()",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L113",
+      "_origin": "ast",
+      "id": "tests_goldenapicontracttest_goldenapicontracttest_testdocumentedwhmcsschemaversionmatchesinstaller",
+      "community": 92,
+      "norm_label": ".testdocumentedwhmcsschemaversionmatchesinstaller()"
+    },
+    {
+      "label": ".fixture()",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L124",
+      "_origin": "ast",
+      "id": "tests_goldenapicontracttest_goldenapicontracttest_fixture",
+      "community": 92,
+      "norm_label": ".fixture()"
+    },
+    {
+      "label": ".requiredRoutes()",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L143",
+      "_origin": "ast",
+      "id": "tests_goldenapicontracttest_goldenapicontracttest_requiredroutes",
+      "community": 92,
+      "norm_label": ".requiredroutes()"
+    },
+    {
+      "label": ".repositoryRoot()",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L161",
+      "_origin": "ast",
+      "id": "tests_goldenapicontracttest_goldenapicontracttest_repositoryroot",
+      "community": 92,
+      "norm_label": ".repositoryroot()"
+    },
+    {
       "label": "ImageOptionNormalizerTest.php",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ImageOptionNormalizerTest.php",
@@ -14961,7 +15231,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest",
-      "community": 109,
+      "community": 102,
       "norm_label": "mappingpublicationservicetest"
     },
     {
@@ -14971,7 +15241,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_setup",
-      "community": 109,
+      "community": 102,
       "norm_label": ".setup()"
     },
     {
@@ -14981,7 +15251,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_testpreviewisidempotentanddoesnotadvancemapping",
-      "community": 109,
+      "community": 102,
       "norm_label": ".testpreviewisidempotentanddoesnotadvancemapping()"
     },
     {
@@ -14991,7 +15261,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_testapprovalatomicallyadvancespublishedpointer",
-      "community": 109,
+      "community": 102,
       "norm_label": ".testapprovalatomicallyadvancespublishedpointer()"
     },
     {
@@ -15001,7 +15271,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_testchangedpreviewhashcannotbeapproved",
-      "community": 109,
+      "community": 102,
       "norm_label": ".testchangedpreviewhashcannotbeapproved()"
     },
     {
@@ -15011,7 +15281,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_testtypedconfirmationisrequired",
-      "community": 109,
+      "community": 102,
       "norm_label": ".testtypedconfirmationisrequired()"
     },
     {
@@ -15021,7 +15291,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_selection",
-      "community": 109,
+      "community": 102,
       "norm_label": ".selection()"
     },
     {
@@ -15031,7 +15301,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest",
-      "community": 102,
+      "community": 17,
       "norm_label": "mappingrepositorytest.php"
     },
     {
@@ -15041,7 +15311,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest_mappingrepositorytest",
-      "community": 102,
+      "community": 17,
       "norm_label": "mappingrepositorytest"
     },
     {
@@ -15051,7 +15321,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest_mappingrepositorytest_setup",
-      "community": 102,
+      "community": 17,
       "norm_label": ".setup()"
     },
     {
@@ -15061,7 +15331,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest_mappingrepositorytest_testinsertusescatalogandrenewalmasks",
-      "community": 102,
+      "community": 17,
       "norm_label": ".testinsertusescatalogandrenewalmasks()"
     },
     {
@@ -15071,7 +15341,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest_mappingrepositorytest_testlegacyfieldsrejectedfromruntimepayload",
-      "community": 102,
+      "community": 17,
       "norm_label": ".testlegacyfieldsrejectedfromruntimepayload()"
     },
     {
@@ -15081,7 +15351,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest_mappingrepositorytest_testmasksareclampedandboolscoerced",
-      "community": 102,
+      "community": 17,
       "norm_label": ".testmasksareclampedandboolscoerced()"
     },
     {
@@ -15091,7 +15361,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest_mappingrepositorytest_testjsonarrayisencodedtostring",
-      "community": 102,
+      "community": 17,
       "norm_label": ".testjsonarrayisencodedtostring()"
     },
     {
@@ -15101,7 +15371,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest_mappingrepositorytest_testsourceoverridesjsonpersisted",
-      "community": 102,
+      "community": 17,
       "norm_label": ".testsourceoverridesjsonpersisted()"
     },
     {
@@ -15111,7 +15381,7 @@
       "source_location": "L144",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest_mappingrepositorytest_testcreateorupdateupdatesexistingrow",
-      "community": 102,
+      "community": 17,
       "norm_label": ".testcreateorupdateupdatesexistingrow()"
     },
     {
@@ -15121,7 +15391,7 @@
       "source_location": "L170",
       "_origin": "ast",
       "id": "tests_mappingrepositorytest_mappingrepositorytest_testfindreturnsnullwhenabsent",
-      "community": 102,
+      "community": 17,
       "norm_label": ".testfindreturnsnullwhenabsent()"
     },
     {
@@ -16141,7 +16411,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest",
-      "community": 128,
+      "community": 58,
       "norm_label": "profileconfigwiringtest.php"
     },
     {
@@ -17491,7 +17761,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_selectionvalidatortest",
-      "community": 128,
+      "community": 58,
       "norm_label": "selectionvalidatortest.php"
     },
     {
@@ -17721,7 +17991,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_servicepricewritertest",
-      "community": 17,
+      "community": 123,
       "norm_label": "servicepricewritertest.php"
     },
     {
@@ -17731,7 +18001,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest",
-      "community": 17,
+      "community": 123,
       "norm_label": "servicepricewritertest"
     },
     {
@@ -17741,7 +18011,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_setup",
-      "community": 17,
+      "community": 123,
       "norm_label": ".setup()"
     },
     {
@@ -17751,7 +18021,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_teardown",
-      "community": 17,
+      "community": 123,
       "norm_label": ".teardown()"
     },
     {
@@ -17761,7 +18031,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_testdisabledinphaseawritesnothing",
-      "community": 17,
+      "community": 123,
       "norm_label": ".testdisabledinphaseawritesnothing()"
     },
     {
@@ -17771,7 +18041,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_testlocalapipayloadusesrecurringamountparam",
-      "community": 17,
+      "community": 123,
       "norm_label": ".testlocalapipayloadusesrecurringamountparam()"
     },
     {
@@ -17781,7 +18051,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_testrawfallbackwritesamountcolumn",
-      "community": 17,
+      "community": 123,
       "norm_label": ".testrawfallbackwritesamountcolumn()"
     },
     {
@@ -18321,7 +18591,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_stdclassmodetest",
-      "community": 73,
+      "community": 27,
       "norm_label": "stdclassmodetest.php"
     },
     {
@@ -18331,7 +18601,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest",
-      "community": 73,
+      "community": 27,
       "norm_label": "stdclassmodetest"
     },
     {
@@ -18341,7 +18611,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_setup",
-      "community": 73,
+      "community": 27,
       "norm_label": ".setup()"
     },
     {
@@ -18351,7 +18621,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_teardown",
-      "community": 73,
+      "community": 27,
       "norm_label": ".teardown()"
     },
     {
@@ -18361,7 +18631,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_specs",
-      "community": 73,
+      "community": 27,
       "norm_label": ".specs()"
     },
     {
@@ -18371,7 +18641,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_ctx",
-      "community": 73,
+      "community": 27,
       "norm_label": ".ctx()"
     },
     {
@@ -18381,7 +18651,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_stdclassmodetest_php_configoptionpricingcontext",
-      "community": 73,
+      "community": 27,
       "norm_label": "configoptionpricingcontext"
     },
     {
@@ -18391,7 +18661,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_syncer",
-      "community": 73,
+      "community": 27,
       "norm_label": ".syncer()"
     },
     {
@@ -18401,7 +18671,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_stdclassmodetest_php_configoptionlinkrepository",
-      "community": 73,
+      "community": 27,
       "norm_label": "configoptionlinkrepository"
     },
     {
@@ -18411,7 +18681,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_stdclassmodetest_php_configurableoptionssyncer",
-      "community": 73,
+      "community": 27,
       "norm_label": "configurableoptionssyncer"
     },
     {
@@ -18421,7 +18691,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_testlinkrepofindreturnsusablearrayunderstdclass",
-      "community": 73,
+      "community": 27,
       "norm_label": ".testlinkrepofindreturnsusablearrayunderstdclass()"
     },
     {
@@ -18431,7 +18701,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_testapplyreapplyanddriftsurvivestdclass",
-      "community": 73,
+      "community": 27,
       "norm_label": ".testapplyreapplyanddriftsurvivestdclass()"
     },
     {
@@ -18441,7 +18711,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_testservicerevenueresolversurvivesstdclass",
-      "community": 73,
+      "community": 27,
       "norm_label": ".testservicerevenueresolversurvivesstdclass()"
     },
     {
@@ -19071,7 +19341,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_whmcsconfigoptionsadaptertest",
-      "community": 123,
+      "community": 47,
       "norm_label": "whmcsconfigoptionsadaptertest.php"
     },
     {
@@ -19341,7 +19611,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "integration_whmcs_smoke",
-      "community": 223,
+      "community": 27,
       "norm_label": "whmcs_smoke.php"
     },
     {
@@ -19351,7 +19621,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "integration_whmcs_smoke_smoke_assert",
-      "community": 223,
+      "community": 27,
       "norm_label": "smoke_assert()"
     },
     {
@@ -19361,7 +19631,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "integration_whmcs_smoke_smoke_section",
-      "community": 223,
+      "community": 27,
       "norm_label": "smoke_section()"
     },
     {
@@ -19371,7 +19641,7 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "integration_whmcs_smoke_smoke_note",
-      "community": 223,
+      "community": 27,
       "norm_label": "smoke_note()"
     },
     {
@@ -19391,7 +19661,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_metadata",
-      "community": 214,
+      "community": 15,
       "norm_label": "contabo_vps_metadata()"
     },
     {
@@ -19401,7 +19671,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_configoptions",
-      "community": 214,
+      "community": 15,
       "norm_label": "contabo_vps_configoptions()"
     },
     {
@@ -19481,7 +19751,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_buttonstart",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_buttonstart()"
     },
     {
@@ -19491,7 +19761,7 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_buttonstop",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_buttonstop()"
     },
     {
@@ -19521,7 +19791,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_buttonreinstall",
-      "community": 39,
+      "community": 90,
       "norm_label": "contabo_vps_buttonreinstall()"
     },
     {
@@ -19551,7 +19821,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientareacustombuttonarray",
-      "community": 15,
+      "community": 90,
       "norm_label": "contabo_vps_clientareacustombuttonarray()"
     },
     {
@@ -19561,7 +19831,7 @@
       "source_location": "L122",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientstart",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_clientstart()"
     },
     {
@@ -19571,7 +19841,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientstop",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_clientstop()"
     },
     {
@@ -19581,7 +19851,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientrestart",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_clientrestart()"
     },
     {
@@ -19591,7 +19861,7 @@
       "source_location": "L140",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientresetpassword",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_clientresetpassword()"
     },
     {
@@ -21481,7 +21751,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_onetimesecretstore",
-      "community": 42,
+      "community": 7,
       "norm_label": "onetimesecretstore.php"
     },
     {
@@ -21491,7 +21761,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore",
-      "community": 42,
+      "community": 7,
       "norm_label": "onetimesecretstore"
     },
     {
@@ -21501,7 +21771,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_store",
-      "community": 42,
+      "community": 7,
       "norm_label": ".store()"
     },
     {
@@ -21511,7 +21781,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_prepareforoperation",
-      "community": 42,
+      "community": 7,
       "norm_label": ".prepareforoperation()"
     },
     {
@@ -21521,7 +21791,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_reveal",
-      "community": 42,
+      "community": 7,
       "norm_label": ".reveal()"
     },
     {
@@ -21531,7 +21801,7 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_availableforservice",
-      "community": 42,
+      "community": 7,
       "norm_label": ".availableforservice()"
     },
     {
@@ -21541,7 +21811,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_destroyexpired",
-      "community": 42,
+      "community": 7,
       "norm_label": ".destroyexpired()"
     },
     {
@@ -21831,7 +22101,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_operationrepository",
-      "community": 101,
+      "community": 42,
       "norm_label": "operationrepository.php"
     },
     {
@@ -21841,7 +22111,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository",
-      "community": 101,
+      "community": 42,
       "norm_label": "operationrepository"
     },
     {
@@ -21851,7 +22121,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_accept",
-      "community": 101,
+      "community": 42,
       "norm_label": ".accept()"
     },
     {
@@ -21861,7 +22131,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_acceptunlocked",
-      "community": 101,
+      "community": 42,
       "norm_label": ".acceptunlocked()"
     },
     {
@@ -21871,7 +22141,7 @@
       "source_location": "L177",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_byuuid",
-      "community": 101,
+      "community": 42,
       "norm_label": ".byuuid()"
     },
     {
@@ -21881,7 +22151,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_latestforservicetype",
-      "community": 101,
+      "community": 42,
       "norm_label": ".latestforservicetype()"
     },
     {
@@ -21891,7 +22161,7 @@
       "source_location": "L200",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_latestlifecycleintent",
-      "community": 101,
+      "community": 42,
       "norm_label": ".latestlifecycleintent()"
     },
     {
@@ -21901,7 +22171,7 @@
       "source_location": "L211",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_supersedeolderlifecycleintents",
-      "community": 101,
+      "community": 42,
       "norm_label": ".supersedeolderlifecycleintents()"
     },
     {
@@ -21911,7 +22181,7 @@
       "source_location": "L244",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_claim",
-      "community": 101,
+      "community": 42,
       "norm_label": ".claim()"
     },
     {
@@ -21921,7 +22191,7 @@
       "source_location": "L318",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_renew",
-      "community": 101,
+      "community": 42,
       "norm_label": ".renew()"
     },
     {
@@ -21931,7 +22201,7 @@
       "source_location": "L423",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_transition",
-      "community": 101,
+      "community": 42,
       "norm_label": ".transition()"
     },
     {
@@ -21941,7 +22211,7 @@
       "source_location": "L437",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_attempt",
-      "community": 101,
+      "community": 42,
       "norm_label": ".attempt()"
     },
     {
@@ -21951,7 +22221,7 @@
       "source_location": "L464",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_due",
-      "community": 101,
+      "community": 42,
       "norm_label": ".due()"
     },
     {
@@ -21961,7 +22231,7 @@
       "source_location": "L500",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_release",
-      "community": 101,
+      "community": 42,
       "norm_label": ".release()"
     },
     {
@@ -22361,7 +22631,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_metadata",
-      "community": 214,
+      "community": 15,
       "norm_label": "securiacevps_metadata()"
     },
     {
@@ -22371,7 +22641,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_configoptions",
-      "community": 214,
+      "community": 15,
       "norm_label": "securiacevps_configoptions()"
     },
     {
@@ -22381,7 +22651,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_testconnection",
-      "community": 15,
+      "community": 91,
       "norm_label": "securiacevps_testconnection()"
     },
     {
@@ -22391,7 +22661,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_createaccount",
-      "community": 217,
+      "community": 91,
       "norm_label": "securiacevps_createaccount()"
     },
     {
@@ -22401,7 +22671,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_suspendaccount",
-      "community": 91,
+      "community": 96,
       "norm_label": "securiacevps_suspendaccount()"
     },
     {
@@ -22481,7 +22751,7 @@
       "source_location": "L201",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_buttonresetpassword",
-      "community": 91,
+      "community": 90,
       "norm_label": "securiacevps_buttonresetpassword()"
     },
     {
@@ -22491,7 +22761,7 @@
       "source_location": "L207",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_buttonreinstall",
-      "community": 39,
+      "community": 90,
       "norm_label": "securiacevps_buttonreinstall()"
     },
     {
@@ -22511,7 +22781,7 @@
       "source_location": "L225",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_adminservicestabfields",
-      "community": 91,
+      "community": 56,
       "norm_label": "securiacevps_adminservicestabfields()"
     },
     {
@@ -22521,7 +22791,7 @@
       "source_location": "L263",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_clientareacustombuttonarray",
-      "community": 15,
+      "community": 90,
       "norm_label": "securiacevps_clientareacustombuttonarray()"
     },
     {
@@ -22631,7 +22901,7 @@
       "source_location": "L530",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_cached_ip",
-      "community": 91,
+      "community": 56,
       "norm_label": "_securiacevps_cached_ip()"
     },
     {
@@ -23141,7 +23411,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_compatibilityshimtest_compatibilityshimtest_testlegacyentrypointdelegatestocanonicalmodule",
-      "community": 214,
+      "community": 15,
       "norm_label": ".testlegacyentrypointdelegatestocanonicalmodule()"
     },
     {
@@ -24111,7 +24381,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "tests_logredactiontest_logredactiontest_testloggermaskssecretbearingrequests",
-      "community": 45,
+      "community": 91,
       "norm_label": ".testloggermaskssecretbearingrequests()"
     },
     {
@@ -24311,7 +24581,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "tests_nativelifecycletest_nativelifecycletest_testcreatewaitsforreadinessandneversubmitstwice",
-      "community": 217,
+      "community": 91,
       "norm_label": ".testcreatewaitsforreadinessandneversubmitstwice()"
     },
     {
@@ -24321,7 +24591,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "tests_nativelifecycletest_nativelifecycletest_testcreatepreflightfailuredoesnotstrandsubmissionmarker",
-      "community": 217,
+      "community": 91,
       "norm_label": ".testcreatepreflightfailuredoesnotstrandsubmissionmarker()"
     },
     {
@@ -24331,7 +24601,7 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "tests_nativelifecycletest_nativelifecycletest_testdelayedcreatecannotreactivatecancelledservice",
-      "community": 217,
+      "community": 91,
       "norm_label": ".testdelayedcreatecannotreactivatecancelledservice()"
     },
     {
@@ -24341,7 +24611,7 @@
       "source_location": "L210",
       "_origin": "ast",
       "id": "tests_nativelifecycletest_nativelifecycletest_testproviderwritekillswitchblocksbeforesubmission",
-      "community": 217,
+      "community": 91,
       "norm_label": ".testproviderwritekillswitchblocksbeforesubmission()"
     },
     {
@@ -24661,7 +24931,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_reinstallflowtest_reinstallflowtest_testadminreinstallcallbackdelegatestodurablelifecycle",
-      "community": 39,
+      "community": 90,
       "norm_label": ".testadminreinstallcallbackdelegatestodurablelifecycle()"
     },
     {
@@ -24711,7 +24981,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_resetpasswordflowtest_resetpasswordflowtest_testcustomercustombuttonsneverexposeuncertifiedreset",
-      "community": 15,
+      "community": 90,
       "norm_label": ".testcustomercustombuttonsneverexposeuncertifiedreset()"
     },
     {
@@ -26048,7 +26318,7 @@
       "label": "API 1.1 \u2014 current",
       "file_type": "document",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L20",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "schema_version_api_1_1_current",
       "community": 76,
@@ -26058,17 +26328,27 @@
       "label": "Added",
       "file_type": "document",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L22",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "schema_version_added",
       "community": 76,
       "norm_label": "added"
     },
     {
+      "label": "Contract fixtures",
+      "file_type": "document",
+      "source_file": "SCHEMA_VERSION.md",
+      "source_location": "L29",
+      "_origin": "ast",
+      "id": "schema_version_contract_fixtures",
+      "community": 76,
+      "norm_label": "contract fixtures"
+    },
+    {
       "label": "Renamed / Removed",
       "file_type": "document",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L26",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "schema_version_renamed_removed",
       "community": 76,
@@ -26078,49 +26358,49 @@
       "label": "Migration",
       "file_type": "document",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L29",
+      "source_location": "L41",
       "_origin": "ast",
       "id": "schema_version_migration",
       "community": 76,
       "norm_label": "migration"
     },
     {
+      "label": "Catalog exchange 1.0 \u2014 current",
+      "file_type": "document",
+      "source_file": "SCHEMA_VERSION.md",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "schema_version_catalog_exchange_1_0_current",
+      "community": 76,
+      "norm_label": "catalog exchange 1.0 \u2014 current"
+    },
+    {
       "label": "API 1.0 \u2014 initial",
       "file_type": "document",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L34",
+      "source_location": "L59",
       "_origin": "ast",
       "id": "schema_version_api_1_0_initial",
       "community": 76,
       "norm_label": "api 1.0 \u2014 initial"
     },
     {
-      "label": "WHMCS DB 7 \u2014 current (`Installer::SCHEMA_VERSION = 7`)",
+      "label": "WHMCS DB 14 \u2014 current",
       "file_type": "document",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L44",
+      "source_location": "L69",
       "_origin": "ast",
-      "id": "schema_version_whmcs_db_7_current_installer_schema_version_7",
+      "id": "schema_version_whmcs_db_14_current",
       "community": 76,
-      "norm_label": "whmcs db 7 \u2014 current (`installer::schema_version = 7`)"
-    },
-    {
-      "label": "Added (v7)",
-      "file_type": "document",
-      "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L64",
-      "_origin": "ast",
-      "id": "schema_version_added_v7",
-      "community": 76,
-      "norm_label": "added (v7)"
+      "norm_label": "whmcs db 14 \u2014 current"
     },
     {
       "label": "Migration",
       "file_type": "document",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L67",
+      "source_location": "L104",
       "_origin": "ast",
-      "id": "schema_version_migration_67",
+      "id": "schema_version_migration_104",
       "community": 76,
       "norm_label": "migration"
     },
@@ -26128,7 +26408,7 @@
       "label": "WHMCS DB 1 \u2014 initial",
       "file_type": "document",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L74",
+      "source_location": "L113",
       "_origin": "ast",
       "id": "schema_version_whmcs_db_1_initial",
       "community": 76,
@@ -26138,7 +26418,7 @@
       "label": "Rules",
       "file_type": "document",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L86",
+      "source_location": "L125",
       "_origin": "ast",
       "id": "schema_version_rules",
       "community": 76,
@@ -29475,7 +29755,7 @@
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProfileManager.php",
       "source_location": "L54",
-      "community": 22,
+      "community": 7,
       "norm_label": ".__construct()",
       "id": "profilemanager_profilemanager_construct"
     },
@@ -31032,7 +31312,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 59,
       "norm_label": "syncengine (catalog-only writer)",
       "id": "sync_engine"
     },
@@ -31578,7 +31858,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 63,
+      "community": 80,
       "norm_label": "image is one mutually-exclusive choice",
       "id": "image_one_choice_rule"
     },
@@ -31643,7 +31923,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 59,
       "norm_label": "50% suspicious-change guard",
       "id": "suspicious_change_guard"
     },
@@ -31773,7 +32053,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 59,
+      "community": 63,
       "norm_label": "servicerevenueresolver (true revenue, not recurringamount)",
       "id": "service_revenue_resolver"
     },
@@ -31851,7 +32131,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 63,
+      "community": 80,
       "norm_label": "imageoptionnormalizer (34 images -> 1 option)",
       "id": "image_option_normalizer"
     },
@@ -31916,7 +32196,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 106,
+      "community": 63,
       "norm_label": "whmcsconfigoptionsadapter (sole tblproduct* write chokepoint)",
       "id": "whmcs_config_options_adapter"
     },
@@ -31929,7 +32209,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 59,
+      "community": 63,
       "norm_label": "margincalculator / landedcostwithselections",
       "id": "margin_calculator"
     },
@@ -31955,7 +32235,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 106,
+      "community": 63,
       "norm_label": "10 binding amendments (a.5.2 review round 2)",
       "id": "ten_amendments"
     },
@@ -31968,7 +32248,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 106,
+      "community": 63,
       "norm_label": "inr-only v1 currency guard",
       "id": "inr_only_currency_guard"
     },
@@ -32033,7 +32313,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 63,
+      "community": 80,
       "norm_label": "dimensionparser",
       "id": "dimension_parser"
     },
@@ -34271,6 +34551,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/api/handlers.rs",
+      "source_location": "L401",
+      "weight": 1.0,
+      "source": "api_handlers",
+      "target": "api_handlers_openapi_document",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/api/handlers.rs",
       "source_location": "L36",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -34505,6 +34795,17 @@
       "target": "json"
     },
     {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L9",
+      "weight": 1.0,
+      "context": "import",
+      "source": "tests_schema_contract",
+      "target": "json",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/api/handlers.rs",
@@ -34602,6 +34903,17 @@
       "confidence_score": 1.0,
       "source": "api_handlers_openapi",
       "target": "src_api_handlers_rs_value"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/api/handlers.rs",
+      "source_location": "L401",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "api_handlers_openapi_document",
+      "target": "src_api_handlers_rs_value",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -34978,6 +35290,17 @@
       "target": "query"
     },
     {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L182",
+      "weight": 1.0,
+      "source": "tests_schema_contract_runtime_responses_match_complete_golden_contract",
+      "target": "query"
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/api/handlers.rs",
@@ -35163,6 +35486,17 @@
       "confidence_score": 1.0,
       "source": "api_handlers_quoteresponse",
       "target": "src_api_handlers_rs_vec"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/api/handlers.rs",
+      "source_location": "L396",
+      "weight": 1.0,
+      "source": "api_handlers_openapi",
+      "target": "api_handlers_openapi_document",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -38779,6 +39113,315 @@
       "confidence_score": 1.0,
       "source": "tests_common_mod_rs",
       "target": "common_mod_spawn_server"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L110",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_assert_same_shape",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_create_snapshot_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_fetchmode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_fixture_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_load_fixture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_opts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L6",
+      "weight": 1.0,
+      "context": "import",
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_rs_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_run_scrape",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L147",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_runtime_responses_match_complete_golden_contract",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L246",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_schema_constants_and_documentation_are_aligned",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "tests_schema_contract",
+      "target": "tests_schema_contract_write_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L32",
+      "weight": 1.0,
+      "context": "field",
+      "source": "tests_schema_contract_opts",
+      "target": "tests_schema_contract_fetchmode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L34",
+      "weight": 1.0,
+      "context": "field",
+      "source": "tests_schema_contract_opts",
+      "target": "tests_schema_contract_rs_option",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L33",
+      "weight": 1.0,
+      "context": "field",
+      "source": "tests_schema_contract_opts",
+      "target": "tests_schema_contract_rs_pathbuf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L34",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "tests_schema_contract_opts",
+      "target": "tests_schema_contract_rs_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L27",
+      "weight": 1.0,
+      "context": "generic_arg",
+      "source": "tests_schema_contract_opts",
+      "target": "tests_schema_contract_rs_vec",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L37",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "tests_schema_contract_run_scrape",
+      "target": "tests_schema_contract_opts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L66",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "tests_schema_contract_create_snapshot_dir",
+      "target": "tests_schema_contract_rs_pathbuf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L44",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "tests_schema_contract_fixture_dir",
+      "target": "tests_schema_contract_rs_pathbuf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "tests_schema_contract_load_fixture",
+      "target": "tests_schema_contract_fixture_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "tests_schema_contract_create_snapshot_dir",
+      "target": "tests_schema_contract_load_fixture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L52",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "tests_schema_contract_load_fixture",
+      "target": "tests_schema_contract_rs_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L176",
+      "weight": 1.0,
+      "source": "tests_schema_contract_runtime_responses_match_complete_golden_contract",
+      "target": "tests_schema_contract_load_fixture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L110",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "tests_schema_contract_assert_same_shape",
+      "target": "tests_schema_contract_rs_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L60",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "tests_schema_contract_write_json",
+      "target": "tests_schema_contract_rs_value",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "tests_schema_contract_create_snapshot_dir",
+      "target": "tests_schema_contract_write_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L60",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "tests_schema_contract_write_json",
+      "target": "tests_schema_contract_rs_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L161",
+      "weight": 1.0,
+      "source": "tests_schema_contract_runtime_responses_match_complete_golden_contract",
+      "target": "tests_schema_contract_create_snapshot_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/schema_contract.rs",
+      "source_location": "L177",
+      "weight": 1.0,
+      "source": "tests_schema_contract_runtime_responses_match_complete_golden_contract",
+      "target": "tests_schema_contract_assert_same_shape",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -44219,9 +44862,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L2141",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_syncrun",
-      "target": "lib_admincontroller_admincontroller_requirepost",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_requirepost"
     },
     {
       "relation": "calls",
@@ -46155,6 +46798,17 @@
       "source_location": "L83",
       "weight": 1.0,
       "source": "tests_catalogimportservicetest_catalogimportservicetest_catalog",
+      "target": "lib_catalogimportservice_catalogimportservice"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L93",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest_testgoldencatalogisacceptedbythewhmcsconsumerwithoutproductwrites",
       "target": "lib_catalogimportservice_catalogimportservice"
     },
     {
@@ -56159,9 +56813,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L1103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine",
-      "target": "lib_syncengine_syncengine_finishwithoutwrite",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_finishwithoutwrite"
     },
     {
       "relation": "method",
@@ -56219,9 +56873,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L279",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine",
-      "target": "lib_syncengine_syncengine_previewcatalogforprofile",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_previewcatalogforprofile"
     },
     {
       "relation": "method",
@@ -56229,9 +56883,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L1084",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine",
-      "target": "lib_syncengine_syncengine_recordcatalogdecision",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_recordcatalogdecision"
     },
     {
       "relation": "method",
@@ -56299,9 +56953,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L301",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine",
-      "target": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_walkcatalogforprofile"
     },
     {
       "relation": "method",
@@ -56342,9 +56996,9 @@
       "source_location": "L68",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_construct",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_syncengine_php_profilemanager",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_syncengine_php_profilemanager"
     },
     {
       "relation": "references",
@@ -56386,9 +57040,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "apiclient",
-      "confidence_score": 1.0
+      "target": "apiclient"
     },
     {
       "relation": "imports",
@@ -56441,9 +57095,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L247",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_run",
-      "target": "lib_syncengine_syncengine_finishwithoutwrite",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_finishwithoutwrite"
     },
     {
       "relation": "calls",
@@ -56452,9 +57106,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L205",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_run",
-      "target": "lib_syncengine_syncengine_previewcatalogforprofile",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_previewcatalogforprofile"
     },
     {
       "relation": "calls",
@@ -56551,9 +57205,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L264",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_applycatalogforprofile",
-      "target": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_walkcatalogforprofile"
     },
     {
       "relation": "calls",
@@ -56617,9 +57271,9 @@
       "source_location": "L279",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_previewcatalogforprofile",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_syncengine_php_profileversioninput",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_syncengine_php_profileversioninput"
     },
     {
       "relation": "references",
@@ -56661,9 +57315,9 @@
       "source_location": "L301",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_syncengine_php_profileversioninput",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_syncengine_php_profileversioninput"
     },
     {
       "relation": "calls",
@@ -56672,9 +57326,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L285",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_previewcatalogforprofile",
-      "target": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_walkcatalogforprofile"
     },
     {
       "relation": "calls",
@@ -56683,9 +57337,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L443",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "target": "lib_syncengine_syncengine_computecycleprice",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_computecycleprice"
     },
     {
       "relation": "calls",
@@ -56694,9 +57348,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L499",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "target": "lib_syncengine_syncengine_computesetupfee",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_computesetupfee"
     },
     {
       "relation": "calls",
@@ -56705,9 +57359,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L471",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "target": "lib_syncengine_syncengine_issuspicious",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_issuspicious"
     },
     {
       "relation": "calls",
@@ -56716,9 +57370,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L323",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "target": "lib_syncengine_syncengine_loadactivecurrencies",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_loadactivecurrencies"
     },
     {
       "relation": "calls",
@@ -56727,9 +57381,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L358",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "target": "lib_syncengine_syncengine_loadtblpricingrow",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_loadtblpricingrow"
     },
     {
       "relation": "calls",
@@ -56738,9 +57392,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L382",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "target": "lib_syncengine_syncengine_recordcatalogdecision",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_recordcatalogdecision"
     },
     {
       "relation": "calls",
@@ -56749,9 +57403,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php",
       "source_location": "L604",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_walkcatalogforprofile",
-      "target": "lib_syncengine_syncengine_writetblpricingcell",
-      "confidence_score": 1.0
+      "target": "lib_syncengine_syncengine_writetblpricingcell"
     },
     {
       "relation": "calls",
@@ -58859,6 +59513,27 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest",
+      "target": "testcase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest",
+      "target": "testcase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ImageOptionNormalizerTest.php",
       "source_location": "L7",
       "weight": 1.0,
@@ -59828,9 +60503,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "testcase",
-      "confidence_score": 1.0
+      "target": "testcase"
     },
     {
       "relation": "inherits",
@@ -59838,9 +60513,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest",
-      "target": "testcase",
-      "confidence_score": 1.0
+      "target": "testcase"
     },
     {
       "relation": "imports",
@@ -66554,6 +67229,17 @@
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest_setup",
+      "target": "tests_fakecapsule_capsule"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
       "source_file": "whmcs-module/modules/servers/contabo_vps/tests/Harness.php",
       "source_location": "L49",
       "weight": 1.0,
@@ -68380,6 +69066,141 @@
       "confidence_score": 1.0,
       "source": "tests_freshinstallschematest_freshinstallschematest",
       "target": "tests_freshinstallschematest_freshinstallschematest_testprovisioningsuitemigrationisidempotent"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_fixture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L161",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_repositoryroot",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L143",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_requiredroutes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_setup",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_testallrequiredgoldenfixturesarepresentandnestedtypesarestable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L113",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_testdocumentedwhmcsschemaversionmatchesinstaller",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_testgoldencatalogisacceptedbythewhmcsconsumerwithoutproductwrites",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest_testallrequiredgoldenfixturesarepresentandnestedtypesarestable",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_fixture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest_testallrequiredgoldenfixturesarepresentandnestedtypesarestable",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_requiredroutes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest_testgoldencatalogisacceptedbythewhmcsconsumerwithoutproductwrites",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_fixture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest_testdocumentedwhmcsschemaversionmatchesinstaller",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_repositoryroot",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php",
+      "source_location": "L126",
+      "weight": 1.0,
+      "source": "tests_goldenapicontracttest_goldenapicontracttest_fixture",
+      "target": "tests_goldenapicontracttest_goldenapicontracttest_repositoryroot",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -71580,9 +72401,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/RenewalEngineCycleTest.php",
       "source_location": "L354",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_renewalenginecycletest_renewalenginecycletest",
-      "target": "tests_renewalenginecycletest_renewalenginecycletest_testunknownpersistedroundingmodefailsclosed",
-      "confidence_score": 1.0
+      "target": "tests_renewalenginecycletest_renewalenginecycletest_testunknownpersistedroundingmodefailsclosed"
     },
     {
       "relation": "calls",
@@ -71725,9 +72546,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/RenewalEngineCycleTest.php",
       "source_location": "L360",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_renewalenginecycletest_renewalenginecycletest_testunknownpersistedroundingmodefailsclosed",
-      "target": "tests_renewalenginecycletest_renewalenginecycletest_stubresolver",
-      "confidence_score": 1.0
+      "target": "tests_renewalenginecycletest_renewalenginecycletest_stubresolver"
     },
     {
       "relation": "calls",
@@ -71859,9 +72680,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/RenewalEngineCycleTest.php",
       "source_location": "L357",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_renewalenginecycletest_renewalenginecycletest_testunknownpersistedroundingmodefailsclosed",
-      "target": "tests_renewalenginecycletest_renewalenginecycletest_baseservice",
-      "confidence_score": 1.0
+      "target": "tests_renewalenginecycletest_renewalenginecycletest_baseservice"
     },
     {
       "relation": "calls",
@@ -71993,9 +72814,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/RenewalEngineCycleTest.php",
       "source_location": "L360",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_renewalenginecycletest_renewalenginecycletest_testunknownpersistedroundingmodefailsclosed",
-      "target": "tests_renewalenginecycletest_renewalenginecycletest_settings",
-      "confidence_score": 1.0
+      "target": "tests_renewalenginecycletest_renewalenginecycletest_settings"
     },
     {
       "relation": "contains",
@@ -75631,9 +76452,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L178",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "tests_syncengineobservetest_observecatalogauditspy",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_observecatalogauditspy"
     },
     {
       "relation": "contains",
@@ -75641,9 +76462,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L190",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "tests_syncengineobservetest_observeprofilemanager",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_observeprofilemanager"
     },
     {
       "relation": "contains",
@@ -75651,9 +76472,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "tests_syncengineobservetest_syncengineobservetest",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest"
     },
     {
       "relation": "imports",
@@ -75662,9 +76483,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_catalogauditlog",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_catalogauditlog"
     },
     {
       "relation": "imports",
@@ -75673,9 +76494,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profilemanager",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profilemanager"
     },
     {
       "relation": "imports",
@@ -75684,9 +76505,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profileversioninput",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profileversioninput"
     },
     {
       "relation": "imports",
@@ -75695,9 +76516,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_settings",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_settings"
     },
     {
       "relation": "imports",
@@ -75706,9 +76527,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_syncengine",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_syncengine"
     },
     {
       "relation": "method",
@@ -75716,9 +76537,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L118",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest",
-      "target": "tests_syncengineobservetest_syncengineobservetest_makeengine",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_makeengine"
     },
     {
       "relation": "method",
@@ -75726,9 +76547,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L151",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest",
-      "target": "tests_syncengineobservetest_syncengineobservetest_seedcatalog",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_seedcatalog"
     },
     {
       "relation": "method",
@@ -75736,9 +76557,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L104",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest",
-      "target": "tests_syncengineobservetest_syncengineobservetest_settings",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_settings"
     },
     {
       "relation": "method",
@@ -75746,9 +76567,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest",
-      "target": "tests_syncengineobservetest_syncengineobservetest_setup",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_setup"
     },
     {
       "relation": "method",
@@ -75756,9 +76577,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest",
-      "target": "tests_syncengineobservetest_syncengineobservetest_testprofilepreviewreturnstypedplanwithoutanymutation",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_testprofilepreviewreturnstypedplanwithoutanymutation"
     },
     {
       "relation": "method",
@@ -75766,9 +76587,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest",
-      "target": "tests_syncengineobservetest_syncengineobservetest_testwholesyncobservationdoesnotwritelogsversionsauditsorprices",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_testwholesyncobservationdoesnotwritelogsversionsauditsorprices"
     },
     {
       "relation": "calls",
@@ -75777,9 +76598,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_testprofilepreviewreturnstypedplanwithoutanymutation",
-      "target": "tests_syncengineobservetest_syncengineobservetest_makeengine",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_makeengine"
     },
     {
       "relation": "calls",
@@ -75788,9 +76609,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_testprofilepreviewreturnstypedplanwithoutanymutation",
-      "target": "tests_syncengineobservetest_syncengineobservetest_seedcatalog",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_seedcatalog"
     },
     {
       "relation": "calls",
@@ -75799,9 +76620,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L32",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_testprofilepreviewreturnstypedplanwithoutanymutation",
-      "target": "tests_syncengineobservetest_syncengineobservetest_settings",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_settings"
     },
     {
       "relation": "calls",
@@ -75810,9 +76631,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L37",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_testprofilepreviewreturnstypedplanwithoutanymutation",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profileversioninput",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profileversioninput"
     },
     {
       "relation": "calls",
@@ -75821,9 +76642,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_testwholesyncobservationdoesnotwritelogsversionsauditsorprices",
-      "target": "tests_syncengineobservetest_syncengineobservetest_makeengine",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_makeengine"
     },
     {
       "relation": "calls",
@@ -75832,9 +76653,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_testwholesyncobservationdoesnotwritelogsversionsauditsorprices",
-      "target": "tests_syncengineobservetest_syncengineobservetest_seedcatalog",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_seedcatalog"
     },
     {
       "relation": "calls",
@@ -75843,9 +76664,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L83",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_testwholesyncobservationdoesnotwritelogsversionsauditsorprices",
-      "target": "tests_syncengineobservetest_syncengineobservetest_settings",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_settings"
     },
     {
       "relation": "calls",
@@ -75854,9 +76675,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L148",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_makeengine",
-      "target": "tests_syncengineobservetest_syncengineobservetest_settings",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_syncengineobservetest_settings"
     },
     {
       "relation": "references",
@@ -75865,9 +76686,9 @@
       "source_location": "L104",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_settings",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_settings",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_settings"
     },
     {
       "relation": "references",
@@ -75876,9 +76697,9 @@
       "source_location": "L199",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_observeprofilemanager_construct",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_settings",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_settings"
     },
     {
       "relation": "references",
@@ -75887,9 +76708,9 @@
       "source_location": "L118",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_makeengine",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_catalogauditlog",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_catalogauditlog"
     },
     {
       "relation": "references",
@@ -75898,9 +76719,9 @@
       "source_location": "L118",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_makeengine",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profilemanager",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profilemanager"
     },
     {
       "relation": "references",
@@ -75909,9 +76730,9 @@
       "source_location": "L118",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_syncengineobservetest_makeengine",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_syncengine",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_syncengine"
     },
     {
       "relation": "inherits",
@@ -75919,9 +76740,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L178",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_observecatalogauditspy",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_catalogauditlog",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_catalogauditlog"
     },
     {
       "relation": "inherits",
@@ -75929,9 +76750,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L190",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_observeprofilemanager",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profilemanager",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profilemanager"
     },
     {
       "relation": "method",
@@ -75939,9 +76760,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L183",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_observecatalogauditspy",
-      "target": "tests_syncengineobservetest_observecatalogauditspy_insert",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_observecatalogauditspy_insert"
     },
     {
       "relation": "method",
@@ -75949,9 +76770,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L217",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_observeprofilemanager",
-      "target": "tests_syncengineobservetest_observeprofilemanager_appendversion",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_observeprofilemanager_appendversion"
     },
     {
       "relation": "method",
@@ -75959,9 +76780,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L199",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_observeprofilemanager",
-      "target": "tests_syncengineobservetest_observeprofilemanager_construct",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_observeprofilemanager_construct"
     },
     {
       "relation": "method",
@@ -75969,9 +76790,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L212",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_observeprofilemanager",
-      "target": "tests_syncengineobservetest_observeprofilemanager_latestversion",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_observeprofilemanager_latestversion"
     },
     {
       "relation": "method",
@@ -75979,9 +76800,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php",
       "source_location": "L205",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_observeprofilemanager",
-      "target": "tests_syncengineobservetest_observeprofilemanager_listprofiles",
-      "confidence_score": 1.0
+      "target": "tests_syncengineobservetest_observeprofilemanager_listprofiles"
     },
     {
       "relation": "references",
@@ -75990,9 +76811,9 @@
       "source_location": "L217",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "tests_syncengineobservetest_observeprofilemanager_appendversion",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profileversioninput",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_syncengineobservetest_php_profileversioninput"
     },
     {
       "relation": "contains",
@@ -87546,11 +88367,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "SCHEMA_VERSION.md",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "schema_version_schema_versions",
+      "target": "schema_version_catalog_exchange_1_0_current",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "SCHEMA_VERSION.md",
       "source_location": "L86",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "schema_version_schema_versions",
       "target": "schema_version_rules"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "SCHEMA_VERSION.md",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "schema_version_schema_versions",
+      "target": "schema_version_whmcs_db_14_current",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -87566,21 +88407,21 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L44",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schema_version_schema_versions",
-      "target": "schema_version_whmcs_db_7_current_installer_schema_version_7"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "SCHEMA_VERSION.md",
       "source_location": "L22",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "schema_version_api_1_1_current",
       "target": "schema_version_added"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "SCHEMA_VERSION.md",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "schema_version_api_1_1_current",
+      "target": "schema_version_contract_fixtures",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -87606,21 +88447,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L64",
+      "source_location": "L104",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schema_version_whmcs_db_7_current_installer_schema_version_7",
-      "target": "schema_version_added_v7"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "SCHEMA_VERSION.md",
-      "source_location": "L67",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schema_version_whmcs_db_7_current_installer_schema_version_7",
-      "target": "schema_version_migration_67"
+      "source": "schema_version_whmcs_db_14_current",
+      "target": "schema_version_migration_104",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -93238,5 +94069,5 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_CONFIGURABLE_OPTIONS.md"
     }
   ],
-  "built_at_commit": "93a1444770fb69d6ee6a943174eaf9d5a780eaef"
+  "built_at_commit": "bf294e855c6b05ce88094aba938709c3cbec340f"
 }

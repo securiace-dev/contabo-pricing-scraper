@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "source_version": "fixture-1.0.0",
+  "source_observed_at": "2026-07-30T10:20:30Z",
+  "effective_at": "2026-07-30T10:20:30Z",
+  "plans": [
+    {
+      "product_slug": "cloud-vps-10",
+      "provider_sku_id": "V45",
+      "family": "Cloud VPS",
+      "product_name": "Cloud VPS 10",
+      "base_monthly_price": 3.6,
+      "fetched_at": "2026-07-30T10:20:30Z",
+      "periods": [
+        {
+          "months": 12,
+          "effective_monthly": 3.6,
+          "setup_fee": 0.0,
+          "total_period_cost": 43.2
+        }
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "machine_id": "profile:cloud-vps-10:default",
+      "plan_machine_id": "plan:cloud-vps-10",
+      "label": "Cloud VPS 10",
+      "source_observed_at": "2026-07-30T10:20:30Z",
+      "availability_state": "observed",
+      "deprecated": false
+    }
+  ],
+  "items": [
+    {
+      "machine_id": "plan:cloud-vps-10",
+      "provider_id": "V45",
+      "item_type": "plan",
+      "label": "Cloud VPS 10",
+      "catalog_version": "catalog-contract-v1",
+      "effective_at": "2026-07-30T10:20:30Z",
+      "availability_state": "observed",
+      "deprecated": false,
+      "compatibility": {
+        "family": "Cloud VPS"
+      },
+      "source_observed_at": "2026-07-30T10:20:30Z",
+      "payload_hash": "765ddd12eb4c0b66b0a89ac3f8e3d7541c0ddcdca5dfeb1dd2845ba508082fdd",
+      "payload": {
+        "product_slug": "cloud-vps-10",
+        "provider_sku_id": "V45",
+        "family": "Cloud VPS",
+        "product_name": "Cloud VPS 10",
+        "base_monthly_price": 3.6,
+        "fetched_at": "2026-07-30T10:20:30Z",
+        "periods": [
+          {
+            "months": 12,
+            "effective_monthly": 3.6,
+            "setup_fee": 0.0,
+            "total_period_cost": 43.2
+          }
+        ]
+      }
+    }
+  ],
+  "compatibility": {
+    "option_catalog": []
+  },
+  "configurations": {
+    "plans": {}
+  },
+  "catalog_version": "catalog-contract-v1",
+  "payload_hash": "5b3cf0c84b0f1436ae8897a27eaff50c6f29fa0f5022a86dc250ecb11b438be3"
+}
