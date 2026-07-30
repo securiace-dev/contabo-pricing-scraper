@@ -1285,13 +1285,13 @@
     "semantic_hash": ""
   },
   "scripts/test-whmcs-release-contract.sh": {
-    "mtime": 1785386129.080781,
-    "ast_hash": "e28c1a950a66d96f355cd21bb3135616",
+    "mtime": 1785386490.6809103,
+    "ast_hash": "d5661383791278a5f4fa76011a0d6f38",
     "semantic_hash": ""
   },
   "scripts/inspect-github-release.sh": {
-    "mtime": 1785386301.3239584,
-    "ast_hash": "04d5c50bb581082973d16606bfda2652",
+    "mtime": 1785386457.3618512,
+    "ast_hash": "2e7e8fdd979866681257830e803f1beb",
     "semantic_hash": ""
   }
 }
