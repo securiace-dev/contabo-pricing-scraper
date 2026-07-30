@@ -1,11 +1,11 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
 #
 # Multi-stage build for contabo-pricing.
 #
 # Final image contains:
 #   - the Rust binary (scrape + serve subcommands)
 #   - Node 20 + the Node scraper (fallback / parity testing)
-#   - CloakBrowser npm wrapper + pre-downloaded patched Chromium (~200MB)
+#   - CloakBrowser npm wrapper (the licensed browser downloads at first use)
 #   - the enrich and HTML generator scripts
 #   - tini as PID 1 for clean signal handling
 #
@@ -18,7 +18,7 @@
 #   cloak    — CloakBrowser only (strongest evasion)
 
 # ── Stage 1: cargo build ─────────────────────────────────────────────────────
-FROM rust:1-bookworm AS rust-builder
+FROM rust:1-bookworm@sha256:77fac8b98f9f46062bb680b6d25d5bcaabfc400143952ebc572e924bcbedc3fa AS rust-builder
 WORKDIR /src
 
 # Cache deps independently of source for fast rebuilds
@@ -34,37 +34,31 @@ COPY report.html ./report.html
 RUN touch src/main.rs src/api/mod.rs && cargo build --release --locked
 
 # ── Stage 2: node scraper bundle + CloakBrowser ──────────────────────────────
-FROM node:20-bookworm-slim AS node-builder
+FROM node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0 AS node-builder
 WORKDIR /app
-COPY package.json ./
+COPY package.json package-lock.json ./
 # Install all deps including cloakbrowser + playwright-core.
-# package-lock.json is not committed (cloakbrowser binary is proprietary/large),
-# so we always use npm install here.
-RUN npm install --omit=dev
-
-# Pre-download the CloakBrowser Chromium binary (~200MB) so containers start
-# instantly without a runtime download. CloakBrowser stores its binary in
-# ~/.cloakbrowser/ and auto-downloads on first launch() — no separate install()
-# function exists in the JS SDK, so we trigger download via a real launch call.
-RUN node --input-type=module - <<'EOF' || true
-import { launch } from '/app/node_modules/cloakbrowser/dist/index.js';
-const b = await launch({ headless: true });
-await b.close();
-EOF
+# Lifecycle scripts are disabled; the separately licensed browser is acquired
+# by the unprivileged runtime user only when CloakBrowser mode is first used.
+RUN npm ci --ignore-scripts --omit=dev
 
 COPY scripts ./scripts
 COPY .github/scripts ./.github/scripts
 
 # ── Stage 3: runtime ─────────────────────────────────────────────────────────
-FROM debian:bookworm-slim AS runtime
+FROM debian:bookworm-slim@sha256:7b140f374b289a7c2befc338f42ebe6441b7ea838a042bbd5acbfca6ec875818 AS runtime
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates tini curl \
-      # Fonts required for CloakBrowser Kasada/Akamai fingerprint compatibility
+      ca-certificates tini curl libatomic1 \
+      # Chromium runtime libraries required by the optional CloakBrowser mode.
+      libasound2 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 \
+      libcairo2 libcups2 libdbus-1-3 libdrm2 libegl1 libgbm1 \
+      libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 \
+      libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxdamage1 \
+      libxext6 libxfixes3 libxrandr2 libxshmfence1 \
+      # Fonts required for CloakBrowser fingerprint compatibility.
       fonts-liberation fonts-noto-core \
- && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
- && apt-get install -y --no-install-recommends nodejs \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Create unprivileged user
@@ -73,15 +67,15 @@ RUN groupadd --system --gid 1000 contabo \
 
 WORKDIR /app
 COPY --from=rust-builder /src/target/release/contabo-scraper /usr/local/bin/contabo-scraper
+COPY --from=node-builder /usr/local/bin/node /usr/local/bin/node
 COPY --from=node-builder /app /app
-# Copy the pre-downloaded CloakBrowser Chromium binary from the builder stage.
-# The binary lives in ~/.cloakbrowser/ (not ~/.cache/ms-playwright).
-COPY --from=node-builder /root/.cloakbrowser /home/contabo/.cloakbrowser
 COPY report.html /app/report.html
 
-# Output dir is the only mutable path; mount a volume here in production
+# Output and browser-cache directories are the only mutable paths. Mount the
+# browser cache when CloakBrowser startup downloads must persist across runs.
 RUN mkdir -p /app/data/output && chown -R contabo:contabo /app \
- && chown -R contabo:contabo /home/contabo/.cloakbrowser 2>/dev/null || true
+ && mkdir -p /home/contabo/.cloakbrowser \
+ && chown -R contabo:contabo /home/contabo/.cloakbrowser
 
 USER contabo
 EXPOSE 8080
