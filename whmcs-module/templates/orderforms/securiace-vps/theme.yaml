@@ -1,0 +1,9 @@
+name: "SecuriAce VPS"
+description: "VPS-only child of Standard Cart with clearer comparison and configuration workflows."
+author: "SecuriAce"
+config:
+  parent: standard_cart
+dependencies:
+  bootstrap: 3||4
+  jquery: 1.12
+  fontawesome: 5

@@ -50,25 +50,25 @@ if ($cb_started !== '' && $cb_finished !== '') {
 
 <!-- ───────────────────── Header card ───────────────────── -->
 <div class="cb-card">
-  <div style="display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap">
-    <div style="flex:1; min-width:240px">
-      <h2 class="cb-card-title display" style="margin:0">Sync <?= $esc($cb_status) ?></h2>
-      <p class="cb-card-sub" style="margin:4px 0 0">
+  <div data-cb-u="u-fc3f2cef5b">
+    <div data-cb-u="u-a2e0c59bb0">
+      <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Sync <?= $esc($cb_status) ?></h2>
+      <p class="cb-card-sub" data-cb-u="u-af3c2c2206">
         Manual sync triggered from the admin dashboard.
       </p>
-      <div style="margin-top:10px; display:flex; gap:18px; flex-wrap:wrap; font-size:12px; color:var(--muted)">
-        <div><span class="glabel">Started</span> <span class="mono" style="margin-left:6px"><?= $esc($cb_started !== '' ? $cb_started : '—') ?></span></div>
-        <div><span class="glabel">Finished</span> <span class="mono" style="margin-left:6px"><?= $esc($cb_finished !== '' ? $cb_finished : '—') ?></span></div>
+      <div data-cb-u="u-4b8f2faec5">
+        <div><span class="glabel">Started</span> <span class="mono" data-cb-u="u-4b17347c23"><?= $esc($cb_started !== '' ? $cb_started : '—') ?></span></div>
+        <div><span class="glabel">Finished</span> <span class="mono" data-cb-u="u-4b17347c23"><?= $esc($cb_finished !== '' ? $cb_finished : '—') ?></span></div>
         <?php if ($cb_dur !== ''): ?>
-          <div><span class="glabel">Duration</span> <span class="mono" style="margin-left:6px">⏱ <?= $esc($cb_dur) ?></span></div>
+          <div><span class="glabel">Duration</span> <span class="mono" data-cb-u="u-4b17347c23"><?= $esc($cb_dur) ?></span></div>
         <?php endif; ?>
         <?php if ($cb_snap !== ''): ?>
-          <div><span class="glabel">Snapshot</span> <span class="mono" style="margin-left:6px"><?= $esc($cb_snap) ?></span></div>
+          <div><span class="glabel">Snapshot</span> <span class="mono" data-cb-u="u-4b17347c23"><?= $esc($cb_snap) ?></span></div>
         <?php endif; ?>
       </div>
     </div>
     <div>
-      <span class="cb-pill <?= $esc($cb_status_tone) ?>" style="font-size:13px; padding:5px 12px">
+      <span class="cb-pill <?= $esc($cb_status_tone) ?>" data-cb-u="u-ddca59c930">
         <span class="dot"></span><?= $esc($cb_status) ?>
       </span>
     </div>
@@ -97,11 +97,11 @@ if ($cb_started !== '' && $cb_finished !== '') {
 <!-- ───────────────────── Errors (if any) ───────────────────── -->
 <?php if ($cb_error_count > 0): ?>
 <div class="cb-card">
-  <h3 style="color:var(--bad)">Errors (<?= (int) $cb_error_count ?>)</h3>
+  <h3 data-cb-u="u-5bd8ae8682">Errors (<?= (int) $cb_error_count ?>)</h3>
   <div class="cb-error">
-    <ul style="margin:0; padding-left:20px">
+    <ul data-cb-u="u-6cf362a80b">
       <?php foreach ($cb_errors as $cb_e): ?>
-        <li><code class="mono" style="font-size:12px"><?= $esc((string) $cb_e) ?></code></li>
+        <li><code class="mono" data-cb-u="u-a49cca52be"><?= $esc((string) $cb_e) ?></code></li>
       <?php endforeach; ?>
     </ul>
   </div>
@@ -177,7 +177,7 @@ if ($cb_started !== '' && $cb_finished !== '') {
         Sync runs walk your profiles, fetch the latest pricing from the API,
         record a new version when prices change, and (per profile setting)
         update the linked WHMCS product prices.</p>
-      <p style="margin-top:14px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+      <p data-cb-u="u-45c58e1470">
         <a class="cb-btn" href="<?= $esc($module_link) ?>&amp;action=profiles">Create your first profile</a>
         <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=mappings">Or map a WHMCS product</a>
       </p>
@@ -190,7 +190,7 @@ if ($cb_started !== '' && $cb_finished !== '') {
 <?php endif; ?>
 
 <!-- ───────────────────── Footer actions ───────────────────── -->
-<p style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
+<p data-cb-u="u-f8849d34e1">
   <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=sync-history">View full history</a>
   <a class="cb-btn ghost" href="<?= $esc($module_link) ?>">← Back to dashboard</a>
 </p>

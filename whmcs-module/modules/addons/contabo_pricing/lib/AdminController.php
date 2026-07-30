@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.7.0';
+    public const VERSION = '1.0.0';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -55,6 +55,15 @@ class AdminController
             case 'compatibility-editor-save': $this->compatibilityEditorSave($req); return;
             case 'mappings':         $this->mappings($req); return;
             case 'mapping-save':     $this->mappingSave($req); return;
+            case 'mapping-publication-preview': $this->mappingPublicationPreview($req); return;
+            case 'mapping-publication-approve': $this->mappingPublicationApprove($req); return;
+            case 'catalog-import':    $this->catalogImport(); return;
+            case 'operations':        $this->operations($req); return;
+            case 'operation-detail':  $this->operationDetail($req); return;
+            case 'operation-command': $this->operationCommand($req); return;
+            case 'adoption-approve': $this->adoptionApprove($req); return;
+            case 'capability-certify': $this->capabilityCertify($req); return;
+            case 'provider-write-control': $this->providerWriteControl($req); return;
             case 'sync-history':     $this->syncHistory(); return;
             case 'sync-run':         $this->syncRun($req); return;
             case 'refresh-api':      $this->refreshApi(); return;
@@ -1748,7 +1757,7 @@ class AdminController
         return array_values(array_unique($out));
     }
 
-    private function mappings(array $req): void
+    private function mappings(array $req, ?array $publicationPreview = null): void
     {
         $pm = new ProfileManager($this->settings);
         $profiles = $pm->listProfiles(false);
@@ -1757,6 +1766,19 @@ class AdminController
             ->get(['id', 'name', 'gid'])->map(static fn ($r) => (array) $r)->all();
         $mappings = Capsule::table('mod_contabo_mapping')
             ->orderByDesc('updated_at')->get()->map(static fn ($r) => (array) $r)->all();
+        $catalogVersions = Capsule::table('mod_contabo_catalog_versions')
+            ->whereNotIn('state', ['invalid', 'retired'])
+            ->orderByDesc('source_observed_at')
+            ->limit(100)
+            ->get()
+            ->map(static fn ($r) => (array) $r)
+            ->all();
+        $mappingPublications = Capsule::table('mod_contabo_mapping_publications')
+            ->orderByDesc('created_at')
+            ->limit(100)
+            ->get()
+            ->map(static fn ($r) => (array) $r)
+            ->all();
 
         $currencies = [];
         $defaultCurrencyId = 0;
@@ -1784,6 +1806,9 @@ class AdminController
             'whmcs_currencies'    => $currencies,
             'default_currency_id' => $defaultCurrencyId,
             'mappings'            => $mappings,
+            'catalog_versions'    => $catalogVersions,
+            'mapping_publications' => $mappingPublications,
+            'publication_preview' => $publicationPreview,
             'flash'               => (string) ($req['flash'] ?? ''),
         ]);
     }
@@ -1853,6 +1878,70 @@ class AdminController
             return;
         }
         $this->redirect('mappings', ['flash' => 'Mapping saved.']);
+    }
+
+    /**
+     * Create an immutable, no-write preview of the provider identifiers that
+     * would become eligible for future paid-order snapshots.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function mappingPublicationPreview(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        try {
+            $preview = (new MappingPublicationService())->preview(
+                (int) ($req['mapping_id'] ?? 0),
+                [
+                    'rust_catalog_version' => (string) ($req['rust_catalog_version'] ?? ''),
+                    'provider_sku_id' => (string) ($req['provider_sku_id'] ?? ''),
+                    'region_id' => (string) ($req['region_id'] ?? ''),
+                    'image_id' => (string) ($req['image_id'] ?? ''),
+                    'management_code' => (string) ($req['management_code'] ?? 'self_managed'),
+                ]
+            );
+            $req['flash'] = 'Publication preview created. Review the exact identifiers and hash before approval.';
+            $this->mappings($req, $preview);
+        } catch (\Throwable $e) {
+            $this->renderSaveError($e, 'mappings');
+        }
+    }
+
+    /**
+     * Advance the active mapping pointer only when the administrator submits
+     * the exact preview hash and typed confirmation.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function mappingPublicationApprove(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        try {
+            $result = (new MappingPublicationService())->approve(
+                (string) ($req['mapping_version'] ?? ''),
+                (string) ($req['preview_hash'] ?? ''),
+                $adminId,
+                (string) ($req['confirmation'] ?? ''),
+                (string) ($req['reason'] ?? '')
+            );
+            if (function_exists('logActivity')) {
+                logActivity(
+                    'Contabo Pricing: published mapping '
+                    . (string) ($result['mapping_version'] ?? $req['mapping_version'] ?? '')
+                    . ' by admin #' . $adminId
+                );
+            }
+            $this->redirect('mappings', ['flash' => 'Mapping publication approved and activated.']);
+        } catch (\Throwable $e) {
+            $this->renderSaveError($e, 'mappings');
+        }
     }
 
     /**
@@ -2071,6 +2160,199 @@ class AdminController
         }
     }
 
+    private function catalogImport(): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        try {
+            $catalog = (new ApiClient($this->settings))->catalog();
+            $result = (new CatalogImportService())->import($catalog, $adminId);
+            $verb = $result['created'] ? 'Imported' : 'Verified existing';
+            $this->redirect('mappings', [
+                'flash' => sprintf(
+                    '%s Rust catalog %s (%d items).',
+                    $verb,
+                    $result['catalog_version'],
+                    $result['item_count']
+                ),
+            ]);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing catalog import failed: ' . $e->getMessage());
+            }
+            $this->redirect('mappings', [
+                'flash' => 'Catalog import failed validation; see the activity log for detail.',
+            ]);
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function operations(array $req): void
+    {
+        if (!$this->guardSchema()) { return; }
+        $beforeId = max(0, (int) ($req['before_id'] ?? 0));
+        try {
+            $data = (new VpsOperationsWorkbench())->overview($beforeId, 50);
+            $data['flash'] = (string) ($req['flash'] ?? '');
+            $this->render('operations.tpl', $data);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing operations workbench failed: ' . $e->getMessage());
+            }
+            echo '<div class="errorbox">The VPS operations workbench is unavailable. '
+                . 'Verify the native suite schema from Maintenance.</div>';
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function operationCommand(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        try {
+            $uuid = (new VpsOperationsWorkbench())->queueCommand(
+                (string) ($req['command_type'] ?? ''),
+                isset($req['service_id']) ? (int) $req['service_id'] : null,
+                isset($req['operation_uuid']) ? (string) $req['operation_uuid'] : null,
+                ['reason' => trim((string) ($req['reason'] ?? 'operator_request'))],
+                $adminId
+            );
+            $this->redirect('operations', [
+                'flash' => 'Operator command queued for provisioning-worker validation: ' . $uuid,
+            ]);
+        } catch (\Throwable $e) {
+            $this->operatorActionError($e);
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function operationDetail(array $req): void
+    {
+        if (!$this->guardSchema()) { return; }
+        try {
+            $data = (new VpsOperationsWorkbench())->operationDetail(
+                (string) ($req['operation_uuid'] ?? '')
+            );
+            $this->render('operation_detail.tpl', $data);
+        } catch (\Throwable $e) {
+            $this->operatorActionError($e);
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function capabilityCertify(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        try {
+            (new VpsOperationsWorkbench())->certifyCapability(
+                (string) ($req['provider_account_id'] ?? ''),
+                (string) ($req['capability'] ?? ''),
+                (string) ($req['state'] ?? 'not_certified'),
+                (string) ($req['certification_version'] ?? ''),
+                [
+                    'evidence_reference' => trim((string) ($req['evidence_reference'] ?? '')),
+                    'notes' => trim((string) ($req['evidence_notes'] ?? '')),
+                    'certification_checklist_version' => '1',
+                ],
+                $adminId,
+                (string) ($req['confirmation'] ?? '')
+            );
+            $this->redirect('operations', [
+                'flash' => 'Provider capability certification recorded. Its write switch remains independent.',
+            ]);
+        } catch (\Throwable $e) {
+            $this->operatorActionError($e);
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function providerWriteControl(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        $scope = (string) ($req['scope'] ?? 'global');
+        $enabled = !empty($req['enabled']);
+        $commandType = $scope === 'capability'
+            ? 'set_capability_write_state'
+            : 'set_global_write_state';
+        $payload = [
+            'enabled' => $enabled,
+            'confirmation' => (string) ($req['confirmation'] ?? ''),
+        ];
+        if ($scope === 'capability') {
+            $payload['capability'] = (string) ($req['capability'] ?? '');
+            $payload['provider_account_id'] = (string) ($req['provider_account_id'] ?? '');
+        }
+
+        try {
+            $uuid = (new VpsOperationsWorkbench())->queueCommand(
+                $commandType,
+                null,
+                null,
+                $payload,
+                $adminId
+            );
+            $this->redirect('operations', [
+                'flash' => 'Write-control command queued for cron validation: ' . $uuid,
+            ]);
+        } catch (\Throwable $e) {
+            $this->operatorActionError($e);
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function adoptionApprove(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        $serviceId = (int) ($req['service_id'] ?? 0);
+        $payload = [
+            'provider_resource_id' => trim((string) ($req['provider_resource_id'] ?? '')),
+            'evidence_hash' => trim((string) ($req['evidence_hash'] ?? '')),
+            'confirmation' => (string) ($req['confirmation'] ?? ''),
+        ];
+        try {
+            $uuid = (new VpsOperationsWorkbench())->queueCommand(
+                'approve_adoption',
+                $serviceId,
+                null,
+                $payload,
+                $adminId
+            );
+            $this->redirect('operations', [
+                'flash' => 'Adoption approval queued for live re-verification: ' . $uuid,
+            ]);
+        } catch (\Throwable $e) {
+            $this->operatorActionError($e);
+        }
+    }
+
+    private function operatorActionError(\Throwable $e): void
+    {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing operator action rejected: ' . $e->getMessage());
+        }
+        $safe = $e instanceof \InvalidArgumentException
+            ? $e->getMessage()
+            : 'The operator action could not be queued.';
+        $this->redirect('operations', ['flash' => 'Request rejected: ' . $safe]);
+    }
+
     private function settingsView(): void
     {
         $this->render('settings.tpl', ['settings' => $this->settings]);
@@ -2106,6 +2388,29 @@ class AdminController
             }
             return false;
         }
+    }
+
+    /**
+     * Fail closed when a mutating action is requested with GET or another
+     * non-POST method. WHMCS CSRF validation is necessary but does not replace
+     * HTTP method enforcement.
+     */
+    private function requirePost(): bool
+    {
+        $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? ''));
+        if ($method === 'POST') {
+            return true;
+        }
+        if (PHP_SAPI === 'cli' && $method === '') {
+            // Unit tests invoke controller methods directly; production web
+            // requests always carry REQUEST_METHOD.
+            return true;
+        }
+
+        http_response_code(405);
+        header('Allow: POST');
+        echo '<div class="errorbox">This action requires a POST request.</div>';
+        return false;
     }
 
     /**
@@ -3241,7 +3546,11 @@ class AdminController
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing service-pricing-tab render error (service #' . $serviceId . '): ' . $e->getMessage());
             }
-            return '<div style="color:#b91c1c">Contabo Pricing tab unavailable — see the activity log for detail.</div>';
+            return '<link rel="stylesheet" href="/modules/addons/contabo_pricing/assets/app.css?v='
+                . rawurlencode(self::VERSION)
+                . '"><div class="cb-wrap"><div class="cb-error">'
+                . 'Contabo Pricing tab unavailable — see the activity log for detail.'
+                . '</div></div>';
         }
 
         $path = $this->templateDir . '/service_pricing_tab.tpl';

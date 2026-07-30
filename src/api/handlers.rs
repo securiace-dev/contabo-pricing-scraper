@@ -103,6 +103,13 @@ pub async fn list_options(State(s): State<AppState>) -> Json<Value> {
     )
 }
 
+// ── GET /api/v1/catalog ──────────────────────────────────────────────────────
+// Versioned, read-only catalog contract for the WHMCS pricing addon.
+pub async fn catalog(State(s): State<AppState>) -> Json<Value> {
+    let snap = s.snapshot.read().await;
+    Json(super::catalog::build(&snap))
+}
+
 // ── GET /api/v1/fx ───────────────────────────────────────────────────────────
 pub async fn fx(State(s): State<AppState>) -> Json<Value> {
     const TTL_SECS: u64 = 300;
@@ -126,7 +133,13 @@ pub async fn fx(State(s): State<AppState>) -> Json<Value> {
         .send()
         .await
         .ok()
-        .and_then(|r| if r.status().is_success() { Some(r) } else { None });
+        .and_then(|r| {
+            if r.status().is_success() {
+                Some(r)
+            } else {
+                None
+            }
+        });
 
     if let Some(resp) = fetched {
         if let Ok(body) = resp.json::<Value>().await {
@@ -258,9 +271,7 @@ pub async fn quote(
 // queued + idempotent return of an in-flight job) use the same status: from
 // the client's perspective the request was accepted; the only difference is
 // whether the worker is starting fresh or already mid-flight.
-pub async fn refresh(
-    State(s): State<AppState>,
-) -> Result<(StatusCode, Json<Value>), StatusCode> {
+pub async fn refresh(State(s): State<AppState>) -> Result<(StatusCode, Json<Value>), StatusCode> {
     let mut guard = s.refresh_lock.lock().await;
     if let Some(j) = &guard.current_job {
         if matches!(j.status, JobStatus::Queued | JobStatus::Running) {
@@ -298,17 +309,23 @@ pub async fn refresh(
             .as_str()
         {
             "cloak" => crate::FetchMode::Cloak,
-            "auto"  => crate::FetchMode::Auto,
-            _       => crate::FetchMode::Reqwest,
+            "auto" => crate::FetchMode::Auto,
+            _ => crate::FetchMode::Reqwest,
         };
-        let proxy = std::env::var("SCRAPER_PROXY").ok().filter(|s| !s.is_empty());
+        let proxy = std::env::var("SCRAPER_PROXY")
+            .ok()
+            .filter(|s| !s.is_empty());
         let cloak_script = std::env::var("CLOAK_SCRIPT")
             .map(std::path::PathBuf::from)
             .unwrap_or_else(|_| std::path::PathBuf::from("scripts/cloak-fetch.mjs"));
         let concurrency: usize = std::env::var("SCRAPER_CONCURRENCY")
-            .ok().and_then(|s| s.parse().ok()).unwrap_or(4);
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(4);
         let retries: u32 = std::env::var("SCRAPER_RETRIES")
-            .ok().and_then(|s| s.parse().ok()).unwrap_or(3);
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(3);
         // Look for plan_urls.json adjacent to the data dir (e.g.
         // /var/lib/contabo-pricing/plan_urls.json when data_dir is
         // /var/lib/contabo-pricing/output). Falls back to the hardcoded list.

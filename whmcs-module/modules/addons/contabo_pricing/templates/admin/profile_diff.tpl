@@ -68,17 +68,17 @@ for ($cb_i = 0; $cb_i < $cb_version_count; $cb_i++) {
 
 <!-- ───────────────────── Header card ───────────────────── -->
 <div class="cb-card">
-  <h2 class="cb-card-title display" style="margin:0"><?= $esc($cb_profile_name) ?></h2>
-  <p class="cb-card-sub" style="margin:6px 0 12px">
+  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85"><?= $esc($cb_profile_name) ?></h2>
+  <p class="cb-card-sub" data-cb-u="u-f1319bea90">
     <span class="cb-pill grey"><span class="mono"><?= $esc($cb_profile_slug) ?></span></span>
     <span class="cb-pill"><?= $esc($cb_plan_slug) ?></span>
     <span class="cb-pill"><?= (int) $cb_period ?> mo</span>
     <?php if ($cb_region !== ''): ?><span class="cb-pill"><?= $esc($cb_region) ?></span><?php endif; ?>
     <?php if ($cb_os !== ''): ?><span class="cb-pill"><?= $esc($cb_os) ?></span><?php endif; ?>
-    <?php if ($cb_sync_strat !== ''): ?><span class="cb-pill"><span class="glabel" style="margin-right:4px">sync</span><?= $esc($cb_sync_strat) ?></span><?php endif; ?>
+    <?php if ($cb_sync_strat !== ''): ?><span class="cb-pill"><span class="glabel" data-cb-u="u-1ac2df864b">sync</span><?= $esc($cb_sync_strat) ?></span><?php endif; ?>
     <?php if ($cb_active): ?><span class="cb-pill good"><span class="dot"></span>active</span><?php else: ?><span class="cb-pill grey">inactive</span><?php endif; ?>
   </p>
-  <div class="muted" style="color:var(--muted); font-size:12px">
+  <div class="muted" data-cb-u="u-e1612f0331">
     <?= (int) $cb_version_count ?> version<?= $cb_version_count === 1 ? '' : 's' ?> tracked
     <?php if ($cb_latest_vid > 0): ?>· latest version row id <span class="mono">#<?= (int) $cb_latest_vid ?></span><?php endif; ?>
   </div>
@@ -88,7 +88,7 @@ for ($cb_i = 0; $cb_i < $cb_version_count; $cb_i++) {
 <?php if ($cb_version_count > 1): ?>
 <div class="cb-card">
   <h3>Price trajectory</h3>
-  <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap">
+  <div data-cb-u="u-5839a855bc">
     <svg class="sparkline-large"
          data-cb-sparkline-large
          data-cb-profile-id="<?= (int) $cb_profile_id ?>"
@@ -96,26 +96,26 @@ for ($cb_i = 0; $cb_i < $cb_version_count; $cb_i++) {
          viewBox="0 0 520 120"
          preserveAspectRatio="none"
          aria-hidden="true"
-         style="display:block; max-width:100%; height:120px"></svg>
+         data-cb-u="u-082a58d32f"></svg>
 
-    <div style="display:grid; grid-template-columns: repeat(2, auto); gap:8px 18px; font-size:12px">
+    <div data-cb-u="u-8da823607c">
       <div>
-        <div class="glabel" style="color:var(--muted-soft)">First</div>
-        <div class="mono" style="font-size:15px"><?= $cb_first_final !== null ? $esc(number_format($cb_first_final, 2)) : '—' ?></div>
+        <div class="glabel" data-cb-u="u-6c850f109c">First</div>
+        <div class="mono" data-cb-u="u-a3970b9f8a"><?= $cb_first_final !== null ? $esc(number_format($cb_first_final, 2)) : '—' ?></div>
       </div>
       <div>
-        <div class="glabel" style="color:var(--muted-soft)">Latest</div>
-        <div class="mono" style="font-size:15px; color:var(--price)"><?= $cb_last_final !== null ? $esc(number_format($cb_last_final, 2)) : '—' ?></div>
+        <div class="glabel" data-cb-u="u-6c850f109c">Latest</div>
+        <div class="mono" data-cb-u="u-d55ffe22fc"><?= $cb_last_final !== null ? $esc(number_format($cb_last_final, 2)) : '—' ?></div>
       </div>
       <div>
-        <div class="glabel" style="color:var(--muted-soft)">Min</div>
-        <div class="mono" style="font-size:15px; color:var(--good)"><?= $cb_min_final !== null ? $esc(number_format($cb_min_final, 2)) : '—' ?></div>
+        <div class="glabel" data-cb-u="u-6c850f109c">Min</div>
+        <div class="mono" data-cb-u="u-c7d8bb823a"><?= $cb_min_final !== null ? $esc(number_format($cb_min_final, 2)) : '—' ?></div>
       </div>
       <div>
-        <div class="glabel" style="color:var(--muted-soft)">Max</div>
-        <div class="mono" style="font-size:15px; color:var(--bad)"><?= $cb_max_final !== null ? $esc(number_format($cb_max_final, 2)) : '—' ?></div>
+        <div class="glabel" data-cb-u="u-6c850f109c">Max</div>
+        <div class="mono" data-cb-u="u-735cc40047"><?= $cb_max_final !== null ? $esc(number_format($cb_max_final, 2)) : '—' ?></div>
       </div>
-      <div style="grid-column:1 / -1; color:var(--muted); font-size:11px; margin-top:2px">
+      <div data-cb-u="u-53239731c4">
         <?= $esc($cb_currency) ?> / month
       </div>
     </div>
@@ -168,16 +168,16 @@ for ($cb_i = 0; $cb_i < $cb_version_count; $cb_i++) {
         ?>
         <tr data-cb-version-row data-cb-version-id="<?= (int) $cb_v_id ?>" data-cb-version="<?= (int) $cb_v_num ?>">
           <td>
-            <span class="mono" style="font-size:15px; font-weight:600">v<?= (int) $cb_v_num ?></span>
-            <?php if ($cb_is_latest): ?><span class="cb-pill good" style="margin-left:6px"><span class="dot"></span>latest</span><?php endif; ?>
+            <span class="mono" data-cb-u="u-aea0af9e9a">v<?= (int) $cb_v_num ?></span>
+            <?php if ($cb_is_latest): ?><span class="cb-pill good" data-cb-u="u-4b17347c23"><span class="dot"></span>latest</span><?php endif; ?>
           </td>
           <td>
             <div><?= $esc($cb_rel_time($cb_v_gen)) ?></div>
-            <div class="mono" style="font-size:11px; color:var(--muted)"><?= $esc(substr($cb_v_gen, 0, 16)) ?></div>
+            <div class="mono" data-cb-u="u-9f803cd406"><?= $esc(substr($cb_v_gen, 0, 16)) ?></div>
           </td>
           <td class="right mono"><?= $esc(number_format($cb_v_base, 2)) ?></td>
           <td class="right mono"><?= $esc(number_format($cb_v_conf, 2)) ?></td>
-          <td class="right mono"><?= $cb_v_fx !== null ? $esc(number_format($cb_v_fx, 4)) : '<span class="muted" style="color:var(--muted)">—</span>' ?></td>
+          <td class="right mono"><?= $cb_v_fx !== null ? $esc(number_format($cb_v_fx, 4)) : '<span class="muted" data-cb-u="u-eac7694072">—</span>' ?></td>
           <td class="right"><?= $esc(number_format($cb_v_gst, 1)) ?>%</td>
           <td class="right"><span class="price mono"><?= $esc(number_format($cb_v_final, 2)) ?></span></td>
           <td>
@@ -204,7 +204,7 @@ for ($cb_i = 0; $cb_i < $cb_version_count; $cb_i++) {
               <!-- TODO: profile-restore-version handler not yet wired by Agent D -->
               <form method="post"
                     action="<?= $esc($module_link) ?>"
-                    style="display:inline"
+                    data-cb-u="u-6b8b63d565"
                     data-cb-form="profile-restore-version"
                     data-cb-disabled-reason="coming-soon">
                 <input type="hidden" name="action" value="profile-restore-version">
@@ -228,7 +228,7 @@ for ($cb_i = 0; $cb_i < $cb_version_count; $cb_i++) {
 </div>
 <?php endif; ?>
 
-<p style="margin-top:16px">
+<p data-cb-u="u-92c18f6bda">
   <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles">← Back to profiles</a>
 </p>
 

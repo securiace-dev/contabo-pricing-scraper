@@ -38,14 +38,14 @@ $cb_strip_data = [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:6px 0 18px;">
+<header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" style="margin:0 0 4px;">Price decisions</h2>
-    <p class="cb-card-sub" style="margin:0; max-width:62ch;">
+    <h2 class="display" data-cb-u="u-0cbe035c55">Price decisions</h2>
+    <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
       Immutable audit log. Every decision the engine considered is recorded here, applied or not.
     </p>
   </div>
-  <div style="display:flex; gap:8px;">
+  <div data-cb-u="u-b887bfd543">
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=repricing">&larr; Dashboard</a>
   </div>
 </header>
@@ -55,18 +55,18 @@ require __DIR__ . '/_layout_open.tpl';
   <input type="hidden" name="module" value="contabo_pricing">
   <input type="hidden" name="action" value="price-decisions">
 
-  <div class="cb-field" style="flex-direction:row; align-items:center; gap:6px; margin:0">
-    <label class="glabel" for="cb-pd-from" style="margin-right:2px">From</label>
+  <div class="cb-field" data-cb-u="u-ff46992490">
+    <label class="glabel" for="cb-pd-from" data-cb-u="u-0aa89a4011">From</label>
     <input id="cb-pd-from" type="date" name="from" data-cb-date-from
-           value="<?= $esc($filter_from ?? '') ?>" style="padding:5px 8px">
-    <label class="glabel" for="cb-pd-to" style="margin:0 2px 0 8px">To</label>
+           value="<?= $esc($filter_from ?? '') ?>" data-cb-u="u-485fc5be97">
+    <label class="glabel" for="cb-pd-to" data-cb-u="u-19db841668">To</label>
     <input id="cb-pd-to" type="date" name="to" data-cb-date-to
-           value="<?= $esc($filter_to ?? '') ?>" style="padding:5px 8px">
+           value="<?= $esc($filter_to ?? '') ?>" data-cb-u="u-485fc5be97">
   </div>
 
-  <div class="cb-field" style="flex-direction:row; align-items:center; gap:6px; margin:0">
+  <div class="cb-field" data-cb-u="u-ff46992490">
     <label class="glabel" for="cb-pd-policy">Policy</label>
-    <select id="cb-pd-policy" name="policy" style="padding:5px 8px">
+    <select id="cb-pd-policy" name="policy" data-cb-u="u-485fc5be97">
       <option value="">All policies</option>
       <?php foreach ($available_policies as $cb_p): ?>
         <option value="<?= $esc($cb_p) ?>"<?= ($filter_policy === $cb_p ? ' selected' : '') ?>><?= $esc($cb_p) ?></option>
@@ -74,9 +74,9 @@ require __DIR__ . '/_layout_open.tpl';
     </select>
   </div>
 
-  <div class="cb-field" style="flex-direction:row; align-items:center; gap:6px; margin:0">
+  <div class="cb-field" data-cb-u="u-ff46992490">
     <label class="glabel" for="cb-pd-skip">Skip reason</label>
-    <select id="cb-pd-skip" name="skip_reason" style="padding:5px 8px">
+    <select id="cb-pd-skip" name="skip_reason" data-cb-u="u-485fc5be97">
       <option value="">All</option>
       <?php foreach ($available_skip_reasons as $cb_s): ?>
         <option value="<?= $esc($cb_s) ?>"<?= ($filter_skip_reason === $cb_s ? ' selected' : '') ?>><?= $esc($cb_s) ?></option>
@@ -84,9 +84,9 @@ require __DIR__ . '/_layout_open.tpl';
     </select>
   </div>
 
-  <div class="cb-field" style="flex-direction:row; align-items:center; gap:6px; margin:0">
+  <div class="cb-field" data-cb-u="u-ff46992490">
     <label class="glabel" for="cb-pd-cycle">Cycle</label>
-    <select id="cb-pd-cycle" name="cycle" style="padding:5px 8px">
+    <select id="cb-pd-cycle" name="cycle" data-cb-u="u-485fc5be97">
       <option value="">All cycles</option>
       <?php foreach (['Monthly','Quarterly','Semi-Annually','Annually','Biennially','Triennially'] as $cb_cyc): ?>
         <option value="<?= $esc($cb_cyc) ?>"<?= ($cb_filter_cycle === $cb_cyc ? ' selected' : '') ?>><?= $esc($cb_cyc) ?></option>
@@ -105,7 +105,7 @@ require __DIR__ . '/_layout_open.tpl';
 </form>
 
 <?php /* Cycle pill filter row — client-side via data-cb-filter-cycle ------- */ ?>
-<div class="cb-toolbar" role="region" aria-label="Cycle pill filter" style="margin-top:-6px;">
+<div class="cb-toolbar" role="region" aria-label="Cycle pill filter" data-cb-u="u-9dcf1dec3b">
   <span class="glabel">Cycle</span>
   <div class="cb-filter-pills" data-cb-filter-group="pd-cycle" role="group">
     <button type="button" data-cb-filter-cycle="all"           aria-pressed="true">All</button>
@@ -119,7 +119,7 @@ require __DIR__ . '/_layout_open.tpl';
 </div>
 
 <?php /* CSV export — POST with CSRF + filter pass-through ----------------- */ ?>
-<form method="post" action="<?= $esc($module_link) ?>" style="margin:0 0 14px;">
+<form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-619b35a9f4">
   <input type="hidden" name="action"     value="price-decisions-csv">
   <input type="hidden" name="from"       value="<?= $esc($filter_from ?? '') ?>">
   <input type="hidden" name="to"         value="<?= $esc($filter_to ?? '') ?>">
@@ -141,7 +141,7 @@ require __DIR__ . '/_layout_open.tpl';
 
 <?php else: ?>
 
-<div class="cb-card" style="padding:0; overflow:hidden;">
+<div class="cb-card" data-cb-u="u-14f5e9e79f">
   <table class="cb-table" data-cb-table="price-decisions">
     <thead>
       <tr>
@@ -181,33 +181,33 @@ require __DIR__ . '/_layout_open.tpl';
           data-cb-cycle="<?= $esc($cycle) ?>">
         <td class="mono">#<?= (int) $rid ?></td>
         <td class="mono">#<?= (int) $svcId ?></td>
-        <td class="mono" style="font-size:12px"><?= $esc(substr($decidedAt, 0, 16)) ?></td>
+        <td class="mono" data-cb-u="u-a49cca52be"><?= $esc(substr($decidedAt, 0, 16)) ?></td>
         <td><span class="cb-pill grey"><?= $esc($policy !== '' ? $policy : '—') ?></span></td>
-        <td class="mono" style="font-size:12px"><?= $esc($cycle) ?></td>
+        <td class="mono" data-cb-u="u-a49cca52be"><?= $esc($cycle) ?></td>
         <td class="right mono price"><?= $esc(number_format($old, 2)) ?></td>
         <td class="right mono price"><?= $esc(number_format($new, 2)) ?></td>
         <td class="right mono">
-          <?= $marginPct === null ? '<span style="color:var(--muted)">—</span>' : $esc(number_format($marginPct, 2) . '%') ?>
+          <?= $marginPct === null ? '<span data-cb-u="u-eac7694072">—</span>' : $esc(number_format($marginPct, 2) . '%') ?>
         </td>
-        <td><code class="mono" style="font-size:11.5px"><?= $esc($taxMode) ?></code></td>
+        <td><code class="mono" data-cb-u="u-bd299c8ad6"><?= $esc($taxMode) ?></code></td>
         <td>
           <?php if ($applied): ?>
             <span class="cb-pill good"><span class="dot"></span>yes</span>
             <?php if ($appliedVia !== ''): ?>
-              <div style="font-size:10.5px; color:var(--muted)"><?= $esc($appliedVia) ?></div>
+              <div data-cb-u="u-209747f06d"><?= $esc($appliedVia) ?></div>
             <?php endif; ?>
           <?php else: ?>
             <span class="cb-pill grey">no</span>
           <?php endif; ?>
         </td>
-        <td><code class="mono" style="font-size:11.5px"><?= $esc($skipReason) ?></code></td>
+        <td><code class="mono" data-cb-u="u-bd299c8ad6"><?= $esc($skipReason) ?></code></td>
       </tr>
       <?php endforeach; ?>
     </tbody>
   </table>
 </div>
 
-<p style="margin-top:14px; color:var(--muted); font-size:12.5px">
+<p data-cb-u="u-e4401e441a">
   Rows are paginated server-side; refine the date range to load older history.
 </p>
 

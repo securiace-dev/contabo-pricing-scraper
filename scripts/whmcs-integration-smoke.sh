@@ -1,41 +1,71 @@
 #!/usr/bin/env bash
 #
-# whmcs-integration-smoke.sh — run the real-WHMCS integration smoke for the
-# contabo_pricing addon against the dockerised dev WHMCS, in one command.
-#
-# The unit suite runs against FakeCapsule (arrays); real WHMCS returns stdClass
-# and the container can be running STALE code. This wrapper defeats the
-# stale-code trap by syncing the addon source into the bind-mounted container
-# source FIRST, then executes tests/integration/whmcs_smoke.php INSIDE the
-# WHMCS 8.13 php container and surfaces its exit code.
-#
-# Usage:  bash scripts/whmcs-integration-smoke.sh
-# Exit:   0 = all smoke assertions PASS; non-zero = a failure (or sync/exec error).
+# Real-WHMCS integration smoke against the local whmcs-devbox 8.13 and 9.0
+# containers. Current source is streamed into a per-container temporary
+# directory, so stale bind mounts cannot affect the result and no other repo is
+# modified. This script never contacts production or a provider API.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+DEVBOX_DIR="${WHMCS_DEVBOX_DIR:-$(cd "$REPO_ROOT/../whmcs-devbox" && pwd)}"
+BASE_COMPOSE="$DEVBOX_DIR/docker-compose.yml"
+OVERRIDE_COMPOSE="$DEVBOX_DIR/docker-compose.override.yml"
+ADDON_DIR="$REPO_ROOT/whmcs-module/modules/addons/contabo_pricing"
+MODULE_DIR="$REPO_ROOT/whmcs-module/modules/servers/securiacevps"
+SHIM_DIR="$REPO_ROOT/whmcs-module/modules/servers/contabo_vps"
+ADDON_SMOKE="$ADDON_DIR/tests/integration/whmcs_smoke.php"
+NATIVE_SMOKE="$MODULE_DIR/tests/integration/native_whmcs_smoke.php"
 
-CONTAINER="securiace-vps-platform-whmcs8-php-1"
-SMOKE_IN_CONTAINER="/var/www/html/modules/addons/contabo_pricing/tests/integration/whmcs_smoke.php"
+[ -f "$BASE_COMPOSE" ] || {
+  echo "WHMCS devbox not found at $DEVBOX_DIR" >&2
+  exit 1
+}
 
-echo "==> [1/2] syncing addon into local WHMCS source (defeats the stale-code trap)"
-bash "$SCRIPT_DIR/local-whmcs.sh" sync
+compose_args=(-p whmcs-devbox -f "$BASE_COMPOSE")
+[ -f "$OVERRIDE_COMPOSE" ] && compose_args+=(-f "$OVERRIDE_COMPOSE")
 
-echo
-echo "==> [2/2] running integration smoke inside container [$CONTAINER]"
-# local-whmcs.sh's rsync excludes tests/, so the smoke script itself is not
-# copied into the bind mount. Pipe it in on stdin and execute from there, so the
-# in-container PHP still loads the freshly-synced addon lib/ via init.php + the
-# stub autoloader the smoke registers.
-# Capture the exit code without tripping `set -e` on a smoke failure.
+echo "==> ensuring isolated local WHMCS web/database services are running"
+(cd "$DEVBOX_DIR" && docker compose "${compose_args[@]}" up -d \
+  mariadb8 whmcs8 mariadb9 whmcs9)
+
 status=0
-docker exec -i "$CONTAINER" php /dev/stdin < "$REPO_ROOT/whmcs-module/modules/addons/contabo_pricing/tests/integration/whmcs_smoke.php" || status=$?
+for container in whmcs-devbox-whmcs8-1 whmcs-devbox-whmcs9-1; do
+  echo
+  echo "==> integration smoke: $container"
+  stage="$(docker exec "$container" mktemp -d /tmp/securiace-native.XXXXXX)"
+  case "$stage" in
+    /tmp/securiace-native.*) ;;
+    *) echo "Unexpected container temp path: $stage" >&2; exit 1 ;;
+  esac
+
+  COPYFILE_DISABLE=1 tar --no-xattrs -C "$REPO_ROOT/whmcs-module" -cf - \
+    modules/addons/contabo_pricing/lib \
+    modules/servers/securiacevps \
+    modules/servers/contabo_vps |
+    docker exec -i "$container" tar -C "$stage" -xf -
+
+  addon_lib="$stage/modules/addons/contabo_pricing/lib"
+  module_entry="$stage/modules/servers/securiacevps/securiacevps.php"
+  shim_entry="$stage/modules/servers/contabo_vps/contabo_vps.php"
+
+  docker exec \
+    -e CONTABO_ADDON_LIB_DIR="$addon_lib" \
+    -i "$container" php /dev/stdin < "$ADDON_SMOKE" || status=1
+
+  docker exec \
+    -e CONTABO_ADDON_LIB_DIR="$addon_lib" \
+    -e SECURIACE_MODULE_ENTRY="$module_entry" \
+    -e SECURIACE_SHIM_ENTRY="$shim_entry" \
+    -i "$container" php /dev/stdin < "$NATIVE_SMOKE" || status=1
+
+  docker exec "$container" rm -rf "$stage"
+done
 
 echo
 if [ "$status" -eq 0 ]; then
-  echo "==> integration smoke PASSED"
+  echo "==> WHMCS 8.13/9.0 integration smoke PASSED"
 else
-  echo "==> integration smoke FAILED (exit $status)"
+  echo "==> WHMCS 8.13/9.0 integration smoke FAILED"
 fi
 exit "$status"

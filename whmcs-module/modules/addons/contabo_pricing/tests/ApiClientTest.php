@@ -250,4 +250,17 @@ final class ApiClientTest extends TestCase
 
         $this->assertSame('http://api.local/v1/plans', $mock->calls[0]['url']);
     }
+
+    public function testCatalogUsesVersionedReadEndpoint(): void
+    {
+        $mock = new MockRequestExecutor();
+        $mock->queue[] = [200, '{"catalog_version":"catalog-1","items":[]}', 0, ''];
+
+        $client = new ApiClient($this->settings(), 8, $mock);
+        $catalog = $client->catalog();
+
+        $this->assertSame('catalog-1', $catalog['catalog_version']);
+        $this->assertSame('GET', $mock->calls[0]['method']);
+        $this->assertSame('http://api.local/v1/catalog', $mock->calls[0]['url']);
+    }
 }

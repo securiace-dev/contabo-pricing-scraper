@@ -54,6 +54,12 @@ class ApiClient
     }
 
     /** @return array<string, mixed> */
+    public function catalog(): array
+    {
+        return $this->get('/catalog');
+    }
+
+    /** @return array<string, mixed> */
     public function fx(): array
     {
         return $this->get('/fx');

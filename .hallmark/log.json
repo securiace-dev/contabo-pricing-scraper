@@ -1,0 +1,29 @@
+[
+  {
+    "date": "2026-07-30",
+    "surface": "administrator addon",
+    "macrostructure": "Pricing Operations Ledger",
+    "theme": "custom",
+    "theme_axes": "warm technical editorial / serif display / amber anchor",
+    "enrichment": "none",
+    "brief": "Dense pricing, publication, operation and reconciliation workbench with explicit controls"
+  },
+  {
+    "date": "2026-07-30",
+    "surface": "customer service",
+    "macrostructure": "Operational Truth Rail",
+    "theme": "custom",
+    "theme_axes": "warm neutral paper / condensed control display / cobalt anchor",
+    "enrichment": "none",
+    "brief": "Capability-driven VPS service management with truthful asynchronous state"
+  },
+  {
+    "date": "2026-07-30",
+    "surface": "VPS order form",
+    "macrostructure": "Sealed Order Journey",
+    "theme": "custom",
+    "theme_axes": "calm infrastructure / editorial display / evergreen anchor",
+    "enrichment": "none",
+    "brief": "WHMCS-native configuration and price journey preserving cart and checkout contracts"
+  }
+]

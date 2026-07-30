@@ -211,9 +211,9 @@ add_hook('AdminHomeWidgets', 1, static function () {
                   <div><strong>Last sync:</strong> {$status} at {$when}</div>
                   <div>Profiles changed: {$changed} · Products updated: {$products}</div>
                   <div>Active profiles: {$data['active']}</div>
-                  <div style="margin-top:8px">
+                  <p>
                     <a class="btn btn-default btn-sm" href="addonmodules.php?module=contabo_pricing">Open addon</a>
-                  </div>
+                  </p>
                 </div>
             HTML;
         }
@@ -239,5 +239,89 @@ add_hook('AfterModuleCreate', 50, static function ($vars): void {
         if (function_exists('logActivity')) {
             logActivity('Contabo Pricing snapshot capture failed: ' . $e->getMessage());
         }
+    }
+});
+
+/**
+ * WHMCS documents ShoppingCartValidateCheckout as the last validation point
+ * before order and invoice creation. Fail closed for native VPS products when
+ * the locally published catalog/mapping contract is stale, unavailable,
+ * tampered with, or incompatible with the selected configurable options.
+ */
+add_hook('ShoppingCartValidateCheckout', 5, static function (): array {
+    try {
+        $products = isset($_SESSION['cart']['products']) && is_array($_SESSION['cart']['products'])
+            ? array_values($_SESSION['cart']['products'])
+            : [];
+        return (new \ContaboPricing\CheckoutGuard())->validateProducts($products);
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing checkout validation failed safely.');
+        }
+        return [
+            'VPS checkout is temporarily unavailable. Please review your configuration or contact support.',
+        ];
+    }
+});
+
+/**
+ * Capture one immutable draft per VPS service immediately after WHMCS creates
+ * the order/service records. A paid invoice seals the draft; unpaid and
+ * fraud-pending orders remain non-provisionable.
+ */
+add_hook('AfterShoppingCartCheckout', 40, static function ($vars): void {
+    try {
+        $orderId = (int) ($vars['OrderID'] ?? 0);
+        $invoiceId = (int) ($vars['InvoiceID'] ?? 0);
+        $services = isset($vars['ServiceIDs']) && is_array($vars['ServiceIDs'])
+            ? $vars['ServiceIDs']
+            : [];
+        $snapshots = new \ContaboPricing\PaidOrderSnapshotService();
+        foreach ($services as $serviceId) {
+            $snapshots->createDraft($orderId, $invoiceId, (int) $serviceId);
+        }
+        // Handles zero-total/instant gateway orders where OrderPaid may have
+        // fired before the post-checkout hook completed.
+        $snapshots->sealOrder($orderId, $invoiceId);
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing paid-order snapshot draft failed: ' . $e->getMessage());
+        }
+    }
+});
+
+add_hook('OrderPaid', 40, static function ($vars): void {
+    try {
+        (new \ContaboPricing\PaidOrderSnapshotService())->sealOrder(
+            (int) ($vars['orderId'] ?? 0),
+            (int) ($vars['invoiceId'] ?? 0)
+        );
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing paid-order snapshot seal failed: ' . $e->getMessage());
+        }
+    }
+});
+
+/**
+ * Belt-and-braces guard: only the canonical module and legacy compatibility
+ * entrypoint are in scope, and both require a sealed snapshot before create.
+ */
+add_hook('PreModuleCreate', 5, static function ($vars): array {
+    try {
+        $params = isset($vars['params']) && is_array($vars['params']) ? $vars['params'] : [];
+        $module = (string) ($params['moduletype'] ?? '');
+        if (!in_array($module, ['securiacevps', 'contabo_vps'], true)) {
+            return [];
+        }
+        $serviceId = (int) ($params['serviceid'] ?? 0);
+        $row = Capsule::table('mod_securiacevps_order_snapshots')
+            ->where('service_id', $serviceId)
+            ->where('state', 'sealed')
+            ->orderByDesc('id')
+            ->first();
+        return $row === null ? ['abortcmd' => true] : [];
+    } catch (\Throwable $e) {
+        return ['abortcmd' => true];
     }
 });

@@ -29,10 +29,10 @@ $cb_strip_data = $cb_d !== null ? [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<header style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin:4px 0 14px;">
+<header data-cb-u="u-99f4ce4345">
   <div>
     <h2 class="cb-card-title">Apply preview — diff against product #<?= $esc((string) (int) $product_id) ?></h2>
-    <p class="cb-card-sub" style="margin:0;">Plan <code class="mono"><?= $esc($plan_slug) ?></code>. This is what <strong>Apply</strong> would change on the live product. Nothing has been written.</p>
+    <p class="cb-card-sub" data-cb-u="u-38965f9b18">Plan <code class="mono"><?= $esc($plan_slug) ?></code>. This is what <strong>Apply</strong> would change on the live product. Nothing has been written.</p>
   </div>
   <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=config-preview&amp;id=<?= $esc((string) (int) $profile_id) ?>">&larr; Preview</a>
 </header>
@@ -44,7 +44,7 @@ require __DIR__ . '/_layout_open.tpl';
 <?php else: ?>
 
   <?php if ((int) $cb_sum['drift_skip'] > 0): ?>
-    <div class="cb-error" style="margin-top:0;">
+    <div class="cb-error" data-cb-u="u-1294519fc5">
       <strong><?= $esc((string) (int) $cb_sum['drift_skip']) ?> option(s) were hand-edited on the live product since the last apply.</strong>
       Apply will <strong>skip</strong> them — your manual edits are preserved, not overwritten.
     </div>
@@ -59,11 +59,11 @@ require __DIR__ . '/_layout_open.tpl';
           <?php $act = (string) ($r['action'] ?? ''); $tone = $cb_actionTone[$act] ?? 'grey'; ?>
           <tr>
             <td><span class="cb-pill <?= $esc($tone) ?>"><span class="dot"></span> <?= $esc($act) ?></span></td>
-            <td><?= $esc((string) ($r['dimension_key'] ?? '')) ?><?php if (!empty($r['will_be_hidden'])): ?> <span class="cb-pill grey" style="font-size:10.5px;">hidden</span><?php endif; ?></td>
+            <td><?= $esc((string) ($r['dimension_key'] ?? '')) ?><?php if (!empty($r['will_be_hidden'])): ?> <span class="cb-pill grey" data-cb-u="u-703d6969d9">hidden</span><?php endif; ?></td>
             <td class="right mono"><?= $esc((string) (int) ($r['optiontype'] ?? 0)) ?></td>
             <td class="right mono"><?= $esc((string) (int) ($r['values'] ?? 0)) ?></td>
             <td class="mono"><?= ((int) ($r['whmcs_option_id'] ?? 0) > 0) ? '#' . $esc((string) (int) $r['whmcs_option_id']) : '<span class="muted">—</span>' ?></td>
-            <td style="font-size:12.5px; color:var(--muted);"><?= $esc((string) ($r['detail'] ?? '')) ?></td>
+            <td data-cb-u="u-9abec1081d"><?= $esc((string) ($r['detail'] ?? '')) ?></td>
           </tr>
         <?php endforeach; ?>
         <?php if ($cb_rows === []): ?>
@@ -74,9 +74,9 @@ require __DIR__ . '/_layout_open.tpl';
   </div>
 
   <?php $cb_writes = (int) $cb_sum['create'] + (int) $cb_sum['update']; ?>
-  <div class="cb-card" style="border-color: rgba(180,83,9,.35);">
+  <div class="cb-card" data-cb-u="u-1359c34c93">
     <h3>Apply</h3>
-    <p class="cb-card-sub" style="margin-top:-4px;">
+    <p class="cb-card-sub" data-cb-u="u-d7a30f1cbd">
       <?php if ($cb_writes > 0): ?>
         Apply will write <strong><?= $esc((string) $cb_writes) ?></strong> option change(s) to product #<?= $esc((string) (int) $product_id) ?>
         (<?= $esc((string) (int) $cb_sum['create']) ?> create, <?= $esc((string) (int) $cb_sum['update']) ?> update),
@@ -86,13 +86,13 @@ require __DIR__ . '/_layout_open.tpl';
         <?= $esc((string) (int) $cb_sum['drift_skip']) ?> drift-skipped). Sub-option/pricing rows are still re-asserted.
       <?php endif; ?>
     </p>
-    <form method="post" action="<?= $esc($module_link) ?>" style="margin:0;"
-          onsubmit="return confirm('Apply these configurable options to product #<?= $esc((string) (int) $product_id) ?>?');">
+    <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-38965f9b18"
+          data-cb-confirm="Apply these configurable options to product #<?= $esc((string) (int) $product_id) ?>?">
       <input type="hidden" name="action" value="config-apply">
       <input type="hidden" name="id" value="<?= $esc((string) (int) $profile_id) ?>">
       <input type="hidden" name="product_id" value="<?= $esc((string) (int) $product_id) ?>">
       <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
-      <label style="display:flex; align-items:center; gap:8px; margin:10px 0; font-size:13.5px; cursor:pointer;">
+      <label data-cb-u="u-036cf9790b">
         <input type="checkbox" name="confirm" value="1" required>
         <span>I’ve reviewed the diff above and want to apply these changes.</span>
       </label>

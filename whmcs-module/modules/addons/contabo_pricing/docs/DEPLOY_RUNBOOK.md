@@ -1,180 +1,231 @@
-# contabo_pricing — Deployment Runbook
+# SecuriAce WHMCS-native VPS release and migration runbook
 
-Production target: **my.securiace.com** — addon at
-`/var/www/my_securiace_usr/data/www/my.securiace.com/modules/addons/contabo_pricing`,
-provisioning module at `…/modules/servers/contabo_vps/`,
-owned by `my_securiace_usr:my_securiace_usr`, served on PHP 8.1.x.
+This runbook prepares and verifies a release. It deliberately contains no
+automatic production deployment. Applying an artifact to production is a
+separate operator-controlled change with explicit authorization, target
+resolution, maintenance/rollback ownership, and evidence capture.
 
-> **Scope rule (hard):** every production action is confined to the
-> `contabo_pricing` and `contabo_vps` module directories. Never touch other
-> admin pages, clients, invoices, services, products, or server config. Prod
-> deploy is a **manual rsync** — there is intentionally **no CI/CD workflow
-> that deploys WHMCS modules** (the GitHub `Release` workflow only builds the
-> Rust scraper's Docker image on `v*` tags).
+The release contains three independently versioned artifacts:
 
----
+1. Rust pricing/catalog API.
+2. `contabo_pricing` WHMCS addon.
+3. SecuriAce VPS suite: canonical `securiacevps` module, `contabo_vps`
+   compatibility shim, and `securiace-vps` Standard Cart child order form.
 
-## 1. MANDATORY pre-deploy gate
+## Gate 0: establish repository and deployment truth
 
-A prod deploy MUST NOT proceed unless this exits `0`:
+Before migration:
 
-```bash
-bash scripts/predeploy-check.sh        # run from the repo root
-```
+- identify the exact deployed Rust binary, addon tree, server-module tree,
+  hooks, order-form templates, cron entrypoints, and database schema version;
+- hash deployed and candidate files without reading secret values;
+- diff tracked source against the deployment;
+- record every product and service assigned to `contabo_vps` or
+  `securiacevps`;
+- record custom fields, product config fields, mapping/publication identities,
+  active hooks, email templates, and module-owned table counts;
+- prove a compatible database backup can be restored in an isolated
+  environment;
+- retain the previous code/package artifact and its checksum.
 
-It runs, fail-closed (gate fails if any stage fails), entirely against **local**
-files + the **dev** WHMCS — never prod:
+Do not use an untracked workstation tree as a release source.
 
-| Stage | What |
-|------|------|
-| 1 | Unit suite (PHPUnit, FakeCapsule) |
-| 2 | PHP **7.4** syntax lint (the polyglot floor) of `lib/*.php`, the entrypoints, `templates/admin/*.tpl`, and repo-root `scripts/*.php` |
-| 3 | Live-schema smoke vs dev WHMCS **8.13 + 9.0** (`information_schema` only) |
-| 4 | Real-WHMCS integration smoke (apply / drift / observe end-to-end on dev) |
+## Gate 1: build and verify locally
 
-The smoke scripts live at **repo-root `scripts/`** (alongside `local-whmcs.sh`),
-**not** under the addon directory:
-- `scripts/predeploy-check.sh` — the gate.
-- `scripts/live-schema-smoke.{php,sh}` — env-gated (`CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1`), read-only `information_schema` check (asserts `tblhosting.amount`/`firstpaymentamount` exist, the v6 `expected_hash` columns exist; skips safely without the flag/credentials).
-- `scripts/whmcs-integration-smoke.sh` — syncs the addon into dev WHMCS then runs `tests/integration/whmcs_smoke.php` inside the 8.13 container.
-
----
-
-## 2. Production deploy
-
-**Normal workflow — use `deploy.sh`** (runs the gate, detects changes, deploys
-both modules, chowns, verifies):
+Run:
 
 ```bash
-bash scripts/deploy.sh        # run from the repo root
+bash scripts/predeploy-check.sh
+bash scripts/package-whmcs-suite.sh
 ```
 
-`deploy.sh` covers both the addon and the provisioning module automatically:
-- Runs `predeploy-check.sh` first — aborts on failure.
-- Detects per-module changes via `rsync --dry-run`; skips a module if nothing changed.
-- Deploys only what changed, then chowns both destinations.
-- Verifies `AdminController::VERSION` and PHP lint on prod for both modules.
+The gate must prove:
 
-After the script finishes, **load the addon admin page once** so
-`SchemaHealth::assertOrMigrate()` runs the schema migration (if any).
+- addon and canonical module unit/contract suites pass;
+- the compatibility shim loads and delegates;
+- PHP syntax is valid on the supported matrix;
+- local WHMCS 8.13.x and 9.x schema/integration checks pass when those
+  environments are available;
+- the Rust service passes format, tests, check, and Clippy;
+- the package contains runtime files only and no tests, caches, VCS state,
+  development dependencies, credentials, or local tooling state.
 
-### Manual rsync (fallback / reference)
+The package script writes an archive, a SHA-256 file, and a sorted manifest
+under `dist/`. It does not connect to any host.
 
-Use this only if `deploy.sh` is unavailable or you need to deploy a single
-module in isolation.
+## Gate 2: stage additive schema and safety controls
 
-**Addon (`contabo_pricing`):**
-```bash
-ADDON=whmcs-module/modules/addons/contabo_pricing
-DEST='root@195.7.4.219:/var/www/my_securiace_usr/data/www/my.securiace.com/modules/addons/contabo_pricing/'
-rsync -rlptzc -i --no-owner --no-group \
-  --exclude vendor/ --exclude tests/ --exclude phpunit.xml \
-  --exclude '.phpunit.cache' --exclude '.phpunit.result.cache' \
-  --exclude composer.lock --exclude '.git*' --exclude '.claude-flow/' \
-  -e 'ssh -o BatchMode=yes -o ConnectTimeout=15' \
-  "$ADDON/" "$DEST"
-ssh -o BatchMode=yes root@195.7.4.219 \
-  "chown -R my_securiace_usr:my_securiace_usr ${DEST#*:}"
+In an isolated restore or staging environment:
+
+1. Install/upgrade the addon first so schema v12 tables exist.
+2. Confirm the migration is additive, idempotent, and safe to run twice.
+3. Confirm the previous application artifact can run against the upgraded
+   schema before declaring code rollback safe.
+4. Set the global provider-write switch off.
+5. Set every mutation capability to `not_certified` or disabled.
+6. Confirm read-only catalog import, schema health, provider-account health,
+   operations workbench, and reconciliation pages.
+7. Confirm environment and WHMCS installation identities.
+8. Confirm lifecycle email templates are present and use synthetic recipients.
+
+No provider write is permitted in this gate.
+
+## Gate 3: import catalog and publish mappings
+
+- Import a versioned Rust catalog and verify payload hashes.
+- Validate stable plan/profile, provider SKU, dimension, and value identities.
+- Preview product/configurable-option changes before publication.
+- Publish a staging mapping version under the named publication lock.
+- Repeat the same publication and prove it is a no-op.
+- Confirm a changed payload creates a new version rather than mutating the old
+  one.
+- Verify self-managed and managed product groups, management-tier rules,
+  currencies, cycles, setup/renewal amounts, tax policy, and decimal rounding.
+- Exercise quote expiration and re-quotation.
+
+## Gate 4: existing-service adoption
+
+Run the read-only adoption inventory before customer service controls are
+exposed:
+
+- exact resource-ID matches;
+- exact `whmcs-{serviceId}` tags;
+- provider account, IP, creation-time, SKU, and region evidence;
+- duplicate mappings;
+- WHMCS services with no provider resource;
+- provider resources with no WHMCS service;
+- drift/conflict findings and confidence.
+
+An operator must approve every non-exact match. Only `verified` adoption enables
+destructive actions. Record baseline orphan and drift totals.
+
+## Gate 5: staged module-name migration
+
+Never replace the old module name as one unverified rename.
+
+1. Install `securiacevps` beside `contabo_vps`.
+2. Install the new `contabo_vps` shim; it contains delegation only.
+3. Verify existing test services through both entrypoints.
+4. Produce a dry-run reassignment report.
+5. Reassign an allowlisted test cohort to `securiacevps`.
+6. Verify client page, admin page, cron, create, inspect, reconciliation, and
+   certified lifecycle callbacks.
+7. Expand cohorts only after evidence is clean.
+8. Retain the shim for at least one rollback window after the final
+   reassignment.
+9. Remove it only after searches of products, services, hooks, scripts, logs,
+   package builders, templates, and documentation prove no remaining runtime
+   reference.
+
+Rollback reassigns the cohort to the compatibility entrypoint and restores the
+previous code artifact. It does not reverse an additive database migration
+unless an independently tested database restore is required.
+
+## Gate 6: dark-launch provider writes
+
+Use a staging provider account and allowlisted WHMCS customers/products only.
+
+1. Certify provider capabilities and rate/error/timeout behavior.
+2. Enable only `inspect` and the single action under test.
+3. Prove duplicate callback and manual/cron overlap create one operation.
+4. Prove a crash after provider acceptance reconciles the existing resource.
+5. Prove a stale worker cannot overwrite a newer fencing token.
+6. Prove cancellation during provisioning has a deterministic recovery path.
+7. Prove the global write switch halts new mutations while inspection remains.
+8. Inspect attempts, correlation IDs, billing sagas, communications, and safe
+   customer error references in the workbench.
+
+## Gate 7: certify minimum lifecycle
+
+Public checkout remains disabled until evidence covers:
+
+- create and readiness verification;
+- inspect/reconcile;
+- suspend and unsuspend;
+- terminate and absence verification;
+- failed-delete orphan detection;
+- power and password reset where certified;
+- failed/unknown operation recovery;
+- billing-persistence failure after provider success;
+- one-time secret reveal, expiry, replay prevention, and redaction.
+
+## Gate 8: configure the VPS order-form child
+
+Place `templates/orderforms/securiace-vps` under the WHMCS template root and
+assign it only to the VPS product groups. Its `theme.yaml` inherits
+`standard_cart`.
+
+The child wraps product discovery and configuration only. WHMCS continues to
+own shared cart review, login/session, coupons, tax, invoice creation, gateways,
+payment, and checkout. If rollback is needed, restore the product-group order
+form to `standard_cart`; no order or invoice data changes.
+
+Verify:
+
+- unavailable/deprecated catalog items fail before order creation;
+- every selected option resolves to an enabled published machine code;
+- management-tier rules match the selected product group;
+- price, renewal, tax, discount, and quote-expiry summaries are truthful;
+- a paid/fraud-eligible order seals one immutable snapshot;
+- invalid or expired snapshots cannot provision.
+
+## Gate 9: release evidence and go/no-go
+
+The evidence pack must contain:
+
+- commit SHA, artifact versions, manifests, and SHA-256 checksums;
+- repository status and source/deployment hashes;
+- migration install/upgrade/repeat/rollback results;
+- PHP, WHMCS, Rust, unit, integration, security, and accessibility results;
+- capability certification and write-switch snapshot;
+- service adoption, conflict, drift, and orphan counts;
+- operation concurrency/unknown-outcome proofs;
+- billing and credential-reveal proofs;
+- staging resource cleanup/reconciliation report;
+- rollback owner, release owner, reviewer, and go/no-go authority.
+
+Any failed invariant is a no-go. A missing environment check is `unverified`,
+not pass.
+
+## Artifact layout
+
+The SecuriAce VPS suite archive lays down:
+
+```text
+modules/
+  servers/
+    securiacevps/
+    contabo_vps/
+templates/
+  orderforms/
+    securiace-vps/
 ```
 
-**Provisioning module (`contabo_vps`):**
-```bash
-VPS=whmcs-module/modules/servers/contabo_vps
-VDEST='root@195.7.4.219:/var/www/my_securiace_usr/data/www/my.securiace.com/modules/servers/contabo_vps/'
-rsync -rlptzc -i --no-owner --no-group \
-  --exclude '.git*' --exclude '.claude-flow/' \
-  -e 'ssh -o BatchMode=yes -o ConnectTimeout=15' \
-  "$VPS/" "$VDEST"
-ssh -o BatchMode=yes root@195.7.4.219 \
-  "chown -R my_securiace_usr:my_securiace_usr ${VDEST#*:}"
+The addon archive lays down:
+
+```text
+modules/
+  addons/
+    contabo_pricing/
 ```
 
-**Gotchas (learned the hard way):**
-- **`--no-owner --no-group`** — the source is a macOS uid (501); without these,
-  rsync-as-root maps that uid onto the prod box. Always chown afterwards.
-- **`vendor/` is excluded** — prod has no `vendor/autoload.php`; the addon's
-  stub autoloader (`ContaboPricing\` → `lib/`) loads every class, so new `lib/`
-  files work with no `composer dump-autoload`.
-- **`tests/` excluded** — never ship tests to prod.
-- **`.claude-flow/` excluded** — local tool-state directory; must never reach prod.
-- **zsh word-splitting** — an unquoted `$SSH` variable is NOT word-split in zsh
-  (`command not found: ssh -o …`). Write the `ssh` command **inline**, not via a
-  variable, or run the deploy steps under bash.
-- **No `--delete`** — never remove prod files not in the source.
+The addon must be installed/upgraded before the server module is enabled because
+it owns the shared schema. Runtime packages exclude tests, `vendor/`, internal
+deployment documents, caches, Composer development files, `.git`, graph data,
+and local agent/tool state.
 
-### Post-deploy verification (manual)
-```bash
-ssh root@195.7.4.219 "D=/var/www/my_securiace_usr/data/www/my.securiace.com; \
-  grep -m1 'const VERSION' \$D/modules/addons/contabo_pricing/lib/AdminController.php; \
-  for f in \$D/modules/addons/contabo_pricing/lib/*.php \
-            \$D/modules/servers/contabo_vps/lib/*.php \
-            \$D/modules/servers/contabo_vps/contabo_vps.php; do \
-    php -l \"\$f\" >/dev/null || echo LINT_FAIL \$f; done; echo lint_ok"
-```
-Then load the addon admin page once so `SchemaHealth::assertOrMigrate()` runs.
+## Rollback boundaries
 
----
-
-## 3. Database & migrations
-
-- The addon's schema migration runs automatically via
-  `SchemaHealth::assertOrMigrate()` on the next admin page load (and on activate
-  / upgrade). It is **idempotent** and version-gated (`Installer::SCHEMA_VERSION`).
-- **No manual SQL on prod.** No deploy step writes the WHMCS DB.
-- A deploy that does not bump `Installer::SCHEMA_VERSION` performs **no migration**
-  (assertOrMigrate is a no-op when already current).
-- **0.6.0 / Phase C** bumps the schema to **v7** — `migrateTo7` adds the
-  idempotent `mod_contabo_profile.expose_configurable_options` column
-  (`TINYINT DEFAULT 1`). On an existing prod (currently at v6) the first admin
-  page load after deploy runs it; confirm with
-  `SELECT value FROM mod_contabo_settings WHERE \`key\`='schema_version'` → `7`.
-
-## 4. Rollback
-
-- **Code:** redeploy the previous tag's addon dir (same rsync + chown).
-- **Addon-created WHMCS config objects:** use the maintenance page's
-  config-object-aware purge (`ConfigPurgeService`, scoped to the link tables) —
-  never hand-delete WHMCS config objects.
-
-## 5. Release-gate checklist (before tagging a release)
-
-1. `scripts/predeploy-check.sh` → green.
-2. CHANGELOG entry finalized; version bumped in `AdminController::VERSION` (+ the
-   `Installer::SCHEMA_VERSION` only if the schema changed).
-3. Commit + push to `origin/main`.
-4. `bash scripts/deploy.sh` (explicit approval required). Deploys both modules if changed.
-5. Load the addon admin page once — `SchemaHealth::assertOrMigrate()` runs the migration.
-
-## 6. Contabo VPS provisioning module (`modules/servers/contabo_vps/`)
-
-A separate WHMCS server/provisioning module. `deploy.sh` deploys it automatically
-alongside the addon whenever it has local changes — no separate step needed.
-`predeploy-check.sh` covers it too: its PHPUnit suite (stage 2) and the PHP 7.4
-lint of its lib/entrypoints/tests (stage 3) gate every deploy. Full contract:
-`docs/PROVISIONING_CONTRACT.md`.
-
-- **No DB schema of its own.** The created instance id lives in the service
-  custom field `contabo_instance_id` — **auto-created on the product at first
-  provision** (no manual step). The instance's Contabo displayName carries a
-  `whmcs-{serviceid}` tag; destructive actions verify it and sync restores it.
-- **Credentials** live in WHMCS server config (Setup → Servers), encrypted at
-  rest by WHMCS: Username = OAuth2 `client_id`, Password = `client_secret`,
-  Access Hash = `apiUser:apiPassword`. They are redacted from `logModuleCall`
-  (plus a recursive sanitizer for secret-bearing payload keys) and never logged
-  in plaintext; SSL verification is enforced on every call.
-- **Activation:** link a WHMCS product to the `contabo_vps` server module and
-  set config options 1–6 (image id + region fallbacks, SSH secret id, Contabo
-  product id, optional cloud-init, optional add-ons JSON). On configurable
-  products, curated customer selections (Image/Region/Private Networking)
-  override the fallbacks via the addon link tables. Use the module's
-  **Test Connection** before ordering.
-- **Passwords:** the service password is pushed to the Contabo vault
-  (`whmcs-svc-{id}-root`) and rides in as `rootPassword`, so what WHMCS shows
-  the customer works on the server. Reset Password (admin + client) rotates it.
-- **Billing:** the WHMCS cycle maps to Contabo's contract `period`
-  (Monthly→1 … Annually→12; bi/triennial→12, logged).
-- Lifecycle: Contabo has no native suspend — Suspend/Unsuspend map to power
-  stop/start; Terminate issues a cancel (`{}` body, cancelDate logged) and
-  best-effort vault cleanup; ChangePackage is a manual-intervention message
-  (no live resize). IP/status sync happens on admin/client page views, the
-  "Sync from Contabo" admin button, and a bounded DailyCronJob sweep.
+- **Rust catalog outage:** keep last verified imported catalog; pause refresh
+  and new quotation. Existing service lifecycle remains available.
+- **Addon UI/catalog regression:** restore prior addon code; pause publication.
+  Provisioning uses sealed snapshots and existing service projections.
+- **Provisioning regression:** disable global provider writes, let inspection
+  and workbench remain available, restore the previous server-suite artifact,
+  and reconcile submitted operations before accepting new ones.
+- **Order-form regression:** reassign the VPS product groups to
+  `standard_cart`.
+- **Provider ambiguity:** do not roll forward or back blindly; reconcile by
+  operation, request, exact tag, and provider resource identity.
+- **Database incompatibility:** use only the tested restoration procedure; do
+  not hand-delete module rows or WHMCS product/service records.

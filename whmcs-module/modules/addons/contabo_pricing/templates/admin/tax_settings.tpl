@@ -60,15 +60,15 @@ $cb_strip_data = [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:6px 0 18px;">
+<header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" style="margin:0 0 4px;">Tax settings</h2>
-    <p class="cb-card-sub" style="margin:0; max-width:62ch;">
+    <h2 class="display" data-cb-u="u-0cbe035c55">Tax settings</h2>
+    <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
       Pluggable tax-recovery mode used by <code class="mono">MarginCalculator</code>. Every decision row
       records a <code class="mono">tax_mode_snapshot</code>, so historical margin doesn't change when this is flipped.
     </p>
   </div>
-  <div style="display:flex; gap:8px;">
+  <div data-cb-u="u-b887bfd543">
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=repricing">&larr; Dashboard</a>
   </div>
 </header>
@@ -80,8 +80,8 @@ require __DIR__ . '/_layout_open.tpl';
 <?php /* Modes table ------------------------------------------------------- */ ?>
 <div class="cb-card">
   <h3>Supported modes</h3>
-  <div style="overflow:auto">
-    <table class="cb-table" style="width:100%">
+  <div data-cb-u="u-e2c857d54b">
+    <table class="cb-table" data-cb-u="u-b7aa1ec004">
       <thead>
         <tr>
           <th>Mode</th>
@@ -95,11 +95,11 @@ require __DIR__ . '/_layout_open.tpl';
         <?php foreach ($mode_summaries as $row):
           $isActive = ($row['mode'] === $cb_active);
         ?>
-        <tr <?= $isActive ? 'style="background: var(--accent-soft);"' : '' ?>>
+        <tr class="<?= $isActive ? 'cb-row-active' : '' ?>">
           <td>
             <code class="mono"><?= $esc($row['mode']) ?></code>
             <?php if ($isActive): ?>
-              <span class="cb-pill good" style="margin-left:6px;"><span class="dot"></span>active</span>
+              <span class="cb-pill good" data-cb-u="u-451d13ae38"><span class="dot"></span>active</span>
             <?php endif; ?>
           </td>
           <td><?= $esc($row['label']) ?></td>
@@ -116,38 +116,38 @@ require __DIR__ . '/_layout_open.tpl';
 <?php /* Worked example --------------------------------------------------- */ ?>
 <div class="cb-card">
   <h3>Worked example — unregistered, no output tax</h3>
-  <p class="cb-card-sub" style="margin:0 0 12px;">
+  <p class="cb-card-sub" data-cb-u="u-2b0e8ce8c2">
     Numbers match the plan's reference scenario: vendor base ₹850 / month, 18% German VAT on the Contabo invoice
     (non-recoverable in India until you register), ₹20 of FX + payment buffer, sold annually at ₹14,400.
   </p>
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
-    <div class="cb-card" style="margin:0; padding:14px;">
-      <div class="cb-card-sub" style="margin:0 0 6px;">Landed cost (monthly)</div>
-      <div class="mono" style="line-height:1.8">
+  <div data-cb-u="u-99d46bf47c">
+    <div class="cb-inset" data-cb-u="u-ca724ea71f">
+      <div class="cb-card-sub" data-cb-u="u-d886b9a9db">Landed cost (monthly)</div>
+      <div class="mono" data-cb-u="u-c680fb2cb2">
         850.00 base<br>
         + 153.00 vendor VAT (18%)<br>
         + 20.00 FX + payment buffer<br>
         <strong>= 1,023.00 / mo</strong>
       </div>
     </div>
-    <div class="cb-card" style="margin:0; padding:14px;">
-      <div class="cb-card-sub" style="margin:0 0 6px;">Landed cost (annually)</div>
-      <div class="mono" style="line-height:1.8">
+    <div class="cb-inset" data-cb-u="u-ca724ea71f">
+      <div class="cb-card-sub" data-cb-u="u-d886b9a9db">Landed cost (annually)</div>
+      <div class="mono" data-cb-u="u-c680fb2cb2">
         1,023.00 × 12<br>
         <strong>= 12,276.00 / yr</strong>
       </div>
     </div>
-    <div class="cb-card" style="margin:0; padding:14px;">
-      <div class="cb-card-sub" style="margin:0 0 6px;">Revenue (annually)</div>
-      <div class="mono" style="line-height:1.8">
+    <div class="cb-inset" data-cb-u="u-ca724ea71f">
+      <div class="cb-card-sub" data-cb-u="u-d886b9a9db">Revenue (annually)</div>
+      <div class="mono" data-cb-u="u-c680fb2cb2">
         14,400.00 gross<br>
         − 0% output tax<br>
         <strong>= 14,400.00 net</strong>
       </div>
     </div>
-    <div class="cb-card" style="margin:0; padding:14px; border-color:var(--accent);">
-      <div class="cb-card-sub" style="margin:0 0 6px;">Margin</div>
-      <div class="mono" style="line-height:1.8">
+    <div class="cb-inset" data-cb-u="u-b521a014bd">
+      <div class="cb-card-sub" data-cb-u="u-d886b9a9db">Margin</div>
+      <div class="mono" data-cb-u="u-c680fb2cb2">
         14,400 − 12,276 = <strong>2,124</strong><br>
         2,124 / 14,400 = <span class="cb-pill good"><strong>14.75%</strong></span>
       </div>
@@ -158,11 +158,11 @@ require __DIR__ . '/_layout_open.tpl';
 <?php /* Write form -------------------------------------------------------- */ ?>
 <div class="cb-card">
   <h3>Edit active settings</h3>
-  <form method="post" action="<?= $esc($module_link) ?>" style="margin:0;">
+  <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-38965f9b18">
     <input type="hidden" name="action" value="tax-settings-save">
     <?= generate_token() ?>
 
-    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+    <div data-cb-u="u-5f28e5f494">
       <div class="cb-field">
         <label for="cb-tax-mode">Tax registration mode</label>
         <select id="cb-tax-mode" name="tax_registration_mode">
@@ -211,9 +211,9 @@ require __DIR__ . '/_layout_open.tpl';
       </div>
     </div>
 
-    <div style="margin-top:14px; display:flex; gap:8px; align-items:center;">
+    <div data-cb-u="u-88cfb290e4">
       <button type="submit" class="cb-btn">Save tax settings</button>
-      <span style="font-size:12px; color:var(--muted)">
+      <span data-cb-u="u-685394115d">
         Saving emits an audit row in <code class="mono">mod_contabo_pricing_action</code> (action_type = phase_changed).
       </span>
     </div>

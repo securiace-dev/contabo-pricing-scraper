@@ -6,10 +6,10 @@ namespace ContaboPricing;
 use WHMCS\Database\Capsule;
 
 /**
- * Seeds the 4 WHMCS email templates that the Renewal Pricing Policy Engine
- * relies on. Each template is checked by `name` in `tblemailtemplates`; if
- * absent, an INSERT is performed with sensible defaults. Admins can later
- * customise the body/subject via Setup → Email Templates.
+ * Seeds the WHMCS email templates used by pricing notices and the native VPS
+ * lifecycle. Each template is checked by `name` in `tblemailtemplates`; if
+ * absent, an INSERT is performed with conservative, long-lived WHMCS columns.
+ * Administrators can later customise the body and subject in WHMCS.
  *
  * Idempotent: re-running this seeder never duplicates a template.
  */
@@ -24,8 +24,6 @@ class EmailTemplateSeeder
     {
         $created = 0;
         $skipped = 0;
-        $now = date('Y-m-d H:i:s');
-
         foreach ($this->templates() as $tpl) {
             $exists = Capsule::table('tblemailtemplates')
                 ->where('name', $tpl['name'])
@@ -46,11 +44,6 @@ class EmailTemplateSeeder
                 'disabled'     => 0,
                 'custom'       => 1,
                 'language'     => '',
-                'copyto'       => '',
-                'bcc'          => '',
-                'plaintext'    => 0,
-                'attachments'  => '',
-                'updated_at'   => $now,
             ]);
             $created++;
         }
@@ -59,7 +52,7 @@ class EmailTemplateSeeder
     }
 
     /**
-     * Definitions of the 4 templates this engine ships.
+     * Definitions of the templates this suite ships.
      *
      * @return list<array{name:string,type:string,subject:string,message:string}>
      */
@@ -89,6 +82,36 @@ class EmailTemplateSeeder
                 'type'    => 'general',
                 'subject' => 'Force-approval required: {$service_name}',
                 'message' => $this->bodyForceApproveAlert(),
+            ],
+            [
+                'name'    => 'SecuriAce VPS Ready',
+                'type'    => 'product',
+                'subject' => 'Your VPS is ready',
+                'message' => $this->bodyVpsReady(),
+            ],
+            [
+                'name'    => 'SecuriAce VPS Provisioning Delayed',
+                'type'    => 'product',
+                'subject' => 'Your VPS setup is still in progress',
+                'message' => $this->bodyVpsDelayed(),
+            ],
+            [
+                'name'    => 'SecuriAce VPS Provisioning Review',
+                'type'    => 'product',
+                'subject' => 'Your VPS setup needs review',
+                'message' => $this->bodyVpsReview(),
+            ],
+            [
+                'name'    => 'SecuriAce VPS Password Reset Complete',
+                'type'    => 'product',
+                'subject' => 'Your VPS password reset is complete',
+                'message' => $this->bodyVpsPasswordReset(),
+            ],
+            [
+                'name'    => 'SecuriAce VPS Reinstall Complete',
+                'type'    => 'product',
+                'subject' => 'Your VPS reinstall is complete',
+                'message' => $this->bodyVpsReinstall(),
             ],
         ];
     }
@@ -156,6 +179,68 @@ admin force-approval before it can be applied.</p>
 </ul>
 <p>Review and force-approve in WHMCS Admin → Addons → Contabo Pricing →
 Approval Queue.</p>
+HTML;
+    }
+
+    private function bodyVpsReady(): string
+    {
+        return <<<'HTML'
+<p>Hi {$client_name},</p>
+<p>Your VPS is ready. Sign in to the SecuriAce client area and open this service
+to review its verified status, network details, and any one-time credential
+available for secure reveal.</p>
+<p>Operation reference: <strong>{$operation_reference}</strong></p>
+<p>For your safety, server credentials are never included in email.</p>
+<p>Thank you,<br/>{$company_name}</p>
+HTML;
+    }
+
+    private function bodyVpsDelayed(): string
+    {
+        return <<<'HTML'
+<p>Hi {$client_name},</p>
+<p>Your VPS setup is taking longer than usual. The same provisioning request is
+still being reconciled, so no duplicate server will be created.</p>
+<p>Operation reference: <strong>{$operation_reference}</strong></p>
+<p>You can follow the durable progress state from the service page in your
+SecuriAce client area. No action is required unless our team contacts you.</p>
+<p>Thank you,<br/>{$company_name}</p>
+HTML;
+    }
+
+    private function bodyVpsReview(): string
+    {
+        return <<<'HTML'
+<p>Hi {$client_name},</p>
+<p>Your VPS setup needs an operator review before it can continue safely. Your
+commercial service remains pending while we reconcile the provider result.</p>
+<p>Operation reference: <strong>{$operation_reference}</strong></p>
+<p>We will update the service timeline when the review is complete.</p>
+<p>Thank you,<br/>{$company_name}</p>
+HTML;
+    }
+
+    private function bodyVpsPasswordReset(): string
+    {
+        return <<<'HTML'
+<p>Hi {$client_name},</p>
+<p>Your VPS password reset is complete.</p>
+<p>Operation reference: <strong>{$operation_reference}</strong></p>
+<p>If a one-time credential is available, retrieve it from the authenticated
+service page. It expires and is never sent by email.</p>
+<p>Thank you,<br/>{$company_name}</p>
+HTML;
+    }
+
+    private function bodyVpsReinstall(): string
+    {
+        return <<<'HTML'
+<p>Hi {$client_name},</p>
+<p>Your VPS reinstall has completed and the requested image has been verified.</p>
+<p>Operation reference: <strong>{$operation_reference}</strong></p>
+<p>Review the service page for the current operating system, network details,
+and any securely delivered one-time credential.</p>
+<p>Thank you,<br/>{$company_name}</p>
 HTML;
     }
 }

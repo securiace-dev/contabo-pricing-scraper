@@ -112,12 +112,12 @@ struct OptionItem {
     monthly_price_delta: f64,
     #[serde(serialize_with = "serialize_whole_f64")]
     setup_fee_delta: f64,
-    // Node only writes `is_default` when true; omit-when-false matches that.
-    #[serde(skip_serializing_if = "is_false", default)]
-    is_default: bool,
+    // Preserve Node's three-state wire contract: ordinary classified options
+    // omit the key, injected defaults emit true, and an explicitly injected
+    // non-default alternative emits false.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    is_default: Option<bool>,
 }
-
-fn is_false(b: &bool) -> bool { !*b }
 
 // Serde adapter: emit whole f64 values as JSON integers (matches `json_num`
 // and JS JSON.stringify behaviour). Used by OptionItem's price-delta fields.
@@ -158,7 +158,7 @@ impl OptionItem {
             self.country.clone().unwrap_or_default(),
             self.country_code.clone().unwrap_or_default(),
             self.subregion.clone().unwrap_or_default(),
-            if self.is_default {
+            if self.is_default.unwrap_or(false) {
                 "true".into()
             } else {
                 "false".into()
@@ -243,11 +243,21 @@ struct ScrapeArgs {
     dry_run: bool,
 
     /// Fetch strategy: reqwest (default), cloak (CloakBrowser only), auto (reqwest + cloak fallback on block)
-    #[arg(long, env = "FETCH_MODE", default_value = "reqwest", value_name = "MODE")]
+    #[arg(
+        long,
+        env = "FETCH_MODE",
+        default_value = "reqwest",
+        value_name = "MODE"
+    )]
     fetch_mode: FetchMode,
 
     /// Path to cloak-fetch.mjs (used when --fetch-mode is cloak or auto)
-    #[arg(long, env = "CLOAK_SCRIPT", default_value = "scripts/cloak-fetch.mjs", value_name = "PATH")]
+    #[arg(
+        long,
+        env = "CLOAK_SCRIPT",
+        default_value = "scripts/cloak-fetch.mjs",
+        value_name = "PATH"
+    )]
     cloak_script: PathBuf,
 
     /// Optional HTTP/HTTPS proxy for all fetches (reqwest and CloakBrowser).
@@ -275,7 +285,13 @@ impl ScrapeArgs {
             // Normalize a schemeless proxy (user:pass@host:port) to http:// once,
             // so every downstream consumer (reqwest + the CloakBrowser subprocess,
             // whose `new URL()` is strict) receives a valid URL.
-            proxy: self.proxy.map(|p| if p.contains("://") { p } else { format!("http://{p}") }),
+            proxy: self.proxy.map(|p| {
+                if p.contains("://") {
+                    p
+                } else {
+                    format!("http://{p}")
+                }
+            }),
         }
     }
 }
@@ -458,7 +474,10 @@ fn iso_now() -> String {
 }
 
 fn round2(v: f64) -> f64 {
-    (v * 100.0).round() / 100.0
+    // JavaScript's Number#toFixed rounds the stored binary value directly.
+    // Multiplying first can cross an exact half-cent boundary (4.675 * 100)
+    // and disagree with the Node reference implementation.
+    format!("{v:.2}").parse::<f64>().unwrap_or(v)
 }
 
 // Serialize f64 as integer JSON when the value is whole (e.g. 8.0 → 8, 0.0 → 0),
@@ -693,7 +712,7 @@ fn classify_addon(
             country: ri.as_ref().map(|r| r.country.clone()),
             country_code: ri.as_ref().map(|r| r.country_code.clone()),
             subregion: ri.as_ref().and_then(|r| r.subregion.clone()),
-            is_default: false,
+            is_default: None,
         };
 
     // Region
@@ -856,7 +875,7 @@ fn inject_defaults(
     let mut add = |dimension: &str,
                    category: &str,
                    label: &str,
-                   is_default: bool,
+                   is_default: Option<bool>,
                    monthly: f64,
                    setup: f64| {
         let key = format!("{dimension}|{label}");
@@ -884,14 +903,14 @@ fn inject_defaults(
     } else {
         "No Data Protection"
     };
-    add("Data Protection", "None", dp_label, true, 0.0, 0.0);
+    add("Data Protection", "None", dp_label, Some(true), 0.0, 0.0);
 
     // Networking defaults
     add(
         "Networking",
         "Private Networking",
         "No Private Networking",
-        true,
+        Some(true),
         0.0,
         0.0,
     );
@@ -899,11 +918,11 @@ fn inject_defaults(
         "Networking",
         "Bandwidth",
         "Unlimited Traffic",
-        true,
+        Some(true),
         0.0,
         0.0,
     );
-    add("Networking", "IPv4", "1 IP Address", true, 0.0, 0.0);
+    add("Networking", "IPv4", "1 IP Address", Some(true), 0.0, 0.0);
 
     // Storage defaults from product spec
     if let Some(st) = storage_title {
@@ -919,7 +938,7 @@ fn inject_defaults(
             } else {
                 "SSD"
             };
-            add(dimension, cat, &primary, true, 0.0, 0.0);
+            add(dimension, cat, &primary, Some(true), 0.0, 0.0);
         }
     }
     if let Some(sub) = storage_subtitle {
@@ -934,18 +953,18 @@ fn inject_defaults(
                 "Storage Type"
             };
             let cat = if alt.contains("NVMe") { "NVMe" } else { "SSD" };
-            add(dimension, cat, &alt, false, 0.0, 0.0);
+            add(dimension, cat, &alt, Some(false), 0.0, 0.0);
         }
     }
 
     // Ubuntu 24.04 default image (detected from HTML presence)
     if html.contains("Ubuntu") {
-        add("Image", "OS", "Ubuntu 24.04", true, 0.0, 0.0);
+        add("Image", "OS", "Ubuntu 24.04", Some(true), 0.0, 0.0);
     }
 
     // Windows Server (if in HTML but not yet in classified)
     if html.contains("Windows Server") && !has_windows_in_classified {
-        add("Image", "OS", "Windows Server", false, 0.0, 0.0);
+        add("Image", "OS", "Windows Server", None, 0.0, 0.0);
     }
 
     classified.extend(additions);
@@ -1146,7 +1165,7 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     // Mark defaults
     for item in &mut classified {
         if item.dimension == "Region" && item.option_label == "European Union" {
-            item.is_default = true;
+            item.is_default = Some(true);
         }
         if item.dimension == "Networking"
             && matches!(
@@ -1154,17 +1173,17 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
                 "Unlimited Traffic" | "No Private Networking" | "1 IP Address"
             )
         {
-            item.is_default = true;
+            item.is_default = Some(true);
         }
         if item.dimension == "Storage Type" || item.dimension == "Storage" {
             if let Some(st) = storage_title {
                 if item.option_label == normalize_storage_label(st) {
-                    item.is_default = true;
+                    item.is_default = Some(true);
                 }
             }
         }
         if item.dimension == "Image" && item.option_label.eq_ignore_ascii_case("Ubuntu 24.04") {
-            item.is_default = true;
+            item.is_default = Some(true);
         }
     }
 
@@ -1179,18 +1198,18 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     }
     // Match Node's String.localeCompare (case-insensitive) so parity_check.sh
     // doesn't flag pure-ordering differences in the Image:Apps array etc.
-    deduped.sort_by(|a, b| a.sort_key().to_lowercase().cmp(&b.sort_key().to_lowercase()));
+    deduped.sort_by_key(|a| a.sort_key().to_lowercase());
     let final_options = deduped;
 
     // Default config monthly cost per period
     let default_monthly_delta: f64 = final_options
         .iter()
-        .filter(|o| o.is_default)
+        .filter(|o| o.is_default == Some(true))
         .map(|o| o.monthly_price_delta)
         .sum();
     let default_setup_delta: f64 = final_options
         .iter()
-        .filter(|o| o.is_default)
+        .filter(|o| o.is_default == Some(true))
         .map(|o| o.setup_fee_delta)
         .sum();
 
@@ -1227,7 +1246,7 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     if product_type == "vds" {
         let ok = final_options
             .iter()
-            .any(|o| o.dimension == "Storage" && o.is_default);
+            .any(|o| o.dimension == "Storage" && o.is_default == Some(true));
         if !ok {
             eprintln!("  WARN   {product_slug}: no default Storage option — storageSpec.title may not match any addon label");
             gap_report.push(GapEntry {
@@ -1386,15 +1405,31 @@ fn build_quick_reference(
                 .unwrap_or_else(|| plan["base_monthly_price"].clone());
 
             // Savings + best-price enrichments (mirrors enrich_output.js STEP 3)
-            let p1m  = pricing.get("1m").and_then(|p| p["effective_monthly"].as_f64());
-            let p6m  = pricing.get("6m").and_then(|p| p["effective_monthly"].as_f64());
-            let p12m = pricing.get("12m").and_then(|p| p["effective_monthly"].as_f64());
-            let savings_6m  = p1m.zip(p6m ).map(|(a, b)| ((1.0 - b / a) * 100.0).round() as i64);
-            let savings_12m = p1m.zip(p12m).map(|(a, b)| ((1.0 - b / a) * 100.0).round() as i64);
+            let p1m = pricing
+                .get("1m")
+                .and_then(|p| p["effective_monthly"].as_f64());
+            let p6m = pricing
+                .get("6m")
+                .and_then(|p| p["effective_monthly"].as_f64());
+            let p12m = pricing
+                .get("12m")
+                .and_then(|p| p["effective_monthly"].as_f64());
+            let savings_6m = p1m
+                .zip(p6m)
+                .map(|(a, b)| ((1.0 - b / a) * 100.0).round() as i64);
+            let savings_12m = p1m
+                .zip(p12m)
+                .map(|(a, b)| ((1.0 - b / a) * 100.0).round() as i64);
             let mut candidates: Vec<(&'static str, f64)> = Vec::new();
-            if let Some(v) = p1m  { candidates.push(("1m",  v)); }
-            if let Some(v) = p6m  { candidates.push(("6m",  v)); }
-            if let Some(v) = p12m { candidates.push(("12m", v)); }
+            if let Some(v) = p1m {
+                candidates.push(("1m", v));
+            }
+            if let Some(v) = p6m {
+                candidates.push(("6m", v));
+            }
+            if let Some(v) = p12m {
+                candidates.push(("12m", v));
+            }
             candidates.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
             let best = candidates.first().copied();
 
@@ -1581,7 +1616,7 @@ async fn cloak_batch_fetch(
     use tokio::process::Command;
 
     let urls_file = tmp_dir.join("cloak-urls.json");
-    let html_dir  = tmp_dir.join("html");
+    let html_dir = tmp_dir.join("html");
 
     if let Err(e) = fs::create_dir_all(&html_dir) {
         tracing::error!(error = %e, "CloakBrowser: cannot create temp HTML dir");
@@ -1609,8 +1644,10 @@ async fn cloak_batch_fetch(
     let mut cmd = Command::new("node");
     cmd.args([
         cloak_script.to_str().unwrap_or("scripts/cloak-fetch.mjs"),
-        "--urls",    urls_file.to_str().unwrap_or(""),
-        "--out-dir", html_dir.to_str().unwrap_or(""),
+        "--urls",
+        urls_file.to_str().unwrap_or(""),
+        "--out-dir",
+        html_dir.to_str().unwrap_or(""),
     ]);
     if let Some(p) = proxy {
         cmd.args(["--proxy", p]);
@@ -1653,14 +1690,15 @@ async fn cloak_batch_fetch(
             }
         };
 
-        let url2  = url.clone();
+        let url2 = url.clone();
         let slug2 = slug.clone();
-        let gr    = Arc::clone(&gap_report);
+        let gr = Arc::clone(&gap_report);
         let result = tokio::task::spawn_blocking(move || {
             let mut local_gaps: Vec<GapEntry> = vec![];
             let r = process_plan(&url2, &html, &mut local_gaps);
             (r, local_gaps)
-        }).await;
+        })
+        .await;
 
         match result {
             Ok((plan_result, local_gaps)) => {
@@ -1764,7 +1802,9 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         if let Some(p) = &opts.proxy {
             // opts.proxy is already scheme-normalized in into_opts().
             match reqwest::Proxy::all(p) {
-                Ok(proxy) => { http_builder = http_builder.proxy(proxy); }
+                Ok(proxy) => {
+                    http_builder = http_builder.proxy(proxy);
+                }
                 Err(e) => {
                     eprintln!("ERROR: invalid SCRAPER_PROXY URL '{p}': {e}");
                     return EXIT_ERROR;
@@ -1847,7 +1887,10 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             .map(|r| r.unwrap_or(None))
             .collect()
     } else {
-        tracing::info!(fetch_mode = "cloak", "skipping reqwest pass — all URLs go to CloakBrowser");
+        tracing::info!(
+            fetch_mode = "cloak",
+            "skipping reqwest pass — all URLs go to CloakBrowser"
+        );
         vec![]
     };
 
@@ -1856,8 +1899,8 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         .expect("all reqwest tasks completed before CloakBrowser pass")
         .into_inner();
     let cloak_urls: Vec<String> = match opts.fetch_mode {
-        FetchMode::Cloak   => urls.clone(),
-        FetchMode::Auto    => failed_fetched,
+        FetchMode::Cloak => urls.clone(),
+        FetchMode::Auto => failed_fetched,
         FetchMode::Reqwest => vec![],
     };
     if !cloak_urls.is_empty() {
@@ -1869,7 +1912,8 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             &tmp_dir,
             Arc::clone(&gap_report),
             opts.proxy.as_deref(),
-        ).await;
+        )
+        .await;
         results.extend(cloak_results);
         let _ = fs::remove_dir_all(&tmp_dir);
     }
@@ -1902,7 +1946,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
     // canonical aliases that downstream consumers (WHMCS addon, dashboards)
     // expect alongside the bare `plan_sku`.
     let mut slug_to_family: BTreeMap<String, String> = BTreeMap::new();
-    let mut slug_to_name:   BTreeMap<String, String> = BTreeMap::new();
+    let mut slug_to_name: BTreeMap<String, String> = BTreeMap::new();
     for plan in &base_plans {
         if let Some(slug) = plan["product_slug"].as_str() {
             if let Some(fam) = plan["family"].as_str() {
@@ -1919,9 +1963,12 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             let mut v = item.to_json();
             let sku = item.plan_sku.as_str();
             if let Value::Object(ref mut m) = v {
-                m.insert("plan_slug".into(),   json!(sku));
-                m.insert("plan_family".into(), json!(slug_to_family.get(sku).cloned()));
-                m.insert("plan_name".into(),   json!(slug_to_name.get(sku).cloned()));
+                m.insert("plan_slug".into(), json!(sku));
+                m.insert(
+                    "plan_family".into(),
+                    json!(slug_to_family.get(sku).cloned()),
+                );
+                m.insert("plan_name".into(), json!(slug_to_name.get(sku).cloned()));
             }
             v
         })
@@ -1971,7 +2018,10 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
                 "snapshot_preserved": true,
                 "reason":          "all_plans_failed",
             });
-            println!("{}", serde_json::to_string_pretty(&summary).unwrap_or_else(|_| "{}".into()));
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&summary).unwrap_or_else(|_| "{}".into())
+            );
         }
         return EXIT_ERROR;
     }
@@ -2064,18 +2114,11 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         .map(str::to_string)
         .collect::<Vec<_>>();
 
-        let fnum = |v: &Value| -> String {
-            v.as_f64().map(|x| x.to_string()).unwrap_or_default()
-        };
-        let fnum_or_zero = |v: &Value| -> String {
-            v.as_f64().unwrap_or(0.0).to_string()
-        };
-        let int_str = |v: &Value| -> String {
-            v.as_i64().map(|x| x.to_string()).unwrap_or_default()
-        };
-        let str_or_empty = |v: &Value| -> String {
-            v.as_str().unwrap_or("").to_string()
-        };
+        let fnum = |v: &Value| -> String { v.as_f64().map(|x| x.to_string()).unwrap_or_default() };
+        let fnum_or_zero = |v: &Value| -> String { v.as_f64().unwrap_or(0.0).to_string() };
+        let int_str =
+            |v: &Value| -> String { v.as_i64().map(|x| x.to_string()).unwrap_or_default() };
+        let str_or_empty = |v: &Value| -> String { v.as_str().unwrap_or("").to_string() };
 
         let mut base_csv_rows: Vec<Vec<String>> = vec![base_csv_header];
         for plan in &base_plans {
@@ -2164,7 +2207,11 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
                 item.country.clone().unwrap_or_default(),
                 item.country_code.clone().unwrap_or_default(),
                 item.subregion.clone().unwrap_or_default(),
-                if item.is_default { "true".into() } else { "false".into() },
+                if item.is_default.unwrap_or(false) {
+                    "true".into()
+                } else {
+                    "false".into()
+                },
                 item.currency.clone(),
             ]);
         }
@@ -2269,7 +2316,7 @@ mod tests {
             country: Some("Germany".to_string()),
             country_code: Some("DE".to_string()),
             subregion: Some("Western Europe".to_string()),
-            is_default: false,
+            is_default: None,
         };
         let json = serde_json::to_string(&full).expect("serialize full OptionItem");
         let back: OptionItem = serde_json::from_str(&json).expect("deserialize full OptionItem");
@@ -2298,7 +2345,7 @@ mod tests {
             country: None,
             country_code: None,
             subregion: None,
-            is_default: true,
+            is_default: Some(true),
         };
         let json = serde_json::to_string(&bare).expect("serialize bare OptionItem");
         assert!(
@@ -2314,8 +2361,35 @@ mod tests {
         assert_eq!(back.country, None);
         assert_eq!(back.country_code, None);
         assert_eq!(back.subregion, None);
-        assert_eq!(back.is_default, true);
+        assert_eq!(back.is_default, Some(true));
         assert_eq!(back.plan_sku, bare.plan_sku);
+    }
+
+    #[test]
+    fn option_item_preserves_explicit_false_default_marker() {
+        let item = OptionItem {
+            plan_sku: "cloud-vps-30".to_string(),
+            currency: "EUR".to_string(),
+            dimension: "Storage Type".to_string(),
+            category: "SSD".to_string(),
+            option_label: "400 GB SSD".to_string(),
+            monthly_price_delta: 0.0,
+            setup_fee_delta: 0.0,
+            region_group: None,
+            country: None,
+            country_code: None,
+            subregion: None,
+            is_default: Some(false),
+        };
+        let json = serde_json::to_string(&item).expect("serialize explicit false");
+        assert!(json.contains("\"is_default\":false"));
+    }
+
+    #[test]
+    fn round2_matches_javascript_to_fixed_contract() {
+        assert_eq!(round2((5.5 * 12.0 - 9.9) / 12.0), 4.67);
+        assert_eq!(round2(1.005), 1.0);
+        assert_eq!(round2(4.676), 4.68);
     }
 
     // GapEntry with every optional field set to None must serialise without

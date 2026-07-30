@@ -1,0 +1,616 @@
+/* Hallmark · macrostructure: Operational Truth Rail · tone: control-room editorial · anchor hue: cobalt
+ * pre-emit critique: P5 H5 E4 S5 R5 V4
+ * contrast: pass (40–41) · nav/footer: WHMCS-owned · slop: pass (42–45)
+ * honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49)
+ * icons: pass (30) · mobile: pass (34, 49, 50–57)
+ */
+@import url("./tokens.css");
+
+html:has(.sav-panel),
+body:has(.sav-panel) {
+  overflow-x: clip;
+}
+
+.sav-panel,
+.sav-panel * {
+  box-sizing: border-box;
+}
+
+.sav-panel {
+  color: var(--sav-color-ink);
+  font-family: var(--sav-font-body);
+  overflow-x: clip;
+}
+
+.sav-panel h2,
+.sav-panel h3,
+.sav-panel p {
+  margin-top: 0;
+}
+
+.sav-panel h2,
+.sav-panel h3 {
+  font-family: var(--sav-font-display);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.sav-head {
+  align-items: end;
+  border-bottom: 3px solid var(--sav-color-ink);
+  display: grid;
+  gap: var(--sav-space-6);
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, auto);
+  padding: var(--sav-space-4) 0 var(--sav-space-6);
+}
+
+.sav-head-copy {
+  min-width: 0;
+}
+
+.sav-head h2 {
+  font-size: var(--sav-text-display);
+  line-height: 0.96;
+  margin-bottom: var(--sav-space-3);
+  max-width: 14ch;
+}
+
+.sav-lede {
+  color: var(--sav-color-muted);
+  font-size: var(--sav-text-base);
+  margin-bottom: 0;
+  max-width: 62ch;
+}
+
+.sav-status-block {
+  align-items: center;
+  background: var(--sav-color-paper);
+  border: var(--sav-rule) solid var(--sav-color-rule);
+  display: flex;
+  gap: var(--sav-space-3);
+  min-width: 13rem;
+  padding: var(--sav-space-4);
+}
+
+.sav-status-dot {
+  background: var(--sav-color-warn);
+  border-radius: 50%;
+  display: block;
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+.sav-status-block[data-state="running"] .sav-status-dot {
+  background: var(--sav-color-safe);
+}
+
+.sav-status-block[data-state="stopped"] .sav-status-dot,
+.sav-status-block[data-state="unavailable"] .sav-status-dot {
+  background: var(--sav-color-muted);
+}
+
+.sav-status-label,
+.sav-truth span {
+  color: var(--sav-color-muted);
+  display: block;
+  font-family: var(--sav-font-data);
+  font-size: var(--sav-text-xs);
+}
+
+.sav-status-block strong {
+  display: block;
+  font-size: var(--sav-text-lg);
+}
+
+.sav-notice {
+  border-top: 2px solid var(--sav-color-accent);
+  margin: var(--sav-space-5) 0;
+  padding: var(--sav-space-3) var(--sav-space-4);
+}
+
+.sav-notice--success {
+  border-color: var(--sav-color-safe);
+}
+
+.sav-notice--warning {
+  background: var(--sav-color-soft-amber);
+  border-color: var(--sav-color-warn);
+}
+
+.sav-notice--danger {
+  background: var(--sav-color-soft-red);
+  border-color: var(--sav-color-danger);
+}
+
+.sav-truth-rail {
+  border-bottom: var(--sav-rule) solid var(--sav-color-rule);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sav-truth {
+  border-right: var(--sav-rule) solid var(--sav-color-rule);
+  min-width: 0;
+  padding: var(--sav-space-4) var(--sav-space-5);
+}
+
+.sav-truth:first-child {
+  padding-left: 0;
+}
+
+.sav-truth:last-child {
+  border-right: 0;
+}
+
+.sav-truth strong {
+  display: block;
+  margin-top: var(--sav-space-1);
+  overflow-wrap: anywhere;
+}
+
+.sav-operation {
+  align-items: stretch;
+  background: var(--sav-color-soft-blue);
+  display: grid;
+  gap: var(--sav-space-4);
+  grid-template-columns: 0.35rem minmax(0, 1fr);
+  margin: var(--sav-space-6) 0;
+  padding: var(--sav-space-4);
+}
+
+.sav-operation-mark {
+  background: var(--sav-color-accent);
+}
+
+.sav-operation h3,
+.sav-operation p {
+  margin-bottom: var(--sav-space-1);
+}
+
+.sav-panel code {
+  font-family: var(--sav-font-data);
+  overflow-wrap: anywhere;
+}
+
+.sav-main-grid {
+  display: grid;
+  gap: var(--sav-space-5);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  margin-top: var(--sav-space-6);
+}
+
+.sav-snapshots {
+  margin-top: var(--sav-space-5);
+}
+
+.sav-snapshot-count {
+  color: var(--sav-color-muted);
+  font-family: var(--sav-font-data);
+  font-size: var(--sav-text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.sav-snapshot-create {
+  border-bottom: var(--sav-rule) solid var(--sav-color-rule);
+  margin-bottom: var(--sav-space-4);
+  padding-bottom: var(--sav-space-4);
+}
+
+.sav-snapshot-create > summary {
+  list-style: none;
+}
+
+.sav-snapshot-create > summary::-webkit-details-marker {
+  display: none;
+}
+
+.sav-snapshot-form {
+  display: grid;
+  gap: var(--sav-space-2);
+  margin-top: var(--sav-space-3);
+  max-width: 38rem;
+}
+
+.sav-snapshot-form label,
+.sav-confirm-body label {
+  font-weight: 700;
+}
+
+.sav-snapshot-form label span {
+  color: var(--sav-color-muted);
+  font-weight: 400;
+}
+
+.sav-snapshot-form input,
+.sav-snapshot-form textarea,
+.sav-confirm-body input {
+  background: var(--sav-color-surface);
+  border: var(--sav-rule) solid var(--sav-color-rule);
+  border-radius: var(--sav-radius-sm);
+  color: var(--sav-color-ink);
+  font: inherit;
+  min-height: var(--sav-control-min);
+  padding: var(--sav-space-2) var(--sav-space-3);
+  width: 100%;
+}
+
+.sav-snapshot-form textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.sav-snapshot-form .sav-btn {
+  justify-self: start;
+}
+
+.sav-snapshot-list {
+  display: grid;
+}
+
+.sav-snapshot {
+  align-items: start;
+  border-top: var(--sav-rule) solid var(--sav-color-rule);
+  display: grid;
+  gap: var(--sav-space-5);
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.32fr);
+  padding: var(--sav-space-4) 0;
+}
+
+.sav-snapshot-copy {
+  min-width: 0;
+}
+
+.sav-snapshot-copy > strong {
+  display: block;
+  font-size: var(--sav-text-lg);
+  overflow-wrap: anywhere;
+}
+
+.sav-snapshot-copy > p {
+  color: var(--sav-color-muted);
+  margin: var(--sav-space-1) 0 var(--sav-space-3);
+}
+
+.sav-snapshot-copy dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sav-space-3) var(--sav-space-6);
+  margin: var(--sav-space-3) 0 0;
+}
+
+.sav-snapshot-copy dl > div {
+  min-width: 9rem;
+}
+
+.sav-snapshot-copy dt {
+  color: var(--sav-color-muted);
+  font-size: var(--sav-text-xs);
+}
+
+.sav-snapshot-copy dd {
+  font-family: var(--sav-font-data);
+  font-size: var(--sav-text-sm);
+  font-variant-numeric: tabular-nums;
+  margin: var(--sav-space-1) 0 0;
+  overflow-wrap: anywhere;
+}
+
+.sav-snapshot-actions {
+  display: grid;
+  gap: var(--sav-space-2);
+}
+
+.sav-risk-copy {
+  background: var(--sav-color-soft-amber);
+  border: var(--sav-rule) solid var(--sav-color-warn);
+  margin-bottom: var(--sav-space-3);
+  padding: var(--sav-space-3);
+}
+
+.sav-observation-note {
+  color: var(--sav-color-muted);
+  font-size: var(--sav-text-xs);
+  margin: var(--sav-space-3) 0 0;
+}
+
+.sav-card {
+  background: var(--sav-color-surface);
+  border: var(--sav-rule) solid var(--sav-color-rule);
+  min-width: 0;
+  padding: var(--sav-space-6);
+}
+
+.sav-card-head {
+  align-items: start;
+  display: flex;
+  gap: var(--sav-space-4);
+  justify-content: space-between;
+}
+
+.sav-card h3 {
+  font-size: var(--sav-text-title);
+  margin-bottom: var(--sav-space-5);
+}
+
+.sav-facts {
+  margin: 0;
+}
+
+.sav-facts > div {
+  border-top: var(--sav-rule) solid var(--sav-color-rule);
+  display: grid;
+  gap: var(--sav-space-4);
+  grid-template-columns: minmax(7rem, 0.4fr) minmax(0, 1fr);
+  padding: var(--sav-space-3) 0;
+}
+
+.sav-facts dt {
+  color: var(--sav-color-muted);
+  font-weight: 500;
+}
+
+.sav-facts dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.sav-action-list {
+  display: grid;
+  gap: var(--sav-space-2);
+}
+
+.sav-action-list form {
+  margin: 0;
+}
+
+.sav-btn {
+  align-items: center;
+  appearance: none;
+  background: var(--sav-color-surface);
+  border: var(--sav-rule) solid var(--sav-color-ink);
+  border-radius: var(--sav-radius-sm);
+  color: var(--sav-color-ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--sav-font-body);
+  font-size: var(--sav-text-sm);
+  font-weight: 700;
+  justify-content: center;
+  min-height: var(--sav-control-min);
+  padding: var(--sav-space-2) var(--sav-space-4);
+  text-decoration: none;
+  touch-action: manipulation;
+  transition: opacity var(--sav-dur-fast) var(--sav-ease-out),
+              transform var(--sav-dur-fast) var(--sav-ease-out);
+  white-space: nowrap;
+}
+
+.sav-action-list .sav-btn,
+.sav-confirm > summary {
+  width: 100%;
+}
+
+.sav-btn:hover {
+  opacity: 0.82;
+  text-decoration: none;
+}
+
+.sav-btn:focus-visible,
+.sav-confirm > summary:focus-visible {
+  outline: 3px solid var(--sav-color-focus);
+  outline-offset: 2px;
+}
+
+.sav-panel input,
+.sav-panel textarea {
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+}
+
+.sav-panel input:focus-visible,
+.sav-panel textarea:focus-visible {
+  outline: 2px solid var(--sav-color-focus);
+  outline-offset: 1px;
+}
+
+.sav-btn:active {
+  transform: translateY(1px);
+}
+
+.sav-btn:disabled,
+.sav-btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.sav-btn[aria-busy="true"] {
+  cursor: progress;
+  opacity: 0.68;
+}
+
+.sav-btn.is-error {
+  border-color: var(--sav-color-danger);
+  color: var(--sav-color-danger);
+}
+
+.sav-btn.is-success {
+  border-color: var(--sav-color-safe);
+  color: var(--sav-color-safe);
+}
+
+.sav-btn--primary {
+  background: var(--sav-color-accent);
+  border-color: var(--sav-color-accent);
+  color: var(--sav-color-surface);
+}
+
+.sav-btn--primary:hover {
+  background: var(--sav-color-accent-dark);
+}
+
+.sav-btn--warning {
+  background: var(--sav-color-soft-amber);
+  border-color: var(--sav-color-warn);
+}
+
+.sav-btn--danger {
+  background: var(--sav-color-soft-red);
+  border-color: var(--sav-color-danger);
+  color: var(--sav-color-danger);
+}
+
+.sav-btn--quiet {
+  border-color: var(--sav-color-rule);
+}
+
+.sav-confirm {
+  margin: 0;
+}
+
+.sav-confirm > summary {
+  list-style: none;
+}
+
+.sav-confirm > summary::-webkit-details-marker {
+  display: none;
+}
+
+.sav-confirm-body {
+  background: var(--sav-color-paper);
+  border: var(--sav-rule) solid var(--sav-color-rule);
+  border-top: 0;
+  display: grid;
+  gap: var(--sav-space-3);
+  padding: var(--sav-space-4);
+}
+
+.sav-confirm-body label {
+  font-size: var(--sav-text-sm);
+}
+
+.sav-confirm-body input {
+  background: var(--sav-color-surface);
+  border: var(--sav-rule) solid var(--sav-color-rule);
+  border-radius: var(--sav-radius-sm);
+  min-height: var(--sav-control-min);
+  padding: var(--sav-space-2) var(--sav-space-3);
+  width: 100%;
+}
+
+.sav-empty {
+  background: var(--sav-color-paper);
+  color: var(--sav-color-muted);
+  line-height: 1.55;
+  padding: var(--sav-space-5);
+}
+
+.sav-credential-ready {
+  align-items: center;
+  border-top: var(--sav-rule) solid var(--sav-color-rule);
+  display: flex;
+  gap: var(--sav-space-4);
+  justify-content: space-between;
+  margin-top: var(--sav-space-5);
+  padding-top: var(--sav-space-5);
+}
+
+.sav-credential-ready span {
+  color: var(--sav-color-muted);
+  display: block;
+  font-size: var(--sav-text-sm);
+}
+
+.sav-secret {
+  align-items: center;
+  background: var(--sav-color-soft-amber);
+  border: 2px solid var(--sav-color-warn);
+  display: grid;
+  gap: var(--sav-space-5);
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  margin: var(--sav-space-5) 0;
+  padding: var(--sav-space-5);
+}
+
+.sav-secret h3,
+.sav-secret p {
+  margin-bottom: var(--sav-space-1);
+}
+
+.sav-secret-value {
+  background: var(--sav-color-surface);
+  border: var(--sav-rule) solid var(--sav-color-rule);
+  font-size: var(--sav-text-lg);
+  padding: var(--sav-space-3);
+  user-select: all;
+}
+
+@media (max-width: 768px) {
+  .sav-head,
+  .sav-main-grid,
+  .sav-secret {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sav-status-block {
+    min-width: 0;
+  }
+
+  .sav-truth-rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sav-truth,
+  .sav-truth:first-child {
+    border-bottom: var(--sav-rule) solid var(--sav-color-rule);
+    border-right: 0;
+    padding: var(--sav-space-3) 0;
+  }
+
+  .sav-truth:last-child {
+    border-bottom: 0;
+  }
+
+  .sav-card-head,
+  .sav-credential-ready {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sav-snapshot {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 414px) {
+  .sav-card {
+    padding: var(--sav-space-4);
+  }
+
+  .sav-facts > div {
+    gap: var(--sav-space-1);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sav-btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sav-btn {
+    transition-duration: 0ms;
+  }
+}
+
+@media (forced-colors: active) {
+  .sav-panel,
+  .sav-card,
+  .sav-status-block,
+  .sav-operation,
+  .sav-secret {
+    forced-color-adjust: auto;
+  }
+}

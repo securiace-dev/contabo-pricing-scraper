@@ -33,11 +33,11 @@ tracing             = "0.1"
 tracing-subscriber  = { version = "0.3", features = ["env-filter", "json", "fmt"] }
 
 # Misc API support
-anyhow          = "1"
+anyhow          = "1.0.103"
 thiserror       = "2"
-rust-embed      = { version = "8", features = ["compression", "include-exclude"] }
-notify          = "7"
+rust-embed      = { version = "8", features = ["include-exclude"] }
 uuid            = { version = "1", features = ["v4"] }
+sha2            = "0.10"
 
 [dev-dependencies]
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }

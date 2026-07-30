@@ -1,13 +1,13 @@
-# Contabo Pricing — UI Architecture (v0.6.0)
+# Contabo Pricing — UI Architecture (v1.0.0)
 
-The admin UI is a self-contained design system rendered via PHP templates inside the WHMCS admin chrome. No framework, no jQuery — vanilla JS (ES2017+) + hand-written CSS variables.
+The admin UI is a self-contained design system rendered via PHP templates inside the WHMCS admin chrome. It uses vanilla ES2017+ JavaScript and one external, addon-scoped stylesheet. Templates contain no inline CSS or inline event handlers.
 
 ## Design tokens
 
-All tokens live as CSS custom properties in `templates/admin/_layout_open.tpl` under `:root { … }`. Single source of truth. Touch nothing else if you want to retheme.
+All tokens live in `assets/app.css` under the module-owned `.cb-wrap` root. This prevents the addon from changing WHMCS admin-theme globals.
 
 - **Color** — burnt-orange accent (`--accent: #b45309`) on cream (`--bg: #faf7f1`). Semantic tones `--good / --warn / --bad`. Border tones are warm-grey so the editorial feel survives.
-- **Typography** — IBM Plex Sans (body), IBM Plex Mono (numbers, tabular-nums), Instrument Serif (display headings only).
+- **Typography** — local system UI, serif display and monospace data stacks; no remote font dependency.
 - **Spacing** — implicit via padding/margin scale in components (no global spacing tokens — keeps the system small).
 - **Radius** — `--radius: 10px` (cards), `--radius-sm: 6px` (buttons, inputs).
 - **Shadows** — `--shadow-sm` for cards, `--shadow-lg` for overlays.
@@ -26,24 +26,24 @@ All tokens live as CSS custom properties in `templates/admin/_layout_open.tpl` u
 | Form field | `.cb-field > label + input` | Vertical label-over-control pattern |
 | Search | `.cb-search` | Pill-shaped search input with leading icon |
 | Toolbar | `.cb-toolbar` | Row of filters + actions atop a table |
-| Drawer | `.cb-drawer[.open]` | Right-side slide-in for detail views |
 | Modal | `.cb-modal[.open]` | Centred overlay sheet |
 | Sparkline | `svg.sparkline` | Inline trend, currentColor stroke |
 | Toast | `.cb-toast.cb-pill` | Transient (3 s) feedback messages |
 
 ## Asset versioning
 
-`_layout_open.tpl` builds a **host-absolute** JS bundle URL and emits it as:
+`_layout_open.tpl` emits host-absolute, versioned CSS and JS asset URLs:
 
 ```php
 $cb_assets_url = '/modules/addons/contabo_pricing/assets/app.js?v='
-    . rawurlencode(isset($cb_addon_version) ? (string) $cb_addon_version : '0.2.0');
+    . rawurlencode(isset($cb_addon_version) ? (string) $cb_addon_version : '1.0.0');
 ```
 ```html
+<link rel="stylesheet" href="/modules/addons/contabo_pricing/assets/app.css?v=…">
 <script src="<?= $esc($cb_assets_url) ?>" defer></script>
 ```
 
-The `?v=` query string forces the browser to cache-bust whenever the addon version bumps. `render()` (in `AdminController`) injects `$cb_addon_version = AdminController::VERSION` (`0.6.0`) on every render unless a view overrides it; the literal `0.2.0` is only the template-side fallback when the variable is somehow unset. The host-absolute path (leading `/…`, not under the WHMCS admin slug) is deliberate — module static files live at the install root regardless of a custom admin slug. Same pattern can be applied to external `<link>` stylesheets in the future.
+The `?v=` query string cache-busts whenever the addon version changes. `AdminController::render()` injects `AdminController::VERSION` (`1.0.0`). Host-absolute paths are deliberate because module assets live at the WHMCS install root, independent of a custom admin slug.
 
 ## AJAX endpoint catalogue
 
@@ -62,7 +62,7 @@ All endpoints sit under `addonmodules.php?module=contabo_pricing&action=<action>
 | `ajax-policy-preview` | GET | — | `service_id`, `policy?` | `{ service_id, available, preview }` (or `{ available: false, reason }` when `RenewalEngine` isn't deployed) — dry-run repricing decision for a service under a hypothetical policy |
 | `ajax-approval-count` | GET | — | — | `{ count }` — number of pending approval-queue decisions (badge poll; soft-fails to `{ count: 0 }`) |
 
-All endpoints emit `{ "error": "<msg>" }` with HTTP 500 (or 400/404 for input errors) on failure. The mutating endpoints — `ajax-quote` (hits a paid upstream API) and `ajax-meta-probe` (can leak server reachability) — call `check_token()` and require a CSRF token. The read-only endpoints (`ajax-fx`, `ajax-profile-versions`, `ajax-profile`, `ajax-configurator`, `ajax-profile-edit-form`, `ajax-product-cycles`, `ajax-policy-preview`, `ajax-approval-count`) are side-effect-free and intentionally do NOT call `check_token()`, so a stale token can't break a drawer/modal fetch (see the dispatch-comment around `AdminController` line ~88). `ajax-meta-probe` is the only soft-fail endpoint — it returns 200 with `ok: false` so the UI can render a red pill without treating it as a network error (`ajax-approval-count` similarly degrades to `count: 0` rather than erroring).
+All endpoints emit `{ "error": "<msg>" }` with HTTP 500 (or 400/404 for input errors) on failure. Mutating endpoints require a CSRF token. Read-only endpoints remain side-effect-free and still execute inside the authenticated WHMCS administrator context. `ajax-meta-probe` is a soft-fail endpoint so the UI can render a provider-health result without misclassifying it as a transport failure.
 
 ## Page actions
 
@@ -116,7 +116,7 @@ Only active when focus is NOT in an `<input>` / `<textarea>` / `<select>` and no
 | `/` | Focus the first visible `[data-cb-search]` |
 | `n` | Click any visible `[data-cb-open-modal="profile-create"]` |
 | `r` | Click any visible `[data-cb-action="test-api-connection"]` |
-| `Esc` | Close any open drawer + modal |
+| `Esc` | Close any open modal |
 
 ## `data-cb-*` attribute reference
 
@@ -134,9 +134,8 @@ The JS module reads only these attributes. Templates must keep them stable.
 | `data-cb-bulk-toolbar` | bulk action bar | bulk select |
 | `data-cb-open-modal="<id>"` | trigger button | modals |
 | `data-cb-close-modal` | cancel button inside `.cb-modal` | modals |
-| `data-cb-open-drawer="profile\|log"` + `data-cb-profile-id` / `data-cb-log-id` | row | drawer |
-| `data-cb-close-drawer` | drawer close button | drawer |
-| `data-cb-drawer-body` | element inside drawer | drawer fetch target |
+| `data-cb-confirm="<message>"` | form or button | external-script confirmation guard |
+| `data-cb-u="<compiled-id>"` | any element | generated stylesheet utility; replaces legacy inline CSS |
 | `data-cb-sparkline`, `data-cb-sparkline-large` + `data-cb-profile-id` | `<svg>` | sparkline render |
 | `data-cb-quote-plan`, `data-cb-quote-period`, `data-cb-preview-price` | inside profile-create modal | live quote preview |
 | `data-cb-profile-mode` | `<select>` in profile-create modal | profile mode (`fixed_admin_profile` \| `customer_configurable_product`) — reset on create, restored on edit |

@@ -42,6 +42,19 @@
     return input ? input.value : '';
   }
 
+  function wireConfirmations() {
+    $$('[data-cb-confirm]').forEach(function (element) {
+      var eventName = element.tagName === 'FORM' ? 'submit' : 'click';
+      element.addEventListener(eventName, function (event) {
+        var message = element.getAttribute('data-cb-confirm') || 'Continue?';
+        if (!window.confirm(message)) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      });
+    });
+  }
+
   // Standalone AJAX endpoint — bypasses WHMCS admin chrome so the response
   // is pure JSON. The addonmodules.php route wrapped our JSON in HTML.
   // Host-absolute path so the admin slug (/shriram/, /admin/, etc.) is
@@ -85,9 +98,7 @@
     el.textContent = String(message);
     document.body.appendChild(el);
     setTimeout(function () {
-      el.style.transition = 'opacity .25s ease';
-      el.style.opacity = '0';
-      setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 280);
+      if (el.parentNode) el.parentNode.removeChild(el);
     }, 3000);
   }
 
@@ -141,7 +152,7 @@
     var cyclePass  = tr.getAttribute('data-cb-cycle-pass');
     var ok = (statusPass === null || statusPass === '1')
           && (cyclePass  === null || cyclePass  === '1');
-    tr.style.display = ok ? '' : 'none';
+    tr.hidden = !ok;
   }
 
   function wireFilterPills() {
@@ -199,11 +210,11 @@
       input.addEventListener('input', debounce(function () {
         var q = input.value.trim().toLowerCase();
         $$('tbody tr', table).forEach(function (tr) {
-          if (!q) { tr.style.display = ''; return; }
+          if (!q) { tr.hidden = false; return; }
           var hay = (tr.getAttribute('data-cb-profile-name') || '') + ' '
                   + (tr.getAttribute('data-cb-trigger') || '') + ' '
                   + tr.textContent;
-          tr.style.display = hay.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+          tr.hidden = hay.toLowerCase().indexOf(q) === -1;
         });
       }, 150));
     });
@@ -289,10 +300,10 @@
     // mirroring the drawer fix — neither alone wins reliably against the other.
     if (n > 0) {
       bar.removeAttribute('hidden');
-      bar.style.display = 'flex';
+      bar.hidden = false;
     } else {
       bar.setAttribute('hidden', '');
-      bar.style.display = 'none';
+      bar.hidden = true;
     }
   }
 
@@ -705,85 +716,10 @@
     });
   }
 
-  // ── drawer ────────────────────────────────────────────────────────────────
-
-  function openDrawer(kind) {
-    var d = document.getElementById('cb-drawer-' + kind);
-    if (d) {
-      // The drawer ships with the `hidden` attribute (display:none via the UA
-      // stylesheet) so it doesn't flash on load. The `.open` class only sets
-      // the slide-in transform — it can't override `hidden`. Remove the
-      // attribute (and flip aria) before adding the class, or the panel stays
-      // invisible.
-      d.removeAttribute('hidden');
-      d.setAttribute('aria-hidden', 'false');
-      d.classList.add('open');
-    }
-    return d;
-  }
-  function closeDrawerEl(d) {
-    if (!d) return;
-    d.classList.remove('open');
-    d.setAttribute('aria-hidden', 'true');
-    d.setAttribute('hidden', '');
-  }
-  function closeAllDrawers() { $$('.cb-drawer').forEach(closeDrawerEl); }
-
-  function wireDrawers() {
-    $$('[data-cb-open-drawer]').forEach(function (el) {
-      el.addEventListener('click', function (e) {
-        // Don't hijack clicks on form controls / nested buttons inside a row.
-        var tag = (e.target.tagName || '').toUpperCase();
-        if (tag === 'INPUT' || tag === 'BUTTON' || tag === 'A' || tag === 'LABEL') return;
-        var kind = el.getAttribute('data-cb-open-drawer');
-        var drawer = openDrawer(kind);
-        if (!drawer) return;
-        var body = drawer.querySelector('[data-cb-drawer-body]');
-        if (!body) return;
-        body.innerHTML = '<p class="muted">Loading…</p>';
-
-        if (kind === 'profile') {
-          var id = el.getAttribute('data-cb-profile-id');
-          ajax('GET', 'ajax-profile', { id: id }).then(function (j) {
-            if (j.error) { body.innerHTML = '<p class="cb-error">' + escapeHtml(j.error) + '</p>'; return; }
-            body.innerHTML = renderProfileDrawer(j);
-          }).catch(function (err) { body.innerHTML = '<p class="cb-error">' + escapeHtml(String(err)) + '</p>'; });
-        } else if (kind === 'log') {
-          // Templates inline log detail; just open.
-          body.innerHTML = body.getAttribute('data-cb-inline-html') || '<p class="muted">No detail.</p>';
-        }
-      });
-    });
-    $$('[data-cb-close-drawer]').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        closeDrawerEl(btn.closest('.cb-drawer'));
-      });
-    });
-  }
-
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
-  }
-
-  function renderProfileDrawer(j) {
-    var p = j.profile || {};
-    var v = j.latest_version || null;
-    var html = '<h3 class="display" style="margin:0 0 8px">' + escapeHtml(p.name || p.slug || ('Profile #' + (p.id || ''))) + '</h3>';
-    html += '<div class="muted" style="font-size:12px;margin-bottom:12px">' + escapeHtml(p.plan_slug || '') + ' · ' + escapeHtml(String(p.period_months || '')) + ' mo</div>';
-    if (v) {
-      html += '<div class="cb-card" style="margin:0 0 12px"><h3>Latest version</h3>';
-      html += '<table class="cb-table"><tbody>';
-      html += '<tr><td class="muted">Final monthly</td><td class="right"><span class="price">' + escapeHtml(String(v.final_monthly || '')) + ' ' + escapeHtml(v.currency_iso || '') + '</span></td></tr>';
-      html += '<tr><td class="muted">FX rate</td><td class="right mono">' + escapeHtml(String(v.fx_rate || '')) + '</td></tr>';
-      html += '<tr><td class="muted">Snapshot</td><td class="right mono">' + escapeHtml(v.snapshot_generated_at || '') + '</td></tr>';
-      html += '</tbody></table></div>';
-    } else {
-      html += '<div class="cb-empty">No versions yet — run a sync to populate.</div>';
-    }
-    return html;
   }
 
   // ── live quote preview ────────────────────────────────────────────────────
@@ -849,23 +785,37 @@
 
   function wireTestApi() {
     $$('[data-cb-action="test-api-connection"]').forEach(function (btn) {
+      var result = btn.parentNode ? btn.parentNode.querySelector('[data-cb-result]') : null;
       btn.addEventListener('click', function (e) {
         e.preventDefault();
         btn.disabled = true;
         var origLabel = btn.textContent;
         btn.textContent = 'Testing…';
+        if (result) {
+          result.className = 'cb-inline-result cb-tone-muted';
+          result.textContent = 'Checking provider catalog API…';
+        }
         ajax('POST', 'ajax-meta-probe', {}).then(function (j) {
           btn.disabled = false;
           btn.textContent = origLabel;
           if (j.ok) {
-            cbToast('API OK · scraper ' + (j.scraper_version || '?') + ' · ' + (j.snapshot_at || ''), 'good');
+            if (result) {
+              result.className = 'cb-inline-result cb-tone-good';
+              result.textContent = 'API reachable · scraper ' + (j.scraper_version || '?') + ' · ' + (j.snapshot_at || '');
+            }
           } else {
-            cbToast('API error: ' + (j.error || 'unknown'), 'bad');
+            if (result) {
+              result.className = 'cb-inline-result cb-tone-bad';
+              result.textContent = 'API error: ' + (j.error || 'unknown');
+            }
           }
         }).catch(function (err) {
           btn.disabled = false;
           btn.textContent = origLabel;
-          cbToast('API unreachable: ' + err, 'bad');
+          if (result) {
+            result.className = 'cb-inline-result cb-tone-bad';
+            result.textContent = 'API unreachable: ' + String(err);
+          }
         });
       });
     });
@@ -984,10 +934,10 @@
     var body = scope.querySelector('[data-cb-mapping-preview-body]');
     if (!body) return;
     if (catalog === 0 && renewal === 0) {
-      body.innerHTML = '<span class="muted" style="font-size:12.5px">No cycles selected yet — pick at least one catalog or renewal cycle to save.</span>';
+      body.innerHTML = '<span class="muted cb-text-sm">No cycles selected yet — pick at least one catalog or renewal cycle to save.</span>';
       return;
     }
-    var html = '<div style="display:flex; flex-wrap:wrap; gap:4px;">';
+    var html = '<div class="cb-pill-row">';
     var cycles = ['Monthly', 'Quarterly', 'Semi-Annually', 'Annually', 'Biennially', 'Triennially'];
     for (var i = 0; i < cycles.length; i++) {
       var bit = 1 << i;
@@ -1026,7 +976,7 @@
         var months = parseInt(tr.getAttribute('data-cb-cycle-months'), 10) || 0;
         var rate = sourceRateForMonths(sourceEur || {}, months);
         srcCell.innerHTML = (rate === null)
-          ? '<span class="muted" style="font-size:11px">—</span>'
+          ? '<span class="muted cb-text-xs">—</span>'
           : '<span class="mono" title="source cost / mo × ' + months + ' mo">€' + rate.toFixed(2) + '/mo · €' + (rate * months).toFixed(2) + '</span>';
       }
 
@@ -1034,7 +984,7 @@
       if (priceCell) {
         var html = '';
         if (c.current_price === null || c.current_price === undefined) {
-          html = '<span class="muted" style="font-size:11.5px">absent</span>';
+          html = '<span class="muted cb-text-xs">absent</span>';
         } else if (c.status === 'disabled') {
           html = '<span class="cb-pill grey" title="WHMCS sentinel: -1">disabled</span>';
         } else if (c.status === 'free') {
@@ -1073,7 +1023,8 @@
     if (!productId) {
       if (loading) {
         loading.textContent = 'Pick a product to load catalog prices…';
-        loading.style.display = '';
+        loading.hidden = false;
+        loading.classList.remove('cb-tone-bad');
       }
       return;
     }
@@ -1083,7 +1034,8 @@
     if (profileEl && profileEl.value) params.profile_id = parseInt(profileEl.value, 10);
     if (loading) {
       loading.textContent = 'Loading catalog prices…';
-      loading.style.display = '';
+      loading.hidden = false;
+      loading.classList.remove('cb-tone-bad');
     }
     var respectDisabledEl = scope.querySelector('[data-cb-respect-disabled]');
     var respectDisabled = respectDisabledEl ? respectDisabledEl.checked : true;
@@ -1091,19 +1043,19 @@
       if (j.error) {
         if (loading) {
           loading.textContent = 'Could not load: ' + j.error;
-          loading.style.color = 'var(--bad)';
+          loading.classList.add('cb-tone-bad');
         }
         return;
       }
       if (loading) {
-        loading.style.display = 'none';
+        loading.hidden = true;
       }
       renderCycleTableRows(scope, j.cycles || [], respectDisabled, j.source_eur || {});
       refreshMappingMasks(scope);
     }).catch(function (err) {
       if (loading) {
         loading.textContent = 'Network error: ' + String(err);
-        loading.style.color = 'var(--bad)';
+        loading.classList.add('cb-tone-bad');
       }
     });
   }
@@ -1192,7 +1144,7 @@
   function wireShortcuts() {
     document.addEventListener('keydown', function (e) {
       // Esc always closes overlays.
-      if (e.key === 'Escape') { closeAllModals(); closeAllDrawers(); return; }
+      if (e.key === 'Escape') { closeAllModals(); return; }
       // Skip if user is typing.
       var tag = (e.target && e.target.tagName || '').toUpperCase();
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
@@ -1214,12 +1166,12 @@
   // ── init ──────────────────────────────────────────────────────────────────
 
   function init() {
+    wireConfirmations();
     wireFilterPills();
     wireSearch();
     wireSort();
     wireBulk();
     wireModals();
-    wireDrawers();
     wireQuotePreview();
     wireConfiguratorForms();
     wireFxPreview();

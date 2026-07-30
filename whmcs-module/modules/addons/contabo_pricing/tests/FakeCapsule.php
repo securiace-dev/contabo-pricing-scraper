@@ -379,6 +379,11 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
             return $this;
         }
 
+        public function lockForUpdate(): self
+        {
+            return $this;
+        }
+
         /**
          * Column projection is a no-op here — FakeCapsule always returns full
          * rows, so callers read whatever columns they seeded. Accepts both
@@ -410,14 +415,16 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
                 'update' => $values,
             ];
             // Mirror the update into the in-memory store, too.
+            $updated = 0;
             if (isset(Capsule::$tables[$this->table])) {
                 foreach (Capsule::$tables[$this->table] as $idx => $row) {
                     if ($this->rowMatches($row)) {
                         Capsule::$tables[$this->table][$idx] = array_merge($row, $values);
+                        $updated++;
                     }
                 }
             }
-            return 1;
+            return $updated;
         }
 
         /**

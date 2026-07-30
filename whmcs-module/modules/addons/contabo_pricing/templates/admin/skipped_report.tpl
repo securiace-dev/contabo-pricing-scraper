@@ -50,15 +50,15 @@ $cb_strip_data = [
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin:6px 0 18px;">
+<header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" style="margin:0 0 4px;">Skipped report</h2>
-    <p class="cb-card-sub" style="margin:0; max-width:62ch;">
+    <h2 class="display" data-cb-u="u-0cbe035c55">Skipped report</h2>
+    <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
       Decisions the engine chose not to apply, grouped by reason. Use this to spot
       bottlenecks (e.g. lots of <code class="mono">notice_scheduled</code>) before flipping the apply phase.
     </p>
   </div>
-  <div style="display:flex; gap:8px;">
+  <div data-cb-u="u-b887bfd543">
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=repricing">&larr; Dashboard</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=price-decisions">Audit log</a>
   </div>
@@ -91,16 +91,16 @@ require __DIR__ . '/_layout_open.tpl';
   }
 ?>
 <div class="cb-card" data-cb-skip-group="<?= $esc($reason) ?>">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-    <h3 style="margin:0;">
+  <div data-cb-u="u-77d1039815">
+    <h3 data-cb-u="u-38965f9b18">
       <span class="cb-pill <?= $esc($tone) ?>"><?= $esc($reason) ?></span>
-      <span class="mono" style="margin-left:8px; color:var(--muted)">× <?= (int) $count ?></span>
+      <span class="mono" data-cb-u="u-84f087897c">× <?= (int) $count ?></span>
     </h3>
     <button type="button" class="cb-btn ghost" data-cb-toggle-group="<?= $esc($reason) ?>" aria-expanded="true">Collapse</button>
   </div>
 
-  <div data-cb-group-body="<?= $esc($reason) ?>" style="overflow:auto;">
-    <table class="cb-table" style="width:100%">
+  <div data-cb-group-body="<?= $esc($reason) ?>" data-cb-u="u-7b590caf29">
+    <table class="cb-table" data-cb-u="u-b7aa1ec004">
       <thead>
         <tr>
           <th>Service</th>
@@ -124,14 +124,14 @@ require __DIR__ . '/_layout_open.tpl';
         ?>
         <tr>
           <td class="mono">#<?= (int) $svcId ?></td>
-          <td class="mono" style="font-size:12px"><?= $esc(substr($decidedAt, 0, 16)) ?></td>
+          <td class="mono" data-cb-u="u-a49cca52be"><?= $esc(substr($decidedAt, 0, 16)) ?></td>
           <td><span class="cb-pill grey"><?= $esc($policy) ?></span></td>
-          <td class="mono" style="font-size:12px"><?= $esc($cycle) ?></td>
+          <td class="mono" data-cb-u="u-a49cca52be"><?= $esc($cycle) ?></td>
           <td class="right mono price"><?= $esc(number_format($old, 2)) ?></td>
           <td class="right mono price"><?= $esc(number_format($new, 2)) ?></td>
           <td class="right mono">
-            <?php $deltaTone = $delta > 0 ? 'var(--accent)' : ($delta < 0 ? 'var(--good)' : 'var(--muted)'); ?>
-            <span style="color: <?= $deltaTone ?>">
+            <?php $deltaTone = $delta > 0 ? 'cb-tone-accent' : ($delta < 0 ? 'cb-tone-good' : 'cb-tone-muted'); ?>
+            <span class="<?= $esc($deltaTone) ?>">
               <?= ($delta >= 0 ? '+' : '') . number_format($delta, 2) ?>
             </span>
           </td>
@@ -141,7 +141,7 @@ require __DIR__ . '/_layout_open.tpl';
     </table>
 
     <?php if ($count > count($sample)): ?>
-      <p style="margin:10px 0 0; color:var(--muted); font-size:12px">
+      <p data-cb-u="u-503692af4b">
         Showing the most recent <?= (int) count($sample) ?> of <?= (int) $count ?>. Use the audit log for the full list.
       </p>
     <?php endif; ?>

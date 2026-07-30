@@ -1,62 +1,83 @@
-# Testing scope guard — my.securiace.com (production WHMCS)
+# SecuriAce VPS test-surface policy
 
-> **HARD RULE for human + AI contributors.** The deployment target `my.securiace.com`
-> is a live, customer-facing WHMCS install. The owner has authorised work on the
-> `contabo_pricing` addon **only**. Anything else is off-limits.
+This repository's automated and manual verification targets local fixtures,
+containerized development WHMCS installations, or an explicitly designated
+staging installation. It does not authorize production access or mutation.
 
-## Allowed test surfaces
+## Default permitted surfaces
 
-When you have admin session cookies (or any other authenticated access) to `my.securiace.com`, you may hit ONLY these three URL patterns:
+- PHPUnit/FakeCapsule unit and contract suites.
+- Rust unit, integration, formatting, and Clippy checks.
+- PHP syntax lint on supported versions.
+- Local package build and archive inspection.
+- Containerized WHMCS 8.13.x and 9.x schema/integration smoke tests.
+- Staging catalog import, checkout, provisioning, reconciliation, and lifecycle
+  tests using staging-only credentials and provider resources.
+- Sanitized, read-only fixture imports that contain no production credentials,
+  session tokens, one-time secrets, or personal data.
 
-| URL pattern | Why |
-|---|---|
-| `https://my.securiace.com/shriram/addonmodules.php?module=contabo_pricing*` | The addon's admin pages. Any `&action=…` query is allowed. |
-| `https://my.securiace.com/modules/addons/contabo_pricing/ajax.php*` | The addon's standalone JSON endpoint. Any `?action=…` query is allowed. |
-| `https://my.securiace.com/modules/addons/contabo_pricing/assets/*` | Static asset URLs (CSS/JS/images shipped by this addon). |
-| `https://my.securiace.com/shriram/login.php` and `…/shriram/logout.php` | Necessary infrastructure when establishing an admin session before touching the addon URLs. Always log out at end of test run. |
+## Production is out of scope by default
 
-POST forms inside the addon are allowed because they only mutate `mod_contabo_*` tables:
+No test or release command in this repository may:
 
-- `action=profile-create` / `profile-save` / `profile-toggle`
-- `action=mapping-save`
-- `action=sync-run` / `refresh-api`
-- `action=tax-settings-save`
-- `action=service-policy` / `approve-decision` / `cancel-schedule` (once Phase B lands)
+- connect to the production WHMCS host;
+- reuse production provider or Rust API credentials;
+- invoke production WHMCS pages, APIs, hooks, or cron;
+- write production WHMCS or provider data;
+- create, alter, suspend, or delete a production VPS;
+- copy production cookies, database dumps, logs, or secrets into the repository.
 
-In Phase A / A.5, `ServicePriceWriter` is gated to `enabled=false`, so even the worst-case engine path cannot touch `tblhosting`. That gate is the safety net, **not** a substitute for this rule.
+A production inspection or rollout is a separate operator-controlled task. It
+requires explicit current-task authorization, an exact target and read/write
+scope, a backup/recovery plan, a provider-write switch state, and a reviewed
+runbook. General implementation approval is not production authorization.
 
-## Forbidden surfaces — always
+## Environment separation
 
-Every other URL on `my.securiace.com` is **off-limits**, including read-only GETs:
+Development, staging, and production must use separate:
 
-- Any other admin page: `clientssummary.php`, `clientshosting.php`, `orders.php`, `invoices.php`, `tickets.php`, `configgeneral.php`, `configproducts.php`, anything under `/shriram/` that is not `addonmodules.php?module=contabo_pricing*`.
-- The client area: `clientarea.php`, `cart.php`, `viewinvoice.php`, etc.
-- The LocalAPI endpoint: `/includes/api.php?action=...`. Use of the LocalAPI from inside the addon's own PHP code (via `localAPI()` helper) is fine — that's a server-side call running in the addon's context. Calling it from outside (via curl + admin cookies) is forbidden.
-- The cron endpoints: `crons/cron.php`, `crons/runcron.php`. Only the production cron daemon may invoke them.
-- The DB directly: writes to any table other than `mod_contabo_*` are forbidden. Read-only `SELECT` for diagnostic purposes via SSH + PDO is permitted only when the owner has authorised that specific diagnostic in the current task.
+- WHMCS installations and installation identities;
+- provider accounts or credentials;
+- Rust API credentials and data sources;
+- resource naming/tag prefixes;
+- catalog publications and mapping states;
+- feature flags and write permissions;
+- payment gateways or gateway modes;
+- mail destinations and templates.
 
-## Why this matters
+Staging callbacks must not be able to address a production provider account.
+Tests assert environment identity as part of deterministic command IDs.
 
-A stray GET on `/shriram/orders.php?action=delete&id=…` deletes an order. A stray GET on `/shriram/clientssummary.php?action=somedestructive` could trigger customer-visible side effects. Some WHMCS admin pages accept destructive actions via GET query strings, not just POST. Treat **every** non-addon admin URL as potentially destructive.
+## Destructive test rules
 
-## How to apply this rule
+Provider-write tests run only against allowlisted staging accounts, products,
+services, and regions. Each run needs a unique correlation prefix and a cleanup
+inventory. A timeout or partial cleanup creates a reconciliation finding; test
+code must not blindly repeat create or delete.
 
-1. **Before every authenticated curl, grep the URL against the 3 allowed patterns above.** If it doesn't match exactly, do not fire it.
-2. **Never store admin cookies in this repo.** They are session credentials. Put them in `/tmp/whmcs_admin_cookies.txt` with mode `600`; they expire when the OS reboots or when the user logs out.
-3. **Never store admin cookies in a knowledge-graph entry, memory drawer, or any file under `~/.claude/` other than a rule-description file.** The rule is portable; the credentials are not.
-4. **Scope expands only on explicit per-task authorisation.** If the owner says "go ahead and create a test client", that authorises that one action, in that one turn — it does not authorise client creation in future tasks.
-5. **When in doubt, ask the owner.** Pausing for a 30-second confirmation is cheaper than a 30-minute incident response.
+## Data and secret handling
 
-## Where the rule is recorded
+- Use generated customers, services, invoices, and credentials.
+- Redact nested provider payloads and verify redaction in tests.
+- Never record plaintext root passwords, access tokens, OAuth secrets, cookies,
+  payment identifiers, or personal contact data.
+- One-time secret tests use deterministic fake ciphertext and never real keys.
+- Screenshots and artifacts must use seeded, synthetic records.
 
-- This file (`docs/TESTING_SCOPE.md`) — in the addon repo, visible to anyone who clones it.
-- `~/.claude/projects/-Users-kritananda/memory/feedback_whmcs_test_scope.md` — in the AI assistant's persistent memory, loaded into every future session.
-- Memory index `MEMORY.md` entry pointing at the above.
+## Required evidence
 
-Both records must say the same thing. If you update one, update the other.
+The release evidence pack contains:
 
-## Owner's wording (verbatim, 2026-05-22)
+1. unit/contract test results and assertion counts;
+2. PHP version lint matrix;
+3. WHMCS 8.13.x and 9.x integration results or a clearly recorded unavailable
+   environment;
+4. Rust format, test, check, and Clippy results;
+5. package manifest and checksum;
+6. migration install/upgrade/idempotency/rollback evidence;
+7. concurrency, unknown-outcome, ownership, billing, and redaction tests;
+8. accessibility and Hallmark 58-gate review;
+9. GitHub CI status for the review branch;
+10. an explicit statement that production was not touched.
 
-> "make sure you dont touch anything as its prod whmcs, working on module is okey but everything not related module is off limit for you and write rules and docs to ensure it never gets [missed]."
-
-— filed under the contabo_pricing addon, applies to all of `my.securiace.com`.
+Missing environment access is reported as unverified, never inferred as green.

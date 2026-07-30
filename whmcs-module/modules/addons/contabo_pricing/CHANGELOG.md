@@ -1,5 +1,108 @@
 # Changelog
 
+## securiacevps 2.0.0 — 2026-07-30 (WHMCS-native lifecycle and customer experience)
+
+This release replaces direct request/response provisioning with the canonical
+`securiacevps` WHMCS provisioning module. The former `contabo_vps` entrypoint is
+retained only as a delegation shim for phased service reassignment.
+
+### Provisioning integrity
+
+- Requires an immutable paid-order snapshot containing the published mapping,
+  catalog, configuration, price, cart, and compatibility identities.
+- Persists deterministic operations, attempts, provider requests, leases,
+  fencing tokens, reconciliation findings, and correlation IDs in module-owned
+  WHMCS MySQL tables.
+- Treats accepted requests followed by timeouts as unknown outcomes and
+  reconciles before retry; duplicate callbacks return the original operation.
+- Retries transient responses only for reads. A mutation that receives a
+  transport, rate-limit, or 5xx ambiguity returns immediately to durable
+  reconciliation instead of being replayed inside the HTTP client.
+- Completes provider ownership and request preflight before persisting the
+  provider-effect marker, and renews a ten-minute minimum fenced lease
+  immediately before each effect so an expired worker cannot submit.
+- Keeps WHMCS Pending until create readiness is read back and verified; changes
+  commercial lifecycle state only after the provider effect is verified.
+- Serializes commercial intents on the WHMCS service row, fences and supersedes
+  older in-flight intents, and projects only from explicit predecessor states,
+  so delayed callbacks cannot reactivate Cancelled or Terminated services.
+- Routes create, suspend, unsuspend, terminate, power, reinstall, and password
+  reset through the same durable engine. Direct provider-mutation helpers now
+  fail closed.
+- Adds certified snapshot inventory, create, delete, and rollback workflows.
+  Provider requests use stable UUID audit identities; ambiguous outcomes are
+  reconciled without replay, and rollback warns that newer snapshots are
+  removed.
+
+### Ownership, recovery, and billing
+
+- Adds exact-tag ownership verification, read-only existing-service adoption,
+  provider orphan inventory, and destructive-action guards.
+- Adds billing-saga projections for provider success paired with failed WHMCS
+  persistence, exposing repair state without repeating the provider mutation.
+- Adds retry classification, crash recovery, expired-lock handling, manual
+  review, safe operator commands, and global/per-capability write switches.
+- Adds expiring fenced claims to operation, operator-command, and communication
+  queues so cron interruption is recoverable and an expired worker cannot
+  overwrite its replacement.
+- Adds lifecycle communications with delivery state and customer-safe error
+  references.
+
+### Credential lifecycle
+
+- Replaces persistent plaintext service-password delivery with encrypted
+  temporary secrets and owner-bound, short-lived, one-time reveal tokens.
+- Prevents provider credentials and raw response payloads from entering the
+  customer UI, operation timeline, audit metadata, or module logs.
+
+### Customer and administrator UX
+
+- Adds a local-projection client service experience with truthful provisioning
+  progress, networking, recovery, billing, and capability-derived actions.
+- Enforces POST, WHMCS CSRF, service ownership, capability certification, and
+  typed confirmation for customer mutations.
+- Expands the addon operations workbench with queue health, attempts, adoption,
+  reconciliation, billing-repair, communications, and safe recovery controls.
+- Ships a VPS-specific Standard Cart child template. Product discovery and
+  configuration gain a responsive, accessible visual layer while WHMCS retains
+  cart, session, coupons, tax, invoice, payment, and shared checkout behavior.
+
+## 1.0.0 — 2026-07-30 (native catalog, pricing, mapping, and operations workbench)
+
+Schema **v14** is additive and idempotent.
+
+### Catalog and order contracts
+
+- Imports versioned Rust `/api/v1/catalog` payloads with stable machine IDs,
+  provider IDs, observation timestamps, availability/deprecation state, and
+  canonical hashes.
+- Publishes immutable mapping versions and validates hash integrity before use.
+- Adds checkout-time validation of catalog availability, mapping publication,
+  configuration compatibility, option exposure, and management-tier rules.
+- Seals paid-order snapshots only after WHMCS payment/fraud eligibility and
+  rejects unmapped or mutable selections. Money remains decimal strings.
+- Keeps the Rust API outside existing-service lifecycle operations; an outage
+  may pause catalog refresh or new quotation but cannot block an existing VPS.
+
+### Operations and security
+
+- Adds the WHMCS-native operation, adoption, reconciliation, capability,
+  one-time-secret, billing-saga, communication, and audit schemas consumed by
+  `securiacevps`.
+- Adds the minimum operator recovery workbench required before provider writes.
+- Adds provider-write kill switches, credential lifecycle management,
+  authorization/method enforcement, redaction, and safe error references.
+- Seeds customer lifecycle email templates without embedding secret material.
+
+### Compatibility
+
+- Validates the addon and provisioning module on PHP 7.4-compatible syntax and
+  the WHMCS 8.13.x/9.x module, hook, client-area, order-form, and cron contracts.
+- Uses explicit sub-64-character MariaDB index names and repairs interrupted
+  non-transactional DDL by matching index column sequences on migration retry.
+- Adds a staged `contabo_vps` compatibility shim and a release package containing
+  the canonical module, shim, and VPS order-form child template.
+
 ## contabo_vps 1.0.0 — 2026-07-07 (provisioning module production hardening)
 
 Full audit + rework of the `modules/servers/contabo_vps` provisioning module
