@@ -82,6 +82,52 @@ foreach (array(
 \SecuriAceVps\SchemaGuard::assertReady();
 native_smoke_assert(\SecuriAceVps\SchemaGuard::installationId() !== '', 'stable WHMCS installation identity exists');
 
+$leaseServiceId = 900000000 + random_int(1, 999999);
+$leaseWorker = 'native-smoke-' . bin2hex(random_bytes(6));
+$leaseRepository = new \SecuriAceVps\OperationRepository();
+$leaseOperation = null;
+try {
+    $leaseOperation = $leaseRepository->accept(
+        $leaseServiceId,
+        null,
+        'native-smoke-provider',
+        'start',
+        ['operation' => 'lease_renewal_smoke']
+    );
+    $claimed = $leaseRepository->claim(
+        (string) $leaseOperation['operation_uuid'],
+        $leaseWorker,
+        \SecuriAceVps\OperationRepository::MIN_LEASE_SECONDS
+    );
+    $claimedExpiry = $claimed !== null
+        ? strtotime((string) ($claimed['lease_expires_at'] ?? ''))
+        : 0;
+    $renewed = $claimed !== null && $leaseRepository->renew(
+        (string) $leaseOperation['operation_uuid'],
+        $leaseServiceId,
+        (int) $claimed['fencing_token'],
+        $leaseWorker,
+        \SecuriAceVps\OperationRepository::MIN_LEASE_SECONDS
+    );
+    $renewedOperation = $leaseRepository->byUuid(
+        (string) $leaseOperation['operation_uuid']
+    );
+    native_smoke_assert(
+        $renewed
+            && strtotime((string) ($renewedOperation['lease_expires_at'] ?? '')) > $claimedExpiry,
+        'same-second lease renewal retains fenced ownership on real MySQL'
+    );
+} finally {
+    if ($leaseOperation !== null) {
+        \WHMCS\Database\Capsule::table('mod_securiacevps_service_locks')
+            ->where('service_id', $leaseServiceId)
+            ->delete();
+        \WHMCS\Database\Capsule::table('mod_securiacevps_operations')
+            ->where('operation_uuid', (string) $leaseOperation['operation_uuid'])
+            ->delete();
+    }
+}
+
 $writeBlocked = false;
 try {
     \SecuriAceVps\SchemaGuard::assertProviderWriteEnabled('create');
