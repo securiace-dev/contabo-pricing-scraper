@@ -69,9 +69,9 @@ final class SyncEngine6CycleTest extends TestCase
         ]);
         // Existing tblpricing row with all three cycles already priced.
         $this->seedTblpricingRow(100, 1, [
-            'monthly'      => 1000.00,
-            'annually'     => 10000.00,
-            'biennially'   => 20000.00,
+            'monthly'      => 900.00,
+            'annually'     => 9000.00,
+            'biennially'   => 19000.00,
         ]);
 
         $engine = $this->makeEngine();
@@ -219,7 +219,7 @@ final class SyncEngine6CycleTest extends TestCase
             'markup_overrides_json'   => '',
         ]);
         $this->seedTblpricingRow(100, 1, [
-            'monthly'      => 1000.00,
+            'monthly'      => 900.00,
             'annually'     => 10000.00,
         ]);
 

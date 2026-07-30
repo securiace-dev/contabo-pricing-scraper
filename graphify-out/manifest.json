@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngine6CycleTest.php": {
-    "mtime": 1785382738.7420278,
-    "ast_hash": "bca5a031404962fc75def655562b36ac",
+    "mtime": 1785383192.596009,
+    "ast_hash": "779e7c42d0098d5ff7ca14386514e0fd",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/CycleSetTest.php": {
@@ -310,8 +310,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/RenewalEngineCycleTest.php": {
-    "mtime": 1785382618.2009532,
-    "ast_hash": "bc0f6547226cdddfdec90b8d2352ed36",
+    "mtime": 1785383230.858714,
+    "ast_hash": "ef8b05d19c886021755f94acd223c41b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/CurrencySupportReportTest.php": {
@@ -330,13 +330,13 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/Rounding.php": {
-    "mtime": 1785382722.07891,
-    "ast_hash": "f4965bd46458367f698f71f83a8048d5",
+    "mtime": 1785383219.5724573,
+    "ast_hash": "e85cbc7b983ceb330cef8c5a5f19262c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php": {
-    "mtime": 1785382722.2214525,
-    "ast_hash": "7fa21f2c69d814fd42f7d1681214b7bf",
+    "mtime": 1785383150.8588467,
+    "ast_hash": "d9aadd1fad7c1b29ba36c7b5abd98f6b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ServicePriceWriter.php": {
@@ -415,13 +415,13 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/RenewalEngine.php": {
-    "mtime": 1785382453.8221636,
-    "ast_hash": "a97f8eada9613c6b9089331d33508872",
+    "mtime": 1785383219.920027,
+    "ast_hash": "88387aae21d29ac2e92e38d9e4c63898",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php": {
-    "mtime": 1785382738.6072297,
-    "ast_hash": "cf103dd9288e3821b71533a02f1c56c9",
+    "mtime": 1785383219.741631,
+    "ast_hash": "f427feee6a2e8bb0ca3da6001d165664",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CurrencySupportReport.php": {
@@ -1237,6 +1237,11 @@
   "whmcs-module/modules/addons/contabo_pricing/tests/RoundingTest.php": {
     "mtime": 1785382722.3608892,
     "ast_hash": "186485a6177599c8755f675a2b8e1a53",
+    "semantic_hash": ""
+  },
+  "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php": {
+    "mtime": 1785383177.0392065,
+    "ast_hash": "89ed19e9a9ac5d80b8527a74cc3d07a4",
     "semantic_hash": ""
   }
 }

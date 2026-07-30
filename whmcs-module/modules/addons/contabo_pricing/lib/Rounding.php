@@ -33,8 +33,8 @@ namespace ContaboPricing;
  *   - 'custom': reserved for existing persisted mappings. Until a versioned
  *     custom rule contract exists, it safely degrades to exact two decimals.
  *
- * Any unknown mode falls back to 'exact_2_decimals' AND emits a logActivity()
- * warning so admins notice misconfiguration without breaking the cron.
+ * The pure formatter falls back to exact two decimals for unknown modes.
+ * Pricing engines reject unknown persisted modes before calling it.
  *
  * PHP 7.4 polyglot: no match, no readonly, no enums.
  */
@@ -142,12 +142,6 @@ final class Rounding
                 return round($price, 2);
 
             default:
-                if (function_exists('logActivity')) {
-                    \logActivity(
-                        'Contabo Pricing Rounding: unknown mode "' . $mode
-                        . '" — falling back to exact_2_decimals'
-                    );
-                }
                 return round($price, 2);
         }
     }

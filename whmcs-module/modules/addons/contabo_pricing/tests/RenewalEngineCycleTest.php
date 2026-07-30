@@ -350,4 +350,19 @@ final class RenewalEngineCycleTest extends TestCase
     {
         return [[0.0], [-1.0], [INF], [NAN]];
     }
+
+    public function testUnknownPersistedRoundingModeFailsClosed(): void
+    {
+        $mask = CycleSet::fromCycles(['Monthly'])->toMask();
+        $svc = $this->baseService('Monthly', $mask, $mask);
+        $svc['mapping']['rounding_mode'] = 'corrupt-mode';
+
+        $engine = new RenewalEngine($this->settings(), $this->stubResolver());
+        $decision = $engine->decide($svc, new \DateTimeImmutable('2026-05-22'));
+
+        $this->assertFalse((bool) $decision['applied']);
+        $this->assertSame('invalid_rounding_mode', $decision['skip_reason']);
+        $meta = json_decode((string) $decision['metadata_json'], true);
+        $this->assertSame('corrupt-mode', $meta['rounding_mode']);
+    }
 }

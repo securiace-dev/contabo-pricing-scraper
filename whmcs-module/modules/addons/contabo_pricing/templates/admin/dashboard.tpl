@@ -146,8 +146,15 @@ require __DIR__ . '/_layout_open.tpl';
   <div data-cb-u="u-cc44f1c604">
     <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-3cb81f8dc9">
       <input type="hidden" name="action" value="sync-run">
+      <input type="hidden" name="mode" value="observe">
       <?= generate_token() ?>
-      <button class="cb-btn" type="submit" data-cb-action="sync-run">Run sync now</button>
+      <button class="cb-btn" type="submit" data-cb-action="sync-preview">Preview sync</button>
+    </form>
+    <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-3cb81f8dc9">
+      <input type="hidden" name="action" value="sync-run">
+      <input type="hidden" name="mode" value="apply">
+      <?= generate_token() ?>
+      <button class="cb-btn subtle" type="submit" data-cb-action="sync-run">Apply sync</button>
     </form>
     <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-3cb81f8dc9">
       <input type="hidden" name="action" value="refresh-api">

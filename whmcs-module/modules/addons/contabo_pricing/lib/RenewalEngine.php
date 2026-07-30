@@ -473,6 +473,19 @@ class RenewalEngine
         }
 
         $roundingMode = (string) ($mapping['rounding_mode'] ?? Rounding::MODE_EXACT_2_DECIMALS);
+        if (!Rounding::isSupportedMode($roundingMode)) {
+            $meta['rounding_mode'] = $roundingMode;
+            return $this->buildDecision(
+                $service, $now, $oldPrice, $oldPrice, $cycle, $cycleMonths,
+                'unknown', false, 'invalid_rounding_mode',
+                false, false,
+                $landedForCycle, $landedMonthly, $eurMonthly, $fxRate, $fxBufferPct,
+                $taxMode, $vendorTaxRatePct, $vendorTaxRecoverable,
+                $pricesIncludeOutput, $outputTaxRatePct,
+                null, null,
+                $meta
+            );
+        }
         $candidate    = Rounding::apply($preRound, $roundingMode);
         $meta['pre_round_price'] = round($preRound, 4);
         $meta['rounded_price']   = round($candidate, 4);

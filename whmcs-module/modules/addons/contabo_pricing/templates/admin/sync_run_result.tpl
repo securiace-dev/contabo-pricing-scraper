@@ -18,7 +18,14 @@ $cb_finished       = (string) ($cb_s['finished_at'] ?? '');
 $cb_snap           = (string) ($cb_s['snapshot_generated_at'] ?? '');
 $cb_checked        = (int) ($cb_s['profiles_checked'] ?? 0);
 $cb_changed        = (int) ($cb_s['profiles_changed'] ?? 0);
-$cb_products       = (int) ($cb_s['products_updated'] ?? 0);
+$cb_observe        = !empty($cb_s['observe_only']);
+$cb_products       = $cb_observe
+    ? (int) ($cb_s['products_planned'] ?? 0)
+    : (int) ($cb_s['products_updated'] ?? 0);
+$cb_planned_writes = isset($cb_s['planned_writes']) && is_array($cb_s['planned_writes'])
+    ? $cb_s['planned_writes']
+    : array();
+$cb_planned_display = array_slice($cb_planned_writes, 0, 200);
 $cb_errors         = isset($cb_s['errors']) && is_array($cb_s['errors']) ? $cb_s['errors'] : array();
 $cb_changes        = isset($cb_s['change_list']) && is_array($cb_s['change_list']) ? $cb_s['change_list'] : array();
 $cb_error_count    = count($cb_errors);
@@ -29,6 +36,7 @@ $cb_status_tone = 'grey';
 if ($cb_status === 'succeeded')      { $cb_status_tone = 'good'; }
 elseif ($cb_status === 'failed')     { $cb_status_tone = 'bad'; }
 elseif ($cb_status === 'no-change')  { $cb_status_tone = 'grey'; }
+elseif ($cb_status === 'preview')    { $cb_status_tone = 'warn'; }
 elseif ($cb_status === 'running')    { $cb_status_tone = 'warn'; }
 
 // Strip tone — paint the "changed" stat orange when non-zero, etc.
@@ -52,9 +60,11 @@ if ($cb_started !== '' && $cb_finished !== '') {
 <div class="cb-card">
   <div data-cb-u="u-fc3f2cef5b">
     <div data-cb-u="u-a2e0c59bb0">
-      <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Sync <?= $esc($cb_status) ?></h2>
+      <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85"><?= $cb_observe ? 'Sync preview' : 'Sync ' . $esc($cb_status) ?></h2>
       <p class="cb-card-sub" data-cb-u="u-af3c2c2206">
-        Manual sync triggered from the admin dashboard.
+        <?= $cb_observe
+            ? 'Observation completed without changing any database table.'
+            : 'Manual sync triggered from the admin dashboard.' ?>
       </p>
       <div data-cb-u="u-4b8f2faec5">
         <div><span class="glabel">Started</span> <span class="mono" data-cb-u="u-4b17347c23"><?= $esc($cb_started !== '' ? $cb_started : '—') ?></span></div>
@@ -85,14 +95,51 @@ if ($cb_started !== '' && $cb_finished !== '') {
   <div class="cb-stat<?= $cb_changed_tone !== '' ? ' ' . $esc($cb_changed_tone) : '' ?>">
     <div class="lbl">Profiles changed</div>
     <div class="v"><?= (int) $cb_changed ?></div>
-    <div class="sub"><?= $cb_changed === 0 ? 'no price movement' : 'new version(s) created' ?></div>
+    <div class="sub"><?= $cb_changed === 0
+        ? 'no price movement'
+        : ($cb_observe ? 'profile version(s) would change' : 'new version(s) created') ?></div>
   </div>
   <div class="cb-stat<?= $cb_products_tone !== '' ? ' ' . $esc($cb_products_tone) : '' ?>">
-    <div class="lbl">Products updated</div>
+    <div class="lbl"><?= $cb_observe ? 'Products planned' : 'Products updated' ?></div>
     <div class="v"><?= (int) $cb_products ?></div>
-    <div class="sub">WHMCS pricing rows touched</div>
+    <div class="sub"><?= $cb_observe ? 'no rows were changed' : 'WHMCS pricing rows touched' ?></div>
   </div>
 </div>
+
+<?php if ($cb_observe && $cb_planned_writes !== array()): ?>
+<div class="cb-card">
+  <h3>Planned pricing writes (<?= count($cb_planned_writes) ?>)</h3>
+  <?php if (count($cb_planned_writes) > count($cb_planned_display)): ?>
+    <p class="cb-card-sub">Showing the first 200 writes. Apply remains disabled on this preview page.</p>
+  <?php endif; ?>
+  <table class="cb-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Currency</th>
+        <th>Cycle</th>
+        <th>Field</th>
+        <th class="right">Current</th>
+        <th class="right">Proposed</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($cb_planned_display as $cb_write): ?>
+        <tr>
+          <td class="mono">#<?= (int) ($cb_write['product_id'] ?? 0) ?></td>
+          <td class="mono">#<?= (int) ($cb_write['currency_id'] ?? 0) ?></td>
+          <td><?= $esc((string) ($cb_write['cycle'] ?? '')) ?></td>
+          <td><?= $esc((string) ($cb_write['kind'] ?? '')) ?></td>
+          <td class="right mono"><?= isset($cb_write['old_value']) && $cb_write['old_value'] !== null
+              ? $esc(number_format((float) $cb_write['old_value'], 2))
+              : '—' ?></td>
+          <td class="right mono"><?= $esc(number_format((float) ($cb_write['new_value'] ?? 0.0), 2)) ?></td>
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+</div>
+<?php endif; ?>
 
 <!-- ───────────────────── Errors (if any) ───────────────────── -->
 <?php if ($cb_error_count > 0): ?>

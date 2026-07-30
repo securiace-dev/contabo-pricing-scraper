@@ -2138,9 +2138,11 @@ class AdminController
 
     private function syncRun(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
+        $observeOnly = (string) ($req['mode'] ?? 'observe') !== 'apply';
         $engine = new SyncEngine($this->settings, new ApiClient($this->settings), new ProfileManager($this->settings));
-        $summary = $engine->run('manual');
+        $summary = $engine->run('manual', $observeOnly);
         $this->render('sync_run_result.tpl', ['summary' => $summary]);
     }
 
