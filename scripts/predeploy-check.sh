@@ -13,8 +13,9 @@
 #   4. Rust format, test, check, and Clippy.
 #   5. Rust producer ↔ WHMCS consumer schema contract.
 #   6. Hallmark static UI regression audit.
-#   7. Real-WHMCS migration/integration smoke in dev.
-#   8. Read-only post-migration schema verification on WHMCS 8.13 + 9.0.
+#   7. WHMCS changelog, checksum, manifest, and package contract.
+#   8. Real-WHMCS migration/integration smoke in dev.
+#   9. Read-only post-migration schema verification on WHMCS 8.13 + 9.0.
 #
 # Usage:  bash scripts/predeploy-check.sh
 # Exit:   0 = gate PASS; non-zero = gate FAIL.
@@ -32,15 +33,15 @@ record() { if [ "$2" -eq 0 ]; then results+=("[PASS] $1"); else results+=("[FAIL
 stage()  { echo; echo "==================== $1 ===================="; }
 
 # ── 1) addon unit suite ──────────────────────────────────────────────────────
-stage "1/8 addon unit suite (phpunit)"
+stage "1/9 addon unit suite (phpunit)"
 ( cd "$ADDON" && vendor/bin/phpunit ); record "addon unit suite" $?
 
 # ── 2) server-module unit suite ──────────────────────────────────────────────
-stage "2/8 securiacevps server-module unit suite (phpunit)"
+stage "2/9 securiacevps server-module unit suite (phpunit)"
 ( cd "$SERVER" && "$ADDON/vendor/bin/phpunit" -c phpunit.xml ); record "server-module unit suite" $?
 
 # ── 3) PHP syntax matrix ─────────────────────────────────────────────────────
-stage "3/8 PHP 7.4 runtime/templates + PHP 8.2 / 8.3 full-source syntax lint"
+stage "3/9 PHP 7.4 runtime/templates + PHP 8.2 / 8.3 full-source syntax lint"
 lint_status=0
 files=()
 while IFS= read -r file; do
@@ -92,7 +93,7 @@ done
 record "PHP runtime/full-source lint matrix" "$lint_status"
 
 # ── 4) Rust verification ─────────────────────────────────────────────────────
-stage "4/8 Rust format, tests, check, and Clippy"
+stage "4/9 Rust format, tests, check, and Clippy"
 rust_status=0
 (cd "$REPO_ROOT" && cargo fmt --all -- --check) || rust_status=1
 (cd "$REPO_ROOT" && cargo test --all-targets) || rust_status=1
@@ -101,22 +102,26 @@ rust_status=0
 record "Rust verification" "$rust_status"
 
 # ── 5) producer/consumer schema contract ─────────────────────────────────────
-stage "5/8 Rust producer ↔ WHMCS consumer schema contract"
+stage "5/9 Rust producer ↔ WHMCS consumer schema contract"
 contract_status=0
 (cd "$REPO_ROOT" && cargo test --test schema_contract) || contract_status=1
 (cd "$ADDON" && vendor/bin/phpunit tests/GoldenApiContractTest.php) || contract_status=1
 record "producer/consumer schema contract" "$contract_status"
 
 # ── 6) Hallmark static UI audit ──────────────────────────────────────────────
-stage "6/8 Hallmark static UI regression audit"
+stage "6/9 Hallmark static UI regression audit"
 ruby "$SCRIPT_DIR/hallmark-audit.rb"; record "Hallmark UI audit" $?
 
-# ── 7) real-WHMCS integration smoke (dev) ────────────────────────────────────
-stage "7/8 real-WHMCS migration and integration smoke"
+# ── 7) installable release contract ──────────────────────────────────────────
+stage "7/9 WHMCS changelog and installable package contract"
+bash "$SCRIPT_DIR/test-whmcs-release-contract.sh"; record "WHMCS release contract" $?
+
+# ── 8) real-WHMCS integration smoke (dev) ────────────────────────────────────
+stage "8/9 real-WHMCS migration and integration smoke"
 bash "$SCRIPT_DIR/whmcs-integration-smoke.sh"; record "integration smoke" $?
 
-# ── 8) live-schema smoke (dev 8.13 + 9.0) ────────────────────────────────────
-stage "8/8 post-migration schema smoke (dev 8.13 + 9.0)"
+# ── 9) live-schema smoke (dev 8.13 + 9.0) ────────────────────────────────────
+stage "9/9 post-migration schema smoke (dev 8.13 + 9.0)"
 CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 8; s8=$?
 CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 9; s9=$?
 if [ "$s8" -eq 0 ] && [ "$s9" -eq 0 ]; then record "live-schema smoke 8.13+9.0" 0; else record "live-schema smoke 8.13+9.0" 1; fi
