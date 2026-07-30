@@ -67,7 +67,7 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
      * tests to also track:
      *   - $inserts : every ->insert() / ->insertGetId() call
      *   - $tables  : the row store, keyed by table → list of associative rows
-     *   - connection()->transaction(fn) : transparent passthrough
+     *   - connection()->transaction(fn) : rollback-aware in-memory transaction
      *
      * Reset with Capsule::reset() between tests.
      */
@@ -142,8 +142,9 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
     final class CapsuleConnection
     {
         /**
-         * Transparent passthrough of WHMCS\Database\Capsule::connection()->transaction(fn).
-         * Closure is invoked immediately; any throw bubbles up.
+         * In-memory equivalent of a local DB transaction. Any throw restores
+         * every mutable registry before bubbling up, allowing atomicity tests
+         * to prove pricing and audit writes commit or roll back together.
          *
          * @template T
          * @param callable():T $fn
@@ -151,7 +152,27 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
          */
         public function transaction(callable $fn)
         {
-            return $fn();
+            $snapshot = [
+                'calls' => Capsule::$calls,
+                'inserts' => Capsule::$inserts,
+                'tables' => Capsule::$tables,
+                'columns' => Capsule::$columns,
+                'statements' => Capsule::$statements,
+                'nextId' => Capsule::$nextId,
+                'returnStdClass' => Capsule::$returnStdClass,
+            ];
+            try {
+                return $fn();
+            } catch (\Throwable $e) {
+                Capsule::$calls = $snapshot['calls'];
+                Capsule::$inserts = $snapshot['inserts'];
+                Capsule::$tables = $snapshot['tables'];
+                Capsule::$columns = $snapshot['columns'];
+                Capsule::$statements = $snapshot['statements'];
+                Capsule::$nextId = $snapshot['nextId'];
+                Capsule::$returnStdClass = $snapshot['returnStdClass'];
+                throw $e;
+            }
         }
 
         /**

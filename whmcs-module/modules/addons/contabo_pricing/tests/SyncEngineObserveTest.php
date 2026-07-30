@@ -101,6 +101,65 @@ final class SyncEngineObserveTest extends TestCase
         $this->assertSame([], $audit->rows);
     }
 
+    public function testExplicitZeroSetupFeePreviewsAndClearsStalePositiveFee(): void
+    {
+        $audit = new ObserveCatalogAuditSpy();
+        $engine = $this->makeEngine(
+            $audit,
+            new ObserveProfileManager($this->settings(), [])
+        );
+        $this->seedCatalog();
+        Capsule::$tables['tblpricing'][0]['monthly'] = 10.0;
+        Capsule::$tables['tblpricing'][0]['msetupfee'] = 25.0;
+        $before = Capsule::$tables;
+
+        $version = ProfileVersionInput::computed(
+            10.0,
+            10.0,
+            0.0,
+            [],
+            [],
+            1.0,
+            'test',
+            0.0,
+            false,
+            'EUR',
+            '2026-07-30T00:00:00Z',
+            [1 => 10.0]
+        );
+        $preview = $engine->previewCatalogForProfile(
+            1,
+            ['published_cycles_mask' => CycleSet::fromCycles(['Monthly'])->toMask()],
+            $version,
+            'preview-zero-setup'
+        );
+
+        $this->assertSame($before, Capsule::$tables);
+        $this->assertCount(1, $preview['planned_writes']);
+        $this->assertSame('setup_fee', $preview['planned_writes'][0]['kind']);
+        $this->assertSame(25.0, $preview['planned_writes'][0]['old_value']);
+        $this->assertSame(0.0, $preview['planned_writes'][0]['new_value']);
+
+        $applied = $engine->applyCatalogForProfile(
+            1,
+            ['published_cycles_mask' => CycleSet::fromCycles(['Monthly'])->toMask()],
+            $version,
+            'apply-zero-setup'
+        );
+
+        $this->assertSame(1, $applied['cycles_applied']);
+        $this->assertSame(0.0, Capsule::$tables['tblpricing'][0]['msetupfee']);
+        $setupWrites = array_values(array_filter(
+            Capsule::$calls,
+            static function (array $call): bool {
+                return $call['table'] === 'tblpricing'
+                    && array_key_exists('msetupfee', $call['update']);
+            }
+        ));
+        $this->assertCount(1, $setupWrites);
+        $this->assertSame(0.0, $setupWrites[0]['update']['msetupfee']);
+    }
+
     private function settings(): Settings
     {
         return new Settings(

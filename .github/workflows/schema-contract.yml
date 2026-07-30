@@ -6,9 +6,9 @@ on:
       - 'src/**'
       - 'tests/**'
       - 'SCHEMA_VERSION.md'
-      - 'whmcs-module/modules/addons/contabo_pricing/lib/CatalogImportService.php'
-      - 'whmcs-module/modules/addons/contabo_pricing/lib/Installer.php'
-      - 'whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php'
+      - 'whmcs-module/modules/addons/contabo_pricing/**/*.php'
+      - 'whmcs-module/modules/servers/**/*.php'
+      - 'scripts/**/*.php'
       - 'scripts/predeploy-check.sh'
       - '.github/workflows/schema-contract.yml'
   workflow_dispatch:
@@ -18,6 +18,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  php74-runtime-lint:
+    name: PHP 7.4 runtime syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 7.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          coverage: none
+
+      - name: Lint WHMCS runtime sources
+        run: |
+          find \
+            whmcs-module/modules/addons/contabo_pricing \
+            whmcs-module/modules/servers/securiacevps \
+            whmcs-module/modules/servers/contabo_vps \
+            scripts \
+            -type f -name '*.php' \
+            -not -path '*/vendor/*' \
+            -not -path '*/tests/*' \
+            -print0 \
+            | sort -z \
+            | xargs -0 -n1 php -l
+
   contract:
     name: Rust producer ↔ WHMCS consumer
     runs-on: ubuntu-latest

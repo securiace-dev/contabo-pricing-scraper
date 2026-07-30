@@ -233,15 +233,13 @@ class SyncEngine
                 }
             }
 
-            $status = ($summary['profiles_changed'] > 0 || $summary['products_updated'] > 0)
-                ? 'succeeded'
-                : 'no-change';
-            if (!empty($summary['errors'])
-                && $summary['profiles_changed'] === 0
-                && $summary['products_updated'] === 0
-            ) {
-                $status = 'failed';
-            }
+            $status = !empty($summary['errors'])
+                ? 'failed'
+                : (
+                    ($summary['profiles_changed'] > 0 || $summary['products_updated'] > 0)
+                        ? 'succeeded'
+                        : 'no-change'
+                );
             if ($observeOnly) {
                 $status = empty($summary['errors']) ? 'preview' : 'failed';
                 return $this->finishWithoutWrite($status, $summary, null);
@@ -587,8 +585,23 @@ class SyncEngine
                         continue;
                     }
 
-                    // 7) Apply the recurring price and optional setup fee as
-                    // one local MySQL transaction.
+                    $appliedDecision = array_merge($auditBase, [
+                        'applied'              => 1,
+                        'old_price'            => $currentValue,
+                        'new_price'            => $rounded,
+                        'old_setup_fee'        => $oldSetupFee,
+                        'new_setup_fee'        => $newSetupFee,
+                        'price_status_before'  => $priceStatus,
+                        'markup_strategy_used' => $markupStrategy,
+                        'markup_value_used'    => $markupValue,
+                        'pre_round_price'      => $preRound,
+                        'rounded_price'        => $rounded,
+                        'rounding_mode'        => $roundingMode,
+                    ]);
+
+                    // 7) Apply recurring/setup prices and their mandatory
+                    // audit row in one local MySQL transaction. An audit
+                    // failure must roll every pricing cell back.
                     try {
                         Capsule::connection()->transaction(function () use (
                             $productId,
@@ -598,7 +611,8 @@ class SyncEngine
                             $setupFeeColumn,
                             $newSetupFee,
                             $recurringChanged,
-                            $setupChanged
+                            $setupChanged,
+                            $appliedDecision
                         ): void {
                             if ($recurringChanged) {
                                 $this->writeTblpricingCell(
@@ -616,6 +630,7 @@ class SyncEngine
                                     $newSetupFee
                                 );
                             }
+                            $this->catalogAudit->insert($appliedDecision);
                         });
                     } catch (PricingInvariantViolation $e) {
                         $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
@@ -639,19 +654,6 @@ class SyncEngine
                         continue;
                     }
 
-                    $this->recordCatalogDecision($observeOnly, $stats, array_merge($auditBase, [
-                        'applied'              => 1,
-                        'old_price'            => $currentValue,
-                        'new_price'            => $rounded,
-                        'old_setup_fee'        => $oldSetupFee,
-                        'new_setup_fee'        => $newSetupFee,
-                        'price_status_before'  => $priceStatus,
-                        'markup_strategy_used' => $markupStrategy,
-                        'markup_value_used'    => $markupValue,
-                        'pre_round_price'      => $preRound,
-                        'rounded_price'        => $rounded,
-                        'rounding_mode'        => $roundingMode,
-                    ]));
                     $stats['cycles_applied']++;
                     $touchedThisMapping = true;
                 }
@@ -770,8 +772,8 @@ class SyncEngine
      * value (WHMCS stores per-cycle setup fees, but the upstream snapshot only
      * gives us one number).
      *
-     * Returns null when the version carries no setup fee — caller skips the
-     * column write entirely in that case.
+     * Zero is an explicit source value. When setup-fee synchronization is
+     * enabled it must clear a stale positive WHMCS setup fee.
      *
      * @param array<string,mixed> $mapping
      */
@@ -785,9 +787,6 @@ class SyncEngine
         unset($mapping, $cycle, $cycleMonths); // accepted for symmetry / future use
 
         $fee = (float) $version->finalSetup;
-        if ($fee === 0.0) {
-            return null;
-        }
         PriceInvariant::requireNonNegativeFinite(
             $fee,
             'price_invariant_violation',
