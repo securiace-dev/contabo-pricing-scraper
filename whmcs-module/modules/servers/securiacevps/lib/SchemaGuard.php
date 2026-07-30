@@ -7,7 +7,7 @@ use WHMCS\Database\Capsule;
 
 final class SchemaGuard
 {
-    public const SUITE_SCHEMA_VERSION = 3;
+    public const SUITE_SCHEMA_VERSION = 4;
 
     /** @var list<string> */
     private const REQUIRED_TABLES = [
@@ -26,6 +26,7 @@ final class SchemaGuard
         'mod_securiacevps_operator_commands',
         'mod_securiacevps_secrets',
         'mod_securiacevps_communications',
+        'mod_securiacevps_snapshot_inventory',
     ];
 
     public static function assertReady(): void

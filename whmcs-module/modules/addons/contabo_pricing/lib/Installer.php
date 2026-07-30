@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 12;
+    public const SCHEMA_VERSION = 13;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -1904,6 +1904,64 @@ class Installer
         }
 
         (new EmailTemplateSeeder())->ensure();
+    }
+
+    /**
+     * Schema v13 — retain a WHMCS-owned projection of the provider snapshot
+     * inventory. Customer pages render this local projection and only an
+     * explicit refresh or durable operation calls Contabo.
+     */
+    public function migrateTo13(): void
+    {
+        $schema = Capsule::schema();
+        if (!$schema->hasTable('mod_securiacevps_snapshot_inventory')) {
+            $schema->create('mod_securiacevps_snapshot_inventory', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->unsignedInteger('service_id');
+                $t->string('provider_account_id', 120);
+                $t->string('provider_resource_id', 160);
+                $t->string('snapshot_id', 160);
+                $t->string('name', 30);
+                $t->string('description', 255)->nullable();
+                $t->string('image_id', 160)->nullable();
+                $t->string('image_name', 191)->nullable();
+                $t->timestamp('provider_created_at')->nullable();
+                $t->timestamp('provider_auto_delete_at')->nullable();
+                $t->char('payload_hash', 64);
+                $t->timestamp('observed_at');
+                $t->timestamps();
+                $t->unique(
+                    ['service_id', 'snapshot_id'],
+                    'savps_snapshot_service_uq'
+                );
+                $t->index(
+                    ['service_id', 'provider_created_at'],
+                    'savps_snapshot_service_created_ix'
+                );
+            });
+        }
+
+        $this->ensureIndex(
+            'mod_securiacevps_snapshot_inventory',
+            'savps_snapshot_service_uq',
+            ['service_id', 'snapshot_id'],
+            true
+        );
+        $this->ensureIndex(
+            'mod_securiacevps_snapshot_inventory',
+            'savps_snapshot_service_created_ix',
+            ['service_id', 'provider_created_at']
+        );
+
+        $now = date('Y-m-d H:i:s');
+        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
+            ['key' => 'suite_schema_version'],
+            ['value' => '4', 'updated_at' => $now]
+        );
+        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
+            ['key' => 'schema_version'],
+            ['value' => '4', 'updated_at' => $now]
+        );
     }
 
     /**

@@ -220,6 +220,15 @@ final class SchemaHealth
             'state',
             'payload_hash',
         ],
+        'mod_securiacevps_snapshot_inventory' => [
+            'service_id',
+            'provider_account_id',
+            'provider_resource_id',
+            'snapshot_id',
+            'name',
+            'payload_hash',
+            'observed_at',
+        ],
     ];
 
     /**
