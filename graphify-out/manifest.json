@@ -1190,8 +1190,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/integration/native_whmcs_smoke.php": {
-    "mtime": 1785365554.4356954,
-    "ast_hash": "91241ec1132441fd8331eab8185d07b6",
+    "mtime": 1785381629.5549183,
+    "ast_hash": "39110023a412355c1431750d47bf4c3c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/WHMCS_NATIVE_ARCHITECTURE.md": {
