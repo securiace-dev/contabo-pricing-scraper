@@ -20,6 +20,7 @@ cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,AlmaLinux 10,0,0,,,,,,
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Arch Linux,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 12,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
@@ -44,7 +45,6 @@ cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,IPv4,1 IP Address,0,
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (Central),1.05,0,America,United States (Central),US,Central,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (East),1.55,0,America,United States (East),US,East,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,America,United States (West),1.3,0,America,United States (West),US,West,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Region,Asia,India,2.4,0,Asia,India,IN,,,EUR
@@ -676,6 +676,7 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EU
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Webmin,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited and Unmetered Traffic,86.29,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
@@ -688,7 +689,6 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (East),13.3,0,Ame
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (West),11.15,0,America,United States (West),US,West,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,India,20.6,0,Asia,India,IN,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Japan,22.3,0,Asia,Japan,JP,,,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Singapore,21.9,0,Asia,Singapore,SG,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Australia,Australia,18.45,0,Australia,Australia,AU,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,United Kingdom,9,0,Europe,United Kingdom,UK,,,EUR
@@ -913,7 +913,6 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2022 Standard,50
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin,0,0,,,,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
@@ -931,6 +930,7 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Networking,Private Networking,Private Ne
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (Central),32,0,America,United States (Central),US,Central,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (East),47,0,America,United States (East),US,East,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (West),39,0,America,United States (West),US,West,,EUR
+vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,India,73,0,Asia,India,IN,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Japan,79,0,Asia,Japan,JP,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Singapore,78,0,Asia,Singapore,SG,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Australia,Australia,65,0,Australia,Australia,AU,,,EUR
