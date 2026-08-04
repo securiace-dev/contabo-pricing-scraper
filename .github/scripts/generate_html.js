@@ -8,6 +8,7 @@
 
 const fs   = require('fs');
 const path = require('path');
+const { loadManagedCatalog } = require('./managed_services_model');
 
 const OUTPUT_DIR    = path.resolve(__dirname, '../../data/output');
 const VM_PATH       = path.join(OUTPUT_DIR, 'contabo_view_model.json');
@@ -16,6 +17,7 @@ const CONFIGS_PATH  = path.join(OUTPUT_DIR, 'contabo_configs.json');
 const QR_PATH       = path.join(OUTPUT_DIR, 'contabo_quick_reference.json');
 const HTML_PATH     = path.resolve(__dirname, '../../report.html');
 const RECON_PATH    = path.join(OUTPUT_DIR, 'contabo_consistency_report.json');
+const MANAGED_CATALOG_PATH = path.resolve(__dirname, '../../data/managed_services_catalog.json');
 
 const round2 = (x) => Math.round((Number(x) + Number.EPSILON) * 100) / 100;
 
@@ -64,6 +66,7 @@ if (!fs.existsSync(VM_PATH)) {
 const vm    = JSON.parse(fs.readFileSync(VM_PATH, 'utf8'));
 const rows  = Array.isArray(vm.rows) ? vm.rows : [];
 const genAt = vm.meta?.generated_at || '';
+const managedServices = loadManagedCatalog(MANAGED_CATALOG_PATH);
 
 let dataset = null;
 if (fs.existsSync(DATASET_PATH)) {
@@ -71,6 +74,42 @@ if (fs.existsSync(DATASET_PATH)) {
   catch { /* graceful: no add-ons / reconciliation if malformed */ }
 }
 const optionCatalog = dataset?.option_catalog || [];
+
+// ── Per-plan metadata straight from the dataset (the view_model carries only
+// VPS-shaped specs, so pull the real per-family specs_parsed + pricing_model +
+// availability here and join by slug on the client). ────────────────────────
+const planMeta = {};
+if (dataset && Array.isArray(dataset.plans)) {
+  for (const p of dataset.plans) {
+    planMeta[p.product_slug] = {
+      pricing_model: p.pricing_model || 'fixed',
+      availability:  p.availability || null,
+      specs:         p.specs_parsed || {},
+    };
+  }
+}
+
+// ── Dedicated add-ons: independent optional line-items grouped by category,
+// rendered as a toggle checklist in the detail modal. ────────────────────────
+const ADDON_CAT_ORDER = ['Control Panel', 'RAM', 'Storage', 'GPU', 'Networking', 'Security', 'Management', 'Software', 'Misc'];
+const planExtras = {};
+for (const opt of optionCatalog) {
+  if (opt.dimension !== 'Add-on') continue;
+  (planExtras[opt.plan_sku] ??= []).push({
+    label:    opt.option_label,
+    category: opt.category || 'Misc',
+    monthly:  Number(opt.monthly_price_delta) || 0,
+    setup:    Number(opt.setup_fee_delta) || 0,
+  });
+}
+for (const slug of Object.keys(planExtras)) {
+  planExtras[slug].sort((a, b) => {
+    const ci = ADDON_CAT_ORDER.indexOf(a.category), cj = ADDON_CAT_ORDER.indexOf(b.category);
+    if (ci !== cj) return (ci < 0 ? 99 : ci) - (cj < 0 ? 99 : cj);
+    if (a.monthly !== b.monthly) return a.monthly - b.monthly;
+    return a.label.localeCompare(b.label);
+  });
+}
 
 let configsRoot = null;
 if (fs.existsSync(CONFIGS_PATH)) {
@@ -117,6 +156,10 @@ if (configsRoot) {
     const controls = [];
     const opts = cfg.options || {};
     for (const dim of Object.keys(opts)) {
+      // Dedicated `Add-on`s are independent optional line-items, not one
+      // mutually-exclusive choice — rendered as a checklist (planExtras), not a
+      // 50-option dropdown. Skip them here.
+      if (dim === 'Add-on') continue;
       const list = (opts[dim] || []).map(mapOpt);
       if (list.length === 0) continue;
       if (dim === 'Networking') {
@@ -208,12 +251,15 @@ if (dataset && Array.isArray(dataset.plans)) {
           view_model_value: a, dataset_value: b });
       }
     }
-    const specMap = { cpu_count: 'cpu_count', ram_gb: 'ram_gb',
-      storage_primary_gb: 'storage_primary_gb', storage_primary_type: 'storage_primary_type',
-      port_speed_mbps: 'port_speed_mbps' };
-    for (const [k, dsK] of Object.entries(specMap)) {
-      const a = r.specs?.[k], b = p.specs_parsed?.[dsK];
-      if (a !== b) {
+    // Key-aware spec reconciliation: only compare a spec the family actually
+    // uses (present in dataset specs_parsed), coalescing null/undefined so
+    // Object Storage — which has capacity specs, not cpu/ram — isn't flagged.
+    const specKeys = ['cpu_count', 'ram_gb', 'storage_primary_gb', 'storage_primary_type', 'port_speed_mbps'];
+    for (const k of specKeys) {
+      const b = p.specs_parsed?.[k];
+      if (b === undefined) continue;
+      const a = r.specs?.[k];
+      if ((a ?? null) !== (b ?? null)) {
         mismatches.push({ plan_slug: r.plan_slug, period: r.period_months, field: `specs.${k}`,
           view_model_value: a, dataset_value: b });
       }
@@ -275,6 +321,9 @@ if (configsRoot) {
 } else {
   payload.planAddons = planAddons;
 }
+payload.planMeta   = planMeta;
+payload.planExtras = planExtras;
+payload.managedServices = managedServices;
 ;(async () => {
 payload.fx = await fetchFx();
 const dataJson = JSON.stringify(payload, null, 1)
@@ -518,6 +567,78 @@ const html = `<!DOCTYPE html>
   .breakdown{font-size:11px;color:var(--muted);margin-top:4px;
     font-family:"IBM Plex Mono",monospace}
 
+  /* ── Pricing-model chip ──────────────────────────────────────────────────── */
+  .mchip{display:inline-block;margin-left:8px;font-size:9.5px;font-weight:600;
+    letter-spacing:.05em;text-transform:uppercase;padding:1px 6px;border-radius:999px;
+    vertical-align:middle;line-height:1.6;font-family:"IBM Plex Mono",monospace}
+  .mchip.setup{color:var(--accent);background:var(--accent-soft)}
+  .mchip.metered{color:var(--accent2);background:rgba(45,212,191,.12)}
+  html[data-theme=light] .mchip.metered{background:rgba(13,148,136,.10)}
+  .pn .mchip{margin-left:6px}
+
+  /* ── Add-on checklist (Dedicated) ────────────────────────────────────────── */
+  .chk-grid{display:flex;flex-direction:column;gap:1px;margin:4px 0 2px;
+    max-height:320px;overflow:auto}
+  .chk-cat{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted-soft);margin:14px 0 4px;padding-bottom:3px;
+    border-bottom:1px solid var(--border-soft)}
+  .chk-cat:first-child{margin-top:2px}
+  .chk{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--radius-sm);
+    cursor:pointer;transition:background .12s ease}
+  .chk:hover{background:var(--row-hover)}
+  .chk input{margin:0;accent-color:var(--accent);width:15px;height:15px;flex:none;cursor:pointer}
+  .chk-l{flex:1;font-size:13px;color:var(--fg)}
+  .chk-p{font-size:11.5px;color:var(--muted);font-family:"IBM Plex Mono",monospace;
+    font-variant-numeric:tabular-nums;white-space:nowrap}
+  .chk-setup{color:var(--muted-soft)}
+  .chk input:checked~.chk-l{color:var(--fg-strong);font-weight:500}
+
+  /* ── Founder Managed Track ──────────────────────────────────────────────── */
+  .managed-track{margin-top:24px;border-top:1px solid var(--border);padding-top:2px}
+  .managed-note{font-size:11.5px;color:var(--muted);line-height:1.6;padding:10px 12px;
+    margin:8px 0 12px;background:var(--bg-elev);border-radius:var(--radius-sm);
+    border-left:2px solid var(--accent)}
+  .managed-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;
+    align-items:stretch}
+  .managed-card{display:flex;position:relative;min-width:0;padding:12px;
+    border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;
+    background:var(--panel2);transition:border-color .12s,background .12s}
+  .managed-card:hover{border-color:var(--accent);background:var(--row-hover)}
+  .managed-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-soft) inset}
+  .managed-card input{position:absolute;opacity:0;pointer-events:none}
+  .managed-card-body{display:flex;flex-direction:column;gap:6px;width:100%}
+  .managed-card-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+  .managed-card-name{font-weight:600;color:var(--fg-strong);font-size:13px}
+  .managed-card-price{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent);
+    white-space:nowrap;text-align:right}
+  .managed-card-price small{display:block;color:var(--muted);font-family:inherit;font-size:10px;
+    margin-top:2px}
+  .managed-card-time{font-size:11.5px;color:var(--accent2);font-weight:600}
+  .managed-card ul{margin:2px 0 0;padding-left:16px;color:var(--muted);font-size:11px;line-height:1.5}
+  .managed-card li+li{margin-top:2px}
+  .managed-card-status{color:var(--warn);font-size:10px;line-height:1.4}
+  .managed-controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:12px 0 2px}
+  .managed-controls label{font-size:12px;color:var(--muted)}
+  .managed-controls input{width:68px;margin-left:6px;background:var(--panel2);color:var(--fg);
+    border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 8px;font:inherit}
+  .managed-summary{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+  .managed-summary .ln{display:flex;justify-content:space-between;gap:12px;align-items:baseline;
+    padding:4px 0;font-size:13px}
+  .managed-summary .ln.muted{color:var(--muted);font-size:11.5px}
+  .managed-summary .ln.tot{font-weight:700;font-size:15px;border-top:1px solid var(--border);
+    margin-top:6px;padding-top:8px}
+  .managed-summary .ln.tot .v{color:var(--price);font-family:"IBM Plex Mono",monospace;font-size:17px}
+  .managed-summary .pending{color:var(--warn);font-size:11px;line-height:1.5;margin-top:8px}
+  .managed-review{margin-top:12px;color:var(--muted);font-size:11px;line-height:1.55}
+  .managed-review summary{cursor:pointer;color:var(--muted-soft)}
+  .managed-review ul{margin:6px 0 0;padding-left:18px}
+  .managed-review li+li{margin-top:3px}
+
+  /* ── Calculator note ─────────────────────────────────────────────────────── */
+  .note{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.6;
+    padding:9px 11px;background:var(--bg-elev);border-radius:var(--radius-sm);
+    border-left:2px solid var(--accent2)}
+
   /* footer */
   footer{padding:22px 28px;color:var(--muted);font-size:12px;
     border-top:1px solid var(--border-soft);line-height:1.65}
@@ -537,6 +658,7 @@ const html = `<!DOCTYPE html>
     .sheet{padding:20px}
     .cfg-grid{grid-template-columns:1fr}
     .cfg-grid label{text-align:left}
+    .managed-grid{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -654,7 +776,20 @@ const DATA = JSON.parse(document.getElementById('contabo-data').textContent);
 const ROWS = DATA.rows;
 const ADDONS = DATA.planAddons || {};
 const CFG = DATA.planConfig || {};
+const META = DATA.planMeta || {};
+const EXTRAS = DATA.planExtras || {};
+const MANAGED = DATA.managedServices || {};
+const MANAGED_PLANS = Array.isArray(MANAGED.plans) ? MANAGED.plans : [];
+const MANAGED_FAMILIES = new Set(Array.isArray(MANAGED.eligible_families) ? MANAGED.eligible_families : []);
+const MANAGED_STORAGE_KEY = 'contabo_managed_track_v1';
 const FAMILIES = [...new Set(ROWS.map(r => r.family))];
+// Family → billing shape. Object Storage is capacity-priced; Dedicated adds a
+// one-off setup; the rest are plain recurring.
+const FAM_STORAGE = 'Object Storage', FAM_DEDICATED = 'Dedicated Server';
+const isStorageFam  = f => f === FAM_STORAGE;
+const isComputeFam  = f => f !== FAM_STORAGE;   // VPS/VDS/Storage-VPS/Dedicated all have cpu/ram
+const MODEL_LABEL = { fixed: '', fixed_plus_setup: '+setup', metered_capacity: 'metered' };
+const ADDON_CATS = ['Control Panel', 'RAM', 'Storage', 'GPU', 'Networking', 'Security', 'Management', 'Software', 'Misc'];
 const FX_META = DATA.fx || {};
 const PRICES_INCLUDE_GST = !!FX_META.pricesIncludeGST;
 const GST_RATE = Number(FX_META.gstRate || 0.18);
@@ -662,25 +797,69 @@ const GST_RATE = Number(FX_META.gstRate || 0.18);
 // Group rows → plans { slug -> {meta, periods:{m->row}} }
 const PLANS = {};
 for (const r of ROWS) {
+  const m = META[r.plan_slug] || {};
   const p = PLANS[r.plan_slug] ??= {
     slug:r.plan_slug, family:r.family, name:r.product_name, url:r.product_url,
-    rank:r.plan_rank, frank:r.plan_family_rank, specs:r.specs,
+    rank:r.plan_rank, frank:r.plan_family_rank,
+    // Prefer the real per-family specs from the dataset; the view_model only
+    // carries VPS-shaped keys (all null for Object Storage).
+    specs:(m.specs && Object.keys(m.specs).length) ? m.specs : r.specs,
+    model:m.pricing_model || 'fixed', avail:m.availability || null,
+    extras:EXTRAS[r.plan_slug] || null,
     options:r.options_summary || {}, periods:{}
   };
   p.periods[r.period_months] = r;
+}
+// Object Storage headline unit: €/TB·mo (base price is the 0.25 TB tier).
+function perTb(p){
+  const s=p.specs||{};
+  if(s.price_per_tb_eur!=null) return Number(s.price_per_tb_eur);
+  const m=p.periods[1]?.effective_monthly, cap=s.capacity_tb;
+  return (m!=null&&cap)? m/cap : null;
+}
+function modelChip(p){
+  const t=MODEL_LABEL[p.model]; if(!t) return '';
+  const cls = p.model==='metered_capacity' ? 'mchip metered' : 'mchip setup';
+  return '<span class="'+cls+'" title="'+(p.model==='metered_capacity'?'Capacity-priced (per TB / month)':'One-time setup fee applies')+'">'+t+'</span>';
 }
 const PLAN_LIST = Object.values(PLANS);
 
 const lsGet=(k)=>{ try{ return localStorage.getItem(k); }catch{ return null; } };
 const lsSet=(k,v)=>{ try{ localStorage.setItem(k,v); }catch{} };
 
+const defaultFxMarkup = Number(FX_META.fxMarkupDefault ?? 0.035);
+const clampFxMarkup = raw => {
+  const value = Number(raw);
+  const fallback = Number.isFinite(defaultFxMarkup) ? defaultFxMarkup : 0.035;
+  return Math.max(0, Math.min(0.15, Number.isFinite(value) ? value : fallback));
+};
+const storedFxMarkup = lsGet('contabo_fx_markup');
+
 let FX = {
   rate: (FX_META && FX_META.eurInr) || null,
   source: FX_META.source || '',
   rateDate: FX_META.rateDate || null,
   at: FX_META.at || null,
-  markup: Number(lsGet('contabo_fx_markup') ?? (FX_META.fxMarkupDefault ?? 0.035))
+  // Storage is a fraction (0.035 == 3.5%), while the visible input is a
+  // percentage. Clamp on load as well as on input so stale values like 45
+  // cannot remain visible or leak into calculations.
+  markup: clampFxMarkup(storedFxMarkup === null ? defaultFxMarkup : storedFxMarkup)
 };
+
+function loadManagedSelections(){
+  try{
+    const raw=JSON.parse(lsGet(MANAGED_STORAGE_KEY)||'{}');
+    if(!raw || typeof raw!=='object' || Array.isArray(raw)) return {};
+    const out={};
+    for(const [slug, selection] of Object.entries(raw)){
+      const plan=MANAGED_PLANS.find(p=>p.id===selection?.planId);
+      if(!plan || !PLANS[slug] || !MANAGED_FAMILIES.has(PLANS[slug].family)) continue;
+      const quantity=Math.max(1,Math.min(99,Math.round(Number(selection.quantity)||1)));
+      out[slug]={planId:plan.id,quantity};
+    }
+    return out;
+  }catch{ return {}; }
+}
 
 let state = {
   fam:'All', period:(lsGet('contabo_period')||'6'), showHidden:false,
@@ -688,6 +867,7 @@ let state = {
   compare:new Set(),
   cur:(lsGet('contabo_cur')||'BOTH'),
   gst:(lsGet('contabo_gst')==='1') || (PRICES_INCLUDE_GST ? false : false),
+  managed:loadManagedSelections(),
 };
 
 // ── Money helpers ───────────────────────────────────────────────────────────
@@ -722,6 +902,26 @@ const sgn = v => {
   const f = eurNF.format(Math.abs(applyGst(v)));
   return (v<0?'−':'+') + f;
 };
+const managedEligible = p => !!p && MANAGED_FAMILIES.has(p.family);
+const managedPlan = id => MANAGED_PLANS.find(p=>p.id===id) || null;
+const managedMinor = minor => inrNF.format(Math.round(Number(minor||0)/100));
+const managedTime = minutes => {
+  const hours=Number(minutes||0)/60;
+  if(Number.isInteger(hours)) return hours+' hour'+(hours===1?'':'s')+'/month';
+  return Math.round(minutes||0)+' min/month';
+};
+function managedQuote(plan, quantity){
+  const qty=Math.max(1,Math.min(99,Math.round(Number(quantity)||1)));
+  const ex=Math.round(Number(plan.annual_price_minor||0)*qty);
+  const taxable=MANAGED.taxable && MANAGED.tax_basis==='exclusive';
+  const gst=taxable && state.gst ? Math.round(ex*Number(MANAGED.gst_rate||0)) : 0;
+  const total=MANAGED.tax_basis==='inclusive' ? ex : ex+gst;
+  return {quantity:qty,ex,gst,total,monthly:Math.round(total/Number(MANAGED.billing_term_months||12)),
+    founderMinutes:Number(plan.founder_time?.minutes_per_month||0)*qty};
+}
+function persistManagedSelections(){
+  lsSet(MANAGED_STORAGE_KEY,JSON.stringify(state.managed));
+}
 const savePct = p => {
   const a=p.periods[1]?.effective_monthly, b=p.periods[12]?.effective_monthly;
   if(!a||!b) return null;
@@ -754,11 +954,14 @@ function renderHero(){
   const bp = bestPerFamily();
   document.getElementById('bestRow').innerHTML = FAMILIES.map(f=>{
     const p = bp[f]; if(!p) return '';
-    const m = p.periods[12].effective_monthly;
+    const stor = isStorageFam(f);
+    const m = stor ? perTb(p) : p.periods[12].effective_monthly;
+    const unit = stor ? '/TB·mo' : '/mo';
+    const nm = stor ? esc(String(p.specs.region||p.name).replace('Object Storage: ','')) : esc(p.name);
     return '<span class="hero-card" data-slug="'+p.slug+'">'+
       '<span class="lbl">'+esc(f)+'</span>'+
-      '<span class="nm">'+esc(p.name)+'</span>'+
-      '<span class="v">'+fmtEur(m)+'/mo</span></span>';
+      '<span class="nm">'+nm+'</span>'+
+      '<span class="v">'+(m==null?'—':fmtEur(m))+unit+'</span></span>';
   }).join('');
   document.querySelectorAll('#bestRow .hero-card').forEach(c=>{
     c.style.cursor='pointer';
@@ -766,25 +969,44 @@ function renderHero(){
   });
 }
 
-// ── Columns ────────────────────────────────────────────────────────────────
-const COLS = [
-  {k:'name',  t:'Plan',    l:true, v:p=>'<span class="pn">'+esc(p.name)+'</span><span class="fm">'+esc(p.family)+'</span>', sort:p=>p.frank},
-  {k:'cpu',   t:'vCPU',    v:p=>num(p.specs.cpu_count), sort:p=>p.specs.cpu_count||0},
-  {k:'ram',   t:'RAM',     v:p=>num(p.specs.ram_gb)+' GB', sort:p=>p.specs.ram_gb||0},
-  {k:'stor',  t:'Storage', v:p=>num(p.specs.storage_primary_gb)+' GB <span class="muted">'+(p.specs.storage_primary_type||'')+'</span>',
-    sort:p=>p.specs.storage_primary_gb||0},
-  {k:'port',  t:'Port',    v:p=>num(p.specs.port_speed_mbps)+' Mbps', sort:p=>p.specs.port_speed_mbps||0},
-  {k:'p1',    t:'1 mo',    v:p=>eur(p.periods[1]?.effective_monthly), sort:p=>p.periods[1]?.effective_monthly??1e9},
-  {k:'p3',    t:'3 mo',    hidden:true, v:p=>eur(p.periods[3]?.effective_monthly), sort:p=>p.periods[3]?.effective_monthly??1e9},
-  {k:'p6',    t:'6 mo',    v:p=>eur(p.periods[6]?.effective_monthly), sort:p=>p.periods[6]?.effective_monthly??1e9},
-  {k:'p12',   t:'12 mo',   v:p=>{
+// ── Columns (family-aware) ──────────────────────────────────────────────────
+const dash = '<span class="muted">—</span>';
+const capGb = p => (p.specs.capacity_tb!=null ? Math.round(p.specs.capacity_tb*1000)+' GB' : '—');
+const colPlan = {k:'name', t:'Plan', l:true, sort:p=>p.frank,
+  v:p=>'<span class="pn">'+esc(p.name)+modelChip(p)+'</span><span class="fm">'+esc(p.family)+'</span>'};
+const priceCols = [
+  {k:'p1',  t:'1 mo',  v:p=>eur(p.periods[1]?.effective_monthly), sort:p=>p.periods[1]?.effective_monthly??1e9},
+  {k:'p3',  t:'3 mo',  hidden:true, v:p=>eur(p.periods[3]?.effective_monthly), sort:p=>p.periods[3]?.effective_monthly??1e9},
+  {k:'p6',  t:'6 mo',  v:p=>eur(p.periods[6]?.effective_monthly), sort:p=>p.periods[6]?.effective_monthly??1e9},
+  {k:'p12', t:'12 mo', v:p=>{
       const m=p.periods[12]?.effective_monthly;
       return m==null?'—':'<span class="price best">'+(state.cur==='INR'?fmtInr(m):eurNF.format(applyGst(m)))+'</span>'+(state.cur==='BOTH'?'<span class="inr">≈ '+fmtInr(m)+'</span>':'');
     }, sort:p=>p.periods[12]?.effective_monthly??1e9},
-  {k:'save',  t:'Save',    v:p=>{const s=savePct(p);return s?'<span class="save"><span class="bar" style="width:'+Math.min(s*0.6,30)+'px"></span>'+s+'%</span>':'—';}, sort:p=>savePct(p)??-1},
+  {k:'save', t:'Save', v:p=>{const s=savePct(p);return s?'<span class="save"><span class="bar" style="width:'+Math.min(s*0.6,30)+'px"></span>'+s+'%</span>':'—';}, sort:p=>savePct(p)??-1},
+];
+// Compute families (VPS/VDS/Storage-VPS/Dedicated) share cpu/ram/storage/port.
+// Object Storage rows render adaptively in this set (so the "All" view stays clean).
+const COLS_COMPUTE = [ colPlan,
+  {k:'cpu',  t:'vCPU',    v:p=>isStorageFam(p.family)?dash:num(p.specs.cpu_count), sort:p=>p.specs.cpu_count||0},
+  {k:'ram',  t:'RAM',     v:p=>isStorageFam(p.family)?dash:num(p.specs.ram_gb)+' GB', sort:p=>p.specs.ram_gb||0},
+  {k:'stor', t:'Storage', sort:p=>isStorageFam(p.family)?(p.specs.capacity_tb||0)*1000:(p.specs.storage_primary_gb||0),
+    v:p=>isStorageFam(p.family)
+      ? '<span class="mono">'+capGb(p)+'</span> <span class="muted">base</span>'
+      : num(p.specs.storage_primary_gb)+' GB <span class="muted">'+(p.specs.storage_primary_type||'')+'</span>'},
+  {k:'port', t:'Port',    v:p=>isStorageFam(p.family)?'<span class="good">free egress</span>':num(p.specs.port_speed_mbps)+' Mbps', sort:p=>p.specs.port_speed_mbps||0},
+  ...priceCols,
+];
+// Object-Storage-native columns (shown when that family is selected).
+const COLS_STORAGE = [ colPlan,
+  {k:'cap', t:'Base',      v:p=>'<span class="mono">'+capGb(p)+'</span>', sort:p=>p.specs.capacity_tb||0},
+  {k:'ptb', t:'€ / TB·mo', v:p=>{const t=perTb(p);return t==null?'—':'<span class="price">'+eurNF.format(applyGst(t))+'</span>';}, sort:p=>perTb(p)??1e9},
+  {k:'egr', t:'Egress',    v:p=>'<span class="good">free</span>', sort:p=>0},
+  {k:'reg', t:'Region',    v:p=>'<span class="muted">'+esc(String(p.specs.region||'').replace('Object Storage: ',''))+'</span>', sort:p=>String(p.specs.region||'')},
+  ...priceCols,
 ];
 const SORTBY = {frank:p=>p.frank};
-const activeCols = () => COLS.filter(c => !c.hidden || state.showHidden);
+const colSet = () => state.fam===FAM_STORAGE ? COLS_STORAGE : COLS_COMPUTE;
+const activeCols = () => colSet().filter(c => !c.hidden || state.showHidden);
 
 const head = document.getElementById('head');
 function renderHead(){
@@ -812,7 +1034,7 @@ function filtered(){
     if(state.q && !p.name.toLowerCase().includes(state.q.toLowerCase())) return false;
     return true;
   }).sort((a,b)=>{
-    const col=COLS.find(c=>c.k===state.sortKey);
+    const col=colSet().find(c=>c.k===state.sortKey);
     const f = col?col.sort:(SORTBY[state.sortKey]||(x=>0));
     const av=f(a), bv=f(b);
     if(av<bv) return -1*state.sortDir;
@@ -879,12 +1101,17 @@ function renderCompare(){
       return '<td>'+(fmt?fmt(v):v)+d+'</td>';
     }).join('')+'</tr>';
   };
+  const MODEL_FULL={fixed:'Fixed',fixed_plus_setup:'Fixed + setup',metered_capacity:'Metered capacity'};
   const t=['<tr><th class="l">Spec</th>'+ps.map(p=>'<th>'+esc(p.name)+'</th>').join('')+'</tr>',
     row('Family',p=>p.family),
-    row('vCPU',p=>p.specs.cpu_count,null,'higherBetter'),
-    row('RAM (GB)',p=>p.specs.ram_gb,null,'higherBetter'),
-    row('Storage (GB)',p=>p.specs.storage_primary_gb,v=>v+' '+base.specs.storage_primary_type,'higherBetter'),
-    row('Port (Mbps)',p=>p.specs.port_speed_mbps,null,'higherBetter'),
+    row('Billing',p=>MODEL_FULL[p.model]||'Fixed'),
+    row('vCPU / cores',p=>p.specs.cpu_count??'—',null,'higherBetter'),
+    row('RAM (GB)',p=>p.specs.ram_gb??'—',null,'higherBetter'),
+    row('Storage',p=>p.specs.storage_primary_gb!=null
+      ? (p.specs.storage_primary_gb+' '+(p.specs.storage_primary_type||''))
+      : (p.specs.capacity_tb!=null?(Math.round(p.specs.capacity_tb*1000)+' GB base'):'—')),
+    row('€ / TB·mo',p=>{const v=perTb(p);return v!=null?eurNF.format(applyGst(v)):'—';}),
+    row('Port / egress',p=>isStorageFam(p.family)?'free egress':(p.specs.port_speed_mbps!=null?p.specs.port_speed_mbps+' Mbps':'—')),
     row('1 mo',p=>p.periods[1]?.effective_monthly,eur,'lowerBetter'),
     row('6 mo',p=>p.periods[6]?.effective_monthly,eur,'lowerBetter'),
     row('12 mo',p=>p.periods[12]?.effective_monthly,eur,'lowerBetter'),
@@ -993,16 +1220,189 @@ function wireCfg(slug){
   recalcCfg();
 }
 
+// Family-aware spec line in the modal header.
+function specsLine(p){
+  const s=p.specs||{};
+  if(isStorageFam(p.family)){
+    const t=perTb(p);
+    return '<b>'+capGb(p)+'</b> base · <b>'+(t==null?'—':eurNF.format(applyGst(t)))+'</b>/TB·mo · '+
+           '<span class="good">free egress</span> · '+esc(String(s.region||'').replace('Object Storage: ',''));
+  }
+  const cores = p.family===FAM_DEDICATED ? 'cores' : 'vCPU';
+  let out='<b>'+num(s.cpu_count)+'</b> '+cores+' · <b>'+num(s.ram_gb)+'</b> GB RAM · <b>'+
+          num(s.storage_primary_gb)+'</b> GB '+(s.storage_primary_type||'')+' · <b>'+num(s.port_speed_mbps)+'</b> Mbps';
+  if(p.avail && (p.avail.out_of_stock||p.avail.unavailable)) out+=' · <span class="bad">out of stock</span>';
+  return out;
+}
+
+// ── Object Storage: capacity → price calculator ──────────────────────────────
+function renderStorageCalc(p){
+  const per=p.periods, ip=cfgInitPeriod(per);
+  let h='<h4>Capacity &amp; price</h4>';
+  h+='<div class="cfg-bar"><label>Term <select id="stTerm">'+
+     cfgPeriods(per).map(m=>'<option value="'+m+'"'+(m===ip?' selected':'')+'>'+m+' mo</option>').join('')+
+     '</select></label><label>Storage <input type="number" id="stTb" min="'+(p.specs.capacity_tb||0.25)+
+     '" step="0.25" value="1"> TB</label></div>';
+  h+='<div class="osum" id="stOut"></div>';
+  h+='<div class="note">Capacity scales in 250 GB steps via the Contabo API. Ingress and egress are free — no traffic metering.</div>';
+  return h;
+}
+function recalcStorage(p){
+  const cap=p.specs.capacity_tb||0.25;
+  const term=Number(document.getElementById('stTerm').value);
+  let tb=Number(document.getElementById('stTb').value)||cap;
+  tb=Math.max(cap, Math.round(tb/0.25)*0.25);
+  const baseMo=Number(p.periods[term]?.effective_monthly)||0;   // price of the base-tier capacity
+  const rate=baseMo/cap, mo=r2(rate*tb), tot=r2(mo*term);
+  let h='<div class="ln muted"><span>Rate ('+term+' mo)</span><span>'+eur(rate)+'/TB·mo</span></div>';
+  h+='<div class="ln"><span>Storage</span><span>'+tb+' TB</span></div>';
+  h+='<div class="ln tot"><span>Monthly</span><span class="v">'+eur(mo)+'/mo</span></div>';
+  h+='<div class="ln"><span>Billed total ('+term+' mo)</span><span>'+eur(tot)+'</span></div>';
+  document.getElementById('stOut').innerHTML=h;
+}
+function wireStorage(slug){
+  const p=PLANS[slug];
+  document.getElementById('stTerm').onchange=()=>recalcStorage(p);
+  document.getElementById('stTb').oninput=()=>recalcStorage(p);
+  recalcStorage(p);
+}
+
+// ── Dedicated: independent add-on checklist ─────────────────────────────────
+function renderExtras(slug){
+  const ex=EXTRAS[slug]; if(!ex||!ex.length) return '';
+  const cats={}; ex.forEach(o=>(cats[o.category]??=[]).push(o));
+  const ip=cfgInitPeriod(PLANS[slug].periods);
+  let h='<h4>Add-ons <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">· optional, independent</span></h4>';
+  h+='<div class="cfg-bar"><label>Term <select id="exTerm">'+
+     cfgPeriods(PLANS[slug].periods).map(m=>'<option value="'+m+'"'+(m===ip?' selected':'')+'>'+m+' mo</option>').join('')+
+     '</select></label><button class="iconbtn" id="exReset">Clear all</button></div>';
+  h+='<div class="chk-grid">';
+  let idx=0;
+  for(const cat of ADDON_CATS){
+    const items=cats[cat]; if(!items) continue;
+    h+='<div class="chk-cat">'+esc(cat)+'</div>';
+    for(const o of items){
+      const price=o.monthly>0?('+'+eurNF.format(applyGst(o.monthly))+'/mo'):(o.setup>0?'setup only':'free');
+      const setup=o.setup>0?(' <span class="chk-setup">+'+eurNF.format(applyGst(o.setup))+' setup</span>'):'';
+      h+='<label class="chk"><input type="checkbox" class="exck" data-m="'+o.monthly+'" data-s="'+o.setup+'">'+
+         '<span class="chk-l">'+esc(o.label)+'</span><span class="chk-p">'+price+setup+'</span></label>';
+      idx++;
+    }
+  }
+  h+='</div><div class="osum" id="exOut"></div>';
+  return h;
+}
+function recalcExtras(slug){
+  const per=PLANS[slug].periods;
+  const term=Number(document.getElementById('exTerm').value);
+  const base=Number(per[term]?.effective_monthly)||0, baseSetup=Number(per[term]?.setup_fee)||0;
+  let addM=0,addS=0,n=0;
+  document.querySelectorAll('.exck').forEach(ck=>{ if(ck.checked){ addM+=Number(ck.dataset.m)||0; addS+=Number(ck.dataset.s)||0; n++; } });
+  const mo=r2(base+addM), setup=r2(baseSetup+addS), tot=r2(mo*term+setup);
+  let h='<div class="ln muted"><span>Base ('+term+' mo)</span><span>'+eur(base)+'/mo</span></div>';
+  if(n) h+='<div class="ln chg up"><span>'+n+' add-on'+(n>1?'s':'')+' selected</span><span class="v">'+sgn(addM)+'/mo'+(addS?' · '+sgn(addS)+' setup':'')+'</span></div>';
+  h+='<div class="ln tot"><span>Configured monthly</span><span class="v">'+eur(mo)+'/mo</span></div>';
+  h+='<div class="ln"><span>Setup (one-time)</span><span>'+(setup>0?eur(setup):'—')+'</span></div>';
+  h+='<div class="ln"><span>Billed total ('+term+' mo)</span><span>'+eur(tot)+'</span></div>';
+  document.getElementById('exOut').innerHTML=h;
+}
+function wireExtras(slug){
+  document.getElementById('exTerm').onchange=()=>recalcExtras(slug);
+  document.querySelectorAll('.exck').forEach(c=>c.onchange=()=>recalcExtras(slug));
+  document.getElementById('exReset').onclick=()=>{ document.querySelectorAll('.exck').forEach(c=>c.checked=false); recalcExtras(slug); };
+  recalcExtras(slug);
+}
+
+// ── Founder Managed Track: INR service tiers alongside provider pricing ─────
+function renderManagedCard(plan, selectedId){
+  const quote=managedQuote(plan,1);
+  const selected=plan.id===selectedId;
+  const status=plan.sla?.status==='approval_required'
+    ? '<span class="managed-card-status">SLA target · approval required</span>' : '';
+  return '<label class="managed-card'+(selected?' selected':'')+'">'+
+    '<input type="radio" class="managed-plan-radio" name="managedPlan" value="'+esc(plan.id)+'"'+(selected?' checked':'')+'>'+
+    '<span class="managed-card-body">'+
+      '<span class="managed-card-top"><span class="managed-card-name">'+esc(plan.name)+'</span>'+
+        '<span class="managed-card-price">'+managedMinor(quote.total)+'<small>/year · '+(state.gst?'incl. GST':'ex GST')+'</small></span></span>'+
+      '<span class="managed-card-time">'+esc(plan.founder_time?.label||managedTime(plan.founder_time?.minutes_per_month))+'</span>'+
+      '<ul>'+plan.includes.map(item=>'<li>'+esc(item)+'</li>').join('')+'</ul>'+status+
+    '</span></label>';
+}
+function renderManagedTrack(p){
+  if(!managedEligible(p) || MANAGED_PLANS.length===0) return '';
+  const selected=state.managed[p.slug];
+  const selectedId=selected?.planId||'';
+  const quantity=Math.max(1,Math.min(99,Math.round(Number(selected?.quantity)||1)));
+  let h='<section class="managed-track" aria-label="Founder Managed Track">';
+  h+='<h4>Managed Track <span class="muted" style="font-weight:400;text-transform:none;letter-spacing:0">· optional, INR annual, per managed server</span></h4>';
+  h+='<div class="managed-note">Founder security and server-management time slices are quoted separately from Contabo\\'s EUR infrastructure charges. This catalog is <b>'+esc(MANAGED.status||'draft')+'</b> and uses a review path; selecting a tier prepares a quote request rather than provisioning service automatically.</div>';
+  h+='<div class="managed-grid" role="radiogroup" aria-label="Managed service tier">';
+  h+='<label class="managed-card managed-none'+(!selectedId?' selected':'')+'"><input type="radio" class="managed-plan-radio" name="managedPlan" value=""'+(!selectedId?' checked':'')+'><span class="managed-card-body"><span class="managed-card-name">No managed tier</span><span class="managed-card-time">Provider pricing only</span><ul><li>Keep this server on self-serve pricing</li><li>No Founder hours or managed SLA selected</li></ul></span></label>';
+  h+=MANAGED_PLANS.map(plan=>renderManagedCard(plan,selectedId)).join('');
+  h+='</div>';
+  h+='<div class="managed-controls"><label>Servers covered <input type="number" id="managedQuantity" min="1" max="99" step="1" value="'+quantity+'"></label><button class="iconbtn" id="managedReset" type="button">Clear managed tier</button></div>';
+  h+='<div class="managed-summary" id="managedOut" role="status" aria-live="polite"></div>';
+  if(Array.isArray(MANAGED.review_flags) && MANAGED.review_flags.length){
+    h+='<details class="managed-review"><summary>Draft and scope notes</summary><ul>'+MANAGED.review_flags.map(item=>'<li>'+esc(item)+'</li>').join('')+'</ul></details>';
+  }
+  h+='</section>';
+  return h;
+}
+function syncManagedCardStates(){
+  document.querySelectorAll('.managed-card').forEach(card=>{
+    const input=card.querySelector('.managed-plan-radio');
+    card.classList.toggle('selected',!!input&&input.checked);
+  });
+}
+function recalcManaged(slug){
+  const out=document.getElementById('managedOut');
+  if(!out) return;
+  const id=document.querySelector('.managed-plan-radio:checked')?.value||'';
+  const plan=managedPlan(id);
+  if(!plan){
+    delete state.managed[slug];
+    persistManagedSelections();
+    out.innerHTML='<div class="ln muted"><span>Managed track</span><span>Not selected</span></div><div class="breakdown">Provider EUR pricing remains unchanged.</div>';
+    syncManagedCardStates();
+    return;
+  }
+  const quantity=Math.max(1,Math.min(99,Math.round(Number(document.getElementById('managedQuantity')?.value)||1)));
+  document.getElementById('managedQuantity').value=quantity;
+  state.managed[slug]={planId:plan.id,quantity};
+  persistManagedSelections();
+  const quote=managedQuote(plan,quantity);
+  let h='<div class="ln muted"><span>'+esc(plan.name)+' × '+quantity+' '+esc(MANAGED.scope_unit||'server')+'</span><span>'+(state.gst?'incl. GST':'ex GST')+'</span></div>';
+  h+='<div class="ln tot"><span>Annual managed service</span><span class="v">'+managedMinor(quote.total)+'</span></div>';
+  h+='<div class="ln"><span>Monthly equivalent</span><span>'+managedMinor(quote.monthly)+'</span></div>';
+  h+='<div class="ln"><span>Founder time</span><span>'+esc(managedTime(quote.founderMinutes))+'</span></div>';
+  if(quote.gst) h+='<div class="ln muted"><span>GST 18%</span><span>'+managedMinor(quote.gst)+'</span></div>';
+  h+='<div class="breakdown">Canonical INR quote · EUR→INR FX and card markup do not apply to managed services.</div>';
+  if(plan.sla?.status==='approval_required')
+    h+='<div class="pending">'+esc(plan.sla.label)+' is a target in the pricing brief, not a published guarantee. Evidence and scope approval are required before sale.</div>';
+  h+='<div class="managed-review"><b>Includes:</b> '+plan.includes.map(esc).join(' · ')+'<br><b>Excludes:</b> '+[...(MANAGED.common_exclusions||[]),...(plan.excludes||[])].map(esc).join(' · ')+'</div>';
+  out.innerHTML=h;
+  syncManagedCardStates();
+}
+function wireManagedTrack(slug){
+  document.querySelectorAll('.managed-plan-radio').forEach(radio=>radio.onchange=()=>recalcManaged(slug));
+  const quantity=document.getElementById('managedQuantity');
+  if(quantity) quantity.oninput=()=>recalcManaged(slug);
+  const reset=document.getElementById('managedReset');
+  if(reset) reset.onclick=()=>{
+    const none=document.querySelector('.managed-plan-radio[value=""]');
+    if(none){ none.checked=true; recalcManaged(slug); }
+  };
+  recalcManaged(slug);
+}
+
 function openModal(slug){
   const p=PLANS[slug]; if(!p) return;
   MSLUG=slug;
   const per=p.periods;
   const order=[1,3,6,12].filter(m=>per[m]);
   let h='<div class="top">';
-  h+='<div><h2><a href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.name)+'</a></h2>';
-  h+='<div class="specs"><b>'+num(p.specs.cpu_count)+'</b> vCPU · <b>'+num(p.specs.ram_gb)+
-     '</b> GB RAM · <b>'+num(p.specs.storage_primary_gb)+'</b> GB '+(p.specs.storage_primary_type||'')+
-     ' · <b>'+num(p.specs.port_speed_mbps)+'</b> Mbps</div></div>';
+  h+='<div><h2><a href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.name)+'</a>'+modelChip(p)+'</h2>';
+  h+='<div class="specs">'+specsLine(p)+'</div></div>';
   h+='<button class="iconbtn" onclick="closeModal()" aria-label="Close">Close ✕</button></div>';
 
   h+='<h4>Billing</h4><table><tr><th class="l"></th>'+
@@ -1023,8 +1423,14 @@ function openModal(slug){
   }
 
   const cfg=CFG[slug];
-  if(cfg && cfg.controls && cfg.controls.length){
+  const stor=isStorageFam(p.family);
+  if(stor){
+    h+=renderStorageCalc(p);
+  } else if(cfg && cfg.controls && cfg.controls.length){
     h+=renderConfigurator(cfg, per);
+    if(EXTRAS[slug]) h+=renderExtras(slug);
+  } else if(EXTRAS[slug]){
+    h+=renderExtras(slug);
   } else if(ADDONS[slug]){
     const ad=ADDONS[slug];
     const img=ad['Image']||[];
@@ -1060,9 +1466,15 @@ function openModal(slug){
   } else {
     h+='<h4>Add-ons</h4><div class="muted pp">Run the enrich step for add-on detail.</div>';
   }
+  if(managedEligible(p)) h+=renderManagedTrack(p);
   document.getElementById('sheet').innerHTML=h;
   modal.classList.add('open');
-  if(cfg && cfg.controls && cfg.controls.length) wireCfg(slug);
+  if(stor){ wireStorage(slug); }
+  else {
+    if(cfg && cfg.controls && cfg.controls.length) wireCfg(slug);
+    if(EXTRAS[slug]) wireExtras(slug);
+  }
+  if(managedEligible(p)) wireManagedTrack(slug);
 }
 
 // ── Wire toolbar ───────────────────────────────────────────────────────────
@@ -1110,9 +1522,11 @@ if(PRICES_INCLUDE_GST){
 // FX markup
 const fxMarkupEl=document.getElementById('fxMarkup');
 fxMarkupEl.value=((FX.markup||0)*100).toFixed(1);
+if(storedFxMarkup!==null && Number(storedFxMarkup)!==FX.markup)
+  lsSet('contabo_fx_markup',String(FX.markup));
 fxMarkupEl.oninput=e=>{
-  const v=Math.max(0,Math.min(15, Number(e.target.value)||0))/100;
-  FX.markup=v; lsSet('contabo_fx_markup', String(v));
+  const v=clampFxMarkup((Number(e.target.value)||0)/100);
+  FX.markup=v; e.target.value=(v*100).toFixed(1); lsSet('contabo_fx_markup', String(v));
   render(); renderCompare();
   if(modal.classList.contains('open') && MSLUG) openModal(MSLUG);
 };
