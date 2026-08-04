@@ -11,7 +11,8 @@
   },
   "scripts": {
     "scrape": "node scripts/contabo_scraper.js",
-    "cloak-fetch": "node scripts/cloak-fetch.mjs"
+    "cloak-fetch": "node scripts/cloak-fetch.mjs",
+    "test:managed": "node --test tests/managed_services_model.test.js"
   },
   "keywords": [
     "contabo",
@@ -20,7 +21,7 @@
     "scraper"
   ],
   "dependencies": {
-    "cloakbrowser": "^0.3.31",
+    "cloakbrowser": "^0.4.5",
     "playwright-core": "^1.60.0"
   },
   "devDependencies": {

@@ -16,6 +16,11 @@ services:
     image: ghcr.io/securiace-dev/contabo-pricing-scraper:latest
     container_name: contabo-pricing
     restart: unless-stopped
+    # proxy.env supplies SCRAPER_PROXY (residential/gateway proxy) so in-container
+    # `POST /api/v1/refresh` scrapes bypass Contabo's Cloudflare 403. Keep it out
+    # of `environment:` below — env_file is the ONLY place SCRAPER_PROXY is set, so
+    # a value in proxy.env is not clobbered by an unset host var. proxy.env is
+    # gitignored + chmod 600; never commit the credential. See deploy/README.md.
     env_file:
       - path: ./proxy.env
         required: false
@@ -28,6 +33,10 @@ services:
       CONTABO_AUTH_TOKEN_FILE: /run/secrets/contabo_auth_token
       CONTABO_CORS_ORIGIN: ${CONTABO_CORS_ORIGIN:-}
       RUST_LOG: ${RUST_LOG:-info}
+      # Default fetch layer is the in-process HTTP client (`reqwest` flag value),
+      # now backed by wreq + wreq-util (BoringSSL, Chrome emulation). Through
+      # SCRAPER_PROXY this clears Cloudflare with no headless browser; CloakBrowser
+      # (`auto`/`cloak`) is only a fallback. Do NOT set SCRAPER_PROXY here.
       FETCH_MODE: ${FETCH_MODE:-reqwest}
       CLOAK_SCRIPT: /app/scripts/cloak-fetch.mjs
     secrets:

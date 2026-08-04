@@ -61,7 +61,8 @@ let browser;
 try {
   const launchOpts = {
     headless: true,
-    humanize: false,  // not needed for SSR pages; saves time
+    humanize: true,   // Contabo is behind a Cloudflare managed challenge;
+                      // humanization materially improves the auto-solve rate.
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -88,7 +89,21 @@ try {
     const slug = slugFromUrl(url);
     const page = await browser.newPage();
     try {
-      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+      // Contabo sits behind a Cloudflare *managed challenge* (cf-mitigated:
+      // challenge). The challenge interstitial loads first and auto-solves via
+      // JS after a few seconds, then the real SSR page (carrying the __SAPPER__
+      // payload) renders. Grabbing content at domcontentloaded captures the
+      // challenge HTML instead — so explicitly wait for the payload to appear.
+      try {
+        await page.waitForFunction(
+          () => document.documentElement.outerHTML.includes('__SAPPER__'),
+          { timeout: 45_000, polling: 1000 },
+        );
+      } catch {
+        // Timed out waiting for the challenge to clear — fall through; the
+        // check below emits the WARN and the Rust side records a precise gap.
+      }
       const html = await page.content();
       // Warn if Sapper payload is absent — Rust will surface a proper gap error.
       if (!html.includes('__SAPPER__')) {

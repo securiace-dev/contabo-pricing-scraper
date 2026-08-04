@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "gap": "fetch_failed",
+    "title": "",
+    "count": 6,
+    "plans": [
+      "cloud-vps-50",
+      "cloud-vps-10",
+      "cloud-vps-30",
+      "cloud-vps-60",
+      "cloud-vps-40",
+      "cloud-vps-20"
+    ]
+  }
+]

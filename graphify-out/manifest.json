@@ -1,7 +1,7 @@
 {
   "tests/api_smoke.rs": {
-    "mtime": 1781854944.570713,
-    "ast_hash": "ae719d2cfdef651ae4609a7d4c3a4079",
+    "mtime": 1782887579.2967994,
+    "ast_hash": "7cf659701612ecbd82b8365ac63cf432",
     "semantic_hash": ""
   },
   "tests/common/mod.rs": {
@@ -630,13 +630,13 @@
     "semantic_hash": ""
   },
   "src/main.rs": {
-    "mtime": 1781854944.5705569,
-    "ast_hash": "260b750739b79f2dbbfbf3a1f8ab66cb",
+    "mtime": 1785872375.6319072,
+    "ast_hash": "4d5d7d60a9cdc24e602360062952455a",
     "semantic_hash": ""
   },
   "src/api/handlers.rs": {
-    "mtime": 1781854944.5700839,
-    "ast_hash": "4f9ba962cc5250dadb7e96924ae98db0",
+    "mtime": 1782873803.4230292,
+    "ast_hash": "d877ef29de3a50de61a5843632155211",
     "semantic_hash": ""
   },
   "src/api/embed_assets.rs": {
@@ -665,8 +665,8 @@
     "semantic_hash": ""
   },
   "PRICES.md": {
-    "mtime": 1781931477.2565517,
-    "ast_hash": "d9f5280c1818526eaa73941c4bb3a9f5",
+    "mtime": 1782889209.9890697,
+    "ast_hash": "32dc66474342ed72c8aa83229e6ed9c7",
     "semantic_hash": ""
   },
   "README.md": {
@@ -675,13 +675,13 @@
     "semantic_hash": ""
   },
   "SCHEMA_VERSION.md": {
-    "mtime": 1781854944.5602202,
-    "ast_hash": "15b91b73cee5e10bc7081f8006ac43ea",
+    "mtime": 1782889292.5951896,
+    "ast_hash": "08ca795bb7f3000ab7152f0edb285001",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1781906538.619058,
-    "ast_hash": "4cff26b6ae53d3d10ea21d088832ab91",
+    "mtime": 1781981701.9877727,
+    "ast_hash": "01b6270a9d65e66a5f26899a3daa0c7e",
     "semantic_hash": ""
   },
   "deploy/README.md": {
@@ -745,18 +745,18 @@
     "semantic_hash": ""
   },
   ".mcp.json": {
-    "mtime": 1781854944.5592318,
-    "ast_hash": "dacd61806856442d4a7b85df674995b8",
+    "mtime": 1781985985.4512544,
+    "ast_hash": "8b1652500fff0148857902d80556d92a",
     "semantic_hash": ""
   },
   ".repowise/.augment-session.json": {
-    "mtime": 1781931169.7738616,
-    "ast_hash": "cd944fff8c4720401e29c45ad1a1690f",
+    "mtime": 1782893545.640879,
+    "ast_hash": "ae61c8172c4399f9a1406e2889c13d7c",
     "semantic_hash": ""
   },
   "data/plan_urls.json": {
-    "mtime": 1781854944.5631933,
-    "ast_hash": "7e8a5cc6641bdb8f69c9a9010288edb2",
+    "mtime": 1782889177.6651325,
+    "ast_hash": "e9d0f704e8a3ce231f3f95ea27490cfc",
     "semantic_hash": ""
   },
   "entities.json": {
@@ -765,8 +765,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1781854944.5682142,
-    "ast_hash": "dcf84b9769d3dbd6362b353f3a9ab26d",
+    "mtime": 1785872258.3107598,
+    "ast_hash": "69e56d0fd47bed90d69c60963cf50843",
     "semantic_hash": ""
   },
   "scripts/bump-version.sh": {
@@ -775,8 +775,8 @@
     "semantic_hash": ""
   },
   "scripts/cloak-fetch.mjs": {
-    "mtime": 1781854944.5687423,
-    "ast_hash": "c2efb1435c37544fec81acc8b55e8cc7",
+    "mtime": 1782873803.422832,
+    "ast_hash": "58dcd18b41d0a8bca3d17a2b16719239",
     "semantic_hash": ""
   },
   "scripts/deploy.sh": {
@@ -845,8 +845,8 @@
     "semantic_hash": ""
   },
   "deploy/docker-compose.yml": {
-    "mtime": 1781854944.565191,
-    "ast_hash": "889a2d9ba282eb53f95328d261c351c4",
+    "mtime": 1782887611.635439,
+    "ast_hash": "015daed1d9336cf0dc03bef582e0718a",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260604_063149_what_connects_catalog_cycles_mask_to_published_cyc.md": {
@@ -887,6 +887,56 @@
   "plans/README.md": {
     "mtime": 1781906472.35445,
     "ast_hash": "54515226f0222e3251d8200ba7206c28",
+    "semantic_hash": ""
+  },
+  ".repowise/jobs/f8c6e824-b3e3-41c4-ad91-2dc236f76247.json": {
+    "mtime": 1781985973.5741057,
+    "ast_hash": "d26b76cd53a8e30e877cb5dd6d4dbff9",
+    "semantic_hash": ""
+  },
+  ".repowise/knowledge-graph.json": {
+    "mtime": 1781993387.0467222,
+    "ast_hash": "d9dfab5f07a84b300f317a5fcc47f3a3",
+    "semantic_hash": ""
+  },
+  ".repowise/lancedb/__manifest/_versions/latest_version_hint.json": {
+    "mtime": 1781980203.086552,
+    "ast_hash": "77efb8e3fa276d4674932392a66555e4",
+    "semantic_hash": ""
+  },
+  ".repowise/lancedb/wiki_pages.lance/_versions/latest_version_hint.json": {
+    "mtime": 1781993376.2717946,
+    "ast_hash": "3d64017abccf0cf81777b88961690557",
+    "semantic_hash": ""
+  },
+  ".repowise/mcp.json": {
+    "mtime": 1781985985.4505372,
+    "ast_hash": "d7a8f9687247c4c3ea49942aa32b5573",
+    "semantic_hash": ""
+  },
+  ".repowise/state.json": {
+    "mtime": 1781993387.7366736,
+    "ast_hash": "9fc942ce2afda5a33937ef07074d8985",
+    "semantic_hash": ""
+  },
+  "data/managed_services_catalog.json": {
+    "mtime": 1785872041.1237168,
+    "ast_hash": "a96dc326483feb4ae4a16a76dc4534ba",
+    "semantic_hash": ""
+  },
+  "tests/managed_services_model.test.js": {
+    "mtime": 1785872041.1240785,
+    "ast_hash": "b083e814a12ed780077e3429706807f6",
+    "semantic_hash": ""
+  },
+  ".repowise/config.yaml": {
+    "mtime": 1781985985.728067,
+    "ast_hash": "e85548c66f89e1cb68df1865cd34ea56",
+    "semantic_hash": ""
+  },
+  "plans/003-new-categories-and-scraper-resilience.md": {
+    "mtime": 1782889325.9319236,
+    "ast_hash": "cc3d4f46131ca5d6933e7cfbf4cd2fe8",
     "semantic_hash": ""
   }
 }

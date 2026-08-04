@@ -21,6 +21,16 @@
 FROM rust:1-bookworm AS rust-builder
 WORKDIR /src
 
+# BoringSSL build deps for `wreq` + `wreq-util` (Chrome emulation fetch layer).
+# boring-sys compiles BoringSSL from source: it needs cmake, a C/C++ toolchain,
+# perl (BoringSSL's asm generators), and libclang for bindgen. pkg-config, perl
+# and build-essential ship in the rust:bookworm base (buildpack-deps), but cmake
+# and clang/libclang do NOT — install them explicitly or the wreq build fails
+# with "could not find cmake" / "unable to find libclang".
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      cmake perl clang libclang-dev pkg-config build-essential \
+ && rm -rf /var/lib/apt/lists/*
+
 # Cache deps independently of source for fast rebuilds
 COPY Cargo.toml Cargo.lock ./
 RUN mkdir -p src/api && echo "fn main() {}" > src/main.rs \

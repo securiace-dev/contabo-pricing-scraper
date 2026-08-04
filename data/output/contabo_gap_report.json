@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "plan_sku": "cloud-vps-50",
+    "gap": "fetch_failed",
+    "error": "HTTP 301 Moved Permanently"
+  },
+  {
+    "plan_sku": "cloud-vps-10",
+    "gap": "fetch_failed",
+    "error": "HTTP 301 Moved Permanently"
+  },
+  {
+    "plan_sku": "cloud-vps-30",
+    "gap": "fetch_failed",
+    "error": "HTTP 301 Moved Permanently"
+  },
+  {
+    "plan_sku": "cloud-vps-60",
+    "gap": "fetch_failed",
+    "error": "HTTP 301 Moved Permanently"
+  },
+  {
+    "plan_sku": "cloud-vps-40",
+    "gap": "fetch_failed",
+    "error": "HTTP 301 Moved Permanently"
+  },
+  {
+    "plan_sku": "cloud-vps-20",
+    "gap": "fetch_failed",
+    "error": "HTTP 301 Moved Permanently"
+  }
+]

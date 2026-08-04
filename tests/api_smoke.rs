@@ -282,7 +282,14 @@ async fn quote_endpoint_with_gst_and_inr_fx() {
     assert_eq!(res.status(), 200);
     let json: serde_json::Value = res.json().await.unwrap();
 
-    let expected = 3.60_f64 * 1.18 * 112.317 * 1.035;
+    // Derive the expected figure from the SAME dataset row the endpoint priced
+    // off (its returned `base_monthly_eur`) instead of hard-coding a EUR base.
+    // This keeps the test green across live price changes in data/output while
+    // still locking down the pricing math: base × (1 + GST) × fx_rate × (1 + markup).
+    let base = json["base_monthly_eur"]
+        .as_f64()
+        .expect("base_monthly_eur missing");
+    let expected = base * 1.18 * 112.317 * 1.035;
     let got = json["final_monthly"]
         .as_f64()
         .expect("final_monthly missing");
@@ -334,7 +341,12 @@ async fn quote_endpoint_without_gst() {
     assert_eq!(res.status(), 200);
     let json: serde_json::Value = res.json().await.unwrap();
 
-    let expected = 3.60_f64 * 112.317 * 1.035; // no GST
+    // Derive from the endpoint's own `base_monthly_eur` (the live dataset row)
+    // rather than a hard-coded EUR base — no GST leg this time.
+    let base = json["base_monthly_eur"]
+        .as_f64()
+        .expect("base_monthly_eur missing");
+    let expected = base * 112.317 * 1.035; // no GST
     let got = json["final_monthly"]
         .as_f64()
         .expect("final_monthly missing");

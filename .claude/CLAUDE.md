@@ -11,7 +11,7 @@
 > (documentation, ownership, history, decisions). **Always verify against
 > actual source files before making changes** — the index may be stale.
 
-Last indexed: 2026-06-20 (commit 9fa3627). Confidence: 100%.
+Last indexed: 2026-06-20 (commit fdb714f). Confidence: 100%.
 ### Key Modules
 | Module | Purpose |
 |--------|---------|
@@ -52,12 +52,12 @@ Last indexed: 2026-06-20 (commit 9fa3627). Confidence: 100%.
 | `data/output/contabo_pricing_dataset.json` | 100.0th %ile | 92 | github-actions[bot] |
 | `data/output/contabo_configs.json` | 99.5th %ile | 92 | github-actions[bot] |
 | `data/output/contabo_base_plans.json` | 99.0th %ile | 92 | github-actions[bot] |
-| `data/output/contabo_quick_reference.json` | 98.5th %ile | 92 | github-actions[bot] |
-| `data/output/contabo_base_plans.csv` | 98.0th %ile | 92 | Sri Nithya Kritananda |
+| `data/output/contabo_quick_reference.json` | 98.6th %ile | 92 | github-actions[bot] |
+| `data/output/contabo_base_plans.csv` | 98.1th %ile | 92 | Sri Nithya Kritananda |
 
 ## Code health
-Hotspot health: 5.5/10 (stable) ·
-Average: 9.17/10 ·
+Hotspot health: 5.45/10 (stable) ·
+Average: 9.18/10 ·
 Worst: 2.0/10 (`src/main.rs`)
 
 ### Critical biomarkers

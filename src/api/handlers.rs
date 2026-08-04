@@ -219,7 +219,15 @@ pub async fn quote(
     let (final_monthly, fx_rate) = match req.currency.as_str() {
         "EUR" => (after_gst, None),
         "INR" => {
-            let rate = req.fx_rate.unwrap_or(0.0);
+            // Guard: a missing/≤0 fx_rate previously yielded rate=0 → a valid-
+            // looking quote priced at ₹0. Reject instead of mis-pricing.
+            let rate = match req.fx_rate {
+                Some(r) if r > 0.0 => r,
+                _ => {
+                    tracing::warn!("INR quote requested without a positive fx_rate");
+                    return Err(StatusCode::BAD_REQUEST);
+                }
+            };
             let with_markup = rate * (1.0 + req.fx_markup);
             breakdown.push(format!(
                 "× EUR→INR {:.4} ({}% markup)",
@@ -229,8 +237,9 @@ pub async fn quote(
             (after_gst * with_markup, Some(rate))
         }
         other => {
-            tracing::warn!("unknown currency: {other}");
-            (after_gst, None)
+            // Don't silently return EUR pricing tagged as another currency.
+            tracing::warn!("unsupported currency requested: {other}");
+            return Err(StatusCode::BAD_REQUEST);
         }
     };
 

@@ -14,7 +14,7 @@ use tokio::sync::{Mutex, Semaphore};
 use tokio::time::{sleep, Duration};
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-pub const SCHEMA_VERSION: &str = "1.1";
+pub const SCHEMA_VERSION: &str = "1.2";
 
 // Exit codes
 const EXIT_OK: i32 = 0;
@@ -178,7 +178,23 @@ struct PlanResult {
 // ─── CLI ──────────────────────────────────────────────────────────────────────
 
 fn slug_from_url(url: &str) -> &str {
-    url.trim_end_matches('/').rsplit('/').next().unwrap_or("")
+    base_url(url).trim_end_matches('/').rsplit('/').next().unwrap_or("")
+}
+
+/// URL with any `#slug` targeting fragment stripped — used for the actual HTTP
+/// fetch and the emitted product_url.
+fn base_url(url: &str) -> &str {
+    url.split('#').next().unwrap_or(url)
+}
+
+/// The product slug a URL targets. Normally the last path segment, but a
+/// `#slug` fragment overrides it — for products (e.g. Object Storage regions)
+/// that share one catalog page and have no individual product URL.
+fn target_slug_from_url(url: &str) -> &str {
+    match url.split_once('#') {
+        Some((_, frag)) if !frag.is_empty() => frag,
+        _ => slug_from_url(url),
+    }
 }
 
 // CLI parsing — clap derive-based. The old hand-rolled parse_args has been
@@ -282,47 +298,90 @@ impl ScrapeArgs {
 
 // ─── HTTP ─────────────────────────────────────────────────────────────────────
 
-async fn fetch_html(client: &reqwest::Client, url: &str) -> Result<String, String> {
-    let res = client
-        .get(url)
-        .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
-        .header("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
-        .header("accept-language", "en-US,en;q=0.9")
-        .header("accept-encoding", "gzip, deflate, br")
-        .header("upgrade-insecure-requests", "1")
-        .header("sec-fetch-dest", "document")
-        .header("sec-fetch-mode", "navigate")
-        .header("sec-fetch-site", "none")
-        .header("sec-fetch-user", "?1")
-        .header("cache-control", "max-age=0")
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
+/// A classified fetch failure. `retryable` drives whether `fetch_with_retry`
+/// should burn its budget on this URL; `retry_after_ms` honours a server's
+/// `Retry-After` hint (429/503) over the default exponential backoff.
+struct FetchErr {
+    msg: String,
+    retryable: bool,
+    retry_after_ms: Option<u64>,
+}
 
-    if !res.status().is_success() {
-        return Err(format!("HTTP {}", res.status()));
+async fn fetch_html(client: &wreq::Client, url: &str) -> Result<String, FetchErr> {
+    // The wreq client is built with a full Chrome emulation profile (see
+    // run_scrape), so it emits an authentic UA + sec-ch-ua + accept-* header
+    // set and a matching TLS/HTTP2 fingerprint. Do NOT hand-set headers here —
+    // that would desync from the emulated fingerprint and re-trip the WAF.
+    let res = match client.get(base_url(url)).send().await {
+        Ok(r) => r,
+        // Transport-level failure (timeout, connection reset, DNS) — transient.
+        Err(e) => {
+            return Err(FetchErr { msg: e.to_string(), retryable: true, retry_after_ms: None })
+        }
+    };
+
+    let status = res.status();
+    if !status.is_success() {
+        let code = status.as_u16();
+        // Retry only rate-limits (429) and transient edge/server errors (5xx).
+        // A 403/404 from Cloudflare will not change on retry with the same
+        // client, so fail fast instead of spending the whole backoff budget.
+        let retryable = code == 429 || (500..=599).contains(&code);
+        let retry_after_ms = res
+            .headers()
+            .get("retry-after")
+            .and_then(|v| v.to_str().ok())
+            .and_then(|s| s.trim().parse::<u64>().ok())
+            .map(|secs| secs.saturating_mul(1000));
+        return Err(FetchErr { msg: format!("HTTP {status}"), retryable, retry_after_ms });
     }
-    res.text().await.map_err(|e| e.to_string())
+
+    let body = res
+        .text()
+        .await
+        .map_err(|e| FetchErr { msg: e.to_string(), retryable: true, retry_after_ms: None })?;
+
+    // Cloudflare soft-blocks / "AI Labyrinth" can return 200 OK with decoy HTML
+    // that lacks the SSR payload. Warn (don't fail) so process_plan still emits
+    // a precise gap, but the anomaly is visible in the logs.
+    if !body.contains("__SAPPER__") {
+        tracing::warn!(url = %url, "fetched 200 but no __SAPPER__ payload (possible soft-block/decoy)");
+    }
+    Ok(body)
 }
 
 async fn fetch_with_retry(
-    client: &reqwest::Client,
+    client: &wreq::Client,
     url: &str,
     retries: u32,
+    // When a rotating proxy is configured, a 403 is worth retrying: each attempt
+    // egresses from a fresh IP, and Contabo's Cloudflare block is IP-scored, so a
+    // retry can land on an unchallenged IP. Without a proxy a 403 is terminal.
+    retry_forbidden: bool,
 ) -> Result<String, String> {
     let mut last_error = String::new();
     for attempt in 0..=retries {
         match fetch_html(client, url).await {
             Ok(html) => return Ok(html),
             Err(e) => {
-                last_error = e.clone();
+                last_error = e.msg.clone();
+                let retryable = e.retryable || (retry_forbidden && e.msg.contains("403"));
+                // Fail fast on genuinely non-retryable errors (e.g. 404): retrying
+                // with an identical client only wastes the backoff budget.
+                if !retryable {
+                    tracing::warn!(url = %url, error = %e.msg, "non-retryable fetch error; not retrying");
+                    return Err(e.msg);
+                }
                 if attempt < retries {
-                    let delay_ms = (1000u64 * 2u64.pow(attempt)).min(8000);
+                    let backoff = (1000u64 * 2u64.pow(attempt)).min(8000);
+                    // Honour Retry-After when present (capped so a hostile value
+                    // can't stall the whole run), else exponential backoff.
+                    let delay_ms = e.retry_after_ms.map(|r| r.min(30_000)).unwrap_or(backoff);
                     tracing::warn!(
                         attempt = attempt + 1,
                         retries,
                         url = %url,
-                        error = %e,
+                        error = %e.msg,
                         delay_ms,
                         "retry"
                     );
@@ -440,7 +499,63 @@ fn family_from_type(t: &str) -> &'static str {
         "vps" => "Cloud VPS",
         "storage-vps" => "Storage VPS",
         "vds" => "Cloud VDS",
+        "ds" => "Dedicated Server",
+        "object-storage" => "Object Storage",
         _ => "Unknown",
+    }
+}
+
+/// How a family is billed, so consumers (the WHMCS addon) branch instead of
+/// assuming a fixed recurring price. `fixed` = recurring only; `fixed_plus_setup`
+/// = recurring + a one-off setup (dedicated); `metered_capacity` = committed
+/// capacity priced per unit (object storage).
+fn pricing_model_for(family: &str) -> &'static str {
+    match family {
+        "Object Storage" => "metered_capacity",
+        "Dedicated Server" => "fixed_plus_setup",
+        _ => "fixed",
+    }
+}
+
+/// Coarse category for a Dedicated add-on, derived from its title. Mirrors the
+/// WHMCS addon's `Add-on` category vocabulary (Control Panel / Security /
+/// Storage / Networking / Management / Misc).
+fn dedicated_addon_category(title: &str) -> &'static str {
+    let t = title.to_lowercase();
+    if t.contains("cpanel") || t.contains("plesk") || t.contains("directadmin")
+        || t.contains("webmin") || t.contains("ispconfig")
+    {
+        "Control Panel"
+    } else if t.contains("ecc ram") || t.contains("ddr") || t.ends_with(" ram") {
+        "RAM"
+    } else if t.contains("nvme") || t.contains("ssd") || t.contains("hdd")
+        || t.contains("raid") || t.contains("ftp") || t.contains("storage")
+        || t.contains("backup")
+    {
+        "Storage"
+    } else if t.contains("geforce") || t.contains("nvidia") || t.contains("tesla")
+        || t.contains("gpu")
+    {
+        "GPU"
+    } else if t.contains("ssl") || t.contains("certificate") || t.contains("firewall")
+        || t.contains("pfsense")
+    {
+        "Security"
+    } else if t.contains("out + unlimited in") || t.contains("traffic")
+        || t.contains("ip adress") || t.contains("ip address") || t.contains("gbit")
+        || t.contains(" port") || t.contains("network")
+    {
+        "Networking"
+    } else if t.contains("ipmi") || t.contains("ilo") || t.contains("monitor")
+        || t.contains("managed") || t.contains("setup") || t.contains("fast-track")
+    {
+        "Management"
+    } else if t.contains("docker") || t.contains("lamp") || t.contains("proxmox")
+        || t.contains("node") || t.ends_with("server")
+    {
+        "Software"
+    } else {
+        "Misc"
     }
 }
 
@@ -476,7 +591,12 @@ fn json_num(v: f64) -> Value {
 fn parse_cpu_count(s: &str) -> Option<u32> {
     static RE: Lazy<Regex> =
         Lazy::new(|| Regex::new(r"(?i)^(\d+)\s+(?:vCPU\s+|Physical\s+)?Cores?").unwrap());
-    RE.captures(s)?.get(1)?.as_str().parse().ok()
+    if let Some(caps) = RE.captures(s) {
+        return caps.get(1)?.as_str().parse().ok();
+    }
+    // Dedicated CPU spec, e.g. "32 x 3.55 GHz (4.20 max)" → 32 cores.
+    static RE_X: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)^(\d+)\s*x\s").unwrap());
+    RE_X.captures(s)?.get(1)?.as_str().parse().ok()
 }
 
 fn parse_ram_gb(s: &str) -> Option<Value> {
@@ -501,6 +621,15 @@ fn parse_port_speed_mbps(s: &str) -> Option<u32> {
 }
 
 fn parse_storage_gb(s: &str) -> Option<u32> {
+    // Dedicated multi-drive form, e.g. "2 x 1 TB NVMe" → 2 × 1000 = 2000 GB total.
+    static RE_X: Lazy<Regex> =
+        Lazy::new(|| Regex::new(r"(?i)^(\d+)\s*x\s*(\d+(?:\.\d+)?)\s*(GB|TB)").unwrap());
+    if let Some(caps) = RE_X.captures(s) {
+        let count: f64 = caps[1].parse().ok()?;
+        let size: f64 = caps[2].parse().ok()?;
+        let gb = if caps[3].eq_ignore_ascii_case("TB") { size * 1000.0 } else { size };
+        return Some((count * gb).round() as u32);
+    }
     static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)^(\d+(?:\.\d+)?)\s*(GB|TB)").unwrap());
     let caps = RE.captures(s)?;
     let n: f64 = caps[1].parse().ok()?;
@@ -696,6 +825,28 @@ fn classify_addon(
             is_default: false,
         };
 
+    // Dedicated servers (type "ds"): options are a flat catalog of independent
+    // paid add-ons, NOT the VPS configurator dimensions. OS images stay under
+    // "Image" (single choice); everything else becomes a Yes/No "Add-on" with a
+    // coarse category. This matches the WHMCS addon's Add-on model.
+    if product_type == "ds" {
+        static RE_OS: Lazy<Regex> = Lazy::new(|| {
+            Regex::new(r"(?i)^(Ubuntu|Debian|AlmaLinux|Rocky Linux|Arch Linux|FreeBSD|Fedora|CentOS|openSUSE|Gentoo)").unwrap()
+        });
+        let tl = title.to_lowercase();
+        if tl.starts_with("windows server") || RE_OS.is_match(title) || tl.contains("custom image") {
+            return ClassifyResult::Include(make("Image", "OS", title.to_string(), None));
+        }
+        // Datacenter region is a real (mutually-exclusive) choice, not a toggle.
+        if let Some(ri) = classify_region(title) {
+            let label = ri.country.clone();
+            let cat = ri.region_group;
+            return ClassifyResult::Include(make("Region", cat, label, Some(ri)));
+        }
+        let cat = dedicated_addon_category(title);
+        return ClassifyResult::Include(make("Add-on", cat, title.to_string(), None));
+    }
+
     // Region
     if let Some(ri) = classify_region(title) {
         let label = ri.country.clone();
@@ -840,6 +991,14 @@ fn inject_defaults(
     html: &str,
     classified: &mut Vec<OptionItem>,
 ) {
+    // Default injection is VPS/VDS-configurator-specific (Region, Storage Type,
+    // Networking, Data Protection). Dedicated and Object Storage don't have that
+    // configurator, so injecting those defaults would fabricate options they
+    // don't offer. Their real options come straight from the payload.
+    if product_type == "ds" || product_type == "object-storage" {
+        return;
+    }
+
     // Build existing set up front (don't hold borrow while mutating)
     let existing: HashSet<String> = classified
         .iter()
@@ -967,16 +1126,47 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
         }
     };
 
-    let slug = slug_from_url(url);
-    let products = sapper.get("preloaded")?.get(0)?.get("products")?;
+    let slug = target_slug_from_url(url);
+    // Explicit gap on a missing payload shape / unmatched product. The previous
+    // `?`-chain returned None silently, so a Contabo markup change dropped a plan
+    // with zero trace in the gap report (the Node scraper records these — parity).
+    let products = match sapper
+        .get("preloaded")
+        .and_then(|p| p.get(0))
+        .and_then(|p| p.get("products"))
+    {
+        Some(p) => p,
+        None => {
+            gap_report.push(GapEntry {
+                plan_sku: Some(slug.to_string()),
+                gap: "products_missing".into(),
+                title: None,
+                error: Some("preloaded[0].products absent in __SAPPER__ payload".into()),
+            });
+            return None;
+        }
+    };
 
-    let product = products.as_object()?.values().find(|p| {
-        p.get("slug").and_then(Value::as_str) == Some(slug)
-            || p.get("title")
-                .and_then(Value::as_str)
-                .map(|t| t == title_from_slug(slug))
-                .unwrap_or(false)
-    })?;
+    let product = match products.as_object().and_then(|obj| {
+        obj.values().find(|p| {
+            p.get("slug").and_then(Value::as_str) == Some(slug)
+                || p.get("title")
+                    .and_then(Value::as_str)
+                    .map(|t| t == title_from_slug(slug))
+                    .unwrap_or(false)
+        })
+    }) {
+        Some(p) => p,
+        None => {
+            gap_report.push(GapEntry {
+                plan_sku: Some(slug.to_string()),
+                gap: "product_not_found".into(),
+                title: None,
+                error: Some(format!("no product matching slug '{slug}' in __SAPPER__ payload")),
+            });
+            return None;
+        }
+    };
 
     let product_type = product.get("type").and_then(Value::as_str).unwrap_or("");
     let family = family_from_type(product_type);
@@ -1259,21 +1449,43 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     } else {
         "SSD"
     };
-    let specs_parsed = json!({
-        "cpu_count":            parse_cpu_count(cpu_str),
-        "ram_gb":               parse_ram_gb(ram_str),
-        "port_speed_mbps":      parse_port_speed_mbps(port_str),
-        "storage_primary_gb":   parse_storage_gb(storage_title.unwrap_or("")),
-        "storage_primary_type": storage_primary_type,
-    });
+    let setup_fee_eur = periods
+        .first()
+        .and_then(|p| p.get("setup_fee").and_then(Value::as_f64))
+        .unwrap_or(0.0);
+    let out_of_stock = product.get("outOfStock").and_then(Value::as_bool).unwrap_or(false);
+    let unavailable = product.get("unavailable").and_then(Value::as_bool).unwrap_or(false);
+    let specs_parsed = if product_type == "object-storage" {
+        // Object Storage has no compute specs. The base price is the 250 GB
+        // (0.25 TB) committed tier; the per-TB rate is base × 4. Egress is free
+        // and Contabo exposes no traffic metering (see plan 003 §2a).
+        json!({
+            "capacity_tb":      0.25,
+            "price_per_tb_eur": json_num(round2(base_monthly * 4.0)),
+            "region":           product_title,
+            "included_traffic": "free_egress",
+            "setup_fee_eur":    json_num(setup_fee_eur),
+        })
+    } else {
+        json!({
+            "cpu_count":            parse_cpu_count(cpu_str),
+            "ram_gb":               parse_ram_gb(ram_str),
+            "port_speed_mbps":      parse_port_speed_mbps(port_str),
+            "storage_primary_gb":   parse_storage_gb(storage_title.unwrap_or("")),
+            "storage_primary_type": storage_primary_type,
+            "setup_fee_eur":        json_num(setup_fee_eur),
+        })
+    };
 
     let base_plan = json!({
         "family":             family,
+        "pricing_model":      pricing_model_for(family),
+        "availability":       json!({ "out_of_stock": out_of_stock, "unavailable": unavailable }),
         "plan_rank":          plan_rank,
         "plan_family_rank":   plan_family_rank,
         "product_name":       product_title,
         "product_slug":       product_slug,
-        "product_url":        url,
+        "product_url":        base_url(url),
         "fetched_at":         fetched_at,
         "cpu":                cpu_str,
         "ram":                ram_str,
@@ -1316,7 +1528,7 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
         base_plan,
         final_options,
         plan_config,
-        url: url.to_string(),
+        url: base_url(url).to_string(),
     })
 }
 
@@ -1753,17 +1965,17 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
 
     // ─── reqwest pass (skipped entirely in Cloak-only mode) ──────────────────
     let mut results: Vec<Option<PlanResult>> = if opts.fetch_mode != FetchMode::Cloak {
-        // Use the same browser-like User-Agent as the Node scraper. Contabo's WAF
-        // returns 403 to anything that looks like a default library client
-        // (e.g. reqwest's `reqwest/0.12` default) when the request comes from a
-        // data-centre IP range.
-        const UA: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
-        let mut http_builder = reqwest::Client::builder()
-            .timeout(Duration::from_secs(30))
-            .user_agent(UA);
+        // wreq emulates a full Chrome fingerprint (TLS ClientHello, HTTP/2
+        // SETTINGS order, UA + sec-ch-ua headers). Contabo's Cloudflare edge
+        // 403s the default rustls fingerprint from data-centre IPs; the Chrome
+        // emulation clears that check without a headless browser. SCRAPER_PROXY,
+        // when set, additionally covers the IP-reputation dimension.
+        let mut http_builder = wreq::Client::builder()
+            .emulation(wreq_util::Emulation::Chrome137)
+            .timeout(Duration::from_secs(30));
         if let Some(p) = &opts.proxy {
             // opts.proxy is already scheme-normalized in into_opts().
-            match reqwest::Proxy::all(p) {
+            match wreq::Proxy::all(p) {
                 Ok(proxy) => { http_builder = http_builder.proxy(proxy); }
                 Err(e) => {
                     eprintln!("ERROR: invalid SCRAPER_PROXY URL '{p}': {e}");
@@ -1772,6 +1984,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             }
         }
         let client = Arc::new(http_builder.build().expect("failed to build HTTP client"));
+        let retry_forbidden = opts.proxy.is_some();
         let semaphore = Arc::new(Semaphore::new(opts.concurrency));
         let mut handles = Vec::new();
 
@@ -1789,12 +2002,12 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
                 let t0 = Instant::now();
                 tracing::info!(slug = %slug, "fetch");
 
-                let html = match fetch_with_retry(&client, &url, retries).await {
+                let html = match fetch_with_retry(&client, &url, retries, retry_forbidden).await {
                     Ok(h) => h,
                     Err(e) => {
                         tracing::error!(slug = %slug, error = %e, "fetch failed");
                         gap_report.lock().await.push(GapEntry {
-                            plan_sku: None,
+                            plan_sku: Some(slug.clone()),
                             gap: "fetch_failed".into(),
                             title: None,
                             error: Some(e),
@@ -1894,6 +2107,65 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         }
     }
 
+    // Plans freshly scraped this run (before any preservation merge below).
+    let fresh_count = base_plans.len();
+
+    // ── Preserve plans not freshly scraped (partial failure / subset run) ────
+    // Without this, a partial failure (e.g. 8/16 fetched, the rest 403'd) or a
+    // `--plans` subset run would drop every other plan from the dataset the
+    // WHMCS addon reads. Carry forward any plan present in the previous on-disk
+    // snapshot but absent this run so consumers keep last-known-good data.
+    // Total failure (0 fresh) skips this and hits the snapshot-preserve guard
+    // below, which leaves the existing files untouched.
+    let mut preserved_catalog_rows: Vec<Value> = vec![];
+    let mut preserved_count = 0usize;
+    if !opts.dry_run && fresh_count > 0 {
+        if let Some(prev) = fs::read_to_string(opts.output.join("contabo_pricing_dataset.json"))
+            .ok()
+            .and_then(|r| serde_json::from_str::<Value>(&r).ok())
+        {
+            let prev_configs: serde_json::Map<String, Value> =
+                fs::read_to_string(opts.output.join("contabo_configs.json"))
+                    .ok()
+                    .and_then(|r| serde_json::from_str::<Value>(&r).ok())
+                    .and_then(|v| v.get("plans").and_then(|p| p.as_object()).cloned())
+                    .unwrap_or_default();
+            let prev_catalog = prev.get("option_catalog").and_then(|c| c.as_array());
+            if let Some(prev_plans) = prev.get("plans").and_then(|p| p.as_array()) {
+                for pplan in prev_plans {
+                    let pslug = pplan.get("product_slug").and_then(Value::as_str).unwrap_or("");
+                    if pslug.is_empty() || seen_slugs.contains(pslug) {
+                        continue;
+                    }
+                    seen_slugs.insert(pslug.to_string());
+                    // Carry this plan's per-URL config forward too.
+                    if let Some(purl) = pplan.get("product_url").and_then(Value::as_str) {
+                        if let Some(cfg) = prev_configs.get(purl) {
+                            plan_configs.insert(purl.to_string(), cfg.clone());
+                        }
+                    }
+                    // Carry its (already-enriched) option-catalog rows forward.
+                    if let Some(cat) = prev_catalog {
+                        for row in cat {
+                            if row.get("plan_sku").and_then(Value::as_str) == Some(pslug) {
+                                preserved_catalog_rows.push(row.clone());
+                            }
+                        }
+                    }
+                    base_plans.push(pplan.clone());
+                    preserved_count += 1;
+                }
+            }
+        }
+        if preserved_count > 0 {
+            tracing::warn!(
+                fresh = fresh_count,
+                preserved = preserved_count,
+                "partial scrape: carried {preserved_count} plan(s) forward from previous snapshot"
+            );
+        }
+    }
+
     let gap_report = Arc::try_unwrap(gap_report).unwrap().into_inner();
     let gap_summary_json = gap_summary(&gap_report);
 
@@ -1913,7 +2185,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             }
         }
     }
-    let enriched_catalog: Vec<Value> = option_catalog
+    let mut enriched_catalog: Vec<Value> = option_catalog
         .iter()
         .map(|item| {
             let mut v = item.to_json();
@@ -1926,6 +2198,10 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
             v
         })
         .collect();
+    // Append option-catalog rows carried forward for preserved plans (already
+    // enriched in the previous snapshot).
+    enriched_catalog.extend(preserved_catalog_rows);
+    let option_count = enriched_catalog.len();
 
     let dataset = json!({
         "scraper_version": VERSION,
@@ -1933,7 +2209,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         "generated_at":    generated_at,
         "source":          "Contabo configurator __SAPPER__ payload + SSR HTML defaults",
         "plan_count":      base_plans.len(),
-        "option_count":    option_catalog.len(),
+        "option_count":    option_count,
         "gap_count":       gap_report.len(),
         "plans":           base_plans,
         "option_catalog":  enriched_catalog,
@@ -1942,7 +2218,9 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
     });
 
     let elapsed = started.elapsed().as_secs_f64();
-    let failed = urls.len() - base_plans.len();
+    // Based on freshly-scraped plans, not the merged total (which may include
+    // carried-forward plans, or exceed urls.len() on a --plans subset run).
+    let failed = urls.len().saturating_sub(fresh_count);
 
     // Preserve the previous on-disk snapshot when every fetch failed. Without
     // this guard a single bad run (WAF block, transient network outage,

@@ -17,7 +17,31 @@ sections (Added / Renamed / Removed / Migration).
 
 ---
 
-## API 1.1 — current
+## API 1.2 — current
+
+Adds two new product families and per-family typing so the dataset is unified across
+Cloud VPS / VDS / Storage VPS **plus Dedicated Servers and Object Storage**.
+
+### Added
+- **New families** in `plans[].family`: `"Dedicated Server"` (Contabo `type:"ds"`) and
+  `"Object Storage"` (`type:"object-storage"`).
+- `plans[].pricing_model` — `"fixed"` (VPS/VDS/Storage), `"fixed_plus_setup"` (Dedicated),
+  `"metered_capacity"` (Object Storage). Consumers branch instead of assuming fixed recurring.
+- `plans[].availability` — `{ out_of_stock, unavailable }` (drives WHMCS Stock Control).
+- `specs_parsed.setup_fee_eur` — for all plans (0 where none).
+- **Dedicated** options: OS images → `Image`; the paid `addons` catalog → `Add-on` rows (Yes/No,
+  `category` ∈ Control Panel/RAM/Storage/GPU/Security/Networking/Management/Software/Misc);
+  datacenter choices → `Region`. `specs_parsed` now parses the "N x F GHz" / "N x SIZE" forms.
+- **Object Storage** `specs_parsed`: `{ capacity_tb: 0.25, price_per_tb_eur, region,
+  included_traffic: "free_egress", setup_fee_eur }` (base = 250 GB tier; per-TB = base × 4).
+
+### Migration
+None — additive. Consumers pinned to `1.x` stay stable. Object-Storage products are matched via a
+`#slug` URL fragment (they share one catalog page and have no per-product URL).
+
+---
+
+## API 1.1
 
 ### Added
 - `contabo_view_model.json` — flat row-per-period view with `options_summary` per dimension. Emitted natively by the Rust scraper; synthesized by `enrich_output.js` (STEP 7) when the Node scraper is used. Consumers should treat this as the canonical analytics surface.
