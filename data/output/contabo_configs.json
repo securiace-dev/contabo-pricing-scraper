@@ -1,14 +1,14 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.2",
-  "generated_at": "2026-08-05T08:46:54.326Z",
+  "generated_at": "2026-08-05T19:14:29.535Z",
   "plan_count": 16,
   "plans": {
     "https://contabo.com/en/vps/cloud-vps-10/": {
       "slug": "cloud-vps-10",
       "family": "Cloud VPS",
       "title": "Cloud VPS 10",
-      "fetched_at": "2026-08-05T08:46:48.985Z",
+      "fetched_at": "2026-08-05T19:14:25.649Z",
       "base_monthly_price": 5.5,
       "contract_periods": [
         {
@@ -243,15 +243,6 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "OS",
-            "option_label": "Debian 13",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-10",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
             "option_label": "FreeBSD 12.2",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -476,6 +467,19 @@
             "currency": "EUR",
             "dimension": "Region",
             "category": "America",
+            "option_label": "United States (Central)",
+            "region_group": "America",
+            "country": "United States (Central)",
+            "country_code": "US",
+            "subregion": "Central",
+            "monthly_price_delta": 1.05,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "cloud-vps-10",
+            "currency": "EUR",
+            "dimension": "Region",
+            "category": "America",
             "option_label": "United States (East)",
             "region_group": "America",
             "country": "United States (East)",
@@ -639,7 +643,7 @@
       "slug": "cloud-vps-20",
       "family": "Cloud VPS",
       "title": "Cloud VPS 20",
-      "fetched_at": "2026-08-05T08:46:48.496Z",
+      "fetched_at": "2026-08-05T19:14:24.847Z",
       "base_monthly_price": 7.5,
       "contract_periods": [
         {
@@ -1274,7 +1278,7 @@
       "slug": "cloud-vps-30",
       "family": "Cloud VPS",
       "title": "Cloud VPS 30",
-      "fetched_at": "2026-08-05T08:46:49.940Z",
+      "fetched_at": "2026-08-05T19:14:25.128Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -1918,7 +1922,7 @@
       "slug": "cloud-vps-40",
       "family": "Cloud VPS",
       "title": "Cloud VPS 40",
-      "fetched_at": "2026-08-05T08:46:49.610Z",
+      "fetched_at": "2026-08-05T19:14:25.180Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -2562,7 +2566,7 @@
       "slug": "cloud-vps-50",
       "family": "Cloud VPS",
       "title": "Cloud VPS 50",
-      "fetched_at": "2026-08-05T08:46:49.075Z",
+      "fetched_at": "2026-08-05T19:14:24.041Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -3206,7 +3210,7 @@
       "slug": "cloud-vps-60",
       "family": "Cloud VPS",
       "title": "Cloud VPS 60",
-      "fetched_at": "2026-08-05T08:46:52.025Z",
+      "fetched_at": "2026-08-05T19:14:26.559Z",
       "base_monthly_price": 49,
       "contract_periods": [
         {
@@ -3850,7 +3854,7 @@
       "slug": "storage-vps-10",
       "family": "Storage VPS",
       "title": "Storage VPS 10",
-      "fetched_at": "2026-08-05T08:46:49.666Z",
+      "fetched_at": "2026-08-05T19:14:27.068Z",
       "base_monthly_price": 5.5,
       "contract_periods": [
         {
@@ -4468,7 +4472,7 @@
       "slug": "storage-vps-20",
       "family": "Storage VPS",
       "title": "Storage VPS 20",
-      "fetched_at": "2026-08-05T08:46:48.195Z",
+      "fetched_at": "2026-08-05T19:14:27.102Z",
       "base_monthly_price": 7.5,
       "contract_periods": [
         {
@@ -5095,7 +5099,7 @@
       "slug": "storage-vps-30",
       "family": "Storage VPS",
       "title": "Storage VPS 30",
-      "fetched_at": "2026-08-05T08:46:53.075Z",
+      "fetched_at": "2026-08-05T19:14:24.820Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -5740,7 +5744,7 @@
       "slug": "storage-vps-40",
       "family": "Storage VPS",
       "title": "Storage VPS 40",
-      "fetched_at": "2026-08-05T08:46:54.310Z",
+      "fetched_at": "2026-08-05T19:14:23.733Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -6385,7 +6389,7 @@
       "slug": "storage-vps-50",
       "family": "Storage VPS",
       "title": "Storage VPS 50",
-      "fetched_at": "2026-08-05T08:46:51.427Z",
+      "fetched_at": "2026-08-05T19:14:29.134Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -7030,7 +7034,7 @@
       "slug": "vds-s",
       "family": "Cloud VDS",
       "title": "Cloud VDS S",
-      "fetched_at": "2026-08-05T08:46:52.852Z",
+      "fetched_at": "2026-08-05T19:14:27.818Z",
       "base_monthly_price": 39,
       "contract_periods": [
         {
@@ -7690,7 +7694,7 @@
       "slug": "vds-m",
       "family": "Cloud VDS",
       "title": "Cloud VDS M",
-      "fetched_at": "2026-08-05T08:46:53.611Z",
+      "fetched_at": "2026-08-05T19:14:27.771Z",
       "base_monthly_price": 49,
       "contract_periods": [
         {
@@ -8362,7 +8366,7 @@
       "slug": "vds-l",
       "family": "Cloud VDS",
       "title": "Cloud VDS L",
-      "fetched_at": "2026-08-05T08:46:52.518Z",
+      "fetched_at": "2026-08-05T19:14:29.052Z",
       "base_monthly_price": 69,
       "contract_periods": [
         {
@@ -9017,7 +9021,7 @@
       "slug": "vds-xl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XL",
-      "fetched_at": "2026-08-05T08:46:53.732Z",
+      "fetched_at": "2026-08-05T19:14:29.522Z",
       "base_monthly_price": 94,
       "contract_periods": [
         {
@@ -9686,7 +9690,7 @@
       "slug": "vds-xxl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XXL",
-      "fetched_at": "2026-08-05T08:46:53.209Z",
+      "fetched_at": "2026-08-05T19:14:28.575Z",
       "base_monthly_price": 139,
       "contract_periods": [
         {
@@ -10056,6 +10060,15 @@
             "currency": "EUR",
             "dimension": "Image",
             "category": "Panels",
+            "option_label": "Plesk Host Edition",
+            "monthly_price_delta": 36.5,
+            "setup_fee_delta": 0
+          },
+          {
+            "plan_sku": "vds-xxl",
+            "currency": "EUR",
+            "dimension": "Image",
+            "category": "Panels",
             "option_label": "Plesk Pro Edition",
             "monthly_price_delta": 19,
             "setup_fee_delta": 0
@@ -10221,18 +10234,6 @@
             "country_code": "US",
             "subregion": "West",
             "monthly_price_delta": 39,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xxl",
-            "currency": "EUR",
-            "dimension": "Region",
-            "category": "Asia",
-            "option_label": "India",
-            "region_group": "Asia",
-            "country": "India",
-            "country_code": "IN",
-            "monthly_price_delta": 73,
             "setup_fee_delta": 0
           },
           {
