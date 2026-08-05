@@ -1,7 +1,7 @@
 {
   "tests/api_smoke.rs": {
-    "mtime": 1785896182.2502563,
-    "ast_hash": "7e708048bf4a6aa4dadafc33edcf304b",
+    "mtime": 1785897380.8357246,
+    "ast_hash": "f61a9d475924dec67ed179e82ccad8db",
     "semantic_hash": ""
   },
   "tests/common/mod.rs": {
@@ -635,8 +635,8 @@
     "semantic_hash": ""
   },
   "src/api/handlers.rs": {
-    "mtime": 1785896182.2446263,
-    "ast_hash": "46d65f4b0f5697263361b5a4f47d372c",
+    "mtime": 1785897328.2465277,
+    "ast_hash": "55329d1e80b61a1b1e2058c9639ebba7",
     "semantic_hash": ""
   },
   "src/api/embed_assets.rs": {
@@ -765,8 +765,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1785872258.3107598,
-    "ast_hash": "69e56d0fd47bed90d69c60963cf50843",
+    "mtime": 1785896612.614665,
+    "ast_hash": "96e362c6244053debf8ec0cb5cf3ae7f",
     "semantic_hash": ""
   },
   "scripts/bump-version.sh": {
@@ -942,6 +942,11 @@
   "src/api/proposals.rs": {
     "mtime": 1785896309.7358227,
     "ast_hash": "e5c2c2e315fe15c96a2b5ec0a23b77c0",
+    "semantic_hash": ""
+  },
+  "tests/proposal_model.test.js": {
+    "mtime": 1785896654.9489915,
+    "ast_hash": "abad384ca54770a2c2bb7e938dc31a03",
     "semantic_hash": ""
   }
 }
