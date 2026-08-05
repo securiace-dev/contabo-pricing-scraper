@@ -58,6 +58,30 @@ fn client() -> reqwest::Client {
         .unwrap()
 }
 
+fn fixture_effective_monthly(
+    data_dir: &std::path::Path,
+    plan_slug: &str,
+    period_months: u64,
+) -> f64 {
+    let fixture_path = data_dir.join("contabo_view_model.json");
+    let raw = std::fs::read_to_string(&fixture_path)
+        .unwrap_or_else(|error| panic!("read {}: {error}", fixture_path.display()));
+    let fixture: serde_json::Value = serde_json::from_str(&raw)
+        .unwrap_or_else(|error| panic!("parse {}: {error}", fixture_path.display()));
+    fixture["rows"]
+        .as_array()
+        .expect("fixture rows must be an array")
+        .iter()
+        .find(|row| {
+            row["plan_slug"].as_str() == Some(plan_slug)
+                && row["period_months"].as_u64() == Some(period_months)
+        })
+        .and_then(|row| row["effective_monthly"].as_f64())
+        .unwrap_or_else(|| {
+            panic!("fixture missing effective_monthly for {plan_slug}/{period_months} months")
+        })
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 //  Open endpoints
 // ────────────────────────────────────────────────────────────────────────────
@@ -294,6 +318,7 @@ async fn quote_endpoint_with_gst_and_inr_fx() {
         return;
     }
     let h = common::spawn_server(None).await;
+    let fixture_monthly = fixture_effective_monthly(&h.data_dir, "cloud-vps-10", 12);
     let body = serde_json::json!({
         "plan_slug": "cloud-vps-10",
         "period_months": 12,
@@ -312,7 +337,14 @@ async fn quote_endpoint_with_gst_and_inr_fx() {
     assert_eq!(res.status(), 200);
     let json: serde_json::Value = res.json().await.unwrap();
 
-    let expected = 3.60_f64 * 1.18 * 112.317 * 1.035;
+    // Read the canonical serialized fixture independently of the quote response,
+    // then verify both API fixture binding and the full pricing formula. This
+    // remains stable when a refreshed fixture legitimately changes the plan price.
+    let configured = json["configured_monthly_eur"]
+        .as_f64()
+        .expect("configured_monthly_eur missing");
+    assert!((configured - fixture_monthly).abs() < f64::EPSILON);
+    let expected = fixture_monthly * 1.18 * 112.317 * 1.035;
     let got = json["final_monthly"]
         .as_f64()
         .expect("final_monthly missing");
@@ -346,6 +378,7 @@ async fn quote_endpoint_without_gst() {
         return;
     }
     let h = common::spawn_server(None).await;
+    let fixture_monthly = fixture_effective_monthly(&h.data_dir, "cloud-vps-10", 12);
     let body = serde_json::json!({
         "plan_slug": "cloud-vps-10",
         "period_months": 12,
@@ -364,7 +397,11 @@ async fn quote_endpoint_without_gst() {
     assert_eq!(res.status(), 200);
     let json: serde_json::Value = res.json().await.unwrap();
 
-    let expected = 3.60_f64 * 112.317 * 1.035; // no GST
+    let configured = json["configured_monthly_eur"]
+        .as_f64()
+        .expect("configured_monthly_eur missing");
+    assert!((configured - fixture_monthly).abs() < f64::EPSILON);
+    let expected = fixture_monthly * 112.317 * 1.035; // no GST
     let got = json["final_monthly"]
         .as_f64()
         .expect("final_monthly missing");
