@@ -6,7 +6,8 @@
  * Talks to a contabo-pricing API server (Rust binary, /api/v1/*) and never
  * scrapes Contabo directly.
  *
- * Targets WHMCS 8.x. Requires PHP >= 8.1. Composer autoload is wired via the
+ * Targets WHMCS 8.12/8.13 and 9.x. The source remains PHP 7.4-compatible;
+ * WHMCS 9 installations must run PHP 8.2+. Composer autoload is wired via the
  * accompanying composer.json (run `composer install --no-dev` once after
  * uploading the module folder to modules/addons/).
  *
@@ -102,6 +103,45 @@ function contabo_pricing_config(): array
                 'Default'      => '365',
                 'Description'  => 'Older sync log rows are pruned by the daily cron.',
             ],
+            'proposal_ai_enabled' => [
+                'FriendlyName' => 'Proposal AI narrative',
+                'Type'         => 'yesno',
+                'Default'      => 'no',
+                'Description'  => 'Optional bounded OpenAI-compatible narrative generation. Prices and visibility remain deterministic.',
+            ],
+            'proposal_ai_base_url' => [
+                'FriendlyName' => 'Proposal AI base URL',
+                'Type'         => 'text',
+                'Size'         => '60',
+                'Default'      => 'https://api.openai.com/v1',
+                'Description'  => 'OpenAI-compatible endpoint base. HTTPS is required except loopback development endpoints.',
+            ],
+            'proposal_ai_api_key' => [
+                'FriendlyName' => 'Proposal AI API key',
+                'Type'         => 'password',
+                'Size'         => '50',
+                'Description'  => 'Encrypted at rest using WHMCS encrypt(). Never included in proposals or logs.',
+            ],
+            'proposal_ai_model' => [
+                'FriendlyName' => 'Proposal AI model',
+                'Type'         => 'text',
+                'Size'         => '30',
+                'Default'      => 'gpt-5-mini',
+                'Description'  => 'Cost-efficient default; manually override with an approved OpenAI-compatible model/deployment.',
+            ],
+            'proposal_ai_request_style' => [
+                'FriendlyName' => 'Proposal AI request style',
+                'Type'         => 'dropdown',
+                'Options'      => 'auto,chat_completions,responses',
+                'Default'      => 'chat_completions',
+                'Description'  => 'Structured-output request contract supported by the configured provider.',
+            ],
+            'proposal_delivery_enabled' => [
+                'FriendlyName' => 'Enable proposal delivery',
+                'Type'         => 'yesno',
+                'Default'      => 'no',
+                'Description'  => 'Fail-closed switch for support-ticket and direct-email actions after compatibility review.',
+            ],
         ],
     ];
 }
@@ -189,6 +229,7 @@ function contabo_pricing_sidebar(array $vars): string
     // non-link separator label.
     $items = [
         'Dashboard'       => '',
+        'Proposal maker'  => '&action=proposals',
         'Profiles'        => '&action=profiles',
         'Mappings'        => '&action=mappings',
         'Sync history'    => '&action=sync-history',

@@ -59,7 +59,7 @@ class EmailTemplateSeeder
     }
 
     /**
-     * Definitions of the 4 templates this engine ships.
+     * Definitions of the templates this engine ships.
      *
      * @return list<array{name:string,type:string,subject:string,message:string}>
      */
@@ -89,6 +89,12 @@ class EmailTemplateSeeder
                 'type'    => 'general',
                 'subject' => 'Force-approval required: {$service_name}',
                 'message' => $this->bodyForceApproveAlert(),
+            ],
+            [
+                'name'    => 'Contabo Proposal Delivery',
+                'type'    => 'general',
+                'subject' => '{$proposal_title}',
+                'message' => '{$proposal_body_html}',
             ],
         ];
     }
