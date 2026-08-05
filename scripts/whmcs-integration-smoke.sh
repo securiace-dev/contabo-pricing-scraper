@@ -30,9 +30,22 @@ echo "==> ensuring isolated local WHMCS web/database services are running"
   mariadb8 whmcs8 mariadb9 whmcs9)
 
 status=0
-for container in whmcs-devbox-whmcs8-1 whmcs-devbox-whmcs9-1; do
+for service in whmcs8 whmcs9; do
+  container="$(cd "$DEVBOX_DIR" && docker compose "${compose_args[@]}" ps -q "$service")"
+  if [ -z "$container" ]; then
+    echo "No running container resolved for Compose service $service" >&2
+    status=1
+    continue
+  fi
+  case "$container" in
+    *$'\n'*)
+      echo "More than one container resolved for Compose service $service" >&2
+      status=1
+      continue
+      ;;
+  esac
   echo
-  echo "==> integration smoke: $container"
+  echo "==> integration smoke: $service ($container)"
   stage="$(docker exec "$container" mktemp -d /tmp/securiace-native.XXXXXX)"
   case "$stage" in
     /tmp/securiace-native.*) ;;
