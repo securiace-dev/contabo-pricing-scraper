@@ -1,7 +1,7 @@
 {
   "tests/api_smoke.rs": {
-    "mtime": 1785897380.8357246,
-    "ast_hash": "f61a9d475924dec67ed179e82ccad8db",
+    "mtime": 1785900030.888918,
+    "ast_hash": "30dbc0f4cf9bd18d3a57d6c69b05980e",
     "semantic_hash": ""
   },
   "tests/common/mod.rs": {
@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "scripts/contabo_scraper.js": {
-    "mtime": 1781854944.5688329,
-    "ast_hash": "cf92c58d2e34ee02262a16878487af51",
+    "mtime": 1785900900.9559631,
+    "ast_hash": "495d07535a4101200977110f02db0da4",
     "semantic_hash": ""
   },
   "scripts/live-schema-smoke.php": {
@@ -630,13 +630,13 @@
     "semantic_hash": ""
   },
   "src/main.rs": {
-    "mtime": 1785872375.6319072,
-    "ast_hash": "4d5d7d60a9cdc24e602360062952455a",
+    "mtime": 1785900900.9555027,
+    "ast_hash": "d11466dcde0e1ea363e36b00ef43c2ef",
     "semantic_hash": ""
   },
   "src/api/handlers.rs": {
-    "mtime": 1785897328.2465277,
-    "ast_hash": "55329d1e80b61a1b1e2058c9639ebba7",
+    "mtime": 1785900030.871057,
+    "ast_hash": "5e18aa147f833d4efc402c9ff2dd9f43",
     "semantic_hash": ""
   },
   "src/api/embed_assets.rs": {
@@ -655,8 +655,8 @@
     "semantic_hash": ""
   },
   "src/api/routes.rs": {
-    "mtime": 1785896108.9515996,
-    "ast_hash": "4551bdf0bedd0e50a504e1a7e081adac",
+    "mtime": 1785900030.8720543,
+    "ast_hash": "a40c2ac37247348c020b0247cbd0718d",
     "semantic_hash": ""
   },
   "src/api/state.rs": {
@@ -670,13 +670,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1781854944.5600932,
-    "ast_hash": "736ea9703eedd53dc1fac8810a9f54ad",
+    "mtime": 1785901529.6940992,
+    "ast_hash": "937e046c7105772d55af777d651a8317",
     "semantic_hash": ""
   },
   "SCHEMA_VERSION.md": {
-    "mtime": 1782889292.5951896,
-    "ast_hash": "08ca795bb7f3000ab7152f0edb285001",
+    "mtime": 1785901524.891891,
+    "ast_hash": "d1d8e2eefc0c2d2deeab66569a2525d0",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -755,8 +755,8 @@
     "semantic_hash": ""
   },
   "data/plan_urls.json": {
-    "mtime": 1782889177.6651325,
-    "ast_hash": "e9d0f704e8a3ce231f3f95ea27490cfc",
+    "mtime": 1785900907.296396,
+    "ast_hash": "c52e6c5a892c14ad1f446cad8bf4bfd2",
     "semantic_hash": ""
   },
   "entities.json": {
@@ -765,8 +765,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1785896612.614665,
-    "ast_hash": "96e362c6244053debf8ec0cb5cf3ae7f",
+    "mtime": 1785898004.28868,
+    "ast_hash": "e0cd258a872bf4007e046dac0b428b43",
     "semantic_hash": ""
   },
   "scripts/bump-version.sh": {
@@ -775,8 +775,8 @@
     "semantic_hash": ""
   },
   "scripts/cloak-fetch.mjs": {
-    "mtime": 1782873803.422832,
-    "ast_hash": "58dcd18b41d0a8bca3d17a2b16719239",
+    "mtime": 1785900573.3566957,
+    "ast_hash": "8a312c57934c4f31074058d8bbdb1cbe",
     "semantic_hash": ""
   },
   "scripts/deploy.sh": {
@@ -935,18 +935,28 @@
     "semantic_hash": ""
   },
   "plans/003-new-categories-and-scraper-resilience.md": {
-    "mtime": 1782889325.9319236,
-    "ast_hash": "cc3d4f46131ca5d6933e7cfbf4cd2fe8",
+    "mtime": 1785901524.891062,
+    "ast_hash": "37592cf09c9243494e1a94531186054d",
     "semantic_hash": ""
   },
   "src/api/proposals.rs": {
-    "mtime": 1785896309.7358227,
-    "ast_hash": "e5c2c2e315fe15c96a2b5ec0a23b77c0",
+    "mtime": 1785901458.8295338,
+    "ast_hash": "9d1b64af0cf95c698213c1a432c47e29",
     "semantic_hash": ""
   },
   "tests/proposal_model.test.js": {
-    "mtime": 1785896654.9489915,
-    "ast_hash": "abad384ca54770a2c2bb7e938dc31a03",
+    "mtime": 1785899974.2933962,
+    "ast_hash": "7c0799baaa766cdd861dd55210e96b0e",
+    "semantic_hash": ""
+  },
+  "tests/scraper_taxonomy.test.js": {
+    "mtime": 1785900573.3569534,
+    "ast_hash": "b25ac52b75d0042e37887e7b82e348b3",
+    "semantic_hash": ""
+  },
+  "docs/PROPOSAL-GENERATION.md": {
+    "mtime": 1785899979.9519641,
+    "ast_hash": "24ed99fdfeef387b0fc6ffe3fe5a8986",
     "semantic_hash": ""
   }
 }
