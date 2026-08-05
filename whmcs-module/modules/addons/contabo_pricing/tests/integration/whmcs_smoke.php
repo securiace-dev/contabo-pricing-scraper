@@ -47,7 +47,9 @@ use ContaboPricing\DriftHasher;
 use ContaboPricing\Installer;
 use ContaboPricing\OptionAuditLog;
 use ContaboPricing\OptionTypeMapper;
+use ContaboPricing\ProposalMaker;
 use ContaboPricing\SchemaHealth;
+use ContaboPricing\Settings;
 use ContaboPricing\WhmcsConfigOptionsAdapter;
 use WHMCS\Database\Capsule;
 
@@ -237,6 +239,24 @@ try {
         (int) ($health['to'] ?? -1) === Installer::SCHEMA_VERSION,
         'schema to=' . (int) ($health['to'] ?? -1) . ' === Installer::SCHEMA_VERSION=' . Installer::SCHEMA_VERSION
     );
+
+    // ── 1b) Proposal Studio preview-only safety boundary ────────────────────
+    smoke_section('proposal studio preview boundary');
+    $proposalSettings = new Settings(
+        'http://localhost:8080/api/v1',
+        '',
+        'notify',
+        'INR',
+        false,
+        0.0,
+        365,
+        'addonmodules.php?module=contabo_pricing'
+    );
+    $proposalMaker = new ProposalMaker($proposalSettings);
+    $delivery = $proposalMaker->deliveryDecision('smoke-version', 'email', 1, 'smoke@example.invalid');
+    smoke_assert($proposalSettings->proposalAiModel === 'gpt-5.6-luna', 'OpenAI profile uses the cost-efficient default model');
+    smoke_assert($proposalSettings->proposalAiRequestStyle === 'responses', 'OpenAI profile defaults to Responses API');
+    smoke_assert(empty($delivery['allowed']), 'delivery stays blocked without durable proposal persistence');
 
     // ── 1b) real-schema parity (catches the recurringamount→amount class) ──────
     // FakeCapsule is schemaless, so the unit suite cannot see a wrong column name.

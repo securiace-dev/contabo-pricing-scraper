@@ -9,7 +9,7 @@ if (!defined('WHMCS')) {
 if (!function_exists('logActivity')) {
     function logActivity(string $message): void
     {
-        // no-op in tests
+        $GLOBALS['contabo_test_activity_log'][] = $message;
     }
 }
 
