@@ -1,5 +1,6 @@
 // In-memory snapshot held behind an RwLock; refresh swaps it atomically.
 
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -17,6 +18,8 @@ pub struct AppState {
     pub auth: Arc<AuthConfig>,
     pub http_client: reqwest::Client,
     pub fx_cache: Arc<RwLock<FxCacheState>>,
+    pub proposal_jobs: Arc<RwLock<HashMap<String, Value>>>,
+    pub proposal_local_only: bool,
 }
 
 #[derive(Default)]
@@ -80,8 +83,16 @@ impl AppState {
             auth,
             http_client: reqwest::Client::new(),
             fx_cache: Arc::new(RwLock::new(FxCacheState::default())),
+            proposal_jobs: Arc::new(RwLock::new(HashMap::new())),
+            proposal_local_only: is_loopback_bind(&args.bind),
         })
     }
+}
+
+fn is_loopback_bind(bind: &str) -> bool {
+    let host = bind.rsplit_once(':').map(|(host, _)| host).unwrap_or(bind);
+    let host = host.trim_matches(['[', ']']);
+    host == "localhost" || host == "::1" || host == "127.0.0.1" || host.starts_with("127.")
 }
 
 pub(super) fn load_snapshot_from_disk(dir: &std::path::Path) -> anyhow::Result<Snapshot> {

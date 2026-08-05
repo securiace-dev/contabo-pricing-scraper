@@ -58,6 +58,24 @@ pub async fn require_bearer(
     }
 }
 
+/// Proposal generation is available without a token only when the server is
+/// explicitly bound to loopback. A configured bearer token enables it for a
+/// deliberately exposed service without turning the endpoint into an open
+/// process-spawning surface.
+pub async fn require_proposal_access(
+    State(s): State<AppState>,
+    req: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    if s.auth.token.is_some() {
+        return require_bearer(State(s), req, next).await;
+    }
+    if !s.proposal_local_only {
+        return Err(StatusCode::SERVICE_UNAVAILABLE);
+    }
+    Ok(next.run(req).await)
+}
+
 fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
     if a.len() != b.len() {
         return false;

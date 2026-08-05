@@ -1,7 +1,7 @@
 {
   "tests/api_smoke.rs": {
-    "mtime": 1782887579.2967994,
-    "ast_hash": "7cf659701612ecbd82b8365ac63cf432",
+    "mtime": 1785896182.2502563,
+    "ast_hash": "7e708048bf4a6aa4dadafc33edcf304b",
     "semantic_hash": ""
   },
   "tests/common/mod.rs": {
@@ -635,8 +635,8 @@
     "semantic_hash": ""
   },
   "src/api/handlers.rs": {
-    "mtime": 1782873803.4230292,
-    "ast_hash": "d877ef29de3a50de61a5843632155211",
+    "mtime": 1785896182.2446263,
+    "ast_hash": "46d65f4b0f5697263361b5a4f47d372c",
     "semantic_hash": ""
   },
   "src/api/embed_assets.rs": {
@@ -645,23 +645,23 @@
     "semantic_hash": ""
   },
   "src/api/auth.rs": {
-    "mtime": 1781854944.5698984,
-    "ast_hash": "a74058fc9357eb2154d917e8c1266ad1",
+    "mtime": 1785896108.9513798,
+    "ast_hash": "b8e45ce2c55d4149782eb80d1d102bd0",
     "semantic_hash": ""
   },
   "src/api/mod.rs": {
-    "mtime": 1781854944.5701675,
-    "ast_hash": "672328b33f27cad266b8191fda112837",
+    "mtime": 1785896182.245201,
+    "ast_hash": "fe9c6cb96875fd0834dff4f242739053",
     "semantic_hash": ""
   },
   "src/api/routes.rs": {
-    "mtime": 1781854944.570244,
-    "ast_hash": "f4430f3f829064bed50dcba75fd9768a",
+    "mtime": 1785896108.9515996,
+    "ast_hash": "4551bdf0bedd0e50a504e1a7e081adac",
     "semantic_hash": ""
   },
   "src/api/state.rs": {
-    "mtime": 1781854944.570333,
-    "ast_hash": "d52ba66b4f1774c2d7384479b7befabf",
+    "mtime": 1785896182.2358634,
+    "ast_hash": "49d5b919677b289dd75542e85bc483bc",
     "semantic_hash": ""
   },
   "PRICES.md": {
@@ -937,6 +937,11 @@
   "plans/003-new-categories-and-scraper-resilience.md": {
     "mtime": 1782889325.9319236,
     "ast_hash": "cc3d4f46131ca5d6933e7cfbf4cd2fe8",
+    "semantic_hash": ""
+  },
+  "src/api/proposals.rs": {
+    "mtime": 1785896309.7358227,
+    "ast_hash": "e5c2c2e315fe15c96a2b5ec0a23b77c0",
     "semantic_hash": ""
   }
 }

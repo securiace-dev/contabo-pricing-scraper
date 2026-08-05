@@ -230,6 +230,80 @@ async fn openapi_endpoint_returns_json() {
 }
 
 #[tokio::test]
+async fn proposal_capabilities_endpoint_is_available_on_loopback() {
+    let h = common::spawn_server(None).await;
+    let res = client()
+        .get(format!("{}/api/v1/proposals/capabilities", h.base()))
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 200);
+    let body: serde_json::Value = res.json().await.unwrap();
+    assert_eq!(body["schema_version"], "proposal.v1");
+    assert_eq!(body["local_only"], true);
+    assert_eq!(body["deterministic_fallback"], true);
+    h.shutdown().await;
+}
+
+#[tokio::test]
+async fn proposal_preview_validates_primary_plan_against_snapshot() {
+    if !common::fixture_present() {
+        eprintln!(
+            "skip proposal_preview_validates_primary_plan_against_snapshot — fixture missing"
+        );
+        return;
+    }
+    let h = common::spawn_server(None).await;
+    let body = serde_json::json!({
+        "profile": "technical-proposal",
+        "context": {
+            "primary": {
+                "plan_slug": "cloud-vps-10",
+                "period_months": 1,
+                "selections": {"Region": "India"}
+            },
+            "alternatives": []
+        },
+        "visibility": {"owner_markup": "internal_only"},
+        "client": {"project_name": "Example migration"}
+    });
+    let res = client()
+        .post(format!("{}/api/v1/proposals/preview", h.base()))
+        .json(&body)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 200);
+    let json: serde_json::Value = res.json().await.unwrap();
+    assert_eq!(json["validated"], true);
+    assert!(json["snapshot_id"]
+        .as_str()
+        .unwrap_or_default()
+        .starts_with("proposal-"));
+    assert_eq!(json["facts"]["plan_slug"], "cloud-vps-10");
+    assert!(json["deterministic_document"]["sections"].is_array());
+    h.shutdown().await;
+}
+
+#[tokio::test]
+async fn proposal_preview_rejects_unknown_plan() {
+    let h = common::spawn_server(None).await;
+    let body = serde_json::json!({
+        "context": {
+            "primary": {"plan_slug": "does-not-exist", "period_months": 1}
+        }
+    });
+    let res = client()
+        .post(format!("{}/api/v1/proposals/preview", h.base()))
+        .json(&body)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 404);
+    h.shutdown().await;
+}
+
+#[tokio::test]
 async fn index_endpoint_returns_embedded_html() {
     let h = common::spawn_server(None).await;
     let res = client().get(format!("{}/", h.base())).send().await.unwrap();
@@ -409,7 +483,12 @@ async fn refresh_accepts_good_token_and_returns_job_id() {
         .unwrap();
     // 202 Accepted: the scrape runs asynchronously; the response only confirms
     // the job was queued, not that it has completed.
-    assert_eq!(res.status(), 202, "expected 202 Accepted, got {}", res.status());
+    assert_eq!(
+        res.status(),
+        202,
+        "expected 202 Accepted, got {}",
+        res.status()
+    );
     let body: serde_json::Value = res.json().await.unwrap();
     let job_id = body["job_id"].as_str().expect("job_id missing");
     assert!(!job_id.is_empty(), "job_id should be non-empty");

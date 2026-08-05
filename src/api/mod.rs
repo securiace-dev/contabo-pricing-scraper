@@ -9,6 +9,7 @@ use clap::Args;
 pub mod auth;
 pub mod embed_assets;
 pub mod handlers;
+pub mod proposals;
 pub mod routes;
 pub mod state;
 
@@ -34,7 +35,6 @@ pub struct ServeArgs {
     /// CORS allow-origin (repeatable; defaults to none = same-origin only)
     #[arg(long = "cors-origin")]
     pub cors_origins: Vec<String>,
-
 }
 
 pub async fn run_serve(args: ServeArgs) -> i32 {
