@@ -22,6 +22,10 @@ final class CurlRequestExecutor implements RequestExecutor
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_TIMEOUT        => $timeoutSec,
             CURLOPT_CONNECTTIMEOUT => $timeoutSec,
+            // Authorization headers must never be replayed to a redirect target.
+            // ProposalMaker treats every 3xx as a failed AI attempt.
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_MAXREDIRS      => 0,
             CURLOPT_USERAGENT      => 'whmcs-contabo-pricing/0.1',
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_SSL_VERIFYHOST => 2,

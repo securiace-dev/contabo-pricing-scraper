@@ -97,6 +97,35 @@ class ApiClient
         return $this->get('/jobs/' . rawurlencode($id));
     }
 
+    /**
+     * Report/Codex boundary advertised by a compatible canonical API release.
+     * Absence is a capability result, never a reason to guess proposal facts.
+     *
+     * @return array<string,mixed>
+     */
+    public function proposalCapabilities(): array
+    {
+        return $this->get('/proposals/capabilities');
+    }
+
+    /**
+     * Queue a report document. WHMCS still owns commercial calculation and
+     * only accepts the returned document as bounded narrative wording.
+     *
+     * @param array<string,mixed> $body
+     * @return array<string,mixed>
+     */
+    public function proposalGenerate(array $body): array
+    {
+        return $this->post('/proposals/generate', $body);
+    }
+
+    /** @return array<string,mixed> */
+    public function proposalJob(string $id): array
+    {
+        return $this->get('/proposals/' . rawurlencode($id));
+    }
+
     // ── internals ────────────────────────────────────────────────────────────
 
     /** @return array<string, mixed> */

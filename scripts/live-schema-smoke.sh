@@ -18,12 +18,32 @@ set -euo pipefail
 
 v="${1:-8}"
 case "$v" in
-  8) ctr="whmcs-devbox-whmcs8-1" ;;
-  9) ctr="whmcs-devbox-whmcs9-1" ;;
+  8) service="whmcs8" ;;
+  9) service="whmcs9" ;;
   *) echo "usage: $0 [8|9]"; exit 2 ;;
 esac
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+DEVBOX_DIR="${WHMCS_DEVBOX_DIR:-$(cd "$REPO_ROOT/../whmcs-devbox" && pwd)}"
+BASE_COMPOSE="$DEVBOX_DIR/docker-compose.yml"
+OVERRIDE_COMPOSE="$DEVBOX_DIR/docker-compose.override.yml"
+
+[ -f "$BASE_COMPOSE" ] || {
+  echo "WHMCS devbox not found at $DEVBOX_DIR" >&2
+  exit 1
+}
+
+compose_args=(-p whmcs-devbox -f "$BASE_COMPOSE")
+[ -f "$OVERRIDE_COMPOSE" ] && compose_args+=(-f "$OVERRIDE_COMPOSE")
+ctr="$(cd "$DEVBOX_DIR" && docker compose "${compose_args[@]}" ps -q "$service")"
+if [ -z "$ctr" ]; then
+  echo "No running container resolved for Compose service $service" >&2
+  exit 1
+fi
+case "$ctr" in
+  *$'\n'*) echo "More than one container resolved for Compose service $service" >&2; exit 1 ;;
+esac
 
 docker exec \
   -e CONTABO_PRICING_LIVE_SCHEMA_SMOKE="${CONTABO_PRICING_LIVE_SCHEMA_SMOKE:-}" \
