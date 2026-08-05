@@ -6,7 +6,9 @@
  * Talks to a contabo-pricing API server (Rust binary, /api/v1/*) and never
  * scrapes Contabo directly.
  *
- * Targets WHMCS 8.x. Requires PHP >= 8.1. Composer autoload is wired via the
+ * Targets WHMCS 8.x and 9.x. Source syntax remains PHP 7.4-compatible;
+ * WHMCS 9 installations follow WHMCS's modern PHP runtime requirements.
+ * Composer autoload is wired via the
  * accompanying composer.json (run `composer install --no-dev` once after
  * uploading the module folder to modules/addons/).
  *
@@ -83,10 +85,10 @@ function contabo_pricing_config(): array
                 'Description'  => 'Profiles store EUR + FX. Sync converts to this currency.',
             ],
             'apply_gst_18' => [
-                'FriendlyName' => 'Apply 18% GST',
+                'FriendlyName' => 'Legacy sync: apply 18% GST',
                 'Type'         => 'yesno',
                 'Default'      => 'yes',
-                'Description'  => 'India GST. Disable if your WHMCS tax rules already apply GST automatically.',
+                'Description'  => 'Legacy catalog-sync behavior only. Proposal Studio uses its separate fail-closed output-tax controls below.',
             ],
             'fx_markup_pct' => [
                 'FriendlyName' => 'FX markup %',
@@ -101,6 +103,144 @@ function contabo_pricing_config(): array
                 'Size'         => '5',
                 'Default'      => '365',
                 'Description'  => 'Older sync log rows are pruned by the daily cron.',
+            ],
+            'proposal_provider_tax_charged' => [
+                'FriendlyName' => 'Proposal: provider tax charged',
+                'Type'         => 'yesno',
+                'Default'      => 'no',
+                'Description'  => 'Provider/vendor cash tax only; this is not Securiace output GST.',
+            ],
+            'proposal_provider_prices_include_tax' => [
+                'FriendlyName' => 'Proposal: provider prices include tax',
+                'Type'         => 'yesno',
+                'Default'      => 'no',
+                'Description'  => 'When enabled, Proposal Studio decomposes the provider gross into net base + tax cash before landed-cost recovery logic.',
+            ],
+            'proposal_provider_tax_rate_pct' => [
+                'FriendlyName' => 'Proposal: provider tax rate %',
+                'Type'         => 'text',
+                'Size'         => '6',
+                'Default'      => '0',
+                'Description'  => 'Applied to provider cash cost. Retained in landed cost unless recoverability is verified.',
+            ],
+            'proposal_provider_tax_recoverable' => [
+                'FriendlyName' => 'Proposal: provider tax recoverable',
+                'Type'         => 'yesno',
+                'Default'      => 'no',
+                'Description'  => 'Enable only with verified input-tax-credit evidence.',
+            ],
+            'proposal_payment_buffer_pct' => [
+                'FriendlyName' => 'Proposal: payment buffer %',
+                'Type'         => 'text',
+                'Size'         => '6',
+                'Default'      => '0',
+                'Description'  => 'Payment-processing buffer, separate from FX/card markup and owner margin.',
+            ],
+            'proposal_output_tax_enabled' => [
+                'FriendlyName' => 'Proposal: charge Securiace output GST',
+                'Type'         => 'yesno',
+                'Default'      => 'no',
+                'Description'  => 'Defaults disabled. Preview fails closed unless registration is verified and commercial mode is GST-exclusive.',
+            ],
+            'proposal_output_tax_registration_verified' => [
+                'FriendlyName' => 'Proposal: GST registration verified',
+                'Type'         => 'yesno',
+                'Default'      => 'no',
+                'Description'  => 'Operator attestation that registration evidence has been verified.',
+            ],
+            'proposal_output_tax_commercial_mode' => [
+                'FriendlyName' => 'Proposal: commercial tax mode',
+                'Type'         => 'dropdown',
+                'Options'      => 'all_inclusive_no_separate_tax,gst_exclusive',
+                'Default'      => 'all_inclusive_no_separate_tax',
+                'Description'  => 'Must match the current commercial/legal setting. Safe default charges no separate GST.',
+            ],
+            'proposal_output_tax_rate_pct' => [
+                'FriendlyName' => 'Proposal: output GST rate %',
+                'Type'         => 'text',
+                'Size'         => '6',
+                'Default'      => '18',
+                'Description'  => 'Applied after owner margin only when both output-tax gates pass.',
+            ],
+            'proposal_ai_enabled' => [
+                'FriendlyName' => 'Proposal AI narrative',
+                'Type'         => 'yesno',
+                'Default'      => 'no',
+                'Description'  => 'Optional narrative-only pass after deterministic preview. Facts, prices and visibility remain authoritative.',
+            ],
+            'proposal_ai_provider' => [
+                'FriendlyName' => 'Proposal AI provider profile',
+                'Type'         => 'dropdown',
+                'Options'      => 'openai,compatible',
+                'Default'      => 'openai',
+                'Description'  => 'OpenAI uses Responses API. Compatible endpoints use explicit Chat Completions mode.',
+            ],
+            'proposal_ai_base_url' => [
+                'FriendlyName' => 'Proposal AI base URL',
+                'Type'         => 'text',
+                'Size'         => '60',
+                'Default'      => 'https://api.openai.com/v1',
+                'Description'  => 'HTTPS required except loopback development endpoints.',
+            ],
+            'proposal_ai_api_key' => [
+                'FriendlyName' => 'Proposal AI API key',
+                'Type'         => 'password',
+                'Size'         => '50',
+                'Description'  => 'Encrypted using WHMCS encrypt(); excluded from logs, prompts and artifacts.',
+            ],
+            'proposal_ai_model' => [
+                'FriendlyName' => 'Proposal AI model/deployment',
+                'Type'         => 'text',
+                'Size'         => '32',
+                'Default'      => 'gpt-5.6-luna',
+                'Description'  => 'Cost-efficient OpenAI default. A compatible provider requires its own explicit model/deployment value.',
+            ],
+            'proposal_ai_request_style' => [
+                'FriendlyName' => 'Proposal AI request style',
+                'Type'         => 'dropdown',
+                'Options'      => 'responses,chat_completions',
+                'Default'      => 'responses',
+                'Description'  => 'Normalized by provider profile; OpenAI=Responses, compatible=Chat Completions.',
+            ],
+            'proposal_ai_structured_output' => [
+                'FriendlyName' => 'Proposal AI structured-output capability',
+                'Type'         => 'yesno',
+                'Default'      => 'yes',
+                'Description'  => 'Disable for compatible providers that do not support JSON-schema output; local validation still applies.',
+            ],
+            'proposal_ai_max_output_tokens' => [
+                'FriendlyName' => 'Proposal AI max output tokens',
+                'Type'         => 'text',
+                'Size'         => '6',
+                'Default'      => '1200',
+                'Description'  => 'Clamped to 128–4000.',
+            ],
+            'proposal_ai_timeout_seconds' => [
+                'FriendlyName' => 'Proposal AI timeout seconds',
+                'Type'         => 'text',
+                'Size'         => '6',
+                'Default'      => '30',
+                'Description'  => 'Clamped to 5–60 seconds per attempt.',
+            ],
+            'proposal_ai_retries' => [
+                'FriendlyName' => 'Proposal AI retries',
+                'Type'         => 'text',
+                'Size'         => '4',
+                'Default'      => '1',
+                'Description'  => 'Clamped to 0–2; retries only provider/network failures.',
+            ],
+            'proposal_ai_advisory_budget_usd' => [
+                'FriendlyName' => 'Proposal AI advisory budget (USD)',
+                'Type'         => 'text',
+                'Size'         => '6',
+                'Default'      => '0.10',
+                'Description'  => 'Advisory metadata only. Output-token and timeout limits are enforced; no monetary cap is claimed without configured model rates.',
+            ],
+            'proposal_delivery_enabled' => [
+                'FriendlyName' => 'Proposal delivery intent',
+                'Type'         => 'yesno',
+                'Default'      => 'no',
+                'Description'  => 'This canonical-source slice still blocks sending until immutable persistence, durable outbox/idempotency and attachment-token hooks land.',
             ],
         ],
     ];
@@ -189,6 +329,7 @@ function contabo_pricing_sidebar(array $vars): string
     // non-link separator label.
     $items = [
         'Dashboard'       => '',
+        'Proposal Studio' => '&action=proposals',
         'Profiles'        => '&action=profiles',
         'Mappings'        => '&action=mappings',
         'VPS operations'  => '&action=operations',

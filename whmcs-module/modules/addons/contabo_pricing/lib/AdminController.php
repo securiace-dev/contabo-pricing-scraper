@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '1.0.0';
+    public const VERSION = '1.1.0';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -34,6 +34,11 @@ class AdminController
     {
         $action = (string) ($req['action'] ?? 'dashboard');
         switch ($action) {
+            case 'proposals':               $this->proposals($req); return;
+            case 'proposal-preview':        $this->proposalPreview($req); return;
+            case 'proposal-generate-codex': $this->proposalGenerateCodex($req); return;
+            case 'proposal-send-ticket':    $this->proposalDeliveryAttempt($req, 'ticket'); return;
+            case 'proposal-send-email':     $this->proposalDeliveryAttempt($req, 'email'); return;
             case 'profiles':         $this->profiles($req); return;
             case 'profiles-trash':   $this->profilesTrash($req); return;
             case 'profile-create':   $this->profileCreate($req); return;
@@ -515,6 +520,150 @@ class AdminController
             'settings'      => $this->settings,
             'flash'        => (string) ($_REQUEST['flash'] ?? ''),
         ]);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposals(array $req): void
+    {
+        $this->renderProposalStudio($req, null, '');
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposalPreview(array $req): void
+    {
+        if (!$this->requirePost() || !$this->verifyToken()) {
+            return;
+        }
+        $result = null;
+        $error = '';
+        try {
+            $result = (new ProposalMaker($this->settings))->build($req);
+        } catch (\Throwable $e) {
+            $error = $this->proposalError($e);
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing Proposal Studio preview rejected: ' . $error);
+            }
+        }
+        $this->renderProposalStudio($req, $result, $error);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposalGenerateCodex(array $req): void
+    {
+        if (!$this->requirePost() || !$this->verifyToken()) {
+            return;
+        }
+        $result = null;
+        $error = '';
+        try {
+            $result = (new ProposalMaker($this->settings))->buildWithCodex($req);
+        } catch (\Throwable $e) {
+            $error = $this->proposalError($e);
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing Proposal Studio Codex preview rejected: ' . $error);
+            }
+        }
+        $this->renderProposalStudio($req, $result, $error);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposalDeliveryAttempt(array $req, string $channel): void
+    {
+        if (!$this->requirePost() || !$this->verifyToken()) {
+            return;
+        }
+        $result = null;
+        $error = '';
+        try {
+            $maker = new ProposalMaker($this->settings);
+            $result = $maker->build($req);
+            $maker->assertDeliveryAllowed(
+                (string) ($result['version_id'] ?? ''),
+                $channel,
+                max(0, (int) ($req['client_id'] ?? 0)),
+                (string) ($req['recipient'] ?? '')
+            );
+        } catch (\Throwable $e) {
+            $error = $this->proposalError($e);
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing Proposal Studio delivery blocked: ' . $error);
+            }
+        }
+        $this->renderProposalStudio($req, $result, $error);
+    }
+
+    /**
+     * @param array<string,mixed> $req
+     * @param array<string,mixed>|null $result
+     */
+    private function renderProposalStudio(array $req, ?array $result, string $error): void
+    {
+        $maker = new ProposalMaker($this->settings);
+        $catalogue = $maker->catalogue();
+        $taxRequested = $this->settings->proposalOutputTaxEnabled;
+        $taxEffective = $taxRequested
+            && $this->settings->proposalOutputTaxRegistrationVerified
+            && $this->settings->proposalOutputTaxCommercialMode === 'gst_exclusive';
+        $taxReason = $taxEffective
+            ? 'Verified registration + GST-exclusive commercial mode.'
+            : ($taxRequested
+                ? 'Requested but blocked until registration and GST-exclusive commercial mode both match.'
+                : 'Safe default: no separate Securiace output GST.');
+        $this->render('proposal_maker.tpl', [
+            'plans' => $catalogue['plans'],
+            'catalog_error' => $catalogue['error'],
+            'managed_tiers' => ProposalMaker::managedTiers(),
+            'visibility_modes' => ['show', 'total_only', 'silent_include', 'internal_only', 'exclude', 'calculated_only'],
+            'settings' => $this->settings,
+            'form' => $this->proposalForm($req),
+            'result' => $result,
+            'error' => $error,
+            'tax_gate' => [
+                'requested' => $taxRequested,
+                'effective' => $taxEffective,
+                'reason' => $taxReason,
+            ],
+            'delivery_gate' => [
+                'effective' => false,
+                'reason' => 'Sending is blocked until immutable versions, approval records, durable outbox/idempotency, and attachment-token persistence are implemented.',
+            ],
+        ]);
+    }
+
+    /** @param array<string,mixed> $req @return array<string,mixed> */
+    private function proposalForm(array $req): array
+    {
+        $keys = [
+            'client_id', 'client_name', 'recipient', 'proposal_title', 'profile',
+            'plan_slug', 'period_months', 'currency', 'fx_rate', 'fx_card_markup_pct',
+            'region', 'os', 'selections_json', 'managed_tier', 'managed_quantity', 'owner_margin_pct',
+            'owner_margin_scope', 'provider_visibility', 'configuration_visibility',
+            'managed_visibility', 'owner_visibility', 'tax_visibility',
+            'comparison_visibility', 'comparison_plan_slugs', 'client_notes_visibility', 'client_notes',
+            'internal_notes', 'report_document_json', 'narrative_mode',
+        ];
+        $form = [];
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $req) && is_scalar($req[$key])) {
+                $form[$key] = (string) $req[$key];
+            }
+        }
+        return $form;
+    }
+
+    private function proposalError(\Throwable $e): string
+    {
+        if ($e instanceof \InvalidArgumentException || $e instanceof \RuntimeException) {
+            $message = $e->getMessage();
+            foreach ([$this->settings->apiToken, $this->settings->proposalAiApiKey] as $secret) {
+                if ($secret !== '') {
+                    $message = str_replace($secret, '[redacted]', $message);
+                }
+            }
+            $message = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $message) ?? '';
+            return substr($message, 0, 600);
+        }
+        return 'Proposal Studio could not complete this action; see the activity log.';
     }
 
     private function profiles(array $req): void
