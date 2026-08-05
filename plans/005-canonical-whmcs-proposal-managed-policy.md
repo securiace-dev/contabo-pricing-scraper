@@ -160,8 +160,11 @@ Acceptance:
 The direct release binary fetched 36/36 plans and 1,975 options with no fetch
 failures and six gaps, but exposed:
 
-- `--dry-run --json ... scrape` logged `dry_run=false`, wrote outputs, and
-  emitted no JSON stdout summary;
+- exact flag-routing reproduction:
+  `target/release/contabo-scraper --output <temporary-dir> --dry-run --json scrape`;
+  with flags before the subcommand it logged `plans=16`, `retries=3`,
+  `dry_run=false`, and `output=data/output`, emitted no JSON stdout summary,
+  and overwrote tracked canonical outputs instead of the explicit target;
 - configs/view model carry Core VPS, Performance VPS, and Max Performance VPS,
   while the pricing dataset can flatten to legacy family names;
 - six false Core VPS `storage_policy_violation` NVMe gaps are emitted even
@@ -181,6 +184,34 @@ Add deterministic fixtures instead.
 - Performance VPS: NVMe storage options only.
 - Max Performance VPS: current name for legacy VDS; preserve alias imports.
 - Object Storage is not eligible for Founder Managed server tiers.
+
+The checked-in report dataset is still flattened to legacy `Cloud VPS` and
+`Cloud VDS` families. Until Phase 1 emits and verifies canonical family fields,
+the report must visibly identify itself as a legacy-taxonomy snapshot and must
+not present those labels as the current catalog. Canonical taxonomy migration
+is a hard release-acceptance blocker, not a cosmetic follow-up.
+
+### 3.4 Confirmed production topology (read-only audit)
+
+The read-only `my.securiace.com` inventory confirmed:
+
+- `contabo_pricing` version 0.8.0 is installed;
+- legacy `contabo_vps` contains six files;
+- no `securiacevps` module is installed and no `securiace-vps` order-form child
+  exists;
+- the observed PHP runtime is 8.1.2;
+- zero products/services are assigned to either Contabo module;
+- active `mod_contabo_*` tables are mostly empty following the prior purge;
+- `purgebackup_*` tables exist and are preservation-only evidence.
+
+This topology permits an admin-only dark launch because there is no assigned
+service cohort to migrate immediately. It does not authorize replacement in
+place. Release requires staged `contabo_pricing` addon migration, installation
+of the canonical server module side-by-side with the legacy module, global
+provider writes disabled, explicit read-only verification, and only then
+controlled cohort assignment. Never blindly overwrite module files or alter,
+drop, rename, or reuse `purgebackup_*` tables. No credential or secret values
+belong in plans, logs, packages, or migration evidence.
 
 ## 4. Target architecture and roadmap
 
@@ -207,7 +238,9 @@ Acceptance:
 Dependencies: Phase 0.
 
 - Reproduce and fix the `--dry-run`/subcommand argument wiring; prove no file
-  mtimes or contents change and JSON summary appears on stdout.
+  mtimes or contents change and JSON summary appears on stdout. Cover flags
+  before and after `scrape`, explicit output, plan filters, retries, dry-run,
+  and JSON mode so Clap parsing and runtime option forwarding cannot diverge.
 - Emit canonical and legacy family fields consistently in every JSON/CSV view.
 - Change storage-policy validation to inspect selectable configuration options,
   not legacy marketing/base storage fields.
@@ -303,8 +336,10 @@ Compatibility gates cover WHMCS 8.12/8.13 and 9.x with the supported PHP matrix.
 Do not claim direct-email attachment support until both runtime families pass.
 
 The current canonical Rust server has no proposal-generation routes. The report
-must probe `GET /api/v1/proposals/capabilities`, keep generation disabled when
-the endpoint/capability is absent, and retain deterministic preview/export. The
+must inspect same-origin OpenAPI capability advertisement before probing
+`GET /api/v1/proposals/capabilities`, avoiding a known 404/console error on the
+current binary, keep generation disabled when the endpoint/capability is absent,
+and retain deterministic preview/export. The
 capabilities, generate, and job-status endpoints are a dependent server slice;
 do not port the stale proposal service blindly.
 
@@ -423,7 +458,9 @@ Exact gates:
 2. deterministic report generation in a temporary output copy; inspect
    consistency report and assert no unverified tax/15% strings;
 3. report browser tests for table, modal, comparison, copy, HTML, JSON, CSV,
-   reactive 45% FX, owner margin, and both tax modes;
+   reactive 45% FX, owner margin, both tax modes, same-origin FX without CORS
+   errors, managed add-on/quantity, internal-note privacy, and sticky proposal
+   actions at a 1000 px viewport;
 4. `cargo fmt --check`, `cargo clippy --all-targets --all-features -- -D warnings`,
    and `cargo test --all-targets --all-features`;
 5. both addon and server-module PHPUnit suites;
@@ -435,6 +472,10 @@ Exact gates:
 10. staging canaries for each certified provider capability;
 11. predeploy gate proves database backup, module package, health beyond root
     HTTP 200, proxy route, cron progress, and rollback artifact.
+
+The production WHMCS gate additionally proves the side-by-side module layout,
+zero initial service assignments, preserved `purgebackup_*` tables, staged
+addon migration, and global provider writes off before admin-only dark launch.
 
 Production is blocked until the PR is green, reviewed, and the operator
 explicitly authorizes merge and deployment. The implementation agent never

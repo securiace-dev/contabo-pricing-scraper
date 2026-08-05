@@ -487,6 +487,9 @@
       .slice(0, 4).map(plan => normalizePlan(plan, pricing));
     const managed = calculateManaged(source.managed, pricing);
     const client = source.client && typeof source.client === 'object' ? { ...source.client } : {};
+    const internal = source.internal && typeof source.internal === 'object'
+      ? { notes: String(source.internal.notes || '').slice(0, 4000) }
+      : { notes: '' };
     const warnings = [...primary.quote.warnings];
     if (finite(source.pricing?.fx_markup) > MAX_FX_MARKUP &&
         !warnings.some(warning => warning.code === 'fx_markup_capped')) {
@@ -516,6 +519,7 @@
       visibility,
       pricing,
       client,
+      internal,
       primary,
       alternatives,
       managed,
@@ -528,6 +532,7 @@
       visibility: snapshot.visibility,
       pricing: snapshot.pricing,
       client: snapshot.client,
+      internal: snapshot.internal,
       primary: snapshot.primary,
       alternatives: snapshot.alternatives,
       managed: snapshot.managed,

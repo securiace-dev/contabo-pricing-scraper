@@ -78,6 +78,8 @@ const vm    = JSON.parse(fs.readFileSync(VM_PATH, 'utf8'));
 const rows  = Array.isArray(vm.rows) ? vm.rows : [];
 const genAt = vm.meta?.generated_at || '';
 const managedServices = loadManagedCatalog(MANAGED_CATALOG_PATH);
+const legacyTaxonomyFamilies = [...new Set(rows.map(row => row.family))]
+  .filter(family => family === 'Cloud VPS' || family === 'Cloud VDS');
 
 let dataset = null;
 if (fs.existsSync(DATASET_PATH)) {
@@ -328,6 +330,15 @@ const payload = {
   meta: vm.meta || {},
   rows,
   consistency: { checked, mismatch_count: mismatches.length },
+  taxonomy: {
+    status: legacyTaxonomyFamilies.length ? 'legacy_flattened' : 'canonical',
+    legacy_families: legacyTaxonomyFamilies,
+    canonical_contract: {
+      'Core VPS': 'SSD only',
+      'Performance VPS': 'NVMe only',
+      'Max Performance VPS': 'legacy Cloud VDS alias',
+    },
+  },
 };
 if (configsRoot) {
   payload.planConfig     = planConfig;
@@ -356,6 +367,7 @@ const html = `<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <title>Contabo Pricing — Interactive Report</title>
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
@@ -532,7 +544,7 @@ const html = `<!DOCTYPE html>
   #modal.open{display:flex}
   .sheet{background:var(--panel);border:1px solid var(--border);
     border-radius:14px;max-width:820px;width:100%;padding:28px 32px;
-    box-shadow:var(--shadow-lg)}
+    box-shadow:var(--shadow-lg);max-height:calc(100vh - 48px);overflow:auto}
   .sheet .top{display:flex;justify-content:space-between;align-items:flex-start;
     gap:12px;margin-bottom:14px}
   .sheet h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em}
@@ -663,7 +675,9 @@ const html = `<!DOCTYPE html>
   .proposal-field.wide{grid-column:1/-1}
   .proposal-field input,.proposal-field select,.proposal-field textarea{width:100%;background:var(--panel2);color:var(--fg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 9px;font:inherit;font-size:13px}
   .proposal-field textarea{min-height:72px;resize:vertical;line-height:1.5}
-  .proposal-controls{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px;align-items:center}
+  .proposal-controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px -8px 16px;align-items:center;
+    position:sticky;top:-28px;z-index:4;padding:12px 8px;background:color-mix(in srgb,var(--panel) 96%,transparent);
+    border-bottom:1px solid var(--border);box-shadow:0 8px 14px rgba(0,0,0,.12)}
   .proposal-controls .primary{background:var(--accent);color:#0b0d10;border-color:var(--accent);font-weight:700}
   html[data-theme=light] .proposal-controls .primary{color:#fff}
   .proposal-controls .secondary{border-color:var(--accent2);color:var(--accent2)}
@@ -688,6 +702,10 @@ const html = `<!DOCTYPE html>
   .proposal-callout.warning{border-color:var(--warn);color:var(--warn)}
   .proposal-summary{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
   .proposal-chip{font-size:10.5px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:4px 8px}
+  .taxonomy-warning{margin:14px 28px 0;padding:10px 12px;border:1px solid color-mix(in srgb,var(--warn) 55%,var(--border));
+    border-left:3px solid var(--warn);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--warn) 8%,var(--panel));
+    color:var(--muted);font-size:12px;line-height:1.55}
+  .taxonomy-warning b{color:var(--warn)}
   @media (max-width:760px){.proposal-grid{grid-template-columns:1fr}.proposal-field.wide{grid-column:auto}}
 
   /* ── Calculator note ─────────────────────────────────────────────────────── */
@@ -707,6 +725,7 @@ const html = `<!DOCTYPE html>
   @media (max-width:760px){
     header.app{padding:14px 18px;grid-template-columns:1fr;gap:8px}
     .hero,.toolbar,.wrap,footer{padding-left:18px;padding-right:18px}
+    .taxonomy-warning{margin-left:18px;margin-right:18px}
     .head-meta{justify-content:flex-start}
     .toolbar{top:0;gap:10px 14px}
     table.grid thead th{padding:9px 10px;font-size:10px;top:0}
@@ -731,6 +750,8 @@ const html = `<!DOCTYPE html>
     <button class="iconbtn" id="themeBtn" aria-label="Toggle theme">◐</button>
   </div>
 </header>
+
+${legacyTaxonomyFamilies.length ? `<aside class="taxonomy-warning" role="status"><b>Legacy taxonomy dataset — not release-current.</b> This snapshot still flattens products as Cloud VPS / Cloud VDS. The accepted current contract is Core VPS (SSD only), Performance VPS (NVMe only), and Max Performance VPS (legacy VDS alias). Do not present these family labels as current until the canonical migration gate passes.</aside>` : ''}
 
 <section class="hero" id="hero" aria-label="Best monthly prices per family">
   <h2>Best 12-mo</h2>
@@ -1699,10 +1720,9 @@ function proposalPlanInput(slug, current){
   return {plan_slug:p.slug,plan_name:p.name,family:p.family,plan_url:p.url,period_months:period,
     provider_monthly_eur:providerMonthly,provider_setup_eur:providerSetup,selections,addons,specs};
 }
-function proposalManagedInput(slug){
-  const saved=state.managed[slug]; if(!saved) return null;
-  const plan=managedPlan(saved.planId); if(!plan) return null;
-  return {plan_id:plan.id,name:plan.name,quantity:saved.quantity,
+function proposalManagedPlanInput(plan,quantity){
+  if(!plan) return null;
+  return {plan_id:plan.id,name:plan.name,quantity:Math.max(1,Math.min(99,Math.round(Number(quantity)||1))),
     annual_price_minor:plan.annual_price_minor,
     founder_minutes_per_month:plan.founder_time?.minutes_per_month||0,
     billing_term_months:MANAGED.billing_term_months||12,
@@ -1712,6 +1732,16 @@ function proposalManagedInput(slug){
     commercial_terms_version:MANAGED.commercial_terms?.version||null,
     commercial_terms_snapshot:MANAGED.commercial_terms||null,
     includes:plan.includes||[],excludes:[...(MANAGED.common_exclusions||[]),...(plan.excludes||[])]};
+}
+function proposalManagedInput(slug){
+  const saved=state.managed[slug]; if(!saved) return null;
+  return proposalManagedPlanInput(managedPlan(saved.planId),saved.quantity);
+}
+function proposalManagedInputFromForm(slug){
+  const p=PLANS[slug];
+  const selected=document.getElementById('proposalManagedPlan')?.value||'';
+  if(!selected || !managedEligible(p)) return null;
+  return proposalManagedPlanInput(managedPlan(selected),document.getElementById('proposalManagedQuantity')?.value);
 }
 function proposalPricing(){
   return reportPricing(state.cur==='EUR'||!FX.rate?'EUR':'INR');
@@ -1734,10 +1764,11 @@ function proposalSnapshotFromForm(){
   const client={project_name:document.getElementById('proposalProject')?.value?.trim()||'',
     recipient:document.getElementById('proposalRecipient')?.value?.trim()||'',
     notes:document.getElementById('proposalNotes')?.value?.trim()||''};
-  return PROPOSAL_MODEL.makeSnapshot({profile,visibility,client,pricing:proposalPricing(),
+  const internal={notes:document.getElementById('proposalInternalNotes')?.value?.trim().slice(0,4000)||''};
+  return PROPOSAL_MODEL.makeSnapshot({profile,visibility,client,internal,pricing:proposalPricing(),
     primary:proposalPlanInput(primarySlug,primarySlug===MSLUG),
     alternatives:selectedAlt.map(slug=>proposalPlanInput(slug,false)),
-    managed:proposalManagedInput(primarySlug),
+    managed:proposalManagedInputFromForm(primarySlug),
     source:{snapshot_generated_at:DATA.meta?.generated_at||'',report_generated_at:DATA.meta?.generated_at||'',
       source:'contabo_view_model.json + contabo_pricing_dataset.json',consistency:DATA.consistency||{},
       fx_source:FX.source,fx_rate_date:FX.rateDate}});
@@ -1829,6 +1860,14 @@ async function detectProposalGenerationCapability(){
     proposalGenerationCapability={checked:true,available:false,reason:'Static report artifact'};
   }else{
     try{
+      const openapiResponse=await fetch('/api/v1/openapi.json',{headers:{accept:'application/json'}});
+      if(!openapiResponse.ok) throw new Error('OpenAPI HTTP '+openapiResponse.status);
+      const openapi=await openapiResponse.json();
+      if(!openapi?.paths?.['/api/v1/proposals/capabilities']){
+        proposalGenerationCapability={checked:true,available:false,
+          reason:'This server build does not advertise proposal generation'};
+        throw new Error(proposalGenerationCapability.reason);
+      }
       const response=await fetch('/api/v1/proposals/capabilities',{headers:{accept:'application/json'}});
       if(!response.ok) throw new Error('HTTP '+response.status);
       const capability=await response.json();
@@ -1836,8 +1875,8 @@ async function detectProposalGenerationCapability(){
       proposalGenerationCapability={checked:true,available,
         reason:available?'Server capability confirmed':'Server reports generation unavailable'};
     }catch(error){
-      proposalGenerationCapability={checked:true,available:false,
-        reason:'Capability endpoint unavailable ('+String(error.message||error)+')'};
+      if(!proposalGenerationCapability.checked) proposalGenerationCapability={checked:true,available:false,
+        reason:'Capability discovery unavailable ('+String(error.message||error)+')'};
     }
   }
   button.disabled=!proposalGenerationCapability.available;
@@ -1862,8 +1901,24 @@ function wireProposalForm(){
   PROPOSAL_POLICY_KEYS.forEach(key=>document.getElementById('proposalPolicy_'+key)?.addEventListener('change',e=>{
     e.target.dataset.touched='1'; previewProposal();
   }));
-  document.getElementById('proposalPlan')?.addEventListener('change',previewProposal);
-  for(const id of ['proposalProject','proposalRecipient','proposalNotes']){
+  const syncManagedControl=()=>{
+    const slug=document.getElementById('proposalPlan')?.value||proposalPrimarySlug;
+    const eligible=managedEligible(PLANS[slug]);
+    const select=document.getElementById('proposalManagedPlan');
+    const quantity=document.getElementById('proposalManagedQuantity');
+    if(!select||!quantity) return;
+    select.disabled=!eligible;
+    if(!eligible) select.value='';
+    quantity.disabled=!eligible||!select.value;
+    select.title=eligible?'Optional Founder Managed add-on':'Managed service is unavailable for this product family';
+  };
+  document.getElementById('proposalPlan')?.addEventListener('change',()=>{syncManagedControl();previewProposal();});
+  document.getElementById('proposalManagedPlan')?.addEventListener('change',()=>{syncManagedControl();previewProposal();});
+  document.getElementById('proposalManagedQuantity')?.addEventListener('input',previewProposal);
+  document.getElementById('proposalManagedQuantity')?.addEventListener('change',e=>{
+    e.target.value=String(Math.max(1,Math.min(99,Math.round(Number(e.target.value)||1)))); previewProposal();
+  });
+  for(const id of ['proposalProject','proposalRecipient','proposalNotes','proposalInternalNotes']){
     document.getElementById(id)?.addEventListener('input',previewProposal);
   }
   document.getElementById('proposalPreviewBtn').onclick=previewProposal;
@@ -1878,6 +1933,7 @@ function wireProposalForm(){
     if(kind==='internal-json') downloadProposal('contabo-proposal-internal-evidence.json',JSON.stringify(PROPOSAL_MODEL.internalEvidence(proposalSnapshot),null,2)+'\\n','application/json');
   });
   syncProfile();
+  syncManagedControl();
   previewProposal();
   detectProposalGenerationCapability();
 }
@@ -1885,20 +1941,25 @@ function openProposalWizard(){
   const defaults=proposalDefaultSlugs(); if(!defaults.primary) return;
   proposalPrimarySlug=defaults.primary; modalMode='proposal';
   const profile='quick-quote', visibility=proposalProfileVisibility(profile);
+  const savedManaged=state.managed[defaults.primary]||{};
   let h='<div class="top"><div><h2>Create proposal</h2><div class="specs">Structured quote workspace · local-only generation · review before export</div></div><button class="iconbtn" onclick="closeModal()" aria-label="Close">Close ✕</button></div>';
   h+='<p class="proposal-intro">Choose what the client sees, what is included only in totals, and what remains internal. Provider facts and prices come from this report snapshot; Codex may improve wording but cannot add arbitrary HTML or invent commercial terms.</p>';
+  h+='<div class="proposal-controls"><button class="iconbtn primary" id="proposalPreviewBtn" type="button">Preview deterministic</button><button class="iconbtn secondary" id="proposalGenerateBtn" type="button" disabled>Checking Codex capability…</button><button class="iconbtn" id="proposalCopyBtn" type="button">Copy client brief</button><button class="iconbtn" data-proposal-export="client-html" type="button" disabled>Client HTML</button><button class="iconbtn" data-proposal-export="client-json" type="button" disabled>Client JSON</button><button class="iconbtn" data-proposal-export="client-csv" type="button" disabled>Client CSV</button><button class="iconbtn" data-proposal-export="internal-json" type="button" disabled title="Contains provider cost, owner margin, recipient, internal notes, and provenance. Never send to a client.">Internal evidence JSON</button></div>';
+  h+='<div class="proposal-status" id="proposalStatus" role="status" aria-live="polite"></div>';
   h+='<div class="proposal-grid">';
   h+='<label class="proposal-field"><span>Primary plan</span><select id="proposalPlan">'+PLAN_LIST.map(p=>'<option value="'+esc(p.slug)+'"'+(p.slug===defaults.primary?' selected':'')+'>'+esc(p.name+' · '+p.family)+'</option>').join('')+'</select></label>';
   h+='<label class="proposal-field"><span>Proposal profile</span><select id="proposalProfile">'+proposalProfileOptions(profile)+'</select></label>';
+  h+='<label class="proposal-field"><span>Founder Managed add-on</span><select id="proposalManagedPlan"><option value="">None</option>'+MANAGED_PLANS.map(plan=>'<option value="'+esc(plan.id)+'"'+(plan.id===savedManaged.planId?' selected':'')+'>'+esc(plan.name+' · '+managedMinor(plan.annual_price_minor)+'/year')+'</option>').join('')+'</select></label>';
+  h+='<label class="proposal-field"><span>Managed server quantity</span><input id="proposalManagedQuantity" type="number" min="1" max="99" step="1" value="'+esc(savedManaged.quantity||1)+'"></label>';
   h+='<label class="proposal-field"><span>Client / project name</span><input id="proposalProject" type="text" maxlength="120" placeholder="Optional"></label>';
   h+='<label class="proposal-field"><span>Recipient</span><input id="proposalRecipient" type="text" maxlength="160" placeholder="Optional"></label>';
   h+='<label class="proposal-field wide"><span>Client-facing notes</span><textarea id="proposalNotes" maxlength="2000" placeholder="Scope, goals, or assumptions to include…"></textarea></label>';
+  h+='<label class="proposal-field wide"><span>Internal notes (operator-only evidence)</span><textarea id="proposalInternalNotes" maxlength="4000" placeholder="Approval context, exceptions, or follow-up; never included in client artifacts…"></textarea></label>';
   h+='</div><h4>Content policy</h4><div class="proposal-grid">';
   for(const key of PROPOSAL_POLICY_KEYS) h+=proposalPolicySelect(key,visibility[key]||'show');
   h+='</div><div class="proposal-hint">Compared plans are taken from the compare drawer (up to four). “Silent include” keeps a value in pricing/context without mentioning it in the client document. Mandatory diagnostics remain on the administrator Review-before-sending rail and enter client artifacts only when explicitly marked client-facing.</div>';
-  h+='<div class="proposal-controls"><button class="iconbtn primary" id="proposalPreviewBtn" type="button">Preview deterministic</button><button class="iconbtn secondary" id="proposalGenerateBtn" type="button" disabled>Checking Codex capability…</button><button class="iconbtn" id="proposalCopyBtn" type="button">Copy client brief</button><button class="iconbtn" data-proposal-export="client-html" type="button" disabled>Client HTML</button><button class="iconbtn" data-proposal-export="client-json" type="button" disabled>Client JSON</button><button class="iconbtn" data-proposal-export="client-csv" type="button" disabled>Client CSV</button><button class="iconbtn" data-proposal-export="internal-json" type="button" disabled title="Contains provider cost, owner margin, recipient, and internal provenance. Never send to a client.">Internal evidence JSON</button></div>';
   h+='<div class="proposal-hint"><b>Client artifacts</b> apply the visibility policy and omit internal/silent facts. <b>Internal evidence JSON</b> intentionally contains provider cost, owner margin, recipient, and provenance; keep it private.</div>';
-  h+='<div class="proposal-status" id="proposalStatus" role="status" aria-live="polite"></div><div class="proposal-preview" id="proposalPreview"></div>';
+  h+='<div class="proposal-preview" id="proposalPreview"></div>';
   document.getElementById('sheet').innerHTML=h; modal.classList.add('open'); wireProposalForm();
 }
 
@@ -2069,21 +2130,23 @@ function renderFxBadge(){
 }
 renderFxBadge();
 
-// Refresh FX in-browser (cache 12h)
+// Refresh FX from the same-origin Rust API (cache 12h). The embedded build-time
+// rate remains the silent fallback for static reports and unavailable APIs; the
+// browser never calls Frankfurter directly, avoiding CORS noise.
 (function refreshFx(){
   try{
     const c=JSON.parse(lsGet('contabo_fx_v2')||'null');
     if(c && c.rate>0 && (Date.now()-c.ts) < 12*3600*1000){
       FX.rate=c.rate; FX.rateDate=c.rateDate; renderFxBadge(); render(); return;
     }
-    if(typeof fetch!=='function') return;
+    if(typeof fetch!=='function'||location.protocol==='file:') return;
     const ac=new AbortController(); const to=setTimeout(()=>ac.abort(),4000);
-    fetch('https://api.frankfurter.app/latest?from=EUR&to=INR',{signal:ac.signal})
+    fetch('/api/v1/fx',{signal:ac.signal,headers:{accept:'application/json'}})
       .then(r=>r.ok?r.json():null).then(j=>{
         clearTimeout(to);
         const rt=j&&j.rates&&j.rates.INR;
         if(typeof rt==='number'&&rt>0){
-          FX.rate=rt; FX.rateDate=j.date||null;
+          FX.rate=rt; FX.rateDate=j.date||null; FX.source='same-origin /api/v1/fx (Frankfurter/ECB)';
           lsSet('contabo_fx_v2',JSON.stringify({rate:rt,ts:Date.now(),rateDate:j.date||null}));
           renderFxBadge(); applyFx();
         }

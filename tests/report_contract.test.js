@@ -33,11 +33,34 @@ test('report exports client-safe artifacts separately from internal evidence', (
 });
 
 test('Codex generation is capability-detected and deterministic output remains available', () => {
+  assert.match(source, /fetch\('\/api\/v1\/openapi\.json'/);
   assert.match(source, /fetch\('\/api\/v1\/proposals\/capabilities'/);
   assert.match(source, /id="proposalGenerateBtn" type="button" disabled>Checking Codex capability/);
   assert.match(source, /Codex generation unavailable/);
   assert.match(source, /Deterministic preview and client exports are available/);
   assert.doesNotMatch(source, /Start the Rust server to use Codex CLI generation/);
+});
+
+test('proposal workspace includes managed selection, quantity, internal evidence notes, and sticky actions', () => {
+  assert.match(source, /id="proposalManagedPlan"/);
+  assert.match(source, /id="proposalManagedQuantity"/);
+  assert.match(source, /proposalManagedInputFromForm\(primarySlug\)/);
+  assert.match(source, /id="proposalInternalNotes"[^>]*maxlength="4000"/);
+  assert.match(source, /internal=\{notes:document\.getElementById\('proposalInternalNotes'\)/);
+  assert.match(source, /\.proposal-controls\{[^}]*position:sticky/s);
+  assert.match(source, /max-height:calc\(100vh - 48px\);overflow:auto/);
+});
+
+test('browser FX uses same-origin API with embedded fallback and no direct Frankfurter request', () => {
+  assert.match(source, /fetch\('\/api\/v1\/fx'/);
+  const browserRefresh = source.slice(source.indexOf('// Refresh FX from the same-origin'));
+  assert.doesNotMatch(browserRefresh, /fetch\('https:\/\/api\.frankfurter\.app/);
+});
+
+test('legacy flattened taxonomy is explicitly release-blocking in the report', () => {
+  assert.match(source, /Legacy taxonomy dataset — not release-current/);
+  assert.match(source, /Core VPS \(SSD only\), Performance VPS \(NVMe only\), and Max Performance VPS/);
+  assert.match(source, /status: legacyTaxonomyFamilies\.length \? 'legacy_flattened' : 'canonical'/);
 });
 
 test('tax labels distinguish provider cash, recoverability, owner margin, and output GST order', () => {

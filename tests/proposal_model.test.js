@@ -318,6 +318,7 @@ test('silent and internal facts never enter client document, JSON, CSV, brief, o
       project_name: 'Safe project', recipient: 'recipient-secret@example.test',
       notes: 'INTERNAL CLIENT NOTE',
     },
+    internal: { notes: 'OPERATOR ONLY NOTE' },
     primary: {
       ...input().primary,
       plan_url: 'https://provider-secret.example/plan',
@@ -350,7 +351,15 @@ test('silent and internal facts never enter client document, JSON, CSV, brief, o
   }
   const internal = JSON.stringify(model.internalEvidence(snapshot));
   assert.match(internal, /recipient-secret@example\.test/);
+  assert.match(internal, /OPERATOR ONLY NOTE/);
   assert.match(internal, /"local_identity_is_security_hash":false/);
+});
+
+test('internal notes are bounded and available only in internal evidence', () => {
+  const snapshot = model.makeSnapshot(input({ internal: { notes: 'x'.repeat(4100) } }));
+  assert.equal(snapshot.internal.notes.length, 4000);
+  assert.doesNotMatch(JSON.stringify(model.clientProjection(snapshot)), /"internal"|x{100}/);
+  assert.match(JSON.stringify(model.internalEvidence(snapshot)), /x{100}/);
 });
 
 test('total-only and calculated-only modes expose totals without naming hidden details', () => {
