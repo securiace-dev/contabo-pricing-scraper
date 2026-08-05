@@ -197,7 +197,9 @@ final class ProposalMaker
         $quote = $this->api->quote([
             'plan_slug' => $planSlug,
             'period_months' => $period,
-            'selections' => $selections,
+            // Rust's QuoteRequest expects a JSON object/map. PHP encodes an
+            // empty array as [], so preserve the empty map shape explicitly.
+            'selections' => $selections === [] ? (object) [] : $selections,
             'currency' => $currency,
             'gst' => $this->settings->applyGst18,
             'fx_markup' => max(0.0, min(0.15, $this->settings->fxMarkupPct / 100)),
@@ -686,7 +688,7 @@ final class ProposalMaker
             $quote = $this->api->quote([
                 'plan_slug' => $slug,
                 'period_months' => $period,
-                'selections' => [],
+                'selections' => (object) [],
                 'currency' => $currency,
                 'gst' => $this->settings->applyGst18,
                 'fx_markup' => max(0.0, min(0.15, $this->settings->fxMarkupPct / 100)),

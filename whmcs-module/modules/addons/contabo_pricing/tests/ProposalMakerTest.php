@@ -13,9 +13,14 @@ final class ProposalMakerRequestExecutor implements RequestExecutor
 {
     /** @var list<array{0:int,1:string,2:int,3:string}> */
     public array $queue = [];
+    /** @var list<string> */
+    public array $bodies = [];
 
     public function execute(string $method, string $url, array $headers, ?string $body, int $timeoutSec): array
     {
+        if ($body !== null) {
+            $this->bodies[] = $body;
+        }
         $response = array_shift($this->queue);
         if ($response === null) {
             return [200, '{}', 0, ''];
@@ -118,6 +123,26 @@ final class ProposalMakerTest extends TestCase
         self::assertSame(0.0, (float) $result['snapshot']['pricing']['owner_markup_pct']);
         self::assertSame(0.0, (float) $result['snapshot']['pricing']['owner_provider']);
         self::assertSame(0.0, (float) $result['snapshot']['pricing']['owner_managed']);
+    }
+
+    public function testEmptySelectionsAreSentAsJsonObjectsToRustApi(): void
+    {
+        $executor = new ProposalMakerRequestExecutor();
+        $executor->queue[] = [200, '{"final_monthly":100,"final_setup":0}', 0, ''];
+        $executor->queue[] = [200, '{"final_monthly":120,"final_setup":0}', 0, ''];
+        $maker = new ProposalMaker($this->settings(), new ApiClient($this->settings(), 8, $executor));
+
+        $request = $this->request();
+        $request['selections_json'] = '{}';
+        $request['comparison_plan_slug'] = 'core-vps-2';
+        $maker->build($request);
+
+        self::assertCount(2, $executor->bodies);
+        foreach ($executor->bodies as $body) {
+            $decoded = json_decode($body);
+            self::assertIsObject($decoded);
+            self::assertIsObject($decoded->selections);
+        }
     }
 
     public function testCodexDocumentOnlyReplacesSafeNarrativeWording(): void
