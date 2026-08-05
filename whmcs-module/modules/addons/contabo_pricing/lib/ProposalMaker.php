@@ -176,7 +176,14 @@ final class ProposalMaker
             throw new \InvalidArgumentException('Proposal currency must be INR or EUR.');
         }
 
-        $ownerPct = $this->boundedPercent($req['owner_markup_pct'] ?? 0, 0, 100, 'Owner markup');
+        // The form treats owner markup as optional. Browsers may submit an
+        // empty number input as an empty string, which should mean no markup
+        // rather than blocking an otherwise valid preview.
+        $ownerMarkupInput = $req['owner_markup_pct'] ?? 0;
+        if (is_string($ownerMarkupInput) && trim($ownerMarkupInput) === '') {
+            $ownerMarkupInput = 0;
+        }
+        $ownerPct = $this->boundedPercent($ownerMarkupInput, 0, 100, 'Owner markup');
         $ownerScope = (string) ($req['owner_markup_scope'] ?? 'provider_only');
         if (!in_array($ownerScope, ['provider_only', 'provider_and_managed'], true)) {
             $ownerScope = 'provider_only';

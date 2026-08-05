@@ -17,6 +17,10 @@ $v = static function (string $key, string $default = '') use ($f): string {
 $selected = static function (string $key, string $value) use ($v): string {
     return $v($key) === $value ? ' selected' : '';
 };
+$ownerMarkup = trim($v('owner_markup_pct', '0'));
+if ($ownerMarkup === '') {
+    $ownerMarkup = '0';
+}
 $hiddenKeys = [
     'client_id', 'client_name', 'proposal_title', 'plan_slug', 'period_months',
     'region', 'os', 'canonical_family', 'selections_json', 'managed_tier',
@@ -151,7 +155,7 @@ $hiddenKeys = [
     </div>
     <div class="cb-field">
       <label for="owner_markup_pct">Owner markup %</label>
-      <input id="owner_markup_pct" name="owner_markup_pct" type="number" min="0" max="100" step="0.1" value="<?= $esc($v('owner_markup_pct', '0')) ?>">
+      <input id="owner_markup_pct" name="owner_markup_pct" type="number" min="0" max="100" step="0.1" value="<?= $esc($ownerMarkup) ?>">
     </div>
     <div class="cb-field">
       <label for="owner_markup_scope">Owner markup scope</label>

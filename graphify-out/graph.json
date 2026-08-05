@@ -5258,7 +5258,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "contabo_pricing_hooks",
-      "community": 22,
+      "community": 89,
       "norm_label": "hooks.php"
     },
     {
@@ -5268,7 +5268,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "contabo_pricing_hooks_contabo_pricing_loadmodulevars",
-      "community": 22,
+      "community": 89,
       "norm_label": "contabo_pricing_loadmodulevars()"
     },
     {
@@ -5278,7 +5278,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "contabo_pricing_hooks_getdata",
-      "community": 22,
+      "community": 89,
       "norm_label": "getdata()"
     },
     {
@@ -5288,7 +5288,7 @@
       "source_location": "L199",
       "_origin": "ast",
       "id": "contabo_pricing_hooks_generateoutput",
-      "community": 22,
+      "community": 89,
       "norm_label": "generateoutput()"
     },
     {
@@ -5338,7 +5338,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_dispatch",
-      "community": 25,
+      "community": 27,
       "norm_label": ".dispatch()"
     },
     {
@@ -5458,7 +5458,7 @@
       "source_location": "L489",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_dashboard",
-      "community": 31,
+      "community": 27,
       "norm_label": ".dashboard()"
     },
     {
@@ -5468,7 +5468,7 @@
       "source_location": "L523",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_proposals",
-      "community": 167,
+      "community": 27,
       "norm_label": ".proposals()"
     },
     {
@@ -5588,7 +5588,7 @@
       "source_location": "L916",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_annotatedrift",
-      "community": 27,
+      "community": 49,
       "norm_label": ".annotatedrift()"
     },
     {
@@ -5598,7 +5598,7 @@
       "source_location": "L962",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_currenteffectivemonthly",
-      "community": 27,
+      "community": 49,
       "norm_label": ".currenteffectivemonthly()"
     },
     {
@@ -5748,7 +5748,7 @@
       "source_location": "L1462",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_configdiff",
-      "community": 25,
+      "community": 27,
       "norm_label": ".configdiff()"
     },
     {
@@ -5938,7 +5938,7 @@
       "source_location": "L2282",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_syncrun",
-      "community": 25,
+      "community": 27,
       "norm_label": ".syncrun()"
     },
     {
@@ -5978,7 +5978,7 @@
       "source_location": "L2354",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_currencyreport",
-      "community": 113,
+      "community": 27,
       "norm_label": ".currencyreport()"
     },
     {
@@ -5988,7 +5988,7 @@
       "source_location": "L2436",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_currencyreportcsv",
-      "community": 113,
+      "community": 25,
       "norm_label": ".currencyreportcsv()"
     },
     {
@@ -6098,7 +6098,7 @@
       "source_location": "L2813",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_maintenance",
-      "community": 31,
+      "community": 27,
       "norm_label": ".maintenance()"
     },
     {
@@ -6118,7 +6118,7 @@
       "source_location": "L2832",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_maintenancepurge",
-      "community": 113,
+      "community": 25,
       "norm_label": ".maintenancepurge()"
     },
     {
@@ -6128,7 +6128,7 @@
       "source_location": "L2919",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_maintenancepurgepreview",
-      "community": 113,
+      "community": 25,
       "norm_label": ".maintenancepurgepreview()"
     },
     {
@@ -6138,7 +6138,7 @@
       "source_location": "L2947",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_addontables",
-      "community": 113,
+      "community": 25,
       "norm_label": ".addontables()"
     },
     {
@@ -6158,7 +6158,7 @@
       "source_location": "L3045",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_computecyclestats",
-      "community": 27,
+      "community": 31,
       "norm_label": ".computecyclestats()"
     },
     {
@@ -6228,7 +6228,7 @@
       "source_location": "L3431",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_servicepricingtabcontent",
-      "community": 113,
+      "community": 17,
       "norm_label": ".servicepricingtabcontent()"
     },
     {
@@ -6818,7 +6818,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository",
-      "community": 22,
+      "community": 16,
       "norm_label": "configoptionlinkrepository.php"
     },
     {
@@ -6828,7 +6828,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository",
-      "community": 22,
+      "community": 16,
       "norm_label": "configoptionlinkrepository"
     },
     {
@@ -6838,7 +6838,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_upsertgrouplink",
-      "community": 22,
+      "community": 16,
       "norm_label": ".upsertgrouplink()"
     },
     {
@@ -6848,7 +6848,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findgrouplink",
-      "community": 22,
+      "community": 16,
       "norm_label": ".findgrouplink()"
     },
     {
@@ -6858,7 +6858,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_upsertoptionlink",
-      "community": 22,
+      "community": 16,
       "norm_label": ".upsertoptionlink()"
     },
     {
@@ -6868,7 +6868,7 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findoptionlink",
-      "community": 22,
+      "community": 16,
       "norm_label": ".findoptionlink()"
     },
     {
@@ -6878,7 +6878,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_listoptionlinksforprofile",
-      "community": 22,
+      "community": 16,
       "norm_label": ".listoptionlinksforprofile()"
     },
     {
@@ -6888,7 +6888,7 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_upsertvaluelink",
-      "community": 22,
+      "community": 16,
       "norm_label": ".upsertvaluelink()"
     },
     {
@@ -6898,7 +6898,7 @@
       "source_location": "L192",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findvaluelink",
-      "community": 22,
+      "community": 16,
       "norm_label": ".findvaluelink()"
     },
     {
@@ -6908,7 +6908,7 @@
       "source_location": "L207",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findvaluelinkbywhmcssubid",
-      "community": 22,
+      "community": 16,
       "norm_label": ".findvaluelinkbywhmcssubid()"
     },
     {
@@ -7768,7 +7768,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_dimensionparser",
-      "community": 16,
+      "community": 23,
       "norm_label": "dimensionparser.php"
     },
     {
@@ -7778,7 +7778,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser",
-      "community": 16,
+      "community": 23,
       "norm_label": "dimensionparser"
     },
     {
@@ -7798,7 +7798,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser_clampdelta",
-      "community": 16,
+      "community": 23,
       "norm_label": ".clampdelta()"
     },
     {
@@ -7808,7 +7808,7 @@
       "source_location": "L168",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser_splitnetworking",
-      "community": 16,
+      "community": 23,
       "norm_label": ".splitnetworking()"
     },
     {
@@ -7818,7 +7818,7 @@
       "source_location": "L198",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser_emitsinglechoice",
-      "community": 16,
+      "community": 23,
       "norm_label": ".emitsinglechoice()"
     },
     {
@@ -7838,7 +7838,7 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "lib_dimensionparser_dimensionparser_buildvalues",
-      "community": 16,
+      "community": 23,
       "norm_label": ".buildvalues()"
     },
     {
@@ -8138,7 +8138,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_installer",
-      "community": 113,
+      "community": 22,
       "norm_label": "installer.php"
     },
     {
@@ -8148,7 +8148,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_installer_installer",
-      "community": 113,
+      "community": 22,
       "norm_label": "installer"
     },
     {
@@ -8158,7 +8158,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "lib_installer_installer_install",
-      "community": 113,
+      "community": 22,
       "norm_label": ".install()"
     },
     {
@@ -8168,7 +8168,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "lib_installer_installer_upgrade",
-      "community": 113,
+      "community": 22,
       "norm_label": ".upgrade()"
     },
     {
@@ -8178,7 +8178,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto2",
-      "community": 113,
+      "community": 22,
       "norm_label": ".migrateto2()"
     },
     {
@@ -8188,7 +8188,7 @@
       "source_location": "L427",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto3",
-      "community": 113,
+      "community": 31,
       "norm_label": ".migrateto3()"
     },
     {
@@ -8198,7 +8198,7 @@
       "source_location": "L727",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto4",
-      "community": 113,
+      "community": 22,
       "norm_label": ".migrateto4()"
     },
     {
@@ -8208,7 +8208,7 @@
       "source_location": "L795",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto5",
-      "community": 113,
+      "community": 22,
       "norm_label": ".migrateto5()"
     },
     {
@@ -8218,7 +8218,7 @@
       "source_location": "L1046",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto6",
-      "community": 113,
+      "community": 22,
       "norm_label": ".migrateto6()"
     },
     {
@@ -8228,7 +8228,7 @@
       "source_location": "L1077",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto7",
-      "community": 113,
+      "community": 22,
       "norm_label": ".migrateto7()"
     },
     {
@@ -8238,7 +8238,7 @@
       "source_location": "L1120",
       "_origin": "ast",
       "id": "lib_installer_installer_migrateto8",
-      "community": 113,
+      "community": 22,
       "norm_label": ".migrateto8()"
     },
     {
@@ -9038,7 +9038,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_profilemanager",
-      "community": 93,
+      "community": 14,
       "norm_label": "profilemanager.php"
     },
     {
@@ -9048,7 +9048,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_profilemanager_profileslugconflictexception",
-      "community": 93,
+      "community": 14,
       "norm_label": "profileslugconflictexception"
     },
     {
@@ -9058,7 +9058,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "runtimeexception",
-      "community": 93,
+      "community": 14,
       "norm_label": "runtimeexception"
     },
     {
@@ -9068,7 +9068,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "lib_profilemanager_profileslugconflictexception_construct",
-      "community": 93,
+      "community": 14,
       "norm_label": ".__construct()"
     },
     {
@@ -9078,7 +9078,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager",
-      "community": 178,
+      "community": 22,
       "norm_label": "profilemanager"
     },
     {
@@ -9088,7 +9088,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_construct",
-      "community": 178,
+      "community": 22,
       "norm_label": ".__construct()"
     },
     {
@@ -9098,7 +9098,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_profilemanager_php_settings",
-      "community": 178,
+      "community": 22,
       "norm_label": "settings"
     },
     {
@@ -9108,7 +9108,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listprofiles",
-      "community": 178,
+      "community": 22,
       "norm_label": ".listprofiles()"
     },
     {
@@ -9118,7 +9118,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listtrashed",
-      "community": 178,
+      "community": 22,
       "norm_label": ".listtrashed()"
     },
     {
@@ -9128,7 +9128,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_softdelete",
-      "community": 178,
+      "community": 22,
       "norm_label": ".softdelete()"
     },
     {
@@ -9138,7 +9138,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_restore",
-      "community": 178,
+      "community": 22,
       "norm_label": ".restore()"
     },
     {
@@ -9148,7 +9148,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_find",
-      "community": 178,
+      "community": 22,
       "norm_label": ".find()"
     },
     {
@@ -9158,7 +9158,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_findbyslug",
-      "community": 178,
+      "community": 22,
       "norm_label": ".findbyslug()"
     },
     {
@@ -9168,7 +9168,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_create",
-      "community": 178,
+      "community": 22,
       "norm_label": ".create()"
     },
     {
@@ -9178,7 +9178,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_update",
-      "community": 178,
+      "community": 22,
       "norm_label": ".update()"
     },
     {
@@ -9188,7 +9188,7 @@
       "source_location": "L199",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_setactive",
-      "community": 178,
+      "community": 22,
       "norm_label": ".setactive()"
     },
     {
@@ -9198,7 +9198,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_appendversion",
-      "community": 178,
+      "community": 22,
       "norm_label": ".appendversion()"
     },
     {
@@ -9208,7 +9208,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_profilemanager_php_profileversioninput",
-      "community": 178,
+      "community": 22,
       "norm_label": "profileversioninput"
     },
     {
@@ -9218,7 +9218,7 @@
       "source_location": "L243",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_latestversion",
-      "community": 178,
+      "community": 22,
       "norm_label": ".latestversion()"
     },
     {
@@ -9228,7 +9228,7 @@
       "source_location": "L253",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listversions",
-      "community": 178,
+      "community": 22,
       "norm_label": ".listversions()"
     },
     {
@@ -9238,7 +9238,7 @@
       "source_location": "L267",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_buildslug",
-      "community": 178,
+      "community": 22,
       "norm_label": ".buildslug()"
     },
     {
@@ -9585,7 +9585,7 @@
       "label": ".generateWithCodex()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L375",
+      "source_location": "L382",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_generatewithcodex",
       "community": 177,
@@ -9595,7 +9595,7 @@
       "label": ".reportContext()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L439",
+      "source_location": "L446",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_reportcontext",
       "community": 177,
@@ -9605,7 +9605,7 @@
       "label": ".reportVisibility()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L473",
+      "source_location": "L480",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_reportvisibility",
       "community": 177,
@@ -9615,7 +9615,7 @@
       "label": ".replaceNarrative()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L488",
+      "source_location": "L495",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_replacenarrative",
       "community": 177,
@@ -9625,7 +9625,7 @@
       "label": ".decodeReportDocument()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L518",
+      "source_location": "L525",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_decodereportdocument",
       "community": 177,
@@ -9635,7 +9635,7 @@
       "label": ".normalizeReportDocument()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L535",
+      "source_location": "L542",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_normalizereportdocument",
       "community": 177,
@@ -9645,7 +9645,7 @@
       "label": ".mergeReportNarrative()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L575",
+      "source_location": "L582",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_mergereportnarrative",
       "community": 177,
@@ -9655,7 +9655,7 @@
       "label": ".reportSectionText()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L594",
+      "source_location": "L601",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_reportsectiontext",
       "community": 177,
@@ -9665,7 +9665,7 @@
       "label": ".safeReportText()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L614",
+      "source_location": "L621",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_safereporttext",
       "community": 177,
@@ -9675,7 +9675,7 @@
       "label": ".clientArtifactSnapshot()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L622",
+      "source_location": "L629",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_clientartifactsnapshot",
       "community": 177,
@@ -9685,7 +9685,7 @@
       "label": ".publicManagedItems()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L657",
+      "source_location": "L664",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_publicmanageditems",
       "community": 177,
@@ -9695,7 +9695,7 @@
       "label": ".comparison()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L672",
+      "source_location": "L679",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_comparison",
       "community": 177,
@@ -9705,7 +9705,7 @@
       "label": ".narrative()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L712",
+      "source_location": "L719",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_narrative",
       "community": 177,
@@ -9715,7 +9715,7 @@
       "label": ".deterministicNarrative()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L748",
+      "source_location": "L755",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_deterministicnarrative",
       "community": 177,
@@ -9725,7 +9725,7 @@
       "label": ".callCompatibleProvider()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L777",
+      "source_location": "L784",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_callcompatibleprovider",
       "community": 177,
@@ -9735,7 +9735,7 @@
       "label": ".validNarrative()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L900",
+      "source_location": "L907",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_validnarrative",
       "community": 177,
@@ -9745,7 +9745,7 @@
       "label": ".renderHtml()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L942",
+      "source_location": "L949",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_renderhtml",
       "community": 177,
@@ -9755,7 +9755,7 @@
       "label": ".renderText()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L999",
+      "source_location": "L1006",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_rendertext",
       "community": 177,
@@ -9765,7 +9765,7 @@
       "label": ".decodeSelections()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1043",
+      "source_location": "L1050",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_decodeselections",
       "community": 177,
@@ -9775,7 +9775,7 @@
       "label": ".resolveFxRate()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1069",
+      "source_location": "L1076",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_resolvefxrate",
       "community": 177,
@@ -9785,7 +9785,7 @@
       "label": ".safeSlug()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1084",
+      "source_location": "L1091",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_safeslug",
       "community": 177,
@@ -9795,7 +9795,7 @@
       "label": ".boundedPercent()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1090",
+      "source_location": "L1097",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_boundedpercent",
       "community": 177,
@@ -9805,7 +9805,7 @@
       "label": ".positiveNumber()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1100",
+      "source_location": "L1107",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_positivenumber",
       "community": 177,
@@ -9815,7 +9815,7 @@
       "label": ".cleanText()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1108",
+      "source_location": "L1115",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_cleantext",
       "community": 177,
@@ -9825,7 +9825,7 @@
       "label": ".money()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1114",
+      "source_location": "L1121",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_money",
       "community": 177,
@@ -9835,7 +9835,7 @@
       "label": ".sendEmail()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1128",
+      "source_location": "L1135",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_sendemail",
       "community": 177,
@@ -9845,7 +9845,7 @@
       "label": ".safeError()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1186",
+      "source_location": "L1193",
       "_origin": "ast",
       "id": "lib_proposalmaker_proposalmaker_safeerror",
       "community": 177,
@@ -9855,7 +9855,7 @@
       "label": "Throwable",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
-      "source_location": "L1186",
+      "source_location": "L1193",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_proposalmaker_php_throwable",
       "community": 177,
@@ -10378,7 +10378,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_schemamismatchexception",
-      "community": 93,
+      "community": 14,
       "norm_label": "schemamismatchexception.php"
     },
     {
@@ -10388,7 +10388,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "lib_schemamismatchexception_schemamismatchexception",
-      "community": 93,
+      "community": 14,
       "norm_label": "schemamismatchexception"
     },
     {
@@ -13488,7 +13488,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_dimensionparsertest",
-      "community": 16,
+      "community": 23,
       "norm_label": "dimensionparsertest.php"
     },
     {
@@ -13498,7 +13498,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest",
-      "community": 16,
+      "community": 23,
       "norm_label": "dimensionparsertest"
     },
     {
@@ -13508,7 +13508,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_options",
-      "community": 16,
+      "community": 23,
       "norm_label": ".options()"
     },
     {
@@ -13518,7 +13518,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_indexbydimensionkey",
-      "community": 16,
+      "community": 23,
       "norm_label": ".indexbydimensionkey()"
     },
     {
@@ -13528,7 +13528,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testimagebecomesexactlyonespec",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testimagebecomesexactlyonespec()"
     },
     {
@@ -13538,7 +13538,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testnetworkingsplitsintothreespecs",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testnetworkingsplitsintothreespecs()"
     },
     {
@@ -13548,7 +13548,7 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testnetworkingconcernscarryonlytheirownrows",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testnetworkingconcernscarryonlytheirownrows()"
     },
     {
@@ -13558,7 +13558,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testnetworkingoptiontypes",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testnetworkingoptiontypes()"
     },
     {
@@ -13568,7 +13568,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testregionstoragedataprotectioneachonespec",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testregionstoragedataprotectioneachonespec()"
     },
     {
@@ -13578,7 +13578,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testsinglechoiceoptiontypes",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testsinglechoiceoptiontypes()"
     },
     {
@@ -13588,7 +13588,7 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testtotalspeccount",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testtotalspeccount()"
     },
     {
@@ -13598,7 +13598,7 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testsinglevaluedimensionisomitted",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testsinglevaluedimensionisomitted()"
     },
     {
@@ -13608,7 +13608,7 @@
       "source_location": "L182",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testsinglevaluenetworkingconcernomitted",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testsinglevaluenetworkingconcernomitted()"
     },
     {
@@ -13618,7 +13618,7 @@
       "source_location": "L202",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testdeltaspassedthroughunclamped",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testdeltaspassedthroughunclamped()"
     },
     {
@@ -13628,7 +13628,7 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testunknowndimensionstillsurfacesasspec",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testunknowndimensionstillsurfacesasspec()"
     },
     {
@@ -13638,7 +13638,7 @@
       "source_location": "L229",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testnonarraydimensionignored",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testnonarraydimensionignored()"
     },
     {
@@ -13648,7 +13648,7 @@
       "source_location": "L241",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testclampdeltafloorsnegativetozero",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testclampdeltafloorsnegativetozero()"
     },
     {
@@ -13658,7 +13658,7 @@
       "source_location": "L246",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testclampdeltazerostayszero",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testclampdeltazerostayszero()"
     },
     {
@@ -13668,7 +13668,7 @@
       "source_location": "L251",
       "_origin": "ast",
       "id": "tests_dimensionparsertest_dimensionparsertest_testclampdeltapositivepassesthrough",
-      "community": 16,
+      "community": 23,
       "norm_label": ".testclampdeltapositivepassesthrough()"
     },
     {
@@ -14178,7 +14178,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "tests_fakecapsule_blueprint_date",
-      "community": 113,
+      "community": 25,
       "norm_label": ".date()"
     },
     {
@@ -14658,7 +14658,7 @@
       "source_location": "L538",
       "_origin": "ast",
       "id": "tests_fakecapsule_capsulequery_count",
-      "community": 27,
+      "community": 31,
       "norm_label": ".count()"
     },
     {
@@ -15438,7 +15438,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_migrationv3test",
-      "community": 160,
+      "community": 20,
       "norm_label": "migrationv3test.php"
     },
     {
@@ -15448,7 +15448,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test",
-      "community": 160,
+      "community": 20,
       "norm_label": "migrationv3test"
     },
     {
@@ -15458,7 +15458,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_setup",
-      "community": 160,
+      "community": 20,
       "norm_label": ".setup()"
     },
     {
@@ -15468,7 +15468,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_testmigrateto3succeedsonfreshschemawithnolegacycolumns",
-      "community": 160,
+      "community": 20,
       "norm_label": ".testmigrateto3succeedsonfreshschemawithnolegacycolumns()"
     },
     {
@@ -15478,7 +15478,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_testmigrateto3isidempotentonalreadymigratedschema",
-      "community": 160,
+      "community": 20,
       "norm_label": ".testmigrateto3isidempotentonalreadymigratedschema()"
     },
     {
@@ -15488,7 +15488,7 @@
       "source_location": "L142",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_testmigrateto3backfillslegacybooleansintobitmasks",
-      "community": 160,
+      "community": 20,
       "norm_label": ".testmigrateto3backfillslegacybooleansintobitmasks()"
     },
     {
@@ -16882,10 +16882,20 @@
       "norm_label": ".testsilentmanagedservicecountsbutisnotnamedinclientartifact()"
     },
     {
-      "label": ".testCodexDocumentOnlyReplacesSafeNarrativeWording()",
+      "label": ".testBlankOwnerMarkupDefaultsToZero()",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L108",
+      "_origin": "ast",
+      "id": "tests_proposalmakertest_proposalmakertest_testblankownermarkupdefaultstozero",
+      "community": 10,
+      "norm_label": ".testblankownermarkupdefaultstozero()"
+    },
+    {
+      "label": ".testCodexDocumentOnlyReplacesSafeNarrativeWording()",
+      "file_type": "code",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
+      "source_location": "L123",
       "_origin": "ast",
       "id": "tests_proposalmakertest_proposalmakertest_testcodexdocumentonlyreplacessafenarrativewording",
       "community": 10,
@@ -19018,7 +19028,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_bootstrap_logactivity",
-      "community": 113,
+      "community": 25,
       "norm_label": "logactivity()"
     },
     {
@@ -19508,7 +19518,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception",
-      "community": 93,
+      "community": 14,
       "norm_label": "contaboprovisioningexception.php"
     },
     {
@@ -19518,7 +19528,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception",
-      "community": 93,
+      "community": 14,
       "norm_label": "contaboprovisioningexception"
     },
     {
@@ -24500,7 +24510,7 @@
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProfileManager.php",
       "source_location": "L28",
-      "community": 93,
+      "community": 14,
       "norm_label": ".__construct()",
       "id": "profilemanager_profileslugconflictexception_construct"
     },
@@ -24509,7 +24519,7 @@
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProfileManager.php",
       "source_location": "L54",
-      "community": 178,
+      "community": 22,
       "norm_label": ".__construct()",
       "id": "profilemanager_profilemanager_construct"
     },
@@ -26047,7 +26057,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 66,
       "norm_label": "scheduledchangeprocessor",
       "id": "scheduled_change_processor"
     },
@@ -26411,7 +26421,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 66,
       "norm_label": "catalog_cycles_mask (customer-facing gate)",
       "id": "catalog_cycles_mask"
     },
@@ -26606,7 +26616,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 89,
+      "community": 2,
       "norm_label": "schema v8 (migrateto8, additive idempotent)",
       "id": "schema_v8"
     },
@@ -26645,7 +26655,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 89,
+      "community": 180,
       "norm_label": "schemahealth (assertormigrate, required columns)",
       "id": "schema_health"
     },
@@ -26658,7 +26668,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 89,
+      "community": 2,
       "norm_label": "deploy runbook",
       "id": "deploy_runbook"
     },
@@ -26671,7 +26681,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 89,
+      "community": 2,
       "norm_label": "predeploy-check.sh gate (fail-closed)",
       "id": "predeploy_gate"
     },
@@ -26684,7 +26694,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 89,
+      "community": 2,
       "norm_label": "live-schema smoke (whmcs 8.13/9.0, information_schema)",
       "id": "live_schema_smoke"
     },
@@ -26697,7 +26707,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 89,
+      "community": 2,
       "norm_label": "php 7.4 polyglot lint floor",
       "id": "php74_lint"
     },
@@ -26710,7 +26720,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 89,
+      "community": 2,
       "norm_label": "real-whmcs integration smoke (apply/drift/observe)",
       "id": "integration_smoke"
     },
@@ -26723,7 +26733,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 89,
+      "community": 180,
       "norm_label": "deploy.sh (rsync both modules, chown, verify)",
       "id": "deploy_sh"
     },
@@ -26736,7 +26746,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 90,
+      "community": 180,
       "norm_label": "contabo_vps provisioning module",
       "id": "contabo_vps_module"
     },
@@ -26749,7 +26759,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 89,
+      "community": 2,
       "norm_label": "fakecapsule test stub (wherenull/wherenotnull)",
       "id": "fake_capsule"
     },
@@ -26931,7 +26941,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 90,
+      "community": 180,
       "norm_label": "serviceconfigsnapshot (mod_contabo_service_config_snapshot)",
       "id": "service_config_snapshot"
     },
@@ -39513,9 +39523,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L716",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller",
-      "target": "lib_admincontroller_admincontroller_proposalform",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalform"
     },
     {
       "relation": "method",
@@ -39523,9 +39533,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L570",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller",
-      "target": "lib_admincontroller_admincontroller_proposalgeneratecodex",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalgeneratecodex"
     },
     {
       "relation": "method",
@@ -39533,9 +39543,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L540",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller",
-      "target": "lib_admincontroller_admincontroller_proposalpreview",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalpreview"
     },
     {
       "relation": "method",
@@ -39543,9 +39553,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L523",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller",
-      "target": "lib_admincontroller_admincontroller_proposals",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposals"
     },
     {
       "relation": "method",
@@ -39553,9 +39563,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L665",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller",
-      "target": "lib_admincontroller_admincontroller_proposalsendemail",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalsendemail"
     },
     {
       "relation": "method",
@@ -39563,9 +39573,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L607",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller",
-      "target": "lib_admincontroller_admincontroller_proposalsendticket",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalsendticket"
     },
     {
       "relation": "method",
@@ -39613,9 +39623,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L693",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller",
-      "target": "lib_admincontroller_admincontroller_renderproposalresult",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_renderproposalresult"
     },
     {
       "relation": "method",
@@ -40196,9 +40206,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_dispatch",
-      "target": "lib_admincontroller_admincontroller_proposalgeneratecodex",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalgeneratecodex"
     },
     {
       "relation": "calls",
@@ -40207,9 +40217,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_dispatch",
-      "target": "lib_admincontroller_admincontroller_proposalpreview",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalpreview"
     },
     {
       "relation": "calls",
@@ -40218,9 +40228,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L37",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_dispatch",
-      "target": "lib_admincontroller_admincontroller_proposals",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposals"
     },
     {
       "relation": "calls",
@@ -40229,9 +40239,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L41",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_dispatch",
-      "target": "lib_admincontroller_admincontroller_proposalsendemail",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalsendemail"
     },
     {
       "relation": "calls",
@@ -40240,9 +40250,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_dispatch",
-      "target": "lib_admincontroller_admincontroller_proposalsendticket",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalsendticket"
     },
     {
       "relation": "calls",
@@ -40646,9 +40656,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L532",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_proposals",
-      "target": "lib_admincontroller_admincontroller_proposalform",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalform"
     },
     {
       "relation": "calls",
@@ -40657,9 +40667,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L527",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_proposals",
-      "target": "lib_admincontroller_admincontroller_render",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_render"
     },
     {
       "relation": "calls",
@@ -40679,9 +40689,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L562",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_proposalpreview",
-      "target": "lib_admincontroller_admincontroller_proposalform",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalform"
     },
     {
       "relation": "calls",
@@ -40690,9 +40700,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L557",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_proposalpreview",
-      "target": "lib_admincontroller_admincontroller_render",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_render"
     },
     {
       "relation": "calls",
@@ -40734,9 +40744,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L599",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_proposalgeneratecodex",
-      "target": "lib_admincontroller_admincontroller_proposalform",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalform"
     },
     {
       "relation": "calls",
@@ -40745,9 +40755,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L594",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_proposalgeneratecodex",
-      "target": "lib_admincontroller_admincontroller_render",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_render"
     },
     {
       "relation": "calls",
@@ -40789,9 +40799,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L661",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_proposalsendticket",
-      "target": "lib_admincontroller_admincontroller_renderproposalresult",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_renderproposalresult"
     },
     {
       "relation": "calls",
@@ -40833,9 +40843,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L689",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_proposalsendemail",
-      "target": "lib_admincontroller_admincontroller_renderproposalresult",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_renderproposalresult"
     },
     {
       "relation": "calls",
@@ -40866,9 +40876,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L708",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_renderproposalresult",
-      "target": "lib_admincontroller_admincontroller_proposalform",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_proposalform"
     },
     {
       "relation": "calls",
@@ -40877,9 +40887,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php",
       "source_location": "L703",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_renderproposalresult",
-      "target": "lib_admincontroller_admincontroller_render",
-      "confidence_score": 1.0
+      "target": "lib_admincontroller_admincontroller_render"
     },
     {
       "relation": "calls",
@@ -42543,9 +42553,9 @@
       "source_location": "L2781",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "lib_admincontroller_admincontroller_rendersaveerror",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_admincontroller_php_throwable",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_admincontroller_php_throwable"
     },
     {
       "relation": "calls",
@@ -43038,9 +43048,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ApiClient.php",
       "source_location": "L95",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_apiclient_apiclient",
-      "target": "lib_apiclient_apiclient_proposalcapabilities",
-      "confidence_score": 1.0
+      "target": "lib_apiclient_apiclient_proposalcapabilities"
     },
     {
       "relation": "method",
@@ -43048,9 +43058,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ApiClient.php",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_apiclient_apiclient",
-      "target": "lib_apiclient_apiclient_proposalgenerate",
-      "confidence_score": 1.0
+      "target": "lib_apiclient_apiclient_proposalgenerate"
     },
     {
       "relation": "method",
@@ -43058,9 +43068,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ApiClient.php",
       "source_location": "L113",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_apiclient_apiclient",
-      "target": "lib_apiclient_apiclient_proposaljob",
-      "confidence_score": 1.0
+      "target": "lib_apiclient_apiclient_proposaljob"
     },
     {
       "relation": "method",
@@ -43240,9 +43250,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ApiClient.php",
       "source_location": "L97",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_apiclient_apiclient_proposalcapabilities",
-      "target": "lib_apiclient_apiclient_get",
-      "confidence_score": 1.0
+      "target": "lib_apiclient_apiclient_get"
     },
     {
       "relation": "calls",
@@ -43251,9 +43261,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ApiClient.php",
       "source_location": "L109",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_apiclient_apiclient_proposalgenerate",
-      "target": "lib_apiclient_apiclient_post",
-      "confidence_score": 1.0
+      "target": "lib_apiclient_apiclient_post"
     },
     {
       "relation": "calls",
@@ -43262,9 +43272,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ApiClient.php",
       "source_location": "L115",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_apiclient_apiclient_proposaljob",
-      "target": "lib_apiclient_apiclient_get",
-      "confidence_score": 1.0
+      "target": "lib_apiclient_apiclient_get"
     },
     {
       "relation": "calls",
@@ -45154,9 +45164,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/CurlRequestExecutor.php",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_curlrequestexecutor_curlrequestexecutor",
-      "target": "requestexecutor",
-      "confidence_score": 1.0
+      "target": "requestexecutor"
     },
     {
       "relation": "imports",
@@ -45165,9 +45175,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ApiClientTest.php",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_apiclienttest",
-      "target": "requestexecutor",
-      "confidence_score": 1.0
+      "target": "requestexecutor"
     },
     {
       "relation": "implements",
@@ -45175,9 +45185,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ApiClientTest.php",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_apiclienttest_mockrequestexecutor",
-      "target": "requestexecutor",
-      "confidence_score": 1.0
+      "target": "requestexecutor"
     },
     {
       "relation": "imports",
@@ -45186,9 +45196,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest",
-      "target": "requestexecutor",
-      "confidence_score": 1.0
+      "target": "requestexecutor"
     },
     {
       "relation": "implements",
@@ -45196,9 +45206,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakerrequestexecutor",
-      "target": "requestexecutor",
-      "confidence_score": 1.0
+      "target": "requestexecutor"
     },
     {
       "relation": "contains",
@@ -50461,9 +50471,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker"
     },
     {
       "relation": "method",
@@ -50471,9 +50481,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1090",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_boundedpercent",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_boundedpercent"
     },
     {
       "relation": "method",
@@ -50481,9 +50491,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L162",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_build",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_build"
     },
     {
       "relation": "method",
@@ -50491,9 +50501,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L777",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_callcompatibleprovider",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_callcompatibleprovider"
     },
     {
       "relation": "method",
@@ -50501,9 +50511,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L130",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_catalogue",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_catalogue"
     },
     {
       "relation": "method",
@@ -50511,9 +50521,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1108",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_cleantext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_cleantext"
     },
     {
       "relation": "method",
@@ -50521,9 +50531,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L622",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_clientartifactsnapshot",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_clientartifactsnapshot"
     },
     {
       "relation": "method",
@@ -50531,9 +50541,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L672",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_comparison",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_comparison"
     },
     {
       "relation": "method",
@@ -50541,9 +50551,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_construct",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_construct"
     },
     {
       "relation": "method",
@@ -50551,9 +50561,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L518",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_decodereportdocument",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_decodereportdocument"
     },
     {
       "relation": "method",
@@ -50561,9 +50571,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1043",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_decodeselections",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_decodeselections"
     },
     {
       "relation": "method",
@@ -50571,9 +50581,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L748",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_deterministicnarrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_deterministicnarrative"
     },
     {
       "relation": "method",
@@ -50581,9 +50591,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L375",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_generatewithcodex",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_generatewithcodex"
     },
     {
       "relation": "method",
@@ -50591,9 +50601,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L50",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_managedtiers",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_managedtiers"
     },
     {
       "relation": "method",
@@ -50601,9 +50611,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L575",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_mergereportnarrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_mergereportnarrative"
     },
     {
       "relation": "method",
@@ -50611,9 +50621,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_money",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_money"
     },
     {
       "relation": "method",
@@ -50621,9 +50631,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L712",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_narrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_narrative"
     },
     {
       "relation": "method",
@@ -50631,9 +50641,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L535",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_normalizereportdocument",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_normalizereportdocument"
     },
     {
       "relation": "method",
@@ -50641,9 +50651,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1100",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_positivenumber",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_positivenumber"
     },
     {
       "relation": "method",
@@ -50651,9 +50661,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L657",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_publicmanageditems",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_publicmanageditems"
     },
     {
       "relation": "method",
@@ -50661,9 +50671,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L942",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_renderhtml",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_renderhtml"
     },
     {
       "relation": "method",
@@ -50671,9 +50681,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L999",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_rendertext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_rendertext"
     },
     {
       "relation": "method",
@@ -50681,9 +50691,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L488",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_replacenarrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_replacenarrative"
     },
     {
       "relation": "method",
@@ -50691,9 +50701,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L439",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_reportcontext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_reportcontext"
     },
     {
       "relation": "method",
@@ -50701,9 +50711,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L594",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_reportsectiontext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_reportsectiontext"
     },
     {
       "relation": "method",
@@ -50711,9 +50721,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L473",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_reportvisibility",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_reportvisibility"
     },
     {
       "relation": "method",
@@ -50721,9 +50731,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1069",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_resolvefxrate",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_resolvefxrate"
     },
     {
       "relation": "method",
@@ -50731,9 +50741,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1186",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_safeerror",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_safeerror"
     },
     {
       "relation": "method",
@@ -50741,9 +50751,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L614",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_safereporttext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_safereporttext"
     },
     {
       "relation": "method",
@@ -50751,9 +50761,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1084",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_safeslug",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_safeslug"
     },
     {
       "relation": "method",
@@ -50761,9 +50771,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1128",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_sendemail",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_sendemail"
     },
     {
       "relation": "method",
@@ -50771,9 +50781,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L900",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker",
-      "target": "lib_proposalmaker_proposalmaker_validnarrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_validnarrative"
     },
     {
       "relation": "references",
@@ -50782,9 +50792,9 @@
       "source_location": "L34",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_construct",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_proposalmaker_php_apiclient",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_proposalmaker_php_apiclient"
     },
     {
       "relation": "references",
@@ -50793,9 +50803,9 @@
       "source_location": "L34",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_construct",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_proposalmaker_php_requestexecutor",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_proposalmaker_php_requestexecutor"
     },
     {
       "relation": "references",
@@ -50804,9 +50814,9 @@
       "source_location": "L34",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_construct",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_proposalmaker_php_settings",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_proposalmaker_php_settings"
     },
     {
       "relation": "calls",
@@ -50815,9 +50825,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L151",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_catalogue",
-      "target": "lib_proposalmaker_proposalmaker_safeerror",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_safeerror"
     },
     {
       "relation": "calls",
@@ -50826,9 +50836,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L179",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_boundedpercent",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_boundedpercent"
     },
     {
       "relation": "calls",
@@ -50837,9 +50847,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L245",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_cleantext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_cleantext"
     },
     {
       "relation": "calls",
@@ -50848,9 +50858,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L339",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_clientartifactsnapshot",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_clientartifactsnapshot"
     },
     {
       "relation": "calls",
@@ -50859,9 +50869,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L228",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_comparison",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_comparison"
     },
     {
       "relation": "calls",
@@ -50870,9 +50880,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L325",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_decodereportdocument",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_decodereportdocument"
     },
     {
       "relation": "calls",
@@ -50881,9 +50891,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L185",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_decodeselections",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_decodeselections"
     },
     {
       "relation": "calls",
@@ -50892,9 +50902,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L327",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_mergereportnarrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_mergereportnarrative"
     },
     {
       "relation": "calls",
@@ -50903,9 +50913,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L324",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_narrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_narrative"
     },
     {
       "relation": "calls",
@@ -50914,9 +50924,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L203",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_positivenumber",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_positivenumber"
     },
     {
       "relation": "calls",
@@ -50925,9 +50935,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L336",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_renderhtml",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_renderhtml"
     },
     {
       "relation": "calls",
@@ -50936,9 +50946,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L337",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_rendertext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_rendertext"
     },
     {
       "relation": "calls",
@@ -50947,9 +50957,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L187",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_resolvefxrate",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_resolvefxrate"
     },
     {
       "relation": "calls",
@@ -50958,9 +50968,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L164",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_build",
-      "target": "lib_proposalmaker_proposalmaker_safeslug",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_safeslug"
     },
     {
       "relation": "calls",
@@ -50969,9 +50979,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L425",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_generatewithcodex",
-      "target": "lib_proposalmaker_proposalmaker_mergereportnarrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_mergereportnarrative"
     },
     {
       "relation": "calls",
@@ -50980,9 +50990,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L412",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_generatewithcodex",
-      "target": "lib_proposalmaker_proposalmaker_normalizereportdocument",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_normalizereportdocument"
     },
     {
       "relation": "calls",
@@ -50991,9 +51001,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L426",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_generatewithcodex",
-      "target": "lib_proposalmaker_proposalmaker_replacenarrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_replacenarrative"
     },
     {
       "relation": "calls",
@@ -51002,9 +51012,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L383",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_generatewithcodex",
-      "target": "lib_proposalmaker_proposalmaker_reportcontext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_reportcontext"
     },
     {
       "relation": "calls",
@@ -51013,9 +51023,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L385",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_generatewithcodex",
-      "target": "lib_proposalmaker_proposalmaker_reportvisibility",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_reportvisibility"
     },
     {
       "relation": "calls",
@@ -51024,9 +51034,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L432",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_generatewithcodex",
-      "target": "lib_proposalmaker_proposalmaker_safeerror",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_safeerror"
     },
     {
       "relation": "calls",
@@ -51046,9 +51056,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L503",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_replacenarrative",
-      "target": "lib_proposalmaker_proposalmaker_clientartifactsnapshot",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_clientartifactsnapshot"
     },
     {
       "relation": "calls",
@@ -51057,9 +51067,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L499",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_replacenarrative",
-      "target": "lib_proposalmaker_proposalmaker_renderhtml",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_renderhtml"
     },
     {
       "relation": "calls",
@@ -51068,9 +51078,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L500",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_replacenarrative",
-      "target": "lib_proposalmaker_proposalmaker_rendertext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_rendertext"
     },
     {
       "relation": "calls",
@@ -51079,9 +51089,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L527",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_decodereportdocument",
-      "target": "lib_proposalmaker_proposalmaker_normalizereportdocument",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_normalizereportdocument"
     },
     {
       "relation": "calls",
@@ -51090,9 +51100,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L540",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_normalizereportdocument",
-      "target": "lib_proposalmaker_proposalmaker_cleantext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_cleantext"
     },
     {
       "relation": "calls",
@@ -51101,9 +51111,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L578",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_mergereportnarrative",
-      "target": "lib_proposalmaker_proposalmaker_reportsectiontext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_reportsectiontext"
     },
     {
       "relation": "calls",
@@ -51112,9 +51122,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L602",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_reportsectiontext",
-      "target": "lib_proposalmaker_proposalmaker_safereporttext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_safereporttext"
     },
     {
       "relation": "calls",
@@ -51123,9 +51133,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L645",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_clientartifactsnapshot",
-      "target": "lib_proposalmaker_proposalmaker_publicmanageditems",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_publicmanageditems"
     },
     {
       "relation": "calls",
@@ -51134,9 +51144,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L763",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_deterministicnarrative",
-      "target": "lib_proposalmaker_proposalmaker_publicmanageditems",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_publicmanageditems"
     },
     {
       "relation": "calls",
@@ -51145,9 +51155,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L674",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_comparison",
-      "target": "lib_proposalmaker_proposalmaker_safeslug",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_safeslug"
     },
     {
       "relation": "calls",
@@ -51156,9 +51166,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L727",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_narrative",
-      "target": "lib_proposalmaker_proposalmaker_callcompatibleprovider",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_callcompatibleprovider"
     },
     {
       "relation": "calls",
@@ -51167,9 +51177,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L714",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_narrative",
-      "target": "lib_proposalmaker_proposalmaker_deterministicnarrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_deterministicnarrative"
     },
     {
       "relation": "calls",
@@ -51178,9 +51188,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L728",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_narrative",
-      "target": "lib_proposalmaker_proposalmaker_validnarrative",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_validnarrative"
     },
     {
       "relation": "calls",
@@ -51200,9 +51210,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L950",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_renderhtml",
-      "target": "lib_proposalmaker_proposalmaker_money",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_money"
     },
     {
       "relation": "calls",
@@ -51222,9 +51232,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1027",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_rendertext",
-      "target": "lib_proposalmaker_proposalmaker_money",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_money"
     },
     {
       "relation": "calls",
@@ -51233,9 +51243,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1056",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_decodeselections",
-      "target": "lib_proposalmaker_proposalmaker_cleantext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_cleantext"
     },
     {
       "relation": "calls",
@@ -51244,9 +51254,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1188",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_safeerror",
-      "target": "lib_proposalmaker_proposalmaker_cleantext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_cleantext"
     },
     {
       "relation": "calls",
@@ -51255,9 +51265,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php",
       "source_location": "L1145",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_sendemail",
-      "target": "lib_proposalmaker_proposalmaker_cleantext",
-      "confidence_score": 1.0
+      "target": "lib_proposalmaker_proposalmaker_cleantext"
     },
     {
       "relation": "calls",
@@ -51277,9 +51287,9 @@
       "source_location": "L1186",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "lib_proposalmaker_proposalmaker_safeerror",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_proposalmaker_php_throwable",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_proposalmaker_php_throwable"
     },
     {
       "relation": "contains",
@@ -53205,9 +53215,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/Settings.php",
       "source_location": "L113",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_settings_settings",
-      "target": "lib_settings_settings_resolveaikey",
-      "confidence_score": 1.0
+      "target": "lib_settings_settings_resolveaikey"
     },
     {
       "relation": "method",
@@ -53215,9 +53225,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/Settings.php",
       "source_location": "L118",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_settings_settings",
-      "target": "lib_settings_settings_resolvesecret",
-      "confidence_score": 1.0
+      "target": "lib_settings_settings_resolvesecret"
     },
     {
       "relation": "method",
@@ -53246,9 +53256,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/Settings.php",
       "source_location": "L65",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_settings_settings_construct",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_settings_php_self",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_settings_php_self"
     },
     {
       "relation": "references",
@@ -53268,9 +53278,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/Settings.php",
       "source_location": "L115",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_settings_settings_resolveaikey",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_settings_php_self",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_settings_php_self"
     },
     {
       "relation": "calls",
@@ -53279,9 +53289,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/Settings.php",
       "source_location": "L137",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_settings_settings_resolvesecret",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_settings_php_self",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_settings_php_self"
     },
     {
       "relation": "calls",
@@ -53578,9 +53588,9 @@
       "source_location": "L47",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "lib_syncengine_syncengine_construct",
-      "target": "whmcs_module_modules_addons_contabo_pricing_lib_syncengine_php_apiclient",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_lib_syncengine_php_apiclient"
     },
     {
       "relation": "references",
@@ -55034,9 +55044,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ApiClientTest.php",
       "source_location": "L116",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_apiclienttest_apiclienttest",
-      "target": "tests_apiclienttest_apiclienttest_testproposalendpointsusetheconfiguredv1basepath",
-      "confidence_score": 1.0
+      "target": "tests_apiclienttest_apiclienttest_testproposalendpointsusetheconfiguredv1basepath"
     },
     {
       "relation": "method",
@@ -55893,9 +55903,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest",
-      "target": "testcase",
-      "confidence_score": 1.0
+      "target": "testcase"
     },
     {
       "relation": "inherits",
@@ -55903,9 +55913,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest",
-      "target": "testcase",
-      "confidence_score": 1.0
+      "target": "testcase"
     },
     {
       "relation": "imports",
@@ -56390,9 +56400,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ApiClientTest.php",
       "source_location": "L122",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_apiclienttest_apiclienttest_testproposalendpointsusetheconfiguredv1basepath",
-      "target": "tests_apiclienttest_apiclienttest_settings",
-      "confidence_score": 1.0
+      "target": "tests_apiclienttest_apiclienttest_settings"
     },
     {
       "relation": "contains",
@@ -65201,9 +65211,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest",
-      "target": "tests_proposalmakertest_proposalmakerrequestexecutor",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakerrequestexecutor"
     },
     {
       "relation": "contains",
@@ -65211,9 +65221,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest",
-      "target": "tests_proposalmakertest_proposalmakertest",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakertest"
     },
     {
       "relation": "imports",
@@ -65222,9 +65232,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_proposalmakertest_php_settings",
-      "confidence_score": 1.0
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_proposalmakertest_php_settings"
     },
     {
       "relation": "method",
@@ -65232,9 +65242,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakerrequestexecutor",
-      "target": "tests_proposalmakertest_proposalmakerrequestexecutor_execute",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakerrequestexecutor_execute"
     },
     {
       "relation": "method",
@@ -65242,9 +65252,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest",
-      "target": "tests_proposalmakertest_proposalmakertest_request",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakertest_request"
     },
     {
       "relation": "method",
@@ -65252,19 +65262,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest",
-      "target": "tests_proposalmakertest_proposalmakertest_settings",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
-      "source_location": "L69",
-      "weight": 1.0,
-      "source": "tests_proposalmakertest_proposalmakertest",
-      "target": "tests_proposalmakertest_proposalmakertest_testbuildkeepsownerandinternalfactsoutofclientjson",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakertest_settings"
     },
     {
       "relation": "method",
@@ -65273,8 +65273,28 @@
       "source_location": "L108",
       "weight": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest",
-      "target": "tests_proposalmakertest_proposalmakertest_testcodexdocumentonlyreplacessafenarrativewording",
+      "target": "tests_proposalmakertest_proposalmakertest_testblankownermarkupdefaultstozero",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
+      "source_location": "L69",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_proposalmakertest_proposalmakertest",
+      "target": "tests_proposalmakertest_proposalmakertest_testbuildkeepsownerandinternalfactsoutofclientjson"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
+      "source_location": "L108",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_proposalmakertest_proposalmakertest",
+      "target": "tests_proposalmakertest_proposalmakertest_testcodexdocumentonlyreplacessafenarrativewording"
     },
     {
       "relation": "method",
@@ -65282,9 +65302,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L93",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest",
-      "target": "tests_proposalmakertest_proposalmakertest_testsilentmanagedservicecountsbutisnotnamedinclientartifact",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakertest_testsilentmanagedservicecountsbutisnotnamedinclientartifact"
     },
     {
       "relation": "references",
@@ -65293,8 +65313,19 @@
       "source_location": "L29",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest_settings",
-      "target": "whmcs_module_modules_addons_contabo_pricing_tests_proposalmakertest_php_settings",
+      "target": "whmcs_module_modules_addons_contabo_pricing_tests_proposalmakertest_php_settings"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "tests_proposalmakertest_proposalmakertest_testblankownermarkupdefaultstozero",
+      "target": "tests_proposalmakertest_proposalmakertest_settings",
       "confidence_score": 1.0
     },
     {
@@ -65304,9 +65335,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest_testbuildkeepsownerandinternalfactsoutofclientjson",
-      "target": "tests_proposalmakertest_proposalmakertest_settings",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakertest_settings"
     },
     {
       "relation": "calls",
@@ -65315,9 +65346,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest_testcodexdocumentonlyreplacessafenarrativewording",
-      "target": "tests_proposalmakertest_proposalmakertest_settings",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakertest_settings"
     },
     {
       "relation": "calls",
@@ -65326,8 +65357,19 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L97",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest_testsilentmanagedservicecountsbutisnotnamedinclientartifact",
-      "target": "tests_proposalmakertest_proposalmakertest_settings",
+      "target": "tests_proposalmakertest_proposalmakertest_settings"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "tests_proposalmakertest_proposalmakertest_testblankownermarkupdefaultstozero",
+      "target": "tests_proposalmakertest_proposalmakertest_request",
       "confidence_score": 1.0
     },
     {
@@ -65337,9 +65379,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L75",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest_testbuildkeepsownerandinternalfactsoutofclientjson",
-      "target": "tests_proposalmakertest_proposalmakertest_request",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakertest_request"
     },
     {
       "relation": "calls",
@@ -65348,9 +65390,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L116",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest_testcodexdocumentonlyreplacessafenarrativewording",
-      "target": "tests_proposalmakertest_proposalmakertest_request",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakertest_request"
     },
     {
       "relation": "calls",
@@ -65359,9 +65401,9 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php",
       "source_location": "L99",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_proposalmakertest_proposalmakertest_testsilentmanagedservicecountsbutisnotnamedinclientartifact",
-      "target": "tests_proposalmakertest_proposalmakertest_request",
-      "confidence_score": 1.0
+      "target": "tests_proposalmakertest_proposalmakertest_request"
     },
     {
       "relation": "contains",
@@ -72332,9 +72374,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery"
     },
     {
       "relation": "contains",
@@ -72342,9 +72384,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L674",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_10_security_and_abuse_controls",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_10_security_and_abuse_controls"
     },
     {
       "relation": "contains",
@@ -72352,9 +72394,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L708",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates"
     },
     {
       "relation": "contains",
@@ -72362,9 +72404,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L804",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix"
     },
     {
       "relation": "contains",
@@ -72372,9 +72414,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L858",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_13_documentation_and_delivery_workflow",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_13_documentation_and_delivery_workflow"
     },
     {
       "relation": "contains",
@@ -72382,9 +72424,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L887",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_14_stop_conditions",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_14_stop_conditions"
     },
     {
       "relation": "contains",
@@ -72392,9 +72434,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L905",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_15_done_when_checklist",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_15_done_when_checklist"
     },
     {
       "relation": "contains",
@@ -72402,9 +72444,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_1_outcome_and_non_negotiable_rules",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_1_outcome_and_non_negotiable_rules"
     },
     {
       "relation": "contains",
@@ -72412,9 +72454,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_2_current_state_and_identified_gaps",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_2_current_state_and_identified_gaps"
     },
     {
       "relation": "contains",
@@ -72422,9 +72464,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L129",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_3_compatibility_and_evidence_baseline",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_3_compatibility_and_evidence_baseline"
     },
     {
       "relation": "contains",
@@ -72432,9 +72474,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L178",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract"
     },
     {
       "relation": "contains",
@@ -72442,9 +72484,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L319",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_5_whmcs_module_architecture",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_5_whmcs_module_architecture"
     },
     {
       "relation": "contains",
@@ -72452,9 +72494,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L364",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design"
     },
     {
       "relation": "contains",
@@ -72462,9 +72504,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L459",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention"
     },
     {
       "relation": "contains",
@@ -72472,9 +72514,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L536",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_8_admin_ui_and_actions",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_8_admin_ui_and_actions"
     },
     {
       "relation": "contains",
@@ -72482,9 +72524,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L594",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery"
     },
     {
       "relation": "contains",
@@ -72492,9 +72534,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L180",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_1_canonical_schemas",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_1_canonical_schemas"
     },
     {
       "relation": "contains",
@@ -72502,9 +72544,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L222",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_2_money_and_markup_semantics",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_2_money_and_markup_semantics"
     },
     {
       "relation": "contains",
@@ -72512,9 +72554,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L265",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_3_visibility_and_disclosure_policy",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_3_visibility_and_disclosure_policy"
     },
     {
       "relation": "contains",
@@ -72522,9 +72564,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L296",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_4_report_import_and_stale_data_handling",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_4_report_import_and_stale_data_handling"
     },
     {
       "relation": "contains",
@@ -72532,9 +72574,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L366",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_1_settings_and_model_policy",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_1_settings_and_model_policy"
     },
     {
       "relation": "contains",
@@ -72542,9 +72584,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L395",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_2_request_contract",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_2_request_contract"
     },
     {
       "relation": "contains",
@@ -72552,9 +72594,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L433",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_3_quality_cost_and_failure_behavior",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_3_quality_cost_and_failure_behavior"
     },
     {
       "relation": "contains",
@@ -72562,9 +72604,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L465",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal"
     },
     {
       "relation": "contains",
@@ -72572,9 +72614,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L505",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_asset",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_asset"
     },
     {
       "relation": "contains",
@@ -72582,9 +72624,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L491",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_delivery",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_delivery"
     },
     {
       "relation": "contains",
@@ -72592,9 +72634,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L477",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_version",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_version"
     },
     {
       "relation": "contains",
@@ -72602,9 +72644,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L596",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_1_support_tickets",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_1_support_tickets"
     },
     {
       "relation": "contains",
@@ -72612,9 +72654,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L623",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_2_direct_email",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_2_direct_email"
     },
     {
       "relation": "contains",
@@ -72622,9 +72664,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L659",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_3_retry_and_duplicate_control",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_3_retry_and_duplicate_control"
     },
     {
       "relation": "contains",
@@ -72632,9 +72674,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L710",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_0_compatibility_spike_and_contract_freeze",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_0_compatibility_spike_and_contract_freeze"
     },
     {
       "relation": "contains",
@@ -72642,9 +72684,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L731",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_1_php_proposal_domain_and_persistence",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_1_php_proposal_domain_and_persistence"
     },
     {
       "relation": "contains",
@@ -72652,9 +72694,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L749",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_2_ai_adapter_and_review_ui",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_2_ai_adapter_and_review_ui"
     },
     {
       "relation": "contains",
@@ -72662,9 +72704,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L767",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_3_native_ticket_and_email_delivery",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_3_native_ticket_and_email_delivery"
     },
     {
       "relation": "contains",
@@ -72672,9 +72714,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L785",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_4_report_bridge_and_operational_hardening",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_4_report_bridge_and_operational_hardening"
     },
     {
       "relation": "contains",
@@ -72682,9 +72724,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L841",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_existing_project_gates",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_existing_project_gates"
     },
     {
       "relation": "contains",
@@ -72692,9 +72734,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L806",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_php_unit",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_php_unit"
     },
     {
       "relation": "contains",
@@ -72702,9 +72744,9 @@
       "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
       "source_location": "L825",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_whmcs_integration",
-      "confidence_score": 1.0
+      "target": "plans_004_whmcs_proposal_maker_and_delivery_whmcs_integration"
     },
     {
       "relation": "contains",
@@ -72712,9 +72754,9 @@
       "source_file": "plans/README.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_readme",
-      "target": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "confidence_score": 1.0
+      "target": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling"
     },
     {
       "relation": "contains",
@@ -72722,9 +72764,9 @@
       "source_file": "plans/README.md",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_cross_plan_notes",
-      "confidence_score": 1.0
+      "target": "plans_readme_cross_plan_notes"
     },
     {
       "relation": "contains",
@@ -72732,9 +72774,9 @@
       "source_file": "plans/README.md",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_dependency_notes",
-      "confidence_score": 1.0
+      "target": "plans_readme_dependency_notes"
     },
     {
       "relation": "contains",
@@ -72742,9 +72784,9 @@
       "source_file": "plans/README.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_execution_order_status",
-      "confidence_score": 1.0
+      "target": "plans_readme_execution_order_status"
     },
     {
       "relation": "contains",
@@ -72752,9 +72794,9 @@
       "source_file": "plans/README.md",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_findings_considered_and_rejected",
-      "confidence_score": 1.0
+      "target": "plans_readme_findings_considered_and_rejected"
     },
     {
       "relation": "contains",
@@ -72762,9 +72804,9 @@
       "source_file": "plans/README.md",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_findings_plans_mapping",
-      "confidence_score": 1.0
+      "target": "plans_readme_findings_plans_mapping"
     },
     {
       "relation": "contains",
@@ -77522,5 +77564,5 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_CONFIGURABLE_OPTIONS.md"
     }
   ],
-  "built_at_commit": "10e1c24463c08b64658e0efc7cbe30b148ec5033"
+  "built_at_commit": "865c2589ff4642c1f403fcfa42204c80048d2417"
 }

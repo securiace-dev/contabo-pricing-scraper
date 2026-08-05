@@ -105,6 +105,21 @@ final class ProposalMakerTest extends TestCase
         self::assertStringNotContainsString('Growth Managed', base64_decode((string) $result['attachments'][1]['data'], true));
     }
 
+    public function testBlankOwnerMarkupDefaultsToZero(): void
+    {
+        $executor = new ProposalMakerRequestExecutor();
+        $executor->queue[] = [200, '{"final_monthly":100,"final_setup":0}', 0, ''];
+        $maker = new ProposalMaker($this->settings(), new ApiClient($this->settings(), 8, $executor));
+
+        $request = $this->request();
+        $request['owner_markup_pct'] = '';
+        $result = $maker->build($request);
+
+        self::assertSame(0.0, (float) $result['snapshot']['pricing']['owner_markup_pct']);
+        self::assertSame(0.0, (float) $result['snapshot']['pricing']['owner_provider']);
+        self::assertSame(0.0, (float) $result['snapshot']['pricing']['owner_managed']);
+    }
+
     public function testCodexDocumentOnlyReplacesSafeNarrativeWording(): void
     {
         $executor = new ProposalMakerRequestExecutor();

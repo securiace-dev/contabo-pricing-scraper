@@ -960,13 +960,13 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php": {
-    "mtime": 1785905255.0816362,
-    "ast_hash": "658f255af52c911d79abf3c68d87534f",
+    "mtime": 1785906082.5154364,
+    "ast_hash": "100539c92f60314ba65bd15a67b8b9e7",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php": {
-    "mtime": 1785905168.962823,
-    "ast_hash": "f38857fd2664923746c55ba635f94b4d",
+    "mtime": 1785906096.8783343,
+    "ast_hash": "86c82bed35886378b2b455c29c17eaba",
     "semantic_hash": ""
   },
   "plans/004-whmcs-proposal-maker-and-delivery.md": {
