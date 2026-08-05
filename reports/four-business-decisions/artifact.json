@@ -1,0 +1,275 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Four Business Decisions for Managed Infrastructure",
+    "description": "Decision-ready operating policy for Founder time, tax, Object Storage tenancy, and cancellation/reassignment.",
+    "generatedAt": "2026-08-05T08:15:00Z",
+    "cards": [],
+    "charts": [
+      {
+        "id": "decision_gates",
+        "title": "Remaining enabling gates by decision",
+        "subtitle": "Count of explicit sign-off, evidence, provider, or technical validations in the reviewed operating policy.",
+        "type": "bar",
+        "dataset": "decision_readiness",
+        "sourceId": "decision_readiness_query",
+        "valueFormat": "number",
+        "encodings": {
+          "x": {
+            "field": "decision",
+            "type": "nominal",
+            "label": "Decision"
+          },
+          "y": {
+            "field": "remaining_gates",
+            "type": "quantitative",
+            "label": "Remaining gates"
+          },
+          "tooltip": [
+            {
+              "field": "gate_summary",
+              "type": "nominal",
+              "label": "Required validation"
+            },
+            {
+              "field": "operating_default",
+              "type": "nominal",
+              "label": "Operating default"
+            }
+          ]
+        }
+      }
+    ],
+    "tables": [],
+    "sources": [
+      {
+        "id": "decision_readiness_query",
+        "label": "Reviewed decision-gate register",
+        "path": "reports/four-business-decisions/decision-readiness.sql"
+      },
+      {
+        "id": "canonical_plan",
+        "label": "Canonical WHMCS proposal and operations plan",
+        "path": "plans/005-canonical-whmcs-proposal-managed-policy.md"
+      },
+      {
+        "id": "managed_runbook",
+        "label": "Managed Services Runbook",
+        "path": "MANAGED-SERVICES-RUNBOOK.md"
+      },
+      {
+        "id": "pricing_decisions",
+        "label": "Securiace Pricing — Final Locked Decisions",
+        "path": "PRICING-DECISIONS-FINAL.md"
+      },
+      {
+        "id": "new_terms_draft",
+        "label": "Securiace launch Terms of Service draft",
+        "path": "terms-of-service.draft.md"
+      },
+      {
+        "id": "legacy_terms",
+        "label": "Securiace Terms of Service",
+        "path": "01-terms-of-service.md"
+      },
+      {
+        "id": "refund_policy",
+        "label": "Securiace Refund Policy",
+        "path": "05-refund-policy.md"
+      },
+      {
+        "id": "object_storage_research",
+        "label": "Contabo Object Storage and category research",
+        "path": "plans/003-new-categories-and-scraper-resilience.md"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# Four Business Decisions for Managed Infrastructure"
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary\n\n- **Founder time expires monthly.** Carry-forward is an admin-issued, dated, expiring, non-contractual exception. Normal overage is ₹2,500/hour after written estimate and approval; only minimum emergency stabilization may begin without prior approval.\n- **Separate Securiace GST stays off.** The newest legal draft says Securiace is not GST-registered and prices are all-inclusive. Provider tax remains a separate landed-cost fact. Sum 9 remains internal provenance and never changes a client charge.\n- **Object Storage is pooled by region by default.** Each WHMCS service receives isolated credentials, namespace, policy, and committed quota; dedicated tenancy is an exception. Billing follows committed capacity, not aggregate usage.\n- **Cancellation is forward-dated and reassignment is evidence-gated.** Entitlement, provider contract, asset, billing, and inventory are separate states. No asset is reusable until access/export obligations end and quarantine plus sanitization evidence is complete."
+      },
+      {
+        "id": "decision_gate_interpretation",
+        "type": "markdown",
+        "sourceId": "canonical_plan",
+        "body": "## The decisions are resolved; enabling gates remain\n\nAll four operating defaults are defined. The chart counts only the explicit validations still required before enabling the related exception or automation. Tax and Object Storage each have three release gates, so they stay fail-closed. Founder time has one legal-sign-off item, while cancellation needs provider-reversal and sanitization proof before automated reassignment can be exposed."
+      },
+      {
+        "id": "decision_gate_chart",
+        "type": "chart",
+        "chartId": "decision_gates",
+        "layout": "full"
+      },
+      {
+        "id": "founder_policy",
+        "type": "markdown",
+        "sourceId": "canonical_plan",
+        "body": "## Founder time expires; emergency authority stays narrow\n\n**Effective rule.** Every managed purchase snapshots its included minutes, policy version, hourly rate, tax mode, and emergency terms. Included minutes close at month-end without creating an automatic credit. An administrator may grant a dated and expiring carry-forward credit only with a recorded reason and an explicit non-contractual marker.\n\n**Commercial rule.** Overage is ₹2,500/hour plus applicable tax. Routine work requires a written estimate and approval before work starts. Emergency authority covers minimum stabilization for an active outage, credible compromise or abuse, imminent material data loss, failed recovery, or critical administrative lockout. Routine tuning, maintenance, migration, and feature work are excluded.\n\n**Control implication.** WHMCS needs an append-only monthly entitlement and usage ledger. The one-hour emergency guardrail is configurable, auditable, pending legal sign-off, and is never presented as a client entitlement."
+      },
+      {
+        "id": "founder_conflict",
+        "type": "markdown",
+        "sourceId": "managed_runbook",
+        "body": "## The earlier automatic-rollover text is superseded\n\nThe May runbook describes automatic banking up to 1.5× the monthly allowance and separately confirms the ₹2,500/hour overage rate. The approved operating direction replaces only that rollover behavior: monthly expiry is controlling, while carry-forward becomes a discretionary admin credit. The runbook remains useful for work scope, exclusions, reporting cadence, and the base hourly rate, but its rollover examples must not drive invoices or client entitlement displays."
+      },
+      {
+        "id": "tax_policy",
+        "type": "markdown",
+        "sourceId": "canonical_plan",
+        "body": "## Tax fails closed; Sum 9 never enters billing\n\n**Effective rule.** Securiace output GST is disabled and prices are treated as all-inclusive until the owner confirms the policy, GST-registration evidence is verified, and WHMCS tax configuration matches. A proposal must stop rather than add GST when those gates conflict.\n\nProvider tax is independent: record the cash tax and include it in landed cost unless verified input-tax-credit recovery makes it economically recoverable. If a provider quote is tax-inclusive, decompose gross into net and tax before margin; never tax the gross twice.\n\nSum 9 is internal pricing provenance only. It does not change price, quantity, term, tax, margin, entitlement, or client-visible copy."
+      },
+      {
+        "id": "tax_evidence",
+        "type": "markdown",
+        "sourceId": "new_terms_draft",
+        "body": "## The newest legal draft supports the no-separate-GST posture\n\nThe launch Terms draft states that Securiace is not currently GST-registered, that displayed and charged prices are all-inclusive, and that no separate GST is charged or claimed. This conflicts with older materials that describe GST-exclusive annual prices. Because the newer document is still a draft for owner and counsel review, it supports a fail-closed runtime gate—not a claim that the legal question is permanently settled."
+      },
+      {
+        "id": "sum_nine_evidence",
+        "type": "markdown",
+        "sourceId": "pricing_decisions",
+        "body": "## Numerology remains a private pricing rationale\n\nThe locked pricing document records Sum 9 as a founder-personal confidence framework and explicitly notes that it is not a tested conversion lever. The proposal system may preserve this as internal provenance, but client artifacts, invoices, tax calculations, and provisioning logic must remain deterministic and commercially grounded."
+      },
+      {
+        "id": "object_storage",
+        "type": "markdown",
+        "sourceId": "object_storage_research",
+        "body": "## Object Storage sells committed capacity, with isolation before automation\n\nContabo's management model charges purchased capacity, exposes aggregate regional-instance usage rather than reliable per-client billing usage, and does not provide traffic metering suitable for WHMCS consumption billing. Therefore the client product is committed capacity, while used-space statistics are operational visibility only.\n\nThe default architecture is one pooled management resource per region, with a unique S3 user and credential set, isolated bucket namespace, restrictive policy, and committed quota for each WHMCS service. Dedicated tenancy remains available when a contract requires stronger isolation. Ordering stays disabled until authenticated create/resize/cancel canaries, cross-tenant denial tests, and purge verification pass. Founder Managed tiers do not attach automatically to Object Storage."
+      },
+      {
+        "id": "cancellation",
+        "type": "markdown",
+        "sourceId": "canonical_plan",
+        "body": "## Cancellation preserves paid entitlement; inventory reuse needs proof\n\n**Effective rule.** Normal cancellation prevents the next renewal and remains forward-dated through the paid-through or provider termination date. Client entitlement, WHMCS billing, provider contract, provider asset, and inventory disposition advance independently.\n\nAn asset cannot be reassigned while access, export, retention, or paid entitlement remains. After those obligations end, revoke access where lawful, quarantine the asset, sanitize it, record evidence, and only then mark it available inventory. There is no dual lease. Destructive provider termination must disclose that provider snapshots and backups are also deleted.\n\nProvider cancellation reversal is attempted only where supported. A renewal reversal inside a short provider support window is a manual exception, never a guaranteed automated right. Business accounts do not receive an assumed consumer 14-day revocation right."
+      },
+      {
+        "id": "cancellation_evidence",
+        "type": "markdown",
+        "sourceId": "refund_policy",
+        "body": "## Existing customer terms already point to end-of-period cancellation\n\nThe refund policy says paid renewal periods do not receive an automatic refund and that cancelling future renewals becomes effective at the end of the current paid service period. The older Terms add a typical 14-day export opportunity before active data deletion and up to 30 days of backup retention. Those obligations explain why a retained provider asset cannot move directly from cancellation request to reusable inventory."
+      },
+      {
+        "id": "implementation",
+        "type": "markdown",
+        "sourceId": "canonical_plan",
+        "body": "## Encode the decisions as state and gates—not operator memory\n\n1. Persist immutable proposal and purchase snapshots for rate, tax, margin, visibility, managed terms, and provider facts.\n2. Add the Founder entitlement/usage ledger, approval evidence, discretionary-credit workflow, and emergency audit fields.\n3. Implement separate compute, Object Storage, and inventory/manual adapters behind a certified capability registry and Simple/Advanced action policy.\n4. Model entitlement, provider contract, asset lease, quarantine, sanitization, and inventory availability as distinct lifecycle records.\n5. Keep AI and Codex narrative-only. Delivery through WHMCS tickets or email must use approved immutable versions, idempotent outbox records, and scoped attachment handling."
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## Recommended Next Steps\n\n1. Obtain owner and counsel sign-off on the emergency guardrail and update the managed-services runbook so it no longer promises automatic rollover.\n2. Keep output GST disabled in Proposal Studio and WHMCS until registration evidence and commercial tax settings are reconciled.\n3. Build authenticated Object Storage isolation and purge canaries before enabling ordering.\n4. Implement the cancellation/inventory state machine before exposing automated termination or reassignment actions.\n5. Release Proposal Studio first as an admin-only preview with provider writes and delivery disabled; enable sending only after persistence, approval, idempotency, and WHMCS 8/9 attachment tests pass."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further Questions\n\n- What legal wording should govern the one-hour emergency stabilization guardrail?\n- Has GST registration status changed, and which WHMCS tax rule is the verified source of truth if it does?\n- Which client contracts require dedicated Object Storage tenancy instead of pooled regional isolation?\n- What exact provider cancellation-reversal window is support willing to treat as an operational target rather than a promise?"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "sourceId": "canonical_plan",
+        "body": "## Caveats and Assumptions\n\nThe legal documents are drafts or older working material and have not been treated as legal advice. Provider capabilities and cancellation behavior can change, so authenticated canaries and capability snapshots—not static prose—must gate automation. This report resolves operating defaults for implementation; it does not replace owner, counsel, tax-professional, or provider confirmation where explicitly noted. No chart is used because these are four qualitative policy decisions with conflicting-document evidence; narrative sections preserve the exact rules more clearly than a quantitative visual."
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-05T08:15:00Z",
+    "status": "ready",
+    "datasets": {
+      "decision_readiness": [
+        {
+          "decision": "Founder time",
+          "remaining_gates": 1,
+          "gate_summary": "Owner/counsel sign-off on emergency guardrail",
+          "operating_default": "Monthly expiry; discretionary non-contractual carry-forward"
+        },
+        {
+          "decision": "Tax and Sum 9",
+          "remaining_gates": 3,
+          "gate_summary": "Owner confirmation; GST evidence; matching WHMCS tax configuration",
+          "operating_default": "No separate output GST; Sum 9 internal only"
+        },
+        {
+          "decision": "Object Storage",
+          "remaining_gates": 3,
+          "gate_summary": "Authenticated API; cross-tenant isolation; purge verification",
+          "operating_default": "Pooled regional tenancy; bill committed capacity"
+        },
+        {
+          "decision": "Cancellation and reassignment",
+          "remaining_gates": 2,
+          "gate_summary": "Provider reversal capability; sanitization workflow proof",
+          "operating_default": "Forward-dated cancellation; evidence-gated inventory reuse"
+        }
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "decision_readiness_query",
+      "label": "Reviewed decision-gate register",
+      "path": "reports/four-business-decisions/decision-readiness.sql",
+      "query": {
+        "engine": "PostgreSQL-compatible VALUES query",
+        "language": "sql",
+        "description": "Materializes the explicit enabling-gate counts reviewed from Plan 005 and its cited business, legal, and provider evidence.",
+        "executed_at": "2026-08-05T08:15:00Z",
+        "sql": "SELECT decision, remaining_gates, gate_summary, operating_default\nFROM (\n    VALUES\n        ('Founder time', 1, 'Owner/counsel sign-off on emergency guardrail', 'Monthly expiry; discretionary non-contractual carry-forward'),\n        ('Tax and Sum 9', 3, 'Owner confirmation; GST evidence; matching WHMCS tax configuration', 'No separate output GST; Sum 9 internal only'),\n        ('Object Storage', 3, 'Authenticated API; cross-tenant isolation; purge verification', 'Pooled regional tenancy; bill committed capacity'),\n        ('Cancellation and reassignment', 2, 'Provider reversal capability; sanitization workflow proof', 'Forward-dated cancellation; evidence-gated inventory reuse')\n) AS reviewed(decision, remaining_gates, gate_summary, operating_default)\nORDER BY remaining_gates DESC, decision ASC;"
+      }
+    },
+    {
+      "id": "canonical_plan",
+      "label": "Canonical WHMCS proposal and operations plan",
+      "path": "plans/005-canonical-whmcs-proposal-managed-policy.md"
+    },
+    {
+      "id": "managed_runbook",
+      "label": "Managed Services Runbook",
+      "path": "MANAGED-SERVICES-RUNBOOK.md"
+    },
+    {
+      "id": "pricing_decisions",
+      "label": "Securiace Pricing — Final Locked Decisions",
+      "path": "PRICING-DECISIONS-FINAL.md"
+    },
+    {
+      "id": "new_terms_draft",
+      "label": "Securiace launch Terms of Service draft",
+      "path": "terms-of-service.draft.md"
+    },
+    {
+      "id": "legacy_terms",
+      "label": "Securiace Terms of Service",
+      "path": "01-terms-of-service.md"
+    },
+    {
+      "id": "refund_policy",
+      "label": "Securiace Refund Policy",
+      "path": "05-refund-policy.md"
+    },
+    {
+      "id": "object_storage_research",
+      "label": "Contabo Object Storage and category research",
+      "path": "plans/003-new-categories-and-scraper-resilience.md"
+    }
+  ],
+  "package_info": {
+    "originUrl": "artifact://four-business-decisions",
+    "controls": {
+      "edit": false,
+      "refresh": false,
+      "persistence": false,
+      "sharing": false
+    }
+  }
+}
