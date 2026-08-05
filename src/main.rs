@@ -2100,6 +2100,10 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         // when set, additionally covers the IP-reputation dimension.
         let mut http_builder = wreq::Client::builder()
             .emulation(wreq_util::Emulation::Chrome137)
+            // Contabo's edge can redirect the same product URL differently
+            // by country/proxy. Follow the normal browser redirect chain so
+            // Rust and Node do not disagree before parsing the payload.
+            .redirect(wreq::redirect::Policy::default())
             .timeout(Duration::from_secs(30));
         if let Some(p) = &opts.proxy {
             // opts.proxy is already scheme-normalized in into_opts().
