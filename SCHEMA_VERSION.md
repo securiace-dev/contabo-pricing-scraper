@@ -18,7 +18,32 @@ sections (Added / Renamed / Removed / Migration).
 
 ---
 
-## API 1.1 — current
+## API 1.2 — current
+
+### Added
+- Canonical active product families: `Core VPS`, `Performance VPS`,
+  `Max Performance VPS`, and `Storage VPS`.
+- `family_aliases` on plan, configurator, view-model, and catalog compatibility
+  records so `Cloud VPS`, `Cloud VPS Plus`, `Cloud VDS`, and `VDS` remain
+  queryable without replacing the current product-line label.
+- The active discovery catalog now records the pricing-page source URL,
+  observation timestamp, verification counts, and per-family storage policy.
+
+### Changed
+- Default discovery follows the 22 active VPS/VDS/Storage pricing-card links
+  observed on 2026-08-05. Legacy SKUs hydrated inside checkout payloads are no
+  longer treated as active products.
+- Hydrated products are selected by exact slug before title fallback, and
+  impossible legacy storage options are filtered by product-line policy.
+
+### Migration
+Consumers displaying or grouping plan families should use `family` as the
+current label and may match `family_aliases` for legacy filters. Consumers that
+pin fixtures must move from `tests/fixtures/api/v1.1` to `v1.2`.
+
+---
+
+## API 1.1 — previous
 
 ### Added
 - `contabo_view_model.json` — flat row-per-period view with `options_summary` per dimension. Emitted natively by the Rust scraper; synthesized by `enrich_output.js` (STEP 7) when the Node scraper is used. Consumers should treat this as the canonical analytics surface.
