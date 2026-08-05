@@ -768,7 +768,7 @@ const html = `<!DOCTYPE html>
       FX markup
       <input type="number" id="fxMarkup" min="0" max="100" step="0.1" value="3.5"> %
     </label>
-    <label class="field" title="Your cost-plus margin applied after tax and FX conversion">
+    <label class="field" title="Your cost-plus margin: provider tax treatment and acquisition buffers are resolved first; verified Securiace output GST is applied afterward">
       Owner markup
       <input type="number" id="ownerMarkup" min="0" max="100" step="0.1" value="0"> %
     </label>
@@ -923,6 +923,7 @@ const clampFxMarkup = raw => {
 const storedFxMarkup = lsGet('contabo_fx_markup');
 const storedOwnerMarkup = lsGet('contabo_owner_markup_pct');
 const storedOwnerScope = lsGet('contabo_owner_markup_scope');
+const storedProviderTaxCharged = lsGet('contabo_provider_tax_charged')==='1' || lsGet('contabo_gst')==='1';
 
 const clampOwnerMarkup = raw => {
   const value = Number(raw);
@@ -964,8 +965,8 @@ let state = {
   cur:(lsGet('contabo_cur')||'BOTH'),
   // Historical key retained for migration; state.gst now means provider tax
   // charged, never Securiace output GST.
-  gst:lsGet('contabo_provider_tax_charged')==='1' || lsGet('contabo_gst')==='1',
-  providerTaxRecoverable:lsGet('contabo_provider_tax_recoverable')==='1',
+  gst:storedProviderTaxCharged,
+  providerTaxRecoverable:storedProviderTaxCharged && lsGet('contabo_provider_tax_recoverable')==='1',
   outputTax:GST_REGISTRATION_VERIFIED && lsGet('contabo_output_tax')==='1',
   ownerMarkup: clampOwnerMarkup(storedOwnerMarkup === null ? 0 : Number(storedOwnerMarkup) / 100),
   ownerMarkupScope: ownerScope(storedOwnerScope),
@@ -1629,16 +1630,16 @@ const PROPOSAL_POLICY_LABELS={
   fx_markup:'FX markup', owner_markup:'Owner markup', client_notes:'Client notes',
   internal_notes:'Internal notes'
 };
-const PROPOSAL_POLICY_OPTIONS=[['show','Show'],['total_only','Total only'],
-  ['silent_include','Silent include'],['internal_only','Internal only'],
-  ['exclude','Exclude'],['calculated_only','Calculated only']];
 let proposalSnapshot=null, proposalDocument=null, proposalPrimarySlug=null;
+let proposalGenerationCapability={checked:false,available:false,reason:'Not checked'};
 
 function proposalPolicySelect(key, selected){
+  const rule=PROPOSAL_MODEL.VISIBILITY_RULES?.[key]||{allowed:['show','internal_only','exclude'],help:''};
+  const labels=PROPOSAL_MODEL.VISIBILITY_LABELS||{};
   return '<label class="proposal-field"><span>'+esc(PROPOSAL_POLICY_LABELS[key]||key)+'</span>'+\
     '<select id="proposalPolicy_'+esc(key)+'">'+\
-    PROPOSAL_POLICY_OPTIONS.map(o=>'<option value="'+o[0]+'"'+(selected===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+\
-    '</select></label>';
+    rule.allowed.map(value=>'<option value="'+value+'"'+(selected===value?' selected':'')+'>'+esc(labels[value]||value)+'</option>').join('')+\
+    '</select>'+(rule.help?'<small>'+esc(rule.help)+'</small>':'')+'</label>';
 }
 function proposalProfileOptions(selected){
   const profiles=PROPOSAL.profiles||PROPOSAL_MODEL.PROFILE_DEFAULTS||{};
@@ -1772,12 +1773,7 @@ function downloadProposal(name, content, type){
 }
 function copyProposalBrief(){
   if(!proposalSnapshot) return;
-  const q=proposalSnapshot.primary.quote;
-  const lines=['Proposal: '+proposalSnapshot.primary.plan_name,
-    'Term: '+proposalSnapshot.primary.period_months+' month(s)',
-    'Estimated total: '+(proposalSnapshot.pricing.currency==='INR'?'₹'+Math.round(q.display.period_total).toLocaleString('en-IN'):'€'+q.display.period_total.toFixed(2))];
-  if(proposalSnapshot.managed) lines.push('Managed add-on: '+proposalSnapshot.managed.name);
-  const text=lines.join('\\n');
+  const text=PROPOSAL_MODEL.toClientBrief(proposalSnapshot);
   if(navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(()=>proposalStatus('Brief copied to clipboard.','good')).catch(()=>proposalStatus('Clipboard permission was not available.','bad'));
   else { const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); proposalStatus('Brief copied to clipboard.','good'); }
 }
@@ -1785,8 +1781,8 @@ async function generateProposalWithCodex(){
   if(!proposalSnapshot) previewProposal();
   if(!proposalSnapshot) return;
   const deterministic=PROPOSAL_MODEL.deterministicDocument(proposalSnapshot);
-  if(location.protocol==='file:'){
-    showProposalPreview(proposalSnapshot,deterministic,'Local file mode: deterministic proposal preview is ready. Start the Rust server to use Codex CLI generation.');
+  if(!proposalGenerationCapability.available){
+    showProposalPreview(proposalSnapshot,deterministic,'Deterministic proposal is ready. Codex generation is unavailable in this server build.');
     return;
   }
   proposalStatus('Submitting the structured snapshot to the local proposal service…');
@@ -1824,6 +1820,35 @@ function previewProposal(){
     showProposalPreview(snapshot,document,'Deterministic preview ready. Adjust visibility or client fields, then generate or export.');
   }catch(error){ proposalStatus('Could not build proposal preview: '+String(error.message||error),'bad'); }
 }
+async function detectProposalGenerationCapability(){
+  const button=document.getElementById('proposalGenerateBtn');
+  if(!button) return;
+  button.disabled=true;
+  button.textContent='Checking Codex capability…';
+  if(location.protocol==='file:'){
+    proposalGenerationCapability={checked:true,available:false,reason:'Static report artifact'};
+  }else{
+    try{
+      const response=await fetch('/api/v1/proposals/capabilities',{headers:{accept:'application/json'}});
+      if(!response.ok) throw new Error('HTTP '+response.status);
+      const capability=await response.json();
+      const available=capability?.generation?.available===true || capability?.codex_cli_available===true;
+      proposalGenerationCapability={checked:true,available,
+        reason:available?'Server capability confirmed':'Server reports generation unavailable'};
+    }catch(error){
+      proposalGenerationCapability={checked:true,available:false,
+        reason:'Capability endpoint unavailable ('+String(error.message||error)+')'};
+    }
+  }
+  button.disabled=!proposalGenerationCapability.available;
+  button.textContent=proposalGenerationCapability.available
+    ?'Generate with local Codex'
+    :'Codex generation unavailable';
+  button.title=proposalGenerationCapability.reason;
+  if(!proposalGenerationCapability.available){
+    proposalStatus('Deterministic preview and client exports are available. '+proposalGenerationCapability.reason+'.','');
+  }
+}
 function wireProposalForm(){
   const profile=document.getElementById('proposalProfile');
   const syncProfile=()=>{
@@ -1834,19 +1859,27 @@ function wireProposalForm(){
     }
   };
   profile.onchange=()=>{syncProfile();previewProposal();};
-  PROPOSAL_POLICY_KEYS.forEach(key=>document.getElementById('proposalPolicy_'+key)?.addEventListener('change',e=>{e.target.dataset.touched='1';}));
+  PROPOSAL_POLICY_KEYS.forEach(key=>document.getElementById('proposalPolicy_'+key)?.addEventListener('change',e=>{
+    e.target.dataset.touched='1'; previewProposal();
+  }));
+  document.getElementById('proposalPlan')?.addEventListener('change',previewProposal);
+  for(const id of ['proposalProject','proposalRecipient','proposalNotes']){
+    document.getElementById(id)?.addEventListener('input',previewProposal);
+  }
   document.getElementById('proposalPreviewBtn').onclick=previewProposal;
   document.getElementById('proposalGenerateBtn').onclick=generateProposalWithCodex;
   document.getElementById('proposalCopyBtn').onclick=copyProposalBrief;
   document.querySelectorAll('[data-proposal-export]').forEach(button=>button.onclick=()=>{
     if(!proposalSnapshot||!proposalDocument) return;
     const kind=button.dataset.proposalExport;
-    if(kind==='html') downloadProposal('contabo-proposal.html',proposalExportHtml(proposalDocument),'text/html');
-    if(kind==='json') downloadProposal('contabo-proposal.json',JSON.stringify(proposalSnapshot,null,2)+'\\n','application/json');
-    if(kind==='csv') downloadProposal('contabo-proposal.csv',PROPOSAL_MODEL.toCsv(proposalSnapshot),'text/csv');
+    if(kind==='client-html') downloadProposal('contabo-proposal-client.html',proposalExportHtml(PROPOSAL_MODEL.clientDocument(proposalSnapshot,proposalDocument)),'text/html');
+    if(kind==='client-json') downloadProposal('contabo-proposal-client.json',JSON.stringify(PROPOSAL_MODEL.clientProjection(proposalSnapshot,proposalDocument),null,2)+'\\n','application/json');
+    if(kind==='client-csv') downloadProposal('contabo-proposal-client.csv',PROPOSAL_MODEL.toCsv(proposalSnapshot),'text/csv');
+    if(kind==='internal-json') downloadProposal('contabo-proposal-internal-evidence.json',JSON.stringify(PROPOSAL_MODEL.internalEvidence(proposalSnapshot),null,2)+'\\n','application/json');
   });
   syncProfile();
   previewProposal();
+  detectProposalGenerationCapability();
 }
 function openProposalWizard(){
   const defaults=proposalDefaultSlugs(); if(!defaults.primary) return;
@@ -1862,8 +1895,9 @@ function openProposalWizard(){
   h+='<label class="proposal-field wide"><span>Client-facing notes</span><textarea id="proposalNotes" maxlength="2000" placeholder="Scope, goals, or assumptions to include…"></textarea></label>';
   h+='</div><h4>Content policy</h4><div class="proposal-grid">';
   for(const key of PROPOSAL_POLICY_KEYS) h+=proposalPolicySelect(key,visibility[key]||'show');
-  h+='</div><div class="proposal-hint">Compared plans are taken from the compare drawer (up to four). “Silent include” keeps a value in pricing/context without mentioning it in the client document. Mandatory stale-data, missing-FX, and comparison warnings remain visible.</div>';
-  h+='<div class="proposal-controls"><button class="iconbtn primary" id="proposalPreviewBtn" type="button">Preview deterministic</button><button class="iconbtn secondary" id="proposalGenerateBtn" type="button">Generate with local Codex</button><button class="iconbtn" id="proposalCopyBtn" type="button">Copy brief</button><button class="iconbtn" data-proposal-export="html" type="button" disabled>Export HTML</button><button class="iconbtn" data-proposal-export="json" type="button" disabled>Export JSON</button><button class="iconbtn" data-proposal-export="csv" type="button" disabled>Export CSV</button></div>';
+  h+='</div><div class="proposal-hint">Compared plans are taken from the compare drawer (up to four). “Silent include” keeps a value in pricing/context without mentioning it in the client document. Mandatory diagnostics remain on the administrator Review-before-sending rail and enter client artifacts only when explicitly marked client-facing.</div>';
+  h+='<div class="proposal-controls"><button class="iconbtn primary" id="proposalPreviewBtn" type="button">Preview deterministic</button><button class="iconbtn secondary" id="proposalGenerateBtn" type="button" disabled>Checking Codex capability…</button><button class="iconbtn" id="proposalCopyBtn" type="button">Copy client brief</button><button class="iconbtn" data-proposal-export="client-html" type="button" disabled>Client HTML</button><button class="iconbtn" data-proposal-export="client-json" type="button" disabled>Client JSON</button><button class="iconbtn" data-proposal-export="client-csv" type="button" disabled>Client CSV</button><button class="iconbtn" data-proposal-export="internal-json" type="button" disabled title="Contains provider cost, owner margin, recipient, and internal provenance. Never send to a client.">Internal evidence JSON</button></div>';
+  h+='<div class="proposal-hint"><b>Client artifacts</b> apply the visibility policy and omit internal/silent facts. <b>Internal evidence JSON</b> intentionally contains provider cost, owner margin, recipient, and provenance; keep it private.</div>';
   h+='<div class="proposal-status" id="proposalStatus" role="status" aria-live="polite"></div><div class="proposal-preview" id="proposalPreview"></div>';
   document.getElementById('sheet').innerHTML=h; modal.classList.add('open'); wireProposalForm();
 }
@@ -1917,10 +1951,16 @@ function applyGstUi(){
 }
 gstToggle.onchange=e=>{
   state.gst=e.target.checked;
+  if(!state.gst){
+    state.providerTaxRecoverable=false;
+    providerTaxRecoverableEl.checked=false;
+    lsSet('contabo_provider_tax_recoverable','0');
+  }
   lsSet('contabo_provider_tax_charged', state.gst?'1':'0'); applyGstUi();
 };
 providerTaxRecoverableEl.onchange=e=>{
-  state.providerTaxRecoverable=e.target.checked;
+  state.providerTaxRecoverable=state.gst && e.target.checked;
+  e.target.checked=state.providerTaxRecoverable;
   lsSet('contabo_provider_tax_recoverable',state.providerTaxRecoverable?'1':'0'); applyGstUi();
 };
 outputTaxToggle.onchange=e=>{
@@ -1936,12 +1976,16 @@ fxMarkupEl.value=((FX.markup||0)*100).toFixed(1);
 if(storedFxMarkup!==null && Number(storedFxMarkup)!==FX.markup)
   lsSet('contabo_fx_markup',String(FX.markup));
 fxMarkupEl.oninput=e=>{
-  const v=clampFxMarkup((Number(e.target.value)||0)/100);
-  FX.markup=v; e.target.value=(v*100).toFixed(1); lsSet('contabo_fx_markup', String(v));
+  const raw=Number(e.target.value);
+  const v=clampFxMarkup((Number.isFinite(raw)?raw:0)/100);
+  FX.markup=v;
+  if(!Number.isFinite(raw)||raw<0||raw>100) e.target.value=(v*100).toFixed(1);
+  lsSet('contabo_fx_markup', String(v));
   renderFxBadge();
   render(); renderCompare();
   if(modal.classList.contains('open') && modalMode==='plan' && MSLUG) openModal(MSLUG);
 };
+fxMarkupEl.onchange=e=>{ e.target.value=(FX.markup*100).toFixed(1); };
 
 // Owner markup is a separate cost-plus adjustment. It is intentionally stored
 // as a fraction, like FX, while the input is displayed as a percentage. The
@@ -1954,13 +1998,16 @@ ownerMarkupScopeEl.value=state.ownerMarkupScope;
 if(storedOwnerMarkup!==null && Number(storedOwnerMarkup)/100!==state.ownerMarkup)
   lsSet('contabo_owner_markup_pct',String(state.ownerMarkup*100));
 ownerMarkupEl.oninput=e=>{
-  const v=clampOwnerMarkup((Number(e.target.value)||0)/100);
-  state.ownerMarkup=v; e.target.value=(v*100).toFixed(1);
+  const raw=Number(e.target.value);
+  const v=clampOwnerMarkup((Number.isFinite(raw)?raw:0)/100);
+  state.ownerMarkup=v;
+  if(!Number.isFinite(raw)||raw<0||raw>100) e.target.value=(v*100).toFixed(1);
   lsSet('contabo_owner_markup_pct',String(v*100));
   renderFxBadge();
   render(); renderCompare();
   if(modal.classList.contains('open') && modalMode==='plan' && MSLUG) openModal(MSLUG);
 };
+ownerMarkupEl.onchange=e=>{ e.target.value=(state.ownerMarkup*100).toFixed(1); };
 ownerMarkupScopeEl.onchange=e=>{
   state.ownerMarkupScope=ownerScope(e.target.value);
   e.target.value=state.ownerMarkupScope;

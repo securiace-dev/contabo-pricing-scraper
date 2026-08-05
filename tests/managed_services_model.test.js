@@ -77,9 +77,19 @@ test('purchase snapshot freezes rate, expiry, emergency, tax, and internal prove
   assert.equal(snapshot.quote.catalog_version, catalog.version);
 });
 
-test('object storage is intentionally not eligible for managed server tiers', () => {
+test('canonical and legacy server families are eligible while object storage is excluded', () => {
+  for (const family of [
+    'Core VPS',
+    'Performance VPS',
+    'Max Performance VPS',
+    'Cloud VPS',
+    'Cloud VDS',
+    'Storage VPS',
+    'Dedicated Server',
+  ]) {
+    assert.equal(managedPlansForFamily(catalog, family).length, 3, family);
+  }
   assert.equal(managedPlansForFamily(catalog, 'Object Storage').length, 0);
-  assert.equal(managedPlansForFamily(catalog, 'Storage VPS').length, 3);
 });
 
 test('validation rejects a changed tier count', () => {

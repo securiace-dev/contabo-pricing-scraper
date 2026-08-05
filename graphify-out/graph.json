@@ -139,45 +139,6 @@
       "norm_label": "mempalace-mcp"
     },
     {
-      "label": "mcp.json",
-      "file_type": "code",
-      "source_file": ".repowise/mcp.json",
-      "source_location": "L1",
-      "metadata": {
-        "mcp_kind": "mcp_config_file"
-      },
-      "_origin": "ast",
-      "id": "repowise_mcp",
-      "community": 248,
-      "norm_label": "mcp.json"
-    },
-    {
-      "label": "repowise",
-      "file_type": "code",
-      "source_file": ".repowise/mcp.json",
-      "source_location": "L1",
-      "metadata": {
-        "mcp_kind": "mcp_server"
-      },
-      "_origin": "ast",
-      "id": "repowise_mcp_mcp_server_repowise",
-      "community": 248,
-      "norm_label": "repowise"
-    },
-    {
-      "label": "repowise",
-      "file_type": "code",
-      "source_file": ".repowise/mcp.json",
-      "source_location": "L1",
-      "metadata": {
-        "mcp_kind": "mcp_command"
-      },
-      "_origin": "ast",
-      "id": "mcp_command_repowise",
-      "community": 248,
-      "norm_label": "repowise"
-    },
-    {
       "label": "package.json",
       "file_type": "code",
       "source_file": "package.json",
@@ -298,30 +259,10 @@
       "norm_label": "cloak-fetch"
     },
     {
-      "label": "report",
-      "file_type": "code",
-      "source_file": "package.json",
-      "source_location": "L15",
-      "_origin": "ast",
-      "id": "package_scripts_report",
-      "community": 34,
-      "norm_label": "report"
-    },
-    {
-      "label": "test:node",
-      "file_type": "code",
-      "source_file": "package.json",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "package_scripts_test_node",
-      "community": 34,
-      "norm_label": "test:node"
-    },
-    {
       "label": "keywords",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L18",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "package_keywords",
       "community": 34,
@@ -331,7 +272,7 @@
       "label": "dependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "package_dependencies",
       "community": 34,
@@ -341,7 +282,7 @@
       "label": "cloakbrowser",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L25",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "package_dependencies_cloakbrowser",
       "community": 34,
@@ -351,7 +292,7 @@
       "label": "playwright-core",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L24",
       "_origin": "ast",
       "id": "package_dependencies_playwright_core",
       "community": 34,
@@ -361,7 +302,7 @@
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L28",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "package_devdependencies",
       "community": 34,
@@ -371,7 +312,7 @@
       "label": "typescript",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L29",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "package_devdependencies_typescript",
       "community": 34,
@@ -381,7 +322,7 @@
       "label": "undici",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L30",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "package_devdependencies_undici",
       "community": 34,
@@ -411,7 +352,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_bump_version_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_bump_version_sh__entry",
       "community": 186,
       "norm_label": "bump-version.sh script"
     },
@@ -909,7 +850,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_deploy_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_deploy_sh__entry",
       "community": 159,
       "norm_label": "deploy.sh script"
     },
@@ -937,7 +878,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_extract_changelog_section_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_extract_changelog_section_sh__entry",
       "community": 223,
       "norm_label": "extract-changelog-section.sh script"
     },
@@ -1065,7 +1006,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_inspect_github_release_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_inspect_github_release_sh__entry",
       "community": 230,
       "norm_label": "inspect-github-release.sh script"
     },
@@ -1131,7 +1072,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_live_schema_smoke_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_live_schema_smoke_sh__entry",
       "community": 187,
       "norm_label": "live-schema-smoke.sh script"
     },
@@ -1159,7 +1100,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_local_whmcs_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_local_whmcs_sh__entry",
       "community": 147,
       "norm_label": "local-whmcs.sh script"
     },
@@ -1187,7 +1128,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_package_whmcs_suite_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry",
       "community": 201,
       "norm_label": "package-whmcs-suite.sh script"
     },
@@ -1299,7 +1240,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_predeploy_check_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_predeploy_check_sh__entry",
       "community": 171,
       "norm_label": "predeploy-check.sh script"
     },
@@ -1355,7 +1296,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_resolve_scraper_release_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_resolve_scraper_release_sh__entry",
       "community": 224,
       "norm_label": "resolve-scraper-release.sh script"
     },
@@ -1453,7 +1394,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_setup_memory_tools_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_setup_memory_tools_sh__entry",
       "community": 180,
       "norm_label": "setup-memory-tools.sh script"
     },
@@ -1495,7 +1436,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_resolve_scraper_release_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_resolve_scraper_release_sh__entry",
       "community": 234,
       "norm_label": "test-resolve-scraper-release.sh script"
     },
@@ -1551,7 +1492,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_whmcs_release_contract_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_whmcs_release_contract_sh__entry",
       "community": 222,
       "norm_label": "test-whmcs-release-contract.sh script"
     },
@@ -1607,7 +1548,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_workflow_trust_contract_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry",
       "community": 236,
       "norm_label": "test-workflow-trust-contract.sh script"
     },
@@ -1691,7 +1632,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_scripts_whmcs_integration_smoke_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_whmcs_integration_smoke_sh__entry",
       "community": 188,
       "norm_label": "whmcs-integration-smoke.sh script"
     },
@@ -4016,126 +3957,6 @@
       "norm_label": "spawn_server()"
     },
     {
-      "label": "managed_services_model.test.js",
-      "file_type": "code",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "tests_managed_services_model_test",
-      "community": 242,
-      "norm_label": "managed_services_model.test.js"
-    },
-    {
-      "label": "assert",
-      "file_type": "code",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L3",
-      "_origin": "ast",
-      "id": "tests_managed_services_model_test_assert",
-      "community": 242,
-      "norm_label": "assert"
-    },
-    {
-      "label": "test",
-      "file_type": "code",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L4",
-      "_origin": "ast",
-      "id": "tests_managed_services_model_test_test",
-      "community": 242,
-      "norm_label": "test"
-    },
-    {
-      "label": "path",
-      "file_type": "code",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "tests_managed_services_model_test_path",
-      "community": 242,
-      "norm_label": "path"
-    },
-    {
-      "label": "{\n  calculateManagedQuote,\n  loadManagedCatalog,\n  makeManagedPurchaseSnapshot,\n  managedPlansForFamily,\n  validateManagedCatalog,\n}",
-      "file_type": "code",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "tests_managed_services_model_test_calculatemanagedquote_loadmanagedcatalog_makemanagedpurchasesnapshot_managedplansforfamily_validatemanagedcatalog",
-      "community": 242,
-      "norm_label": "{\n  calculatemanagedquote,\n  loadmanagedcatalog,\n  makemanagedpurchasesnapshot,\n  managedplansforfamily,\n  validatemanagedcatalog,\n}"
-    },
-    {
-      "label": "catalogPath",
-      "file_type": "code",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L15",
-      "_origin": "ast",
-      "id": "tests_managed_services_model_test_catalogpath",
-      "community": 242,
-      "norm_label": "catalogpath"
-    },
-    {
-      "label": "catalog",
-      "file_type": "code",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "tests_managed_services_model_test_catalog",
-      "community": 242,
-      "norm_label": "catalog"
-    },
-    {
-      "label": "proposal_model.test.js",
-      "file_type": "code",
-      "source_file": "tests/proposal_model.test.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "tests_proposal_model_test",
-      "community": 245,
-      "norm_label": "proposal_model.test.js"
-    },
-    {
-      "label": "test",
-      "file_type": "code",
-      "source_file": "tests/proposal_model.test.js",
-      "source_location": "L3",
-      "_origin": "ast",
-      "id": "tests_proposal_model_test_test",
-      "community": 245,
-      "norm_label": "test"
-    },
-    {
-      "label": "assert",
-      "file_type": "code",
-      "source_file": "tests/proposal_model.test.js",
-      "source_location": "L4",
-      "_origin": "ast",
-      "id": "tests_proposal_model_test_assert",
-      "community": 245,
-      "norm_label": "assert"
-    },
-    {
-      "label": "model",
-      "file_type": "code",
-      "source_file": "tests/proposal_model.test.js",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "tests_proposal_model_test_model",
-      "community": 245,
-      "norm_label": "model"
-    },
-    {
-      "label": "input()",
-      "file_type": "code",
-      "source_file": "tests/proposal_model.test.js",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "tests_proposal_model_test_input",
-      "community": 245,
-      "norm_label": "input()"
-    },
-    {
       "label": "schema_contract.rs",
       "file_type": "code",
       "source_file": "tests/schema_contract.rs",
@@ -5232,7 +5053,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_admincontroller",
-      "community": 28,
+      "community": 99,
       "norm_label": "admincontroller.php"
     },
     {
@@ -5242,7 +5063,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller",
-      "community": 28,
+      "community": 99,
       "norm_label": "admincontroller"
     },
     {
@@ -5252,7 +5073,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_construct",
-      "community": 28,
+      "community": 99,
       "norm_label": ".__construct()"
     },
     {
@@ -5262,7 +5083,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_admincontroller_php_settings",
-      "community": 28,
+      "community": 99,
       "norm_label": "settings"
     },
     {
@@ -5322,7 +5143,7 @@
       "source_location": "L194",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_ajaxmetaprobe",
-      "community": 86,
+      "community": 99,
       "norm_label": ".ajaxmetaprobe()"
     },
     {
@@ -5362,7 +5183,7 @@
       "source_location": "L331",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_buildconfiguratorcontrols",
-      "community": 46,
+      "community": 99,
       "norm_label": ".buildconfiguratorcontrols()"
     },
     {
@@ -5372,7 +5193,7 @@
       "source_location": "L396",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_finalizecontrol",
-      "community": 46,
+      "community": 99,
       "norm_label": ".finalizecontrol()"
     },
     {
@@ -5402,7 +5223,7 @@
       "source_location": "L520",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_profiles",
-      "community": 28,
+      "community": 46,
       "norm_label": ".profiles()"
     },
     {
@@ -5452,7 +5273,7 @@
       "source_location": "L694",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_annotatedrift",
-      "community": 28,
+      "community": 46,
       "norm_label": ".annotatedrift()"
     },
     {
@@ -5462,7 +5283,7 @@
       "source_location": "L740",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_currenteffectivemonthly",
-      "community": 28,
+      "community": 46,
       "norm_label": ".currenteffectivemonthly()"
     },
     {
@@ -5582,7 +5403,7 @@
       "source_location": "L1081",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_configpreview",
-      "community": 28,
+      "community": 99,
       "norm_label": ".configpreview()"
     },
     {
@@ -5592,7 +5413,7 @@
       "source_location": "L1182",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_defaultselectionfromspecs",
-      "community": 28,
+      "community": 99,
       "norm_label": ".defaultselectionfromspecs()"
     },
     {
@@ -5602,7 +5423,7 @@
       "source_location": "L1216",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_mappedproductsforprofile",
-      "community": 28,
+      "community": 99,
       "norm_label": ".mappedproductsforprofile()"
     },
     {
@@ -5652,7 +5473,7 @@
       "source_location": "L1520",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_profileplanspecs",
-      "community": 28,
+      "community": 99,
       "norm_label": ".profileplanspecs()"
     },
     {
@@ -5662,7 +5483,7 @@
       "source_location": "L1549",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_mergespecrows",
-      "community": 28,
+      "community": 99,
       "norm_label": ".mergespecrows()"
     },
     {
@@ -5672,7 +5493,7 @@
       "source_location": "L1572",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_editorprofilemissing",
-      "community": 28,
+      "community": 99,
       "norm_label": ".editorprofilemissing()"
     },
     {
@@ -5682,7 +5503,7 @@
       "source_location": "L1587",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_capabilityeditor",
-      "community": 28,
+      "community": 99,
       "norm_label": ".capabilityeditor()"
     },
     {
@@ -5702,7 +5523,7 @@
       "source_location": "L1663",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_compatibilityeditor",
-      "community": 28,
+      "community": 99,
       "norm_label": ".compatibilityeditor()"
     },
     {
@@ -5722,7 +5543,7 @@
       "source_location": "L1749",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_splitvaluelist",
-      "community": 28,
+      "community": 99,
       "norm_label": ".splitvaluelist()"
     },
     {
@@ -5742,7 +5563,7 @@
       "source_location": "L1831",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_mappingsave",
-      "community": 26,
+      "community": 19,
       "norm_label": ".mappingsave()"
     },
     {
@@ -5782,7 +5603,7 @@
       "source_location": "L1971",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_coercejsonobject",
-      "community": 28,
+      "community": 19,
       "norm_label": ".coercejsonobject()"
     },
     {
@@ -5922,7 +5743,7 @@
       "source_location": "L2346",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_admincontroller_php_throwable",
-      "community": 26,
+      "community": 19,
       "norm_label": "throwable"
     },
     {
@@ -5982,7 +5803,7 @@
       "source_location": "L2563",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_approvalpendingquery",
-      "community": 28,
+      "community": 99,
       "norm_label": ".approvalpendingquery()"
     },
     {
@@ -6022,7 +5843,7 @@
       "source_location": "L2795",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_ajaxapprovalcount",
-      "community": 28,
+      "community": 99,
       "norm_label": ".ajaxapprovalcount()"
     },
     {
@@ -6062,7 +5883,7 @@
       "source_location": "L2856",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_rendersaveerror",
-      "community": 26,
+      "community": 19,
       "norm_label": ".rendersaveerror()"
     },
     {
@@ -6092,7 +5913,7 @@
       "source_location": "L2907",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_maintenancepurge",
-      "community": 247,
+      "community": 53,
       "norm_label": ".maintenancepurge()"
     },
     {
@@ -6102,7 +5923,7 @@
       "source_location": "L2994",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_maintenancepurgepreview",
-      "community": 247,
+      "community": 53,
       "norm_label": ".maintenancepurgepreview()"
     },
     {
@@ -6112,7 +5933,7 @@
       "source_location": "L3022",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_addontables",
-      "community": 247,
+      "community": 53,
       "norm_label": ".addontables()"
     },
     {
@@ -6132,7 +5953,7 @@
       "source_location": "L3120",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_computecyclestats",
-      "community": 28,
+      "community": 46,
       "norm_label": ".computecyclestats()"
     },
     {
@@ -6622,7 +6443,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_catalogimportservice",
-      "community": 92,
+      "community": 149,
       "norm_label": "catalogimportservice.php"
     },
     {
@@ -6632,7 +6453,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice",
-      "community": 92,
+      "community": 149,
       "norm_label": "catalogimportservice"
     },
     {
@@ -6642,7 +6463,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_import",
-      "community": 92,
+      "community": 149,
       "norm_label": ".import()"
     },
     {
@@ -6652,7 +6473,7 @@
       "source_location": "L174",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_canonicaljson",
-      "community": 92,
+      "community": 149,
       "norm_label": ".canonicaljson()"
     },
     {
@@ -6662,7 +6483,7 @@
       "source_location": "L190",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_normalize",
-      "community": 92,
+      "community": 149,
       "norm_label": ".normalize()"
     },
     {
@@ -6672,7 +6493,7 @@
       "source_location": "L206",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_islist",
-      "community": 92,
+      "community": 149,
       "norm_label": ".islist()"
     },
     {
@@ -6682,7 +6503,7 @@
       "source_location": "L217",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_mysqltimestamp",
-      "community": 92,
+      "community": 149,
       "norm_label": ".mysqltimestamp()"
     },
     {
@@ -9352,7 +9173,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_pricinginvariantviolation",
-      "community": 92,
+      "community": 109,
       "norm_label": "pricinginvariantviolation.php"
     },
     {
@@ -9362,7 +9183,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "lib_pricinginvariantviolation_pricinginvariantviolation",
-      "community": 92,
+      "community": 109,
       "norm_label": "pricinginvariantviolation"
     },
     {
@@ -9372,7 +9193,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "runtimeexception",
-      "community": 92,
+      "community": 109,
       "norm_label": "runtimeexception"
     },
     {
@@ -9382,7 +9203,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "lib_pricinginvariantviolation_pricinginvariantviolation_construct",
-      "community": 92,
+      "community": 109,
       "norm_label": ".__construct()"
     },
     {
@@ -9392,7 +9213,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_pricinginvariantviolation_pricinginvariantviolation_reason",
-      "community": 92,
+      "community": 109,
       "norm_label": ".reason()"
     },
     {
@@ -9572,7 +9393,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_profilemanager",
-      "community": 92,
+      "community": 233,
       "norm_label": "profilemanager.php"
     },
     {
@@ -9582,7 +9403,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_profilemanager_profileslugconflictexception",
-      "community": 92,
+      "community": 233,
       "norm_label": "profileslugconflictexception"
     },
     {
@@ -9592,7 +9413,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "lib_profilemanager_profileslugconflictexception_construct",
-      "community": 92,
+      "community": 233,
       "norm_label": ".__construct()"
     },
     {
@@ -9602,7 +9423,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager",
-      "community": 203,
+      "community": 7,
       "norm_label": "profilemanager"
     },
     {
@@ -9612,7 +9433,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_construct",
-      "community": 203,
+      "community": 7,
       "norm_label": ".__construct()"
     },
     {
@@ -9622,7 +9443,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_profilemanager_php_settings",
-      "community": 203,
+      "community": 7,
       "norm_label": "settings"
     },
     {
@@ -9632,7 +9453,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listprofiles",
-      "community": 203,
+      "community": 7,
       "norm_label": ".listprofiles()"
     },
     {
@@ -9642,7 +9463,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listtrashed",
-      "community": 203,
+      "community": 7,
       "norm_label": ".listtrashed()"
     },
     {
@@ -9652,7 +9473,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_softdelete",
-      "community": 203,
+      "community": 7,
       "norm_label": ".softdelete()"
     },
     {
@@ -9662,7 +9483,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_restore",
-      "community": 203,
+      "community": 7,
       "norm_label": ".restore()"
     },
     {
@@ -9672,7 +9493,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_find",
-      "community": 203,
+      "community": 7,
       "norm_label": ".find()"
     },
     {
@@ -9682,7 +9503,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_findbyslug",
-      "community": 203,
+      "community": 7,
       "norm_label": ".findbyslug()"
     },
     {
@@ -9692,7 +9513,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_create",
-      "community": 203,
+      "community": 7,
       "norm_label": ".create()"
     },
     {
@@ -9702,7 +9523,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_update",
-      "community": 203,
+      "community": 7,
       "norm_label": ".update()"
     },
     {
@@ -9712,7 +9533,7 @@
       "source_location": "L199",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_setactive",
-      "community": 203,
+      "community": 7,
       "norm_label": ".setactive()"
     },
     {
@@ -9722,7 +9543,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_appendversion",
-      "community": 203,
+      "community": 7,
       "norm_label": ".appendversion()"
     },
     {
@@ -9732,7 +9553,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_profilemanager_php_profileversioninput",
-      "community": 203,
+      "community": 7,
       "norm_label": "profileversioninput"
     },
     {
@@ -9742,7 +9563,7 @@
       "source_location": "L243",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_latestversion",
-      "community": 203,
+      "community": 7,
       "norm_label": ".latestversion()"
     },
     {
@@ -9752,7 +9573,7 @@
       "source_location": "L253",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listversions",
-      "community": 203,
+      "community": 7,
       "norm_label": ".listversions()"
     },
     {
@@ -9762,7 +9583,7 @@
       "source_location": "L267",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_buildslug",
-      "community": 203,
+      "community": 13,
       "norm_label": ".buildslug()"
     },
     {
@@ -10552,7 +10373,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_schemamismatchexception",
-      "community": 92,
+      "community": 109,
       "norm_label": "schemamismatchexception.php"
     },
     {
@@ -10562,7 +10383,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "lib_schemamismatchexception_schemamismatchexception",
-      "community": 92,
+      "community": 109,
       "norm_label": "schemamismatchexception"
     },
     {
@@ -11432,7 +11253,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench",
-      "community": 92,
+      "community": 109,
       "norm_label": "vpsoperationsworkbench.php"
     },
     {
@@ -12302,7 +12123,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest",
-      "community": 92,
+      "community": 208,
       "norm_label": "catalogimportservicetest.php"
     },
     {
@@ -12312,7 +12133,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest",
-      "community": 92,
+      "community": 208,
       "norm_label": "catalogimportservicetest"
     },
     {
@@ -12322,7 +12143,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_setup",
-      "community": 92,
+      "community": 208,
       "norm_label": ".setup()"
     },
     {
@@ -12332,7 +12153,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testimportsonlyaddonownedversionanditems",
-      "community": 92,
+      "community": 208,
       "norm_label": ".testimportsonlyaddonownedversionanditems()"
     },
     {
@@ -12342,7 +12163,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testrepeatingsameversionandhashisnoop",
-      "community": 92,
+      "community": 208,
       "norm_label": ".testrepeatingsameversionandhashisnoop()"
     },
     {
@@ -12352,7 +12173,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testtamperedenvelopeisrejectedbeforewrite",
-      "community": 92,
+      "community": 208,
       "norm_label": ".testtamperedenvelopeisrejectedbeforewrite()"
     },
     {
@@ -12362,7 +12183,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_catalog",
-      "community": 92,
+      "community": 208,
       "norm_label": ".catalog()"
     },
     {
@@ -12922,7 +12743,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest",
-      "community": 7,
+      "community": 203,
       "norm_label": "configpurgeservicetest.php"
     },
     {
@@ -12932,7 +12753,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest",
-      "community": 7,
+      "community": 203,
       "norm_label": "configpurgeservicetest"
     },
     {
@@ -12942,7 +12763,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_setup",
-      "community": 7,
+      "community": 203,
       "norm_label": ".setup()"
     },
     {
@@ -12952,7 +12773,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_seed",
-      "community": 7,
+      "community": 203,
       "norm_label": ".seed()"
     },
     {
@@ -12962,7 +12783,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testremovesonlyaddoncreatedobjects",
-      "community": 7,
+      "community": 203,
       "norm_label": ".testremovesonlyaddoncreatedobjects()"
     },
     {
@@ -12972,7 +12793,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testidempotentsecondrundeletesnothing",
-      "community": 7,
+      "community": 203,
       "norm_label": ".testidempotentsecondrundeletesnothing()"
     },
     {
@@ -12982,7 +12803,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testnolinksdeletesnothing",
-      "community": 7,
+      "community": 203,
       "norm_label": ".testnolinksdeletesnothing()"
     },
     {
@@ -12992,7 +12813,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testpreviewremovalcountsbutdeletesnothing",
-      "community": 7,
+      "community": 203,
       "norm_label": ".testpreviewremovalcountsbutdeletesnothing()"
     },
     {
@@ -13002,7 +12823,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testpreviewmatchesactualremovalcounts",
-      "community": 7,
+      "community": 203,
       "norm_label": ".testpreviewmatchesactualremovalcounts()"
     },
     {
@@ -13012,7 +12833,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "tests_configpurgeservicetest_configpurgeservicetest_testpreviewwithnolinksisallzeros",
-      "community": 7,
+      "community": 203,
       "norm_label": ".testpreviewwithnolinksisallzeros()"
     },
     {
@@ -15312,7 +15133,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_freshinstallschematest",
-      "community": 53,
+      "community": 7,
       "norm_label": "freshinstallschematest.php"
     },
     {
@@ -15322,7 +15143,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest",
-      "community": 53,
+      "community": 7,
       "norm_label": "freshinstallschematest"
     },
     {
@@ -15332,7 +15153,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_setup",
-      "community": 53,
+      "community": 7,
       "norm_label": ".setup()"
     },
     {
@@ -15342,7 +15163,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testfreshinstallendsatcurrentschemaversion",
-      "community": 53,
+      "community": 7,
       "norm_label": ".testfreshinstallendsatcurrentschemaversion()"
     },
     {
@@ -15352,7 +15173,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testfreshinstallschemaishealthy",
-      "community": 53,
+      "community": 7,
       "norm_label": ".testfreshinstallschemaishealthy()"
     },
     {
@@ -15362,7 +15183,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testfreshinstallassertormigrateisnoop",
-      "community": 53,
+      "community": 7,
       "norm_label": ".testfreshinstallassertormigrateisnoop()"
     },
     {
@@ -15372,7 +15193,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testfreshinstallcreatesprovisioningsuiteschema",
-      "community": 53,
+      "community": 7,
       "norm_label": ".testfreshinstallcreatesprovisioningsuiteschema()"
     },
     {
@@ -15382,7 +15203,7 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testprovisioningsuitemigrationisidempotent",
-      "community": 53,
+      "community": 7,
       "norm_label": ".testprovisioningsuitemigrationisidempotent()"
     },
     {
@@ -15862,7 +15683,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest",
-      "community": 92,
+      "community": 109,
       "norm_label": "mappingpublicationservicetest.php"
     },
     {
@@ -15872,7 +15693,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest",
-      "community": 92,
+      "community": 102,
       "norm_label": "mappingpublicationservicetest"
     },
     {
@@ -15882,7 +15703,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_setup",
-      "community": 92,
+      "community": 102,
       "norm_label": ".setup()"
     },
     {
@@ -15892,7 +15713,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_testpreviewisidempotentanddoesnotadvancemapping",
-      "community": 92,
+      "community": 102,
       "norm_label": ".testpreviewisidempotentanddoesnotadvancemapping()"
     },
     {
@@ -15902,7 +15723,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_testapprovalatomicallyadvancespublishedpointer",
-      "community": 92,
+      "community": 102,
       "norm_label": ".testapprovalatomicallyadvancespublishedpointer()"
     },
     {
@@ -15912,7 +15733,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_testchangedpreviewhashcannotbeapproved",
-      "community": 92,
+      "community": 102,
       "norm_label": ".testchangedpreviewhashcannotbeapproved()"
     },
     {
@@ -15922,7 +15743,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_testtypedconfirmationisrequired",
-      "community": 92,
+      "community": 102,
       "norm_label": ".testtypedconfirmationisrequired()"
     },
     {
@@ -15932,7 +15753,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "tests_mappingpublicationservicetest_mappingpublicationservicetest_selection",
-      "community": 92,
+      "community": 102,
       "norm_label": ".selection()"
     },
     {
@@ -16232,7 +16053,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_migrationv3test",
-      "community": 17,
+      "community": 237,
       "norm_label": "migrationv3test.php"
     },
     {
@@ -16242,7 +16063,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test",
-      "community": 17,
+      "community": 237,
       "norm_label": "migrationv3test"
     },
     {
@@ -16252,7 +16073,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_setup",
-      "community": 17,
+      "community": 237,
       "norm_label": ".setup()"
     },
     {
@@ -16262,7 +16083,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_testmigrateto3succeedsonfreshschemawithnolegacycolumns",
-      "community": 17,
+      "community": 237,
       "norm_label": ".testmigrateto3succeedsonfreshschemawithnolegacycolumns()"
     },
     {
@@ -16272,7 +16093,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_testmigrateto3isidempotentonalreadymigratedschema",
-      "community": 17,
+      "community": 237,
       "norm_label": ".testmigrateto3isidempotentonalreadymigratedschema()"
     },
     {
@@ -16282,7 +16103,7 @@
       "source_location": "L142",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_testmigrateto3backfillslegacybooleansintobitmasks",
-      "community": 17,
+      "community": 237,
       "norm_label": ".testmigrateto3backfillslegacybooleansintobitmasks()"
     },
     {
@@ -18632,7 +18453,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_servicepricewritertest",
-      "community": 243,
+      "community": 17,
       "norm_label": "servicepricewritertest.php"
     },
     {
@@ -18642,7 +18463,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest",
-      "community": 243,
+      "community": 17,
       "norm_label": "servicepricewritertest"
     },
     {
@@ -18652,7 +18473,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_setup",
-      "community": 243,
+      "community": 17,
       "norm_label": ".setup()"
     },
     {
@@ -18662,7 +18483,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_teardown",
-      "community": 243,
+      "community": 17,
       "norm_label": ".teardown()"
     },
     {
@@ -18672,7 +18493,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_testdisabledinphaseawritesnothing",
-      "community": 243,
+      "community": 17,
       "norm_label": ".testdisabledinphaseawritesnothing()"
     },
     {
@@ -18682,7 +18503,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_testlocalapipayloadusesrecurringamountparam",
-      "community": 243,
+      "community": 17,
       "norm_label": ".testlocalapipayloadusesrecurringamountparam()"
     },
     {
@@ -18692,7 +18513,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_testrawfallbackwritesamountcolumn",
-      "community": 243,
+      "community": 17,
       "norm_label": ".testrawfallbackwritesamountcolumn()"
     },
     {
@@ -19982,7 +19803,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest",
-      "community": 17,
+      "community": 227,
       "norm_label": "vpsoperationsworkbenchtest.php"
     },
     {
@@ -19992,7 +19813,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest",
-      "community": 17,
+      "community": 227,
       "norm_label": "vpsoperationsworkbenchtest"
     },
     {
@@ -20002,7 +19823,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest_setup",
-      "community": 17,
+      "community": 227,
       "norm_label": ".setup()"
     },
     {
@@ -20012,7 +19833,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest_testrecoveryrequestisappendonlyandhashprotected",
-      "community": 17,
+      "community": 227,
       "norm_label": ".testrecoveryrequestisappendonlyandhashprotected()"
     },
     {
@@ -20022,7 +19843,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest_testenablingwritesrequiresexactconfirmation",
-      "community": 17,
+      "community": 227,
       "norm_label": ".testenablingwritesrequiresexactconfirmation()"
     },
     {
@@ -20032,7 +19853,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest_testcapabilitycertificationandwriteswitchremainseparate",
-      "community": 17,
+      "community": 227,
       "norm_label": ".testcapabilitycertificationandwriteswitchremainseparate()"
     },
     {
@@ -20042,7 +19863,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_whmcsconfigoptionsadaptertest",
-      "community": 41,
+      "community": 47,
       "norm_label": "whmcsconfigoptionsadaptertest.php"
     },
     {
@@ -21012,7 +20833,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_clientareapresenter",
-      "community": 237,
+      "community": 44,
       "norm_label": "clientareapresenter.php"
     },
     {
@@ -21022,7 +20843,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "lib_clientareapresenter_clientareapresenter",
-      "community": 237,
+      "community": 44,
       "norm_label": "clientareapresenter"
     },
     {
@@ -21032,7 +20853,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_clientareapresenter_clientareapresenter_construct",
-      "community": 237,
+      "community": 44,
       "norm_label": ".__construct()"
     },
     {
@@ -21042,7 +20863,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_clientareapresenter_php_capabilityregistry",
-      "community": 237,
+      "community": 44,
       "norm_label": "capabilityregistry"
     },
     {
@@ -21052,7 +20873,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "lib_clientareapresenter_clientareapresenter_present",
-      "community": 237,
+      "community": 44,
       "norm_label": ".present()"
     },
     {
@@ -21062,7 +20883,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "lib_clientareapresenter_clientareapresenter_canwrite",
-      "community": 237,
+      "community": 44,
       "norm_label": ".canwrite()"
     },
     {
@@ -21072,7 +20893,7 @@
       "source_location": "L167",
       "_origin": "ast",
       "id": "lib_clientareapresenter_clientareapresenter_serviceips",
-      "community": 237,
+      "community": 44,
       "norm_label": ".serviceips()"
     },
     {
@@ -21082,7 +20903,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_communicationservice",
-      "community": 73,
+      "community": 42,
       "norm_label": "communicationservice.php"
     },
     {
@@ -21092,7 +20913,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_communicationservice_communicationservice",
-      "community": 73,
+      "community": 42,
       "norm_label": "communicationservice"
     },
     {
@@ -21102,7 +20923,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_communicationservice_communicationservice_queueforoperation",
-      "community": 73,
+      "community": 42,
       "norm_label": ".queueforoperation()"
     },
     {
@@ -21112,7 +20933,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "lib_communicationservice_communicationservice_processqueue",
-      "community": 73,
+      "community": 42,
       "norm_label": ".processqueue()"
     },
     {
@@ -21122,7 +20943,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_configoptionresolver",
-      "community": 246,
+      "community": 221,
       "norm_label": "configoptionresolver.php"
     },
     {
@@ -21132,7 +20953,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "lib_configoptionresolver_configoptionresolver",
-      "community": 246,
+      "community": 221,
       "norm_label": "configoptionresolver"
     },
     {
@@ -21142,7 +20963,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "lib_configoptionresolver_configoptionresolver_selectionsforservice",
-      "community": 246,
+      "community": 221,
       "norm_label": ".selectionsforservice()"
     },
     {
@@ -21152,7 +20973,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "lib_configoptionresolver_configoptionresolver_linktablespresent",
-      "community": 246,
+      "community": 221,
       "norm_label": ".linktablespresent()"
     },
     {
@@ -21442,7 +21263,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception",
-      "community": 92,
+      "community": 198,
       "norm_label": "contaboprovisioningexception.php"
     },
     {
@@ -21452,7 +21273,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception",
-      "community": 92,
+      "community": 198,
       "norm_label": "contaboprovisioningexception"
     },
     {
@@ -21462,7 +21283,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception_construct",
-      "community": 92,
+      "community": 198,
       "norm_label": ".__construct()"
     },
     {
@@ -21472,7 +21293,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception_safecode",
-      "community": 92,
+      "community": 198,
       "norm_label": ".safecode()"
     },
     {
@@ -21482,7 +21303,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception_retryclassification",
-      "community": 92,
+      "community": 198,
       "norm_label": ".retryclassification()"
     },
     {
@@ -21492,7 +21313,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception_hasambiguousoutcome",
-      "community": 92,
+      "community": 198,
       "norm_label": ".hasambiguousoutcome()"
     },
     {
@@ -21812,7 +21633,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_construct",
-      "community": 240,
+      "community": 30,
       "norm_label": ".__construct()"
     },
     {
@@ -21822,7 +21643,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_instanceservice_php_contaboapiclient",
-      "community": 240,
+      "community": 30,
       "norm_label": "contaboapiclient"
     },
     {
@@ -21832,7 +21653,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_instanceservice_php_instancelinker",
-      "community": 240,
+      "community": 30,
       "norm_label": "instancelinker"
     },
     {
@@ -21842,7 +21663,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_instanceservice_php_secretmanager",
-      "community": 240,
+      "community": 30,
       "norm_label": "secretmanager"
     },
     {
@@ -21852,7 +21673,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_instanceservice_php_configoptionresolver",
-      "community": 240,
+      "community": 30,
       "norm_label": "configoptionresolver"
     },
     {
@@ -21862,7 +21683,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_instanceservice_php_imageresolver",
-      "community": 240,
+      "community": 30,
       "norm_label": "imageresolver"
     },
     {
@@ -21872,7 +21693,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_instanceservice_php_contaboinstancemapper",
-      "community": 240,
+      "community": 30,
       "norm_label": "contaboinstancemapper"
     },
     {
@@ -21882,7 +21703,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_create",
-      "community": 233,
+      "community": 30,
       "norm_label": ".create()"
     },
     {
@@ -21892,7 +21713,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_submitcreatefromsnapshot",
-      "community": 233,
+      "community": 30,
       "norm_label": ".submitcreatefromsnapshot()"
     },
     {
@@ -22022,7 +21843,7 @@
       "source_location": "L515",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_terminate",
-      "community": 233,
+      "community": 30,
       "norm_label": ".terminate()"
     },
     {
@@ -22082,7 +21903,7 @@
       "source_location": "L691",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_resetpassword",
-      "community": 233,
+      "community": 30,
       "norm_label": ".resetpassword()"
     },
     {
@@ -22092,7 +21913,7 @@
       "source_location": "L697",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_reinstall",
-      "community": 233,
+      "community": 30,
       "norm_label": ".reinstall()"
     },
     {
@@ -22102,7 +21923,7 @@
       "source_location": "L706",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_poweraction",
-      "community": 233,
+      "community": 30,
       "norm_label": ".poweraction()"
     },
     {
@@ -22192,7 +22013,7 @@
       "source_location": "L947",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_directmutationdisabled",
-      "community": 233,
+      "community": 30,
       "norm_label": ".directmutationdisabled()"
     },
     {
@@ -22202,7 +22023,7 @@
       "source_location": "L947",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_instanceservice_php_contaboprovisioningexception",
-      "community": 233,
+      "community": 30,
       "norm_label": "contaboprovisioningexception"
     },
     {
@@ -22212,7 +22033,7 @@
       "source_location": "L960",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_log",
-      "community": 233,
+      "community": 30,
       "norm_label": ".log()"
     },
     {
@@ -22242,7 +22063,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_lifecycleorchestrator_lifecycleorchestrator_construct",
-      "community": 122,
+      "community": 44,
       "norm_label": ".__construct()"
     },
     {
@@ -22252,7 +22073,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_lifecycleorchestrator_php_operationrepository",
-      "community": 122,
+      "community": 44,
       "norm_label": "operationrepository"
     },
     {
@@ -22272,7 +22093,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "operationprocessor",
-      "community": 122,
+      "community": 44,
       "norm_label": "operationprocessor"
     },
     {
@@ -22802,7 +22623,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_operationrepository",
-      "community": 227,
+      "community": 73,
       "norm_label": "operationrepository.php"
     },
     {
@@ -22812,7 +22633,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository",
-      "community": 227,
+      "community": 73,
       "norm_label": "operationrepository"
     },
     {
@@ -22822,7 +22643,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_accept",
-      "community": 227,
+      "community": 73,
       "norm_label": ".accept()"
     },
     {
@@ -22832,7 +22653,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_acceptunlocked",
-      "community": 227,
+      "community": 73,
       "norm_label": ".acceptunlocked()"
     },
     {
@@ -22842,7 +22663,7 @@
       "source_location": "L177",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_byuuid",
-      "community": 227,
+      "community": 73,
       "norm_label": ".byuuid()"
     },
     {
@@ -22852,7 +22673,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_latestforservicetype",
-      "community": 227,
+      "community": 73,
       "norm_label": ".latestforservicetype()"
     },
     {
@@ -22862,7 +22683,7 @@
       "source_location": "L200",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_latestlifecycleintent",
-      "community": 227,
+      "community": 73,
       "norm_label": ".latestlifecycleintent()"
     },
     {
@@ -22872,7 +22693,7 @@
       "source_location": "L211",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_supersedeolderlifecycleintents",
-      "community": 227,
+      "community": 73,
       "norm_label": ".supersedeolderlifecycleintents()"
     },
     {
@@ -22882,7 +22703,7 @@
       "source_location": "L244",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_claim",
-      "community": 227,
+      "community": 73,
       "norm_label": ".claim()"
     },
     {
@@ -22892,7 +22713,7 @@
       "source_location": "L318",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_renew",
-      "community": 227,
+      "community": 73,
       "norm_label": ".renew()"
     },
     {
@@ -22902,7 +22723,7 @@
       "source_location": "L423",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_transition",
-      "community": 227,
+      "community": 73,
       "norm_label": ".transition()"
     },
     {
@@ -22912,7 +22733,7 @@
       "source_location": "L437",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_attempt",
-      "community": 227,
+      "community": 73,
       "norm_label": ".attempt()"
     },
     {
@@ -22922,7 +22743,7 @@
       "source_location": "L464",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_due",
-      "community": 227,
+      "community": 73,
       "norm_label": ".due()"
     },
     {
@@ -22932,7 +22753,7 @@
       "source_location": "L500",
       "_origin": "ast",
       "id": "lib_operationrepository_operationrepository_release",
-      "community": 227,
+      "community": 73,
       "norm_label": ".release()"
     },
     {
@@ -24212,7 +24033,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest",
-      "community": 244,
+      "community": 17,
       "norm_label": "directmutationbypasstest.php"
     },
     {
@@ -24222,7 +24043,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest",
-      "community": 244,
+      "community": 17,
       "norm_label": "directmutationbypasstest"
     },
     {
@@ -24232,7 +24053,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest_setup",
-      "community": 244,
+      "community": 17,
       "norm_label": ".setup()"
     },
     {
@@ -24242,7 +24063,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest_teardown",
-      "community": 244,
+      "community": 17,
       "norm_label": ".teardown()"
     },
     {
@@ -24252,7 +24073,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest_testlegacymutationmethodscannotreachtheprovider",
-      "community": 244,
+      "community": 17,
       "norm_label": ".testlegacymutationmethodscannotreachtheprovider()"
     },
     {
@@ -25112,7 +24933,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest",
-      "community": 73,
+      "community": 122,
       "norm_label": "nativefoundationtest"
     },
     {
@@ -25122,7 +24943,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_setup",
-      "community": 73,
+      "community": 122,
       "norm_label": ".setup()"
     },
     {
@@ -25142,7 +24963,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testcapabilityrequirescertificationandbothkillswitches",
-      "community": 73,
+      "community": 122,
       "norm_label": ".testcapabilityrequirescertificationandbothkillswitches()"
     },
     {
@@ -25152,7 +24973,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testcertifiedcapabilityisallowedwhenwritesareenabled",
-      "community": 73,
+      "community": 122,
       "norm_label": ".testcertifiedcapabilityisallowedwhenwritesareenabled()"
     },
     {
@@ -25162,7 +24983,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testsealedsnapshothashesareverified",
-      "community": 73,
+      "community": 122,
       "norm_label": ".testsealedsnapshothashesareverified()"
     },
     {
@@ -25172,7 +24993,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testsamecreatecommandreturnsexistingoperation",
-      "community": 73,
+      "community": 122,
       "norm_label": ".testsamecreatecommandreturnsexistingoperation()"
     },
     {
@@ -25182,7 +25003,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testsamecommandwithdifferentpayloadisrejected",
-      "community": 73,
+      "community": 122,
       "norm_label": ".testsamecommandwithdifferentpayloadisrejected()"
     },
     {
@@ -25192,7 +25013,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testoperationclaimhonorsleasethenrecoversexpiredworker",
-      "community": 73,
+      "community": 122,
       "norm_label": ".testoperationclaimhonorsleasethenrecoversexpiredworker()"
     },
     {
@@ -25202,7 +25023,7 @@
       "source_location": "L186",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testactiveworkercanrenewleasebeforeprovidermutation",
-      "community": 73,
+      "community": 122,
       "norm_label": ".testactiveworkercanrenewleasebeforeprovidermutation()"
     },
     {
@@ -25212,7 +25033,7 @@
       "source_location": "L250",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testnewlifecycleintentsupersedesandfencesclaimedolderintent",
-      "community": 73,
+      "community": 122,
       "norm_label": ".testnewlifecycleintentsupersedesandfencesclaimedolderintent()"
     },
     {
@@ -25222,7 +25043,7 @@
       "source_location": "L308",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testonetimesecretcannotbereplayed",
-      "community": 73,
+      "community": 122,
       "norm_label": ".testonetimesecretcannotbereplayed()"
     },
     {
@@ -25232,7 +25053,7 @@
       "source_location": "L322",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_seedsuiteschema",
-      "community": 73,
+      "community": 122,
       "norm_label": ".seedsuiteschema()"
     },
     {
@@ -26269,7 +26090,7 @@
       "label": "[Cloud VPS 20](https://contabo.com/en/vps/cloud-vps-20/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L40",
+      "source_location": "L41",
       "_origin": "ast",
       "id": "prices_cloud_vps_20_https_contabo_com_en_vps_cloud_vps_20",
       "community": 88,
@@ -26279,7 +26100,7 @@
       "label": "[Cloud VPS 30](https://contabo.com/en/vps/cloud-vps-30/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L62",
+      "source_location": "L63",
       "_origin": "ast",
       "id": "prices_cloud_vps_30_https_contabo_com_en_vps_cloud_vps_30",
       "community": 88,
@@ -26289,7 +26110,7 @@
       "label": "[Cloud VPS 40](https://contabo.com/en/vps/cloud-vps-40/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L84",
+      "source_location": "L85",
       "_origin": "ast",
       "id": "prices_cloud_vps_40_https_contabo_com_en_vps_cloud_vps_40",
       "community": 88,
@@ -26299,7 +26120,7 @@
       "label": "[Cloud VPS 50](https://contabo.com/en/vps/cloud-vps-50/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L106",
+      "source_location": "L107",
       "_origin": "ast",
       "id": "prices_cloud_vps_50_https_contabo_com_en_vps_cloud_vps_50",
       "community": 88,
@@ -26309,7 +26130,7 @@
       "label": "[Cloud VPS 60](https://contabo.com/en/vps/cloud-vps-60/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L128",
+      "source_location": "L129",
       "_origin": "ast",
       "id": "prices_cloud_vps_60_https_contabo_com_en_vps_cloud_vps_60",
       "community": 88,
@@ -26319,7 +26140,7 @@
       "label": "\ud83d\udcbe Storage VPS",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L150",
+      "source_location": "L151",
       "_origin": "ast",
       "id": "prices_storage_vps",
       "community": 38,
@@ -26329,7 +26150,7 @@
       "label": "[Storage VPS 10](https://contabo.com/en/storage-vps/storage-vps-10/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L160",
+      "source_location": "L161",
       "_origin": "ast",
       "id": "prices_storage_vps_10_https_contabo_com_en_storage_vps_storage_vps_10",
       "community": 38,
@@ -26339,7 +26160,7 @@
       "label": "[Storage VPS 20](https://contabo.com/en/storage-vps/storage-vps-20/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L181",
+      "source_location": "L183",
       "_origin": "ast",
       "id": "prices_storage_vps_20_https_contabo_com_en_storage_vps_storage_vps_20",
       "community": 38,
@@ -26349,7 +26170,7 @@
       "label": "[Storage VPS 30](https://contabo.com/en/storage-vps/storage-vps-30/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L202",
+      "source_location": "L204",
       "_origin": "ast",
       "id": "prices_storage_vps_30_https_contabo_com_en_storage_vps_storage_vps_30",
       "community": 38,
@@ -26359,7 +26180,7 @@
       "label": "[Storage VPS 40](https://contabo.com/en/storage-vps/storage-vps-40/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L223",
+      "source_location": "L225",
       "_origin": "ast",
       "id": "prices_storage_vps_40_https_contabo_com_en_storage_vps_storage_vps_40",
       "community": 38,
@@ -26369,7 +26190,7 @@
       "label": "[Storage VPS 50](https://contabo.com/en/storage-vps/storage-vps-50/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L244",
+      "source_location": "L246",
       "_origin": "ast",
       "id": "prices_storage_vps_50_https_contabo_com_en_storage_vps_storage_vps_50",
       "community": 38,
@@ -26379,7 +26200,7 @@
       "label": "\ud83d\udda5\ufe0f Cloud VDS",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L265",
+      "source_location": "L267",
       "_origin": "ast",
       "id": "prices_cloud_vds",
       "community": 38,
@@ -26389,7 +26210,7 @@
       "label": "[Cloud VDS S](https://contabo.com/en/vds/vds-s/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L275",
+      "source_location": "L277",
       "_origin": "ast",
       "id": "prices_cloud_vds_s_https_contabo_com_en_vds_vds_s",
       "community": 38,
@@ -26399,7 +26220,7 @@
       "label": "[Cloud VDS M](https://contabo.com/en/vds/vds-m/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L297",
+      "source_location": "L299",
       "_origin": "ast",
       "id": "prices_cloud_vds_m_https_contabo_com_en_vds_vds_m",
       "community": 38,
@@ -26409,7 +26230,7 @@
       "label": "[Cloud VDS L](https://contabo.com/en/vds/vds-l/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L319",
+      "source_location": "L321",
       "_origin": "ast",
       "id": "prices_cloud_vds_l_https_contabo_com_en_vds_vds_l",
       "community": 38,
@@ -26419,7 +26240,7 @@
       "label": "[Cloud VDS XL](https://contabo.com/en/vds/vds-xl/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L341",
+      "source_location": "L343",
       "_origin": "ast",
       "id": "prices_cloud_vds_xl_https_contabo_com_en_vds_vds_xl",
       "community": 38,
@@ -26429,7 +26250,7 @@
       "label": "[Cloud VDS XXL](https://contabo.com/en/vds/vds-xxl/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L363",
+      "source_location": "L365",
       "_origin": "ast",
       "id": "prices_cloud_vds_xxl_https_contabo_com_en_vds_vds_xxl",
       "community": 38,
@@ -27474,1246 +27295,6 @@
       "id": "memory_query_20260604_063603_how_is_the_catalog_renewal_write_boundary_tblpric_source_nodes",
       "community": 170,
       "norm_label": "source nodes"
-    },
-    {
-      "label": "001-harden-predeploy-gate.md",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate",
-      "community": 208,
-      "norm_label": "001-harden-predeploy-gate.md"
-    },
-    {
-      "label": "Plan 001: Harden the predeploy gate \u2014 preflight prerequisites, honest PHP-7.4 lint, and fixed runbook references",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "community": 208,
-      "norm_label": "plan 001: harden the predeploy gate \u2014 preflight prerequisites, honest php-7.4 lint, and fixed runbook references"
-    },
-    {
-      "label": "Status",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L13",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_status",
-      "community": 208,
-      "norm_label": "status"
-    },
-    {
-      "label": "Why this matters",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L22",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_why_this_matters",
-      "community": 208,
-      "norm_label": "why this matters"
-    },
-    {
-      "label": "Current state",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L50",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_current_state",
-      "community": 208,
-      "norm_label": "current state"
-    },
-    {
-      "label": "Commands you will need",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L126",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_commands_you_will_need",
-      "community": 208,
-      "norm_label": "commands you will need"
-    },
-    {
-      "label": "Scope",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L139",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_scope",
-      "community": 208,
-      "norm_label": "scope"
-    },
-    {
-      "label": "Git workflow",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L151",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_git_workflow",
-      "community": 208,
-      "norm_label": "git workflow"
-    },
-    {
-      "label": "Steps",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L160",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_steps",
-      "community": 208,
-      "norm_label": "steps"
-    },
-    {
-      "label": "Step 1: Add a preflight stage that blocks (not fails) on missing prerequisites",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L162",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_step_1_add_a_preflight_stage_that_blocks_not_fails_on_missing_prerequisites",
-      "community": 208,
-      "norm_label": "step 1: add a preflight stage that blocks (not fails) on missing prerequisites"
-    },
-    {
-      "label": "Step 2: Make the PHP 7.4 lint fail closed when it cannot run under 7.4",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L205",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_step_2_make_the_php_7_4_lint_fail_closed_when_it_cannot_run_under_7_4",
-      "community": 208,
-      "norm_label": "step 2: make the php 7.4 lint fail closed when it cannot run under 7.4"
-    },
-    {
-      "label": "Step 3: Fix the runbook path references",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L227",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_step_3_fix_the_runbook_path_references",
-      "community": 208,
-      "norm_label": "step 3: fix the runbook path references"
-    },
-    {
-      "label": "Step 4: Confirm the BLOCKED path works end-to-end in this worktree",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L242",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_step_4_confirm_the_blocked_path_works_end_to_end_in_this_worktree",
-      "community": 208,
-      "norm_label": "step 4: confirm the blocked path works end-to-end in this worktree"
-    },
-    {
-      "label": "Test plan",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L251",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_test_plan",
-      "community": 208,
-      "norm_label": "test plan"
-    },
-    {
-      "label": "Done criteria",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L263",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_done_criteria",
-      "community": 208,
-      "norm_label": "done criteria"
-    },
-    {
-      "label": "STOP conditions",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L274",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_stop_conditions",
-      "community": 208,
-      "norm_label": "stop conditions"
-    },
-    {
-      "label": "Maintenance notes",
-      "file_type": "document",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L285",
-      "_origin": "ast",
-      "id": "plans_001_harden_predeploy_gate_maintenance_notes",
-      "community": 208,
-      "norm_label": "maintenance notes"
-    },
-    {
-      "label": "002-deploy-script-safety.md",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety",
-      "community": 198,
-      "norm_label": "002-deploy-script-safety.md"
-    },
-    {
-      "label": "Plan 002: Add dry-run, confirmation, and prerequisite preflights to deploy.sh / local-whmcs.sh",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "community": 198,
-      "norm_label": "plan 002: add dry-run, confirmation, and prerequisite preflights to deploy.sh / local-whmcs.sh"
-    },
-    {
-      "label": "Status",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L13",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_status",
-      "community": 198,
-      "norm_label": "status"
-    },
-    {
-      "label": "Why this matters",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L22",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_why_this_matters",
-      "community": 198,
-      "norm_label": "why this matters"
-    },
-    {
-      "label": "Current state",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L43",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_current_state",
-      "community": 198,
-      "norm_label": "current state"
-    },
-    {
-      "label": "`scripts/deploy.sh` (full, as it exists today)",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L45",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_scripts_deploy_sh_full_as_it_exists_today",
-      "community": 198,
-      "norm_label": "`scripts/deploy.sh` (full, as it exists today)"
-    },
-    {
-      "label": "`scripts/local-whmcs.sh` (relevant excerpts)",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L151",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_scripts_local_whmcs_sh_relevant_excerpts",
-      "community": 198,
-      "norm_label": "`scripts/local-whmcs.sh` (relevant excerpts)"
-    },
-    {
-      "label": "Commands you will need",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L191",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_commands_you_will_need",
-      "community": 198,
-      "norm_label": "commands you will need"
-    },
-    {
-      "label": "Scope",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L207",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_scope",
-      "community": 198,
-      "norm_label": "scope"
-    },
-    {
-      "label": "Git workflow",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L219",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_git_workflow",
-      "community": 198,
-      "norm_label": "git workflow"
-    },
-    {
-      "label": "Steps",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L227",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_steps",
-      "community": 198,
-      "norm_label": "steps"
-    },
-    {
-      "label": "Step 1: Parse flags + add `--help` in deploy.sh",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L229",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_step_1_parse_flags_add_help_in_deploy_sh",
-      "community": 198,
-      "norm_label": "step 1: parse flags + add `--help` in deploy.sh"
-    },
-    {
-      "label": "Step 2: Honor `--dry-run` inside `rsync_module`",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L269",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_step_2_honor_dry_run_inside_rsync_module",
-      "community": 198,
-      "norm_label": "step 2: honor `--dry-run` inside `rsync_module`"
-    },
-    {
-      "label": "Step 3: Add SSH preflight + confirmation before the transfers",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L286",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_step_3_add_ssh_preflight_confirmation_before_the_transfers",
-      "community": 198,
-      "norm_label": "step 3: add ssh preflight + confirmation before the transfers"
-    },
-    {
-      "label": "Step 4: Add a prerequisite preflight to local-whmcs.sh",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L319",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_step_4_add_a_prerequisite_preflight_to_local_whmcs_sh",
-      "community": 198,
-      "norm_label": "step 4: add a prerequisite preflight to local-whmcs.sh"
-    },
-    {
-      "label": "Test plan",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L348",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_test_plan",
-      "community": 198,
-      "norm_label": "test plan"
-    },
-    {
-      "label": "Done criteria",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L360",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_done_criteria",
-      "community": 198,
-      "norm_label": "done criteria"
-    },
-    {
-      "label": "STOP conditions",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L375",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_stop_conditions",
-      "community": 198,
-      "norm_label": "stop conditions"
-    },
-    {
-      "label": "Maintenance notes",
-      "file_type": "document",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L386",
-      "_origin": "ast",
-      "id": "plans_002_deploy_script_safety_maintenance_notes",
-      "community": 198,
-      "norm_label": "maintenance notes"
-    },
-    {
-      "label": "003-new-categories-and-scraper-resilience.md",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience",
-      "community": 149,
-      "norm_label": "003-new-categories-and-scraper-resilience.md"
-    },
-    {
-      "label": "Plan 003 \u2014 Audit findings + New categories (Dedicated, Object Storage) + Scraper resilience",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "community": 149,
-      "norm_label": "plan 003 \u2014 audit findings + new categories (dedicated, object storage) + scraper resilience"
-    },
-    {
-      "label": "2026-08-05 taxonomy amendment",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_2026_08_05_taxonomy_amendment",
-      "community": 149,
-      "norm_label": "2026-08-05 taxonomy amendment"
-    },
-    {
-      "label": "1. Audit \u2014 current failures & bugs (severity-ranked)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L46",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_1_audit_current_failures_bugs_severity_ranked",
-      "community": 149,
-      "norm_label": "1. audit \u2014 current failures & bugs (severity-ranked)"
-    },
-    {
-      "label": "Live-blocking",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L48",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_live_blocking",
-      "community": 149,
-      "norm_label": "live-blocking"
-    },
-    {
-      "label": "Data-integrity (from deep bug-sweep)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L58",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_data_integrity_from_deep_bug_sweep",
-      "community": 149,
-      "norm_label": "data-integrity (from deep bug-sweep)"
-    },
-    {
-      "label": "Structural",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L74",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_structural",
-      "community": 149,
-      "norm_label": "structural"
-    },
-    {
-      "label": "Existing-build audit (what's already there)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L86",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_existing_build_audit_what_s_already_there",
-      "community": 149,
-      "norm_label": "existing-build audit (what's already there)"
-    },
-    {
-      "label": "2. Grounded design conclusions (the \"don't default to simple tiers\" answer)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L101",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_2_grounded_design_conclusions_the_don_t_default_to_simple_tiers_answer",
-      "community": 149,
-      "norm_label": "2. grounded design conclusions (the \"don't default to simple tiers\" answer)"
-    },
-    {
-      "label": "2a. Object Storage \u2014 committed-capacity config option, NOT consumption-metered. Here's why.",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L103",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_2a_object_storage_committed_capacity_config_option_not_consumption_metered_here_s_why",
-      "community": 149,
-      "norm_label": "2a. object storage \u2014 committed-capacity config option, not consumption-metered. here's why."
-    },
-    {
-      "label": "2b. Dedicated Servers \u2014 fixed price + setup fee, MANUAL provisioning.",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L131",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_2b_dedicated_servers_fixed_price_setup_fee_manual_provisioning",
-      "community": 149,
-      "norm_label": "2b. dedicated servers \u2014 fixed price + setup fee, manual provisioning."
-    },
-    {
-      "label": "2c. Unified schema (satisfies \"unified or properly formatted for WHMCS consumption\").",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L138",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_2c_unified_schema_satisfies_unified_or_properly_formatted_for_whmcs_consumption",
-      "community": 149,
-      "norm_label": "2c. unified schema (satisfies \"unified or properly formatted for whmcs consumption\")."
-    },
-    {
-      "label": "2d. Scraper fetch resilience \u2014 EMPIRICALLY VERIFIED (2026-07-01 live tests).",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L148",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_2d_scraper_fetch_resilience_empirically_verified_2026_07_01_live_tests",
-      "community": 149,
-      "norm_label": "2d. scraper fetch resilience \u2014 empirically verified (2026-07-01 live tests)."
-    },
-    {
-      "label": "3. Work plan (phased)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L177",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_3_work_plan_phased",
-      "community": 149,
-      "norm_label": "3. work plan (phased)"
-    },
-    {
-      "label": "4. Decisions still open for the owner",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L205",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_4_decisions_still_open_for_the_owner",
-      "community": 149,
-      "norm_label": "4. decisions still open for the owner"
-    },
-    {
-      "label": "4b. Progress log (2026-07-01)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L214",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_4b_progress_log_2026_07_01",
-      "community": 149,
-      "norm_label": "4b. progress log (2026-07-01)"
-    },
-    {
-      "label": "4c. Schema 1.2 GROUND TRUTH (live payload inspection, 2026-07-01, via proxy)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L243",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_4c_schema_1_2_ground_truth_live_payload_inspection_2026_07_01_via_proxy",
-      "community": 149,
-      "norm_label": "4c. schema 1.2 ground truth (live payload inspection, 2026-07-01, via proxy)"
-    },
-    {
-      "label": "4d. Fleet progress (2026-07-01, later)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L286",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_4d_fleet_progress_2026_07_01_later",
-      "community": 149,
-      "norm_label": "4d. fleet progress (2026-07-01, later)"
-    },
-    {
-      "label": "4e. COMPLETED \u2014 unified schema-1.2 extraction (2026-07-01, verified live)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L323",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_4e_completed_unified_schema_1_2_extraction_2026_07_01_verified_live",
-      "community": 149,
-      "norm_label": "4e. completed \u2014 unified schema-1.2 extraction (2026-07-01, verified live)"
-    },
-    {
-      "label": "5. Evidence (research citations)",
-      "file_type": "document",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L351",
-      "_origin": "ast",
-      "id": "plans_003_new_categories_and_scraper_resilience_5_evidence_research_citations",
-      "community": 149,
-      "norm_label": "5. evidence (research citations)"
-    },
-    {
-      "label": "004-whmcs-proposal-maker-and-delivery.md",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery",
-      "community": 102,
-      "norm_label": "004-whmcs-proposal-maker-and-delivery.md"
-    },
-    {
-      "label": "Plan 004 \u2014 WHMCS proposal maker, AI narrative, and native delivery",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "community": 102,
-      "norm_label": "plan 004 \u2014 whmcs proposal maker, ai narrative, and native delivery"
-    },
-    {
-      "label": "1. Outcome and non-negotiable rules",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L17",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_1_outcome_and_non_negotiable_rules",
-      "community": 102,
-      "norm_label": "1. outcome and non-negotiable rules"
-    },
-    {
-      "label": "2. Current state and identified gaps",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L73",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_2_current_state_and_identified_gaps",
-      "community": 102,
-      "norm_label": "2. current state and identified gaps"
-    },
-    {
-      "label": "3. Compatibility and evidence baseline",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L129",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_3_compatibility_and_evidence_baseline",
-      "community": 102,
-      "norm_label": "3. compatibility and evidence baseline"
-    },
-    {
-      "label": "4. Shared proposal contract",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L178",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "community": 102,
-      "norm_label": "4. shared proposal contract"
-    },
-    {
-      "label": "4.1 Canonical schemas",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L180",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_4_1_canonical_schemas",
-      "community": 102,
-      "norm_label": "4.1 canonical schemas"
-    },
-    {
-      "label": "4.2 Money and markup semantics",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L222",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_4_2_money_and_markup_semantics",
-      "community": 102,
-      "norm_label": "4.2 money and markup semantics"
-    },
-    {
-      "label": "4.3 Visibility and disclosure policy",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L265",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_4_3_visibility_and_disclosure_policy",
-      "community": 102,
-      "norm_label": "4.3 visibility and disclosure policy"
-    },
-    {
-      "label": "4.4 Report import and stale-data handling",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L296",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_4_4_report_import_and_stale_data_handling",
-      "community": 102,
-      "norm_label": "4.4 report import and stale-data handling"
-    },
-    {
-      "label": "5. WHMCS module architecture",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L319",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_5_whmcs_module_architecture",
-      "community": 102,
-      "norm_label": "5. whmcs module architecture"
-    },
-    {
-      "label": "6. AI provider design",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L364",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design",
-      "community": 102,
-      "norm_label": "6. ai provider design"
-    },
-    {
-      "label": "6.1 Settings and model policy",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L366",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_6_1_settings_and_model_policy",
-      "community": 102,
-      "norm_label": "6.1 settings and model policy"
-    },
-    {
-      "label": "6.2 Request contract",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L395",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_6_2_request_contract",
-      "community": 102,
-      "norm_label": "6.2 request contract"
-    },
-    {
-      "label": "6.3 Quality, cost, and failure behavior",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L433",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_6_3_quality_cost_and_failure_behavior",
-      "community": 102,
-      "norm_label": "6.3 quality, cost, and failure behavior"
-    },
-    {
-      "label": "7. Persistence, versioning, and retention",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L459",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "community": 102,
-      "norm_label": "7. persistence, versioning, and retention"
-    },
-    {
-      "label": "mod_contabo_proposal",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L465",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal",
-      "community": 102,
-      "norm_label": "mod_contabo_proposal"
-    },
-    {
-      "label": "mod_contabo_proposal_version",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L477",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_version",
-      "community": 102,
-      "norm_label": "mod_contabo_proposal_version"
-    },
-    {
-      "label": "mod_contabo_proposal_delivery",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L491",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_delivery",
-      "community": 102,
-      "norm_label": "mod_contabo_proposal_delivery"
-    },
-    {
-      "label": "mod_contabo_proposal_asset",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L505",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_asset",
-      "community": 102,
-      "norm_label": "mod_contabo_proposal_asset"
-    },
-    {
-      "label": "8. Admin UI and actions",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L536",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_8_admin_ui_and_actions",
-      "community": 102,
-      "norm_label": "8. admin ui and actions"
-    },
-    {
-      "label": "9. WHMCS-native delivery",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L594",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery",
-      "community": 102,
-      "norm_label": "9. whmcs-native delivery"
-    },
-    {
-      "label": "9.1 Support tickets",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L596",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_9_1_support_tickets",
-      "community": 102,
-      "norm_label": "9.1 support tickets"
-    },
-    {
-      "label": "9.2 Direct email",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L623",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_9_2_direct_email",
-      "community": 102,
-      "norm_label": "9.2 direct email"
-    },
-    {
-      "label": "9.3 Retry and duplicate control",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L659",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_9_3_retry_and_duplicate_control",
-      "community": 102,
-      "norm_label": "9.3 retry and duplicate control"
-    },
-    {
-      "label": "10. Security and abuse controls",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L674",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_10_security_and_abuse_controls",
-      "community": 102,
-      "norm_label": "10. security and abuse controls"
-    },
-    {
-      "label": "11. Implementation phases and review gates",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L708",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "community": 102,
-      "norm_label": "11. implementation phases and review gates"
-    },
-    {
-      "label": "Phase 0 \u2014 compatibility spike and contract freeze",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L710",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_phase_0_compatibility_spike_and_contract_freeze",
-      "community": 102,
-      "norm_label": "phase 0 \u2014 compatibility spike and contract freeze"
-    },
-    {
-      "label": "Phase 1 \u2014 PHP proposal domain and persistence",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L731",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_phase_1_php_proposal_domain_and_persistence",
-      "community": 102,
-      "norm_label": "phase 1 \u2014 php proposal domain and persistence"
-    },
-    {
-      "label": "Phase 2 \u2014 AI adapter and review UI",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L749",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_phase_2_ai_adapter_and_review_ui",
-      "community": 102,
-      "norm_label": "phase 2 \u2014 ai adapter and review ui"
-    },
-    {
-      "label": "Phase 3 \u2014 native ticket and email delivery",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L767",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_phase_3_native_ticket_and_email_delivery",
-      "community": 102,
-      "norm_label": "phase 3 \u2014 native ticket and email delivery"
-    },
-    {
-      "label": "Phase 4 \u2014 report bridge and operational hardening",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L785",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_phase_4_report_bridge_and_operational_hardening",
-      "community": 102,
-      "norm_label": "phase 4 \u2014 report bridge and operational hardening"
-    },
-    {
-      "label": "12. Test matrix",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L804",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix",
-      "community": 102,
-      "norm_label": "12. test matrix"
-    },
-    {
-      "label": "PHP/unit",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L806",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_php_unit",
-      "community": 102,
-      "norm_label": "php/unit"
-    },
-    {
-      "label": "WHMCS integration",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L825",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_whmcs_integration",
-      "community": 102,
-      "norm_label": "whmcs integration"
-    },
-    {
-      "label": "Existing project gates",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L841",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_existing_project_gates",
-      "community": 102,
-      "norm_label": "existing project gates"
-    },
-    {
-      "label": "13. Documentation and delivery workflow",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L858",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_13_documentation_and_delivery_workflow",
-      "community": 102,
-      "norm_label": "13. documentation and delivery workflow"
-    },
-    {
-      "label": "14. Stop conditions",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L887",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_14_stop_conditions",
-      "community": 102,
-      "norm_label": "14. stop conditions"
-    },
-    {
-      "label": "15. Done-when checklist",
-      "file_type": "document",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L905",
-      "_origin": "ast",
-      "id": "plans_004_whmcs_proposal_maker_and_delivery_15_done_when_checklist",
-      "community": 102,
-      "norm_label": "15. done-when checklist"
-    },
-    {
-      "label": "005-canonical-whmcs-proposal-managed-policy.md",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy",
-      "community": 109,
-      "norm_label": "005-canonical-whmcs-proposal-managed-policy.md"
-    },
-    {
-      "label": "Plan 005 \u2014 Canonical WHMCS proposal, managed policy, and multi-resource operations",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_plan_005_canonical_whmcs_proposal_managed_policy_and_multi_resource_operations",
-      "community": 109,
-      "norm_label": "plan 005 \u2014 canonical whmcs proposal, managed policy, and multi-resource operations"
-    },
-    {
-      "label": "1. Decisions and non-negotiable boundaries",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L14",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_1_decisions_and_non_negotiable_boundaries",
-      "community": 109,
-      "norm_label": "1. decisions and non-negotiable boundaries"
-    },
-    {
-      "label": "1.1 Four business decisions",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_1_1_four_business_decisions",
-      "community": 109,
-      "norm_label": "1.1 four business decisions"
-    },
-    {
-      "label": "1.2 Deterministic commercial boundary",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L76",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_1_2_deterministic_commercial_boundary",
-      "community": 109,
-      "norm_label": "1.2 deterministic commercial boundary"
-    },
-    {
-      "label": "1.3 WHMCS-native setup behavior",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L99",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_1_3_whmcs_native_setup_behavior",
-      "community": 109,
-      "norm_label": "1.3 whmcs-native setup behavior"
-    },
-    {
-      "label": "2. Supersession matrix",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L114",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_2_supersession_matrix",
-      "community": 109,
-      "norm_label": "2. supersession matrix"
-    },
-    {
-      "label": "3. Release-blocking evidence and defects",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L131",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_3_release_blocking_evidence_and_defects",
-      "community": 109,
-      "norm_label": "3. release-blocking evidence and defects"
-    },
-    {
-      "label": "3.1 Screenshot pricing contradiction",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L133",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_3_1_screenshot_pricing_contradiction",
-      "community": 109,
-      "norm_label": "3.1 screenshot pricing contradiction"
-    },
-    {
-      "label": "3.2 Live release-binary audit",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L155",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_3_2_live_release_binary_audit",
-      "community": 109,
-      "norm_label": "3.2 live release-binary audit"
-    },
-    {
-      "label": "3.3 Current taxonomy contract",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L175",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_3_3_current_taxonomy_contract",
-      "community": 109,
-      "norm_label": "3.3 current taxonomy contract"
-    },
-    {
-      "label": "4. Target architecture and roadmap",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L182",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "community": 109,
-      "norm_label": "4. target architecture and roadmap"
-    },
-    {
-      "label": "Phase 0 \u2014 canonical branch and contract reconciliation",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L184",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_phase_0_canonical_branch_and_contract_reconciliation",
-      "community": 109,
-      "norm_label": "phase 0 \u2014 canonical branch and contract reconciliation"
-    },
-    {
-      "label": "Phase 1 \u2014 scraper truth and release CLI",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L202",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_phase_1_scraper_truth_and_release_cli",
-      "community": 109,
-      "norm_label": "phase 1 \u2014 scraper truth and release cli"
-    },
-    {
-      "label": "Phase 2 \u2014 Proposal Studio domain and immutable versions",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L223",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_phase_2_proposal_studio_domain_and_immutable_versions",
-      "community": 109,
-      "norm_label": "phase 2 \u2014 proposal studio domain and immutable versions"
-    },
-    {
-      "label": "Phase 3 \u2014 OpenAI-compatible narrative and WHMCS delivery",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L245",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_phase_3_openai_compatible_narrative_and_whmcs_delivery",
-      "community": 109,
-      "norm_label": "phase 3 \u2014 openai-compatible narrative and whmcs delivery"
-    },
-    {
-      "label": "Phase 4 \u2014 resource adapters and capability registry",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L288",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_phase_4_resource_adapters_and_capability_registry",
-      "community": 109,
-      "norm_label": "phase 4 \u2014 resource adapters and capability registry"
-    },
-    {
-      "label": "Phase 5 \u2014 Founder-hour ledger",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L335",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_phase_5_founder_hour_ledger",
-      "community": 109,
-      "norm_label": "phase 5 \u2014 founder-hour ledger"
-    },
-    {
-      "label": "Phase 6 \u2014 provider contract, inventory, and reassignment",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L354",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_phase_6_provider_contract_inventory_and_reassignment",
-      "community": 109,
-      "norm_label": "phase 6 \u2014 provider contract, inventory, and reassignment"
-    },
-    {
-      "label": "Phase 7 \u2014 operator UI, tests, deployment, rollback",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L378",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_phase_7_operator_ui_tests_deployment_rollback",
-      "community": 109,
-      "norm_label": "phase 7 \u2014 operator ui, tests, deployment, rollback"
-    },
-    {
-      "label": "5. Risk register and acceptance",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L432",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_5_risk_register_and_acceptance",
-      "community": 109,
-      "norm_label": "5. risk register and acceptance"
-    },
-    {
-      "label": "6. First successor slice scope",
-      "file_type": "document",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L449",
-      "_origin": "ast",
-      "id": "plans_005_canonical_whmcs_proposal_managed_policy_6_first_successor_slice_scope",
-      "community": 109,
-      "norm_label": "6. first successor slice scope"
-    },
-    {
-      "label": "README.md",
-      "file_type": "document",
-      "source_file": "plans/README.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_readme",
-      "community": 241,
-      "norm_label": "readme.md"
-    },
-    {
-      "label": "Implementation Plans \u2014 scraper, report, and WHMCS tooling",
-      "file_type": "document",
-      "source_file": "plans/README.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "community": 241,
-      "norm_label": "implementation plans \u2014 scraper, report, and whmcs tooling"
-    },
-    {
-      "label": "Execution order & status",
-      "file_type": "document",
-      "source_file": "plans/README.md",
-      "source_location": "L9",
-      "_origin": "ast",
-      "id": "plans_readme_execution_order_status",
-      "community": 241,
-      "norm_label": "execution order & status"
-    },
-    {
-      "label": "Dependency notes",
-      "file_type": "document",
-      "source_file": "plans/README.md",
-      "source_location": "L21",
-      "_origin": "ast",
-      "id": "plans_readme_dependency_notes",
-      "community": 241,
-      "norm_label": "dependency notes"
-    },
-    {
-      "label": "Findings \u2192 plans mapping",
-      "file_type": "document",
-      "source_file": "plans/README.md",
-      "source_location": "L26",
-      "_origin": "ast",
-      "id": "plans_readme_findings_plans_mapping",
-      "community": 241,
-      "norm_label": "findings \u2192 plans mapping"
-    },
-    {
-      "label": "Findings considered and rejected",
-      "file_type": "document",
-      "source_file": "plans/README.md",
-      "source_location": "L39",
-      "_origin": "ast",
-      "id": "plans_readme_findings_considered_and_rejected",
-      "community": 241,
-      "norm_label": "findings considered and rejected"
-    },
-    {
-      "label": "Cross-plan notes",
-      "file_type": "document",
-      "source_file": "plans/README.md",
-      "source_location": "L48",
-      "_origin": "ast",
-      "id": "plans_readme_cross_plan_notes",
-      "community": 241,
-      "norm_label": "cross-plan notes"
     },
     {
       "label": "README.md",
@@ -31777,7 +30358,7 @@
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProfileManager.php",
       "source_location": "L28",
-      "community": 92,
+      "community": 233,
       "norm_label": ".__construct()",
       "id": "profilemanager_profileslugconflictexception_construct"
     },
@@ -31786,7 +30367,7 @@
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProfileManager.php",
       "source_location": "L54",
-      "community": 203,
+      "community": 7,
       "norm_label": ".__construct()",
       "id": "profilemanager_profilemanager_construct"
     },
@@ -34452,27 +33033,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": ".repowise/mcp.json",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "repowise_mcp",
-      "target": "repowise_mcp_mcp_server_repowise"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": ".repowise/mcp.json",
-      "source_location": "L1",
-      "weight": 1.0,
-      "context": "command",
-      "source": "repowise_mcp_mcp_server_repowise",
-      "target": "mcp_command_repowise"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "package.json",
       "source_location": "L9",
       "weight": 1.0,
@@ -34604,31 +33164,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L15",
-      "weight": 1.0,
-      "source": "package_scripts",
-      "target": "package_scripts_report",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "package.json",
       "source_location": "L13",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "package_scripts",
       "target": "package_scripts_scrape"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "package.json",
-      "source_location": "L16",
-      "weight": 1.0,
-      "source": "package_scripts",
-      "target": "package_scripts_test_node",
-      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -34676,9 +33216,9 @@
       "source_file": "scripts/bump-version.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_bump_version",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_bump_version_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_bump_version_sh__entry"
     },
     {
       "relation": "contains",
@@ -35410,9 +33950,9 @@
       "source_file": "scripts/deploy.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_deploy",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_deploy_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_deploy_sh__entry"
     },
     {
       "relation": "contains",
@@ -35420,9 +33960,9 @@
       "source_file": "scripts/extract-changelog-section.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_extract_changelog_section",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_extract_changelog_section_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_extract_changelog_section_sh__entry"
     },
     {
       "relation": "contains",
@@ -35574,9 +34114,9 @@
       "source_file": "scripts/inspect-github-release.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_inspect_github_release",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_inspect_github_release_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_inspect_github_release_sh__entry"
     },
     {
       "relation": "calls",
@@ -35585,9 +34125,9 @@
       "source_location": "L63",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_inspect_github_release_sh__entry",
-      "target": "scripts_inspect_github_release_resolve_tag_commit",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_inspect_github_release_sh__entry",
+      "target": "scripts_inspect_github_release_resolve_tag_commit"
     },
     {
       "relation": "contains",
@@ -35595,9 +34135,9 @@
       "source_file": "scripts/live-schema-smoke.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_live_schema_smoke_sh_scripts_live_schema_smoke",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_live_schema_smoke_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_live_schema_smoke_sh__entry"
     },
     {
       "relation": "contains",
@@ -35605,9 +34145,9 @@
       "source_file": "scripts/local-whmcs.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_local_whmcs",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_local_whmcs_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_local_whmcs_sh__entry"
     },
     {
       "relation": "defines",
@@ -35675,31 +34215,31 @@
       "source_file": "scripts/package-whmcs-suite.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_package_whmcs_suite",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_package_whmcs_suite_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry"
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/package-whmcs-suite.sh",
-      "source_location": "L96",
+      "source_location": "L71",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_package_whmcs_suite_sh__entry",
-      "target": "scripts_package_whmcs_suite_checksum",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry",
+      "target": "scripts_package_whmcs_suite_checksum"
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/package-whmcs-suite.sh",
-      "source_location": "L91",
+      "source_location": "L66",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_package_whmcs_suite_sh__entry",
-      "target": "scripts_package_whmcs_suite_copy_runtime_tree",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry",
+      "target": "scripts_package_whmcs_suite_copy_runtime_tree"
     },
     {
       "relation": "calls",
@@ -35708,9 +34248,9 @@
       "source_location": "L88",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_package_whmcs_suite_sh__entry",
-      "target": "scripts_package_whmcs_suite_validate_version",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry",
+      "target": "scripts_package_whmcs_suite_validate_version"
     },
     {
       "relation": "defines",
@@ -35738,31 +34278,31 @@
       "source_file": "scripts/predeploy-check.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_predeploy_check",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_predeploy_check_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_predeploy_check_sh__entry"
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/predeploy-check.sh",
-      "source_location": "L37",
+      "source_location": "L34",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_predeploy_check_sh__entry",
-      "target": "scripts_predeploy_check_record",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_predeploy_check_sh__entry",
+      "target": "scripts_predeploy_check_record"
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/predeploy-check.sh",
-      "source_location": "L36",
+      "source_location": "L33",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_predeploy_check_sh__entry",
-      "target": "scripts_predeploy_check_stage",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_predeploy_check_sh__entry",
+      "target": "scripts_predeploy_check_stage"
     },
     {
       "relation": "defines",
@@ -35820,9 +34360,9 @@
       "source_file": "scripts/resolve-scraper-release.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_resolve_scraper_release",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_resolve_scraper_release_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_resolve_scraper_release_sh__entry"
     },
     {
       "relation": "calls",
@@ -35831,9 +34371,9 @@
       "source_location": "L41",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_resolve_scraper_release_sh__entry",
-      "target": "scripts_resolve_scraper_release_has_required_assets",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_resolve_scraper_release_sh__entry",
+      "target": "scripts_resolve_scraper_release_has_required_assets"
     },
     {
       "relation": "defines",
@@ -35851,9 +34391,9 @@
       "source_file": "scripts/setup-memory-tools.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_setup_memory_tools",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_setup_memory_tools_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_setup_memory_tools_sh__entry"
     },
     {
       "relation": "calls",
@@ -35862,9 +34402,9 @@
       "source_location": "L30",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_setup_memory_tools_sh__entry",
-      "target": "scripts_setup_memory_tools_say",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_setup_memory_tools_sh__entry",
+      "target": "scripts_setup_memory_tools_say"
     },
     {
       "relation": "defines",
@@ -35892,9 +34432,9 @@
       "source_file": "scripts/test-resolve-scraper-release.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_resolve_scraper_release",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_resolve_scraper_release_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_resolve_scraper_release_sh__entry"
     },
     {
       "relation": "calls",
@@ -35903,9 +34443,9 @@
       "source_location": "L62",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_resolve_scraper_release_sh__entry",
-      "target": "scripts_test_resolve_scraper_release_run_resolver",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_resolve_scraper_release_sh__entry",
+      "target": "scripts_test_resolve_scraper_release_run_resolver"
     },
     {
       "relation": "defines",
@@ -35933,20 +34473,20 @@
       "source_file": "scripts/test-whmcs-release-contract.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_whmcs_release_contract",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_whmcs_release_contract_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_whmcs_release_contract_sh__entry"
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/test-whmcs-release-contract.sh",
-      "source_location": "L42",
+      "source_location": "L41",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_whmcs_release_contract_sh__entry",
-      "target": "scripts_test_whmcs_release_contract_fail",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_whmcs_release_contract_sh__entry",
+      "target": "scripts_test_whmcs_release_contract_fail"
     },
     {
       "relation": "defines",
@@ -35994,9 +34534,9 @@
       "source_file": "scripts/test-workflow-trust-contract.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_workflow_trust_contract",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_workflow_trust_contract_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry"
     },
     {
       "relation": "calls",
@@ -36005,9 +34545,9 @@
       "source_location": "L66",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_workflow_trust_contract_sh__entry",
-      "target": "scripts_test_workflow_trust_contract_expect_fail",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry",
+      "target": "scripts_test_workflow_trust_contract_expect_fail"
     },
     {
       "relation": "calls",
@@ -36016,9 +34556,9 @@
       "source_location": "L41",
       "weight": 1.0,
       "context": "call",
-      "source": "users_kritananda_projects_contabo_pricing_scraper_scripts_test_workflow_trust_contract_sh__entry",
-      "target": "scripts_test_workflow_trust_contract_expect_pass",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry",
+      "target": "scripts_test_workflow_trust_contract_expect_pass"
     },
     {
       "relation": "contains",
@@ -36026,9 +34566,9 @@
       "source_file": "scripts/whmcs-integration-smoke.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_whmcs_integration_smoke",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_scripts_whmcs_integration_smoke_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_whmcs_integration_smoke_sh__entry"
     },
     {
       "relation": "contains",
@@ -41597,106 +40137,6 @@
       "confidence_score": 1.0,
       "source": "tests_common_mod_rs",
       "target": "common_mod_spawn_server"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "tests_managed_services_model_test",
-      "target": "tests_managed_services_model_test_assert",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "tests_managed_services_model_test",
-      "target": "tests_managed_services_model_test_calculatemanagedquote_loadmanagedcatalog_makemanagedpurchasesnapshot_managedplansforfamily_validatemanagedcatalog",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L16",
-      "weight": 1.0,
-      "source": "tests_managed_services_model_test",
-      "target": "tests_managed_services_model_test_catalog",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L15",
-      "weight": 1.0,
-      "source": "tests_managed_services_model_test",
-      "target": "tests_managed_services_model_test_catalogpath",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "tests_managed_services_model_test",
-      "target": "tests_managed_services_model_test_path",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/managed_services_model.test.js",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "tests_managed_services_model_test",
-      "target": "tests_managed_services_model_test_test",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/proposal_model.test.js",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "tests_proposal_model_test",
-      "target": "tests_proposal_model_test_assert",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/proposal_model.test.js",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "tests_proposal_model_test",
-      "target": "tests_proposal_model_test_input",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/proposal_model.test.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "tests_proposal_model_test",
-      "target": "tests_proposal_model_test_model",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/proposal_model.test.js",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "tests_proposal_model_test",
-      "target": "tests_proposal_model_test_test",
-      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -91586,1186 +90026,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate",
-      "target": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L126",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_commands_you_will_need",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L50",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_current_state",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L263",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_done_criteria",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L151",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_git_workflow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L285",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_maintenance_notes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L139",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_scope",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L13",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_status",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L160",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_steps",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L274",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_stop_conditions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L251",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_test_plan",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L22",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_plan_001_harden_the_predeploy_gate_preflight_prerequisites_honest_php_7_4_lint_and_fixed_runbook_references",
-      "target": "plans_001_harden_predeploy_gate_why_this_matters",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L162",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_steps",
-      "target": "plans_001_harden_predeploy_gate_step_1_add_a_preflight_stage_that_blocks_not_fails_on_missing_prerequisites",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L205",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_steps",
-      "target": "plans_001_harden_predeploy_gate_step_2_make_the_php_7_4_lint_fail_closed_when_it_cannot_run_under_7_4",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L227",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_steps",
-      "target": "plans_001_harden_predeploy_gate_step_3_fix_the_runbook_path_references",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/001-harden-predeploy-gate.md",
-      "source_location": "L242",
-      "weight": 1.0,
-      "source": "plans_001_harden_predeploy_gate_steps",
-      "target": "plans_001_harden_predeploy_gate_step_4_confirm_the_blocked_path_works_end_to_end_in_this_worktree",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety",
-      "target": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L191",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_commands_you_will_need",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L43",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_current_state",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L360",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_done_criteria",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L219",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_git_workflow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L386",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_maintenance_notes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L207",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_scope",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L13",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_status",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L227",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_steps",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L375",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_stop_conditions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L348",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_test_plan",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L22",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_plan_002_add_dry_run_confirmation_and_prerequisite_preflights_to_deploy_sh_local_whmcs_sh",
-      "target": "plans_002_deploy_script_safety_why_this_matters",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L45",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_current_state",
-      "target": "plans_002_deploy_script_safety_scripts_deploy_sh_full_as_it_exists_today",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L151",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_current_state",
-      "target": "plans_002_deploy_script_safety_scripts_local_whmcs_sh_relevant_excerpts",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L229",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_steps",
-      "target": "plans_002_deploy_script_safety_step_1_parse_flags_add_help_in_deploy_sh",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L269",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_steps",
-      "target": "plans_002_deploy_script_safety_step_2_honor_dry_run_inside_rsync_module",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L286",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_steps",
-      "target": "plans_002_deploy_script_safety_step_3_add_ssh_preflight_confirmation_before_the_transfers",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/002-deploy-script-safety.md",
-      "source_location": "L319",
-      "weight": 1.0,
-      "source": "plans_002_deploy_script_safety_steps",
-      "target": "plans_002_deploy_script_safety_step_4_add_a_prerequisite_preflight_to_local_whmcs_sh",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L46",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_1_audit_current_failures_bugs_severity_ranked",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_2026_08_05_taxonomy_amendment",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L101",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_2_grounded_design_conclusions_the_don_t_default_to_simple_tiers_answer",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L177",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_3_work_plan_phased",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L205",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_4_decisions_still_open_for_the_owner",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L214",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_4b_progress_log_2026_07_01",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L243",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_4c_schema_1_2_ground_truth_live_payload_inspection_2026_07_01_via_proxy",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L286",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_4d_fleet_progress_2026_07_01_later",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L323",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_4e_completed_unified_schema_1_2_extraction_2026_07_01_verified_live",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L351",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_plan_003_audit_findings_new_categories_dedicated_object_storage_scraper_resilience",
-      "target": "plans_003_new_categories_and_scraper_resilience_5_evidence_research_citations",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L58",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_1_audit_current_failures_bugs_severity_ranked",
-      "target": "plans_003_new_categories_and_scraper_resilience_data_integrity_from_deep_bug_sweep",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L86",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_1_audit_current_failures_bugs_severity_ranked",
-      "target": "plans_003_new_categories_and_scraper_resilience_existing_build_audit_what_s_already_there",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L48",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_1_audit_current_failures_bugs_severity_ranked",
-      "target": "plans_003_new_categories_and_scraper_resilience_live_blocking",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L74",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_1_audit_current_failures_bugs_severity_ranked",
-      "target": "plans_003_new_categories_and_scraper_resilience_structural",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L103",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_2_grounded_design_conclusions_the_don_t_default_to_simple_tiers_answer",
-      "target": "plans_003_new_categories_and_scraper_resilience_2a_object_storage_committed_capacity_config_option_not_consumption_metered_here_s_why",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L131",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_2_grounded_design_conclusions_the_don_t_default_to_simple_tiers_answer",
-      "target": "plans_003_new_categories_and_scraper_resilience_2b_dedicated_servers_fixed_price_setup_fee_manual_provisioning",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L138",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_2_grounded_design_conclusions_the_don_t_default_to_simple_tiers_answer",
-      "target": "plans_003_new_categories_and_scraper_resilience_2c_unified_schema_satisfies_unified_or_properly_formatted_for_whmcs_consumption",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/003-new-categories-and-scraper-resilience.md",
-      "source_location": "L148",
-      "weight": 1.0,
-      "source": "plans_003_new_categories_and_scraper_resilience_2_grounded_design_conclusions_the_don_t_default_to_simple_tiers_answer",
-      "target": "plans_003_new_categories_and_scraper_resilience_2d_scraper_fetch_resilience_empirically_verified_2026_07_01_live_tests",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L674",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_10_security_and_abuse_controls",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L708",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L804",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L858",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_13_documentation_and_delivery_workflow",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L887",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_14_stop_conditions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L905",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_15_done_when_checklist",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L17",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_1_outcome_and_non_negotiable_rules",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L73",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_2_current_state_and_identified_gaps",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L129",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_3_compatibility_and_evidence_baseline",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L178",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L319",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_5_whmcs_module_architecture",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L364",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L459",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L536",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_8_admin_ui_and_actions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L594",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_plan_004_whmcs_proposal_maker_ai_narrative_and_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L180",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_1_canonical_schemas",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L222",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_2_money_and_markup_semantics",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L265",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_3_visibility_and_disclosure_policy",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L296",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_4_shared_proposal_contract",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_4_4_report_import_and_stale_data_handling",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L366",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_1_settings_and_model_policy",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L395",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_2_request_contract",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L433",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_6_ai_provider_design",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_6_3_quality_cost_and_failure_behavior",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L465",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L505",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_asset",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L491",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_delivery",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L477",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_7_persistence_versioning_and_retention",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_mod_contabo_proposal_version",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L596",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_1_support_tickets",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L623",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_2_direct_email",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L659",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_9_whmcs_native_delivery",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_9_3_retry_and_duplicate_control",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L710",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_0_compatibility_spike_and_contract_freeze",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L731",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_1_php_proposal_domain_and_persistence",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L749",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_2_ai_adapter_and_review_ui",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L767",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_3_native_ticket_and_email_delivery",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L785",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_11_implementation_phases_and_review_gates",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_phase_4_report_bridge_and_operational_hardening",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L841",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_existing_project_gates",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L806",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_php_unit",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/004-whmcs-proposal-maker-and-delivery.md",
-      "source_location": "L825",
-      "weight": 1.0,
-      "source": "plans_004_whmcs_proposal_maker_and_delivery_12_test_matrix",
-      "target": "plans_004_whmcs_proposal_maker_and_delivery_whmcs_integration",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_plan_005_canonical_whmcs_proposal_managed_policy_and_multi_resource_operations",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L14",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_plan_005_canonical_whmcs_proposal_managed_policy_and_multi_resource_operations",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_1_decisions_and_non_negotiable_boundaries",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L114",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_plan_005_canonical_whmcs_proposal_managed_policy_and_multi_resource_operations",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_2_supersession_matrix",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L131",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_plan_005_canonical_whmcs_proposal_managed_policy_and_multi_resource_operations",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_3_release_blocking_evidence_and_defects",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L182",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_plan_005_canonical_whmcs_proposal_managed_policy_and_multi_resource_operations",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L432",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_plan_005_canonical_whmcs_proposal_managed_policy_and_multi_resource_operations",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_5_risk_register_and_acceptance",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L449",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_plan_005_canonical_whmcs_proposal_managed_policy_and_multi_resource_operations",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_6_first_successor_slice_scope",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L16",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_1_decisions_and_non_negotiable_boundaries",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_1_1_four_business_decisions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L76",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_1_decisions_and_non_negotiable_boundaries",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_1_2_deterministic_commercial_boundary",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L99",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_1_decisions_and_non_negotiable_boundaries",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_1_3_whmcs_native_setup_behavior",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L133",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_3_release_blocking_evidence_and_defects",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_3_1_screenshot_pricing_contradiction",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L155",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_3_release_blocking_evidence_and_defects",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_3_2_live_release_binary_audit",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L175",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_3_release_blocking_evidence_and_defects",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_3_3_current_taxonomy_contract",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L184",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_phase_0_canonical_branch_and_contract_reconciliation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L202",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_phase_1_scraper_truth_and_release_cli",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L223",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_phase_2_proposal_studio_domain_and_immutable_versions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L245",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_phase_3_openai_compatible_narrative_and_whmcs_delivery",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L288",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_phase_4_resource_adapters_and_capability_registry",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L335",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_phase_5_founder_hour_ledger",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L354",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_phase_6_provider_contract_inventory_and_reassignment",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/005-canonical-whmcs-proposal-managed-policy.md",
-      "source_location": "L378",
-      "weight": 1.0,
-      "source": "plans_005_canonical_whmcs_proposal_managed_policy_4_target_architecture_and_roadmap",
-      "target": "plans_005_canonical_whmcs_proposal_managed_policy_phase_7_operator_ui_tests_deployment_rollback",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/README.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "plans_readme",
-      "target": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/README.md",
-      "source_location": "L48",
-      "weight": 1.0,
-      "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_cross_plan_notes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/README.md",
-      "source_location": "L21",
-      "weight": 1.0,
-      "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_dependency_notes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/README.md",
-      "source_location": "L9",
-      "weight": 1.0,
-      "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_execution_order_status",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/README.md",
-      "source_location": "L39",
-      "weight": 1.0,
-      "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_findings_considered_and_rejected",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "plans/README.md",
-      "source_location": "L26",
-      "weight": 1.0,
-      "source": "plans_readme_implementation_plans_scraper_report_and_whmcs_tooling",
-      "target": "plans_readme_findings_plans_mapping",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "whmcs-module/README.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -98169,5 +95429,5 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_CONFIGURABLE_OPTIONS.md"
     }
   ],
-  "built_at_commit": "49c4c5163037037598f37f6b3d08d6e9cb8eede1"
+  "built_at_commit": "324b7a4b82470bcdd8a17fbf878f68b539c7a753"
 }

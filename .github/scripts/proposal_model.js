@@ -16,6 +16,15 @@
   const MAX_OWNER_MARKUP = 1;
   const ROUND_SCALE = 100;
 
+  const VISIBILITY_LABELS = Object.freeze({
+    show: 'Show',
+    total_only: 'Total only',
+    silent_include: 'Silent include',
+    internal_only: 'Internal only',
+    exclude: 'Exclude',
+    calculated_only: 'Calculated only',
+  });
+
   const DEFAULT_VISIBILITY = Object.freeze({
     configuration: 'show',
     provider_pricing: 'show',
@@ -29,6 +38,71 @@
     client_notes: 'show',
     internal_notes: 'internal_only',
     warnings: 'show',
+  });
+
+  // Visibility is field-specific. Invalid combinations fail closed to an
+  // internal/hidden state instead of becoming client-visible by accident.
+  const VISIBILITY_RULES = Object.freeze({
+    configuration: {
+      allowed: ['show', 'total_only', 'silent_include', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Show details, or keep configuration facts out of the client artifact.',
+    },
+    provider_pricing: {
+      allowed: ['show', 'total_only', 'calculated_only', 'silent_include', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Total/calculated modes expose only the seller total, never provider cost facts.',
+    },
+    provider_line_items: {
+      allowed: ['show', 'total_only', 'silent_include', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Line items are named only when explicitly set to Show.',
+    },
+    managed_services: {
+      allowed: ['show', 'total_only', 'calculated_only', 'silent_include', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Total/calculated modes include the managed total without naming tier or Founder time.',
+    },
+    alternatives: {
+      allowed: ['show', 'total_only', 'calculated_only', 'silent_include', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Total/calculated modes show anonymous alternative totals only.',
+    },
+    source_links: {
+      allowed: ['show', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Source links are either client-visible, internal, or omitted.',
+    },
+    tax: {
+      allowed: ['show', 'calculated_only', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Calculated-only keeps tax in the verified total without naming the tax treatment.',
+    },
+    fx_markup: {
+      allowed: ['show', 'silent_include', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'FX markup is named only when explicitly set to Show.',
+    },
+    owner_markup: {
+      allowed: ['show', 'silent_include', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Owner margin is named only when explicitly set to Show.',
+    },
+    client_notes: {
+      allowed: ['show', 'internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Notes are client-visible only when explicitly set to Show.',
+    },
+    internal_notes: {
+      allowed: ['internal_only', 'exclude'],
+      invalid: 'internal_only',
+      help: 'Internal notes never enter a client artifact.',
+    },
+    warnings: {
+      allowed: ['show'],
+      invalid: 'show',
+      help: 'Mandatory review warnings cannot be hidden.',
+    },
   });
 
   const PROFILE_DEFAULTS = Object.freeze({
@@ -48,7 +122,7 @@
     internal: {
       label: 'Internal review',
       visibility: {
-        fx_markup: 'show', owner_markup: 'show', internal_notes: 'show',
+        fx_markup: 'show', owner_markup: 'show', internal_notes: 'internal_only',
         provider_line_items: 'show', warnings: 'show',
       },
     },
@@ -91,23 +165,36 @@
     return JSON.stringify(sortedObject(value));
   }
 
-  function stableHash(value) {
+  // Deterministic 32-bit FNV-1a is sufficient for a local UI identity only.
+  // It is NOT collision-resistant and must never be used as an integrity,
+  // authenticity, approval, delivery, or security hash. Server-side persisted
+  // artifacts use SHA-256 under the contract documented in Plan 005.
+  function stableLocalId(value) {
     const raw = stableStringify(value);
     let hash = 2166136261;
     for (let i = 0; i < raw.length; i += 1) {
       hash ^= raw.charCodeAt(i);
       hash = Math.imul(hash, 16777619);
     }
-    return `proposal-${(hash >>> 0).toString(16).padStart(8, '0')}`;
+    return `local-proposal-${(hash >>> 0).toString(16).padStart(8, '0')}`;
   }
+
+  // Backward-compatible name for older report artifacts. Security-sensitive
+  // callers must not use this alias; see stableLocalId above.
+  const stableHash = stableLocalId;
 
   function normalizeVisibility(profile, provided) {
     const profileConfig = PROFILE_DEFAULTS[profile] || PROFILE_DEFAULTS['quick-quote'];
     const raw = provided && typeof provided === 'object' ? provided : {};
-    const merged = { ...DEFAULT_VISIBILITY, ...(profileConfig.visibility || {}), ...raw };
-    const allowed = new Set(['show', 'total_only', 'silent_include', 'internal_only', 'exclude', 'calculated_only']);
-    for (const key of Object.keys(merged)) {
-      if (!allowed.has(merged[key])) merged[key] = DEFAULT_VISIBILITY[key] || 'show';
+    const profileVisibility = profileConfig.visibility || {};
+    const merged = {};
+    for (const key of Object.keys(DEFAULT_VISIBILITY)) {
+      const rule = VISIBILITY_RULES[key];
+      const hasProvidedValue = Object.prototype.hasOwnProperty.call(raw, key);
+      const candidate = hasProvidedValue
+        ? raw[key]
+        : (profileVisibility[key] ?? DEFAULT_VISIBILITY[key]);
+      merged[key] = rule.allowed.includes(candidate) ? candidate : rule.invalid;
     }
     // A warning about missing FX or stale data cannot be hidden by a client
     // profile. A user may hide the non-mandatory source note separately.
@@ -136,6 +223,9 @@
       : (input && typeof input === 'object' ? input : {});
     const providerPricesIncludeTax = pricing.provider_prices_include_tax === true;
     const providerTaxCharged = pricing.provider_tax_charged === true;
+    if (providerPricesIncludeTax && !providerTaxCharged) {
+      throw new Error('provider_prices_include_tax=true requires provider_tax_charged=true');
+    }
     const providerTaxRecoverable = providerTaxCharged && pricing.provider_tax_recoverable === true;
     const providerTaxRate = clampFraction(pricing.provider_tax_rate, 0.18, 1);
     const outputTaxRequested = pricing.output_tax_enabled === true || pricing.output_tax_requested === true;
@@ -171,14 +261,35 @@
     };
   }
 
+  function providerTaxBreakdown(listedEurValue, pricing) {
+    const listedEur = finite(listedEurValue);
+    if (pricing.provider_prices_include_tax) {
+      const divisor = 1 + pricing.provider_tax_rate;
+      const netEur = divisor > 0 ? listedEur / divisor : listedEur;
+      return {
+        listed_eur: listedEur,
+        net_eur: netEur,
+        tax_cash_eur: listedEur - netEur,
+        cash_eur: listedEur,
+      };
+    }
+    const taxCashEur = pricing.provider_tax_charged
+      ? listedEur * pricing.provider_tax_rate : 0;
+    return {
+      listed_eur: listedEur,
+      net_eur: listedEur,
+      tax_cash_eur: taxCashEur,
+      cash_eur: listedEur + taxCashEur,
+    };
+  }
+
   // Narrow JS mirror of MarginCalculator::landedCostMonthly. The report uses
   // cost_plus_pct only; amount/fixed strategies remain server-side WHMCS work.
-  function landedCost(eurValue, pricing) {
-    const sourceEur = finite(eurValue);
-    const localBase = sourceEur * (pricing.currency === 'INR' && pricing.fx_rate
-      ? pricing.fx_rate : 1);
-    const providerTaxCash = pricing.provider_tax_charged && !pricing.provider_prices_include_tax
-      ? localBase * pricing.provider_tax_rate : 0;
+  function landedCost(taxParts, pricing) {
+    const localMultiplier = pricing.currency === 'INR' && pricing.fx_rate
+      ? pricing.fx_rate : 1;
+    const localBase = taxParts.net_eur * localMultiplier;
+    const providerTaxCash = taxParts.tax_cash_eur * localMultiplier;
     const fxBuffer = pricing.currency === 'INR' ? localBase * pricing.fx_markup : 0;
     const paymentBuffer = localBase * pricing.payment_buffer;
     const nonRecoverableProviderTax = pricing.provider_tax_recoverable ? 0 : providerTaxCash;
@@ -201,17 +312,17 @@
     const baseSetup = finite(source.provider_setup_eur ?? source.base_setup_eur);
     const providerMonthly = round(baseMonthly + optionDeltas.monthly + addonDeltas.monthly);
     const providerSetup = round(baseSetup + optionDeltas.setup + addonDeltas.setup);
-    const providerTaxMonthly = pricing.provider_tax_charged && !pricing.provider_prices_include_tax
-      ? round(providerMonthly * pricing.provider_tax_rate) : 0;
-    const providerTaxSetup = pricing.provider_tax_charged && !pricing.provider_prices_include_tax
-      ? round(providerSetup * pricing.provider_tax_rate) : 0;
-    const providerCashMonthly = round(providerMonthly + providerTaxMonthly);
-    const providerCashSetup = round(providerSetup + providerTaxSetup);
+    const monthlyTaxParts = providerTaxBreakdown(providerMonthly, pricing);
+    const setupTaxParts = providerTaxBreakdown(providerSetup, pricing);
+    const providerTaxMonthly = round(monthlyTaxParts.tax_cash_eur);
+    const providerTaxSetup = round(setupTaxParts.tax_cash_eur);
+    const providerCashMonthly = round(monthlyTaxParts.cash_eur);
+    const providerCashSetup = round(setupTaxParts.cash_eur);
     const providerPeriodTotal = round(providerCashMonthly * periodMonths + providerCashSetup);
     const ownerEnabled = pricing.owner_markup_scope === 'provider_only'
       || pricing.owner_markup_scope === 'provider_and_managed';
-    const monthlyLanded = landedCost(providerMonthly, pricing);
-    const setupLanded = landedCost(providerSetup, pricing);
+    const monthlyLanded = landedCost(monthlyTaxParts, pricing);
+    const setupLanded = landedCost(setupTaxParts, pricing);
     const acquisitionMonthly = monthlyLanded.landed;
     const acquisitionSetup = setupLanded.landed;
     const sellerPreTaxMonthly = round(acquisitionMonthly * (ownerEnabled ? 1 + pricing.owner_markup : 1));
@@ -240,7 +351,7 @@
     if (finite(source.pricing?.fx_markup ?? source.fx_markup) > MAX_FX_MARKUP) {
       warnings.push({ code: 'fx_markup_capped', message: 'FX/card markup was capped at the explicit 100% input boundary.', mandatory: true });
     }
-    if (pricing.owner_markup >= MAX_OWNER_MARKUP) {
+    if (finite(source.pricing?.owner_markup ?? source.owner_markup) > MAX_OWNER_MARKUP) {
       warnings.push({ code: 'owner_markup_capped', message: 'Owner markup was capped at 100% for this report.', mandatory: true });
     }
     return {
@@ -249,6 +360,8 @@
       provider: {
         monthly_eur: providerMonthly,
         setup_eur: providerSetup,
+        net_monthly_eur: round(monthlyTaxParts.net_eur),
+        net_setup_eur: round(setupTaxParts.net_eur),
         tax_monthly_eur: providerTaxMonthly,
         tax_setup_eur: providerTaxSetup,
         cash_monthly_eur: providerCashMonthly,
@@ -256,6 +369,7 @@
         landed_monthly: monthlyLanded,
         landed_setup: setupLanded,
         period_total_eur: providerPeriodTotal,
+        prices_include_tax: pricing.provider_prices_include_tax,
         option_delta_monthly_eur: round(optionDeltas.monthly),
         option_delta_setup_eur: round(optionDeltas.setup),
         addon_delta_monthly_eur: round(addonDeltas.monthly),
@@ -374,6 +488,14 @@
     const managed = calculateManaged(source.managed, pricing);
     const client = source.client && typeof source.client === 'object' ? { ...source.client } : {};
     const warnings = [...primary.quote.warnings];
+    if (finite(source.pricing?.fx_markup) > MAX_FX_MARKUP &&
+        !warnings.some(warning => warning.code === 'fx_markup_capped')) {
+      warnings.push({ code: 'fx_markup_capped', message: 'FX/card markup was capped at the explicit 100% input boundary.', mandatory: true });
+    }
+    if (finite(source.pricing?.owner_markup) > MAX_OWNER_MARKUP &&
+        !warnings.some(warning => warning.code === 'owner_markup_capped')) {
+      warnings.push({ code: 'owner_markup_capped', message: 'Owner markup was capped at 100% for this report.', mandatory: true });
+    }
     if (alternatives.some(plan => plan.family !== primary.family)) {
       warnings.push({ code: 'comparison_family_mismatch', message: 'Compared plans are from different product families; verify feature parity before sending.', mandatory: true });
     }
@@ -400,7 +522,7 @@
       source: source.source && typeof source.source === 'object' ? { ...source.source } : {},
       warnings,
     };
-    snapshot.snapshot_id = stableHash({
+    snapshot.snapshot_id = stableLocalId({
       schema_version: snapshot.schema_version,
       profile: snapshot.profile,
       visibility: snapshot.visibility,
@@ -411,34 +533,42 @@
       managed: snapshot.managed,
       source: snapshot.source,
     });
+    snapshot.snapshot_id_kind = 'local_non_security_fingerprint';
     return snapshot;
   }
 
-  function isVisible(snapshot, key, mode = 'show') {
+  function clientVisibility(snapshot, key) {
     const setting = snapshot.visibility?.[key] || 'show';
-    return setting === mode || (mode === 'show' && setting === 'total_only');
+    if (setting === 'show') return 'show';
+    if (setting === 'total_only' || setting === 'calculated_only') return 'total_only';
+    return 'hidden';
   }
 
-  function deterministicDocument(snapshot) {
+  function deterministicDocument(snapshot, options = {}) {
     const primary = snapshot.primary;
     const sections = [];
+    const audience = options.audience === 'client' ? 'client' : 'operator';
+    const configurationVisibility = clientVisibility(snapshot, 'configuration');
+    const mayNameConfiguration = configurationVisibility !== 'hidden';
     const project = snapshot.client?.project_name ? ` for ${snapshot.client.project_name}` : '';
     sections.push({
       id: 'summary', title: 'Summary', blocks: [{
         type: 'paragraph',
-        text: `This ${snapshot.profile_label.toLowerCase()}${project} is based on the selected ${primary.plan_name} configuration and the current report snapshot.`,
+        text: mayNameConfiguration
+          ? `This ${snapshot.profile_label.toLowerCase()}${project} is based on the selected ${primary.plan_name} configuration and the current report snapshot.`
+          : `This ${snapshot.profile_label.toLowerCase()}${project} is based on the approved commercial calculation and the current report snapshot.`,
       }],
     });
-    if (isVisible(snapshot, 'configuration')) {
+    if (configurationVisibility !== 'hidden') {
       const rows = [
         { label: 'Plan', value: primary.plan_name },
         { label: 'Family', value: primary.family },
         { label: 'Term', value: `${primary.period_months} month${primary.period_months === 1 ? '' : 's'}` },
       ];
-      for (const [key, value] of Object.entries(primary.specs || {})) {
-        if (value != null && value !== '') rows.push({ label: key.replaceAll('_', ' '), value: String(value) });
-      }
-      if (snapshot.visibility.configuration !== 'total_only') {
+      if (configurationVisibility === 'show') {
+        for (const [key, value] of Object.entries(primary.specs || {})) {
+          if (value != null && value !== '') rows.push({ label: key.replaceAll('_', ' '), value: String(value) });
+        }
         for (const item of primary.quote.selections) rows.push({ label: item.label, value: item.monthly || item.setup ? `${item.monthly ? `+€${item.monthly}/mo` : ''}${item.setup ? ` +€${item.setup} setup` : ''}` : 'Included' });
       }
       sections.push({ id: 'configuration', title: 'Selected configuration', blocks: [{ type: 'table', rows }] });
@@ -449,17 +579,19 @@
       if (snapshot.source.source) sourceRows.push({ label: 'Pricing snapshot', value: snapshot.source.source });
       if (sourceRows.length) sections.push({ id: 'sources', title: 'Sources', blocks: [{ type: 'table', rows: sourceRows }] });
     }
-    if (snapshot.visibility.provider_pricing !== 'exclude') {
+    const pricingVisibility = clientVisibility(snapshot, 'provider_pricing');
+    if (pricingVisibility !== 'hidden') {
       const rows = [];
-      const showLineItems = snapshot.visibility.provider_line_items === 'show';
+      const showLineItems = pricingVisibility === 'show' &&
+        clientVisibility(snapshot, 'provider_line_items') === 'show';
       if (showLineItems) {
-        rows.push({ label: 'Provider base monthly', value: `€${primary.quote.provider.monthly_eur.toFixed(2)}` });
+        rows.push({ label: 'Provider listed/configured monthly', value: `€${primary.quote.provider.monthly_eur.toFixed(2)}` });
         if (primary.quote.provider.tax_monthly_eur) {
           rows.push({ label: 'Provider/vendor tax cash', value: `€${primary.quote.provider.tax_monthly_eur.toFixed(2)}` });
         }
         if (primary.quote.provider.setup_eur) rows.push({ label: 'Provider setup', value: `€${primary.quote.provider.setup_eur.toFixed(2)}` });
       }
-      if (snapshot.visibility.tax === 'show') {
+      if (pricingVisibility === 'show' && clientVisibility(snapshot, 'tax') === 'show') {
         rows.push({ label: 'Provider tax treatment', value: snapshot.pricing.provider_tax_charged
           ? `${(snapshot.pricing.provider_tax_rate * 100).toFixed(1)}% charged · ${snapshot.pricing.provider_tax_recoverable ? 'recoverable' : 'landed cost'}`
           : 'Not charged' });
@@ -472,25 +604,27 @@
         : `€${primary.quote.display.period_total.toFixed(2)}` });
       sections.push({ id: 'pricing', title: 'Pricing', blocks: [{ type: 'pricing', rows }] });
     }
-    if (snapshot.managed && snapshot.visibility.managed_services !== 'exclude') {
-      const managedRows = [{ label: 'Annual managed service', value: `₹${snapshot.managed.seller.annual_inr_minor.toLocaleString('en-IN')}` }];
-      if (snapshot.visibility.managed_services !== 'total_only') {
+    const managedVisibility = clientVisibility(snapshot, 'managed_services');
+    if (snapshot.managed && managedVisibility !== 'hidden') {
+      const managedRows = [{ label: 'Annual managed service', value: `₹${round(snapshot.managed.seller.annual_inr_minor / 100).toLocaleString('en-IN')}` }];
+      if (managedVisibility === 'show') {
         managedRows.unshift({ label: 'Managed tier', value: snapshot.managed.name });
         managedRows.push({ label: 'Founder time', value: `${snapshot.managed.founder_minutes_per_month} minutes/month` });
       }
       sections.push({ id: 'managed', title: 'Managed service add-on', blocks: [{ type: 'table', rows: managedRows }] });
     }
-    if (snapshot.alternatives.length && snapshot.visibility.alternatives !== 'exclude') {
+    const alternativesVisibility = clientVisibility(snapshot, 'alternatives');
+    if (snapshot.alternatives.length && alternativesVisibility !== 'hidden') {
       sections.push({
         id: 'comparison', title: 'Compared plans', blocks: [{ type: 'table', rows: snapshot.alternatives.map(plan => ({
-          label: plan.plan_name,
+          label: alternativesVisibility === 'show' ? plan.plan_name : 'Alternative total',
           value: snapshot.pricing.currency === 'INR'
             ? `₹${Math.round(plan.quote.display.period_total).toLocaleString('en-IN')}`
             : `€${plan.quote.display.period_total.toFixed(2)}`,
         })) }],
       });
     }
-    if (snapshot.visibility.client_notes !== 'exclude' && snapshot.client.notes) {
+    if (clientVisibility(snapshot, 'client_notes') === 'show' && snapshot.client.notes) {
       sections.push({ id: 'notes', title: 'Notes', blocks: [{ type: 'paragraph', text: String(snapshot.client.notes) }] });
     }
     if (snapshot.visibility.fx_markup === 'show' || snapshot.visibility.owner_markup === 'show') {
@@ -502,17 +636,26 @@
     sections.push({ id: 'next_steps', title: 'Next steps', blocks: [{
       type: 'list', items: ['Confirm the configuration and commercial terms.', 'Confirm quote validity before sending.', 'Provision only after the client accepts the final scope.'],
     }] });
-    const warnings = snapshot.warnings.map(warning => ({ type: 'callout', level: 'warning', text: warning.message }));
+    const visibleWarnings = snapshot.warnings.filter(warning => audience === 'operator' ||
+      warning.client_facing === true || warning.audience === 'client');
+    const warnings = visibleWarnings.map(warning => ({ type: 'callout', level: 'warning', text: warning.message }));
     if (warnings.length) sections.unshift({ id: 'warnings', title: 'Review before sending', blocks: warnings });
-    return {
+    const document = {
       schema_version: DOCUMENT_SCHEMA_VERSION,
       provider: 'deterministic',
-      snapshot_id: snapshot.snapshot_id,
+      audience,
       title: snapshot.client?.project_name ? `Proposal · ${snapshot.client.project_name}` : 'Contabo pricing proposal',
-      subtitle: `${primary.plan_name} · ${primary.period_months} month${primary.period_months === 1 ? '' : 's'}`,
+      subtitle: mayNameConfiguration
+        ? `${primary.plan_name} · ${primary.period_months} month${primary.period_months === 1 ? '' : 's'}`
+        : 'Commercial proposal',
       sections,
-      warnings: snapshot.warnings,
+      warnings: visibleWarnings,
     };
+    if (audience === 'operator') {
+      document.local_snapshot_id = snapshot.snapshot_id;
+      document.local_snapshot_id_kind = snapshot.snapshot_id_kind;
+    }
+    return document;
   }
 
   function hasCommercialClaim(text) {
@@ -573,33 +716,71 @@
     return `<article class="proposal-document"><header><h2>${escapeHtml(source.title || 'Proposal')}</h2>${source.subtitle ? `<p class="proposal-subtitle">${escapeHtml(source.subtitle)}</p>` : ''}</header>${sections.map(section => `<section><h3>${escapeHtml(section?.title || '')}</h3>${(Array.isArray(section?.blocks) ? section.blocks : []).map(renderBlock).join('')}</section>`).join('')}</article>`;
   }
 
+  function clientDocument(snapshot, reviewedDocument) {
+    const deterministicClient = deterministicDocument(snapshot, { audience: 'client' });
+    return reviewedDocument
+      ? mergeSafeNarrative(deterministicClient, reviewedDocument)
+      : deterministicClient;
+  }
+
+  function clientProjection(snapshot, document) {
+    const projectedDocument = clientDocument(snapshot, document);
+    return {
+      schema_version: 'proposal.client-artifact.v1',
+      artifact_type: 'client',
+      generated_at: snapshot.generated_at,
+      profile: snapshot.profile,
+      document: JSON.parse(JSON.stringify(projectedDocument)),
+    };
+  }
+
+  function internalEvidence(snapshot) {
+    return {
+      schema_version: 'proposal.internal-evidence.v1',
+      artifact_type: 'internal_evidence',
+      contains_internal_commercial_data: true,
+      local_identity_is_security_hash: false,
+      snapshot: JSON.parse(JSON.stringify(snapshot)),
+    };
+  }
+
   function toCsv(snapshot) {
-    const rows = [['kind', 'label', 'value', 'currency']];
-    const quote = snapshot.primary.quote;
-    if (!['exclude', 'internal_only'].includes(snapshot.visibility.provider_pricing)) {
-      if (snapshot.visibility.provider_line_items === 'show') {
-        rows.push(['provider', 'monthly', quote.provider.monthly_eur, 'EUR']);
-        rows.push(['provider_tax_cash', 'monthly', quote.provider.tax_monthly_eur, 'EUR']);
-        rows.push(['provider', 'setup', quote.provider.setup_eur, 'EUR']);
-        rows.push(['provider_tax_cash', 'setup', quote.provider.tax_setup_eur, 'EUR']);
-      }
-      rows.push(['seller', 'period_total', quote.display.period_total, snapshot.pricing.currency]);
-    }
-    if (snapshot.visibility.configuration === 'show') {
-      for (const item of quote.selections) {
-        rows.push(['selection', item.label, item.monthly || 0, 'EUR/month']);
-        if (item.setup) rows.push(['selection_setup', item.label, item.setup, 'EUR']);
+    const document = clientDocument(snapshot);
+    const rows = [['section', 'kind', 'label', 'value']];
+    for (const section of document.sections) {
+      for (const block of section.blocks || []) {
+        if (block.type === 'table' || block.type === 'pricing') {
+          for (const row of block.rows || []) rows.push([section.title, block.type, row.label, row.value]);
+        } else if (block.type === 'list') {
+          for (const item of block.items || []) rows.push([section.title, 'list', '', item]);
+        } else if (block.type === 'paragraph' || block.type === 'callout') {
+          rows.push([section.title, block.type, '', block.text]);
+        }
       }
     }
-    if (snapshot.managed && !['exclude', 'internal_only'].includes(snapshot.visibility.managed_services)) {
-      rows.push(['managed', snapshot.managed.name, snapshot.managed.seller.annual_inr_minor, 'INR']);
-    }
-    if (snapshot.visibility.fx_markup === 'show') rows.push(['adjustment', 'FX markup', `${(snapshot.pricing.fx_markup * 100).toFixed(1)}%`, 'percent']);
-    if (snapshot.visibility.owner_markup === 'show') rows.push(['adjustment', 'Owner markup', `${(snapshot.pricing.owner_markup * 100).toFixed(1)}% · ${snapshot.pricing.owner_markup_scope}`, 'percent']);
     return rows.map(row => row.map(value => {
       const text = String(value == null ? '' : value);
       return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
     }).join(',')).join('\n') + '\n';
+  }
+
+  function toClientBrief(snapshot) {
+    const document = clientDocument(snapshot);
+    const lines = [document.title];
+    if (document.subtitle) lines.push(document.subtitle);
+    for (const section of document.sections) {
+      lines.push('', section.title);
+      for (const block of section.blocks || []) {
+        if (block.type === 'table' || block.type === 'pricing') {
+          for (const row of block.rows || []) lines.push(`${row.label}: ${row.value}`);
+        } else if (block.type === 'list') {
+          for (const item of block.items || []) lines.push(`- ${item}`);
+        } else if (block.type === 'paragraph' || block.type === 'callout') {
+          lines.push(block.text);
+        }
+      }
+    }
+    return lines.join('\n').trim() + '\n';
   }
 
   return {
@@ -607,17 +788,24 @@
     DOCUMENT_SCHEMA_VERSION,
     DEFAULT_VISIBILITY,
     PROFILE_DEFAULTS,
+    VISIBILITY_LABELS,
+    VISIBILITY_RULES,
     clampFraction,
     clampPercent,
     stableStringify,
+    stableLocalId,
     stableHash,
     normalizeVisibility,
     calculateQuote,
     calculateManaged,
     makeSnapshot,
     deterministicDocument,
+    clientDocument,
+    clientProjection,
+    internalEvidence,
     mergeSafeNarrative,
     renderDocument,
     toCsv,
+    toClientBrief,
   };
 }));

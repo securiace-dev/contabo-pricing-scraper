@@ -82,6 +82,9 @@ server-side until explicitly added with parity fixtures. The ordered model is:
 1. provider base plus selected provider options/add-ons in EUR;
 2. provider/vendor tax cash when charged; include it in economic landed cost
    unless verified recoverability excludes it;
+   when the provider price already includes tax, decompose the gross amount as
+   `net = gross / (1 + rate)` and `tax = gross - net`; reject contradictory
+   included-tax/not-charged inputs rather than silently taxing twice;
 3. EUR-to-INR reference conversion;
 4. FX volatility/acquisition-card and payment buffers;
 5. seller owner margin using `cost_plus_pct` on landed economic cost;
@@ -234,6 +237,18 @@ Dependencies: Phases 0–1 commercial schema.
 - Visibility states: show, total-only, silent-include, internal-only, exclude,
   and calculated-only.
 - Saved versions never recalculate from mutable current terms.
+- Browser/client projections are allow-listed artifacts derived from the
+  visibility-filtered document. Raw snapshots, provider facts, recipient data,
+  owner margin, internal notes, and silent-included labels are internal evidence
+  and never use the client JSON/CSV/copy path.
+- Mandatory operator diagnostics (for example unverified tax registration or a
+  stale source snapshot) remain on the admin Review-before-sending rail and
+  block approval until resolved, but do not enter client artifacts unless a
+  reviewed warning is explicitly classified client-facing.
+- Report-local 32-bit deterministic fingerprints are local identities only, not
+  integrity or security hashes. Persisted approvals, rendered bodies,
+  attachments, delivery records, and source artifacts use SHA-256 computed by
+  the server.
 
 Workflow:
 
@@ -248,13 +263,15 @@ Dependencies: Phase 2.
 
 Provider configuration:
 
-- provider default: `openai`;
-- cost-efficient default model: `gpt-5.6-luna`;
-- manual model override;
+- provider default: OpenAI with cost-efficient default model `gpt-5.6-luna`;
+  the selected model is administrator-visible and manually overridable, release
+  verification must confirm model availability, and unavailable/unsupported
+  models fall back to the deterministic proposal without blocking preview;
+- generic OpenAI-compatible endpoints require an explicit configured model and
+  never inherit a hardcoded OpenAI model identifier;
 - bounded reasoning, output tokens, timeout, retries, and estimated spend;
 - Responses API default for OpenAI;
 - explicit Chat Completions compatibility mode for third-party endpoints;
-- never hardcode an OpenAI model for generic compatible endpoints;
 - capability-detect structured outputs and validate the strict proposal JSON
   schema;
 - deterministic fallback on timeout, refusal, invalid JSON/schema, or budget
@@ -284,6 +301,12 @@ Delivery:
 
 Compatibility gates cover WHMCS 8.12/8.13 and 9.x with the supported PHP matrix.
 Do not claim direct-email attachment support until both runtime families pass.
+
+The current canonical Rust server has no proposal-generation routes. The report
+must probe `GET /api/v1/proposals/capabilities`, keep generation disabled when
+the endpoint/capability is absent, and retain deterministic preview/export. The
+capabilities, generate, and job-status endpoints are a dependent server slice;
+do not port the stale proposal service blindly.
 
 ### Phase 4 — resource adapters and capability registry
 
@@ -436,6 +459,8 @@ Rollback:
 | tax charged without registration | verified tax-mode snapshot, default off | unverified request adds zero tax and mandatory warning |
 | visible 45%, calculated 15% | shared model and explicit 0–100% boundary | all six surfaces produce the same fixture total |
 | mutable terms alter old sale | immutable purchase/proposal snapshots | old fixture unchanged after catalog mutation |
+| client export leaks internal pricing | allow-listed client projection; separate internal evidence artifact | silent/internal/provider/recipient sentinels absent from HTML/JSON/CSV/copy |
+| local fingerprint mistaken for integrity | local-ID caveat; server SHA-256 | approval/delivery hashes are cryptographic and server-generated |
 | AI changes money/scope | strict narrative schema and deterministic merge | hostile model fixture cannot alter commercial sections |
 | unsupported action appears automated | certified capability registry | Storage VPS/Dedicated automated create absent |
 | destructive networking surprises client | consequence acknowledgment + saga | reinstall/restart states and audit evidence persist |
@@ -456,6 +481,8 @@ This first slice is intentionally bounded to:
 - proposal domain/tests with separate FX/owner fields, all visibility states,
   ordered provenance, immutable managed terms, and deterministic AI boundary;
 - report-side proposal workspace ported without stale datasets;
+- capability-detected Codex action; deterministic preview/export remains usable
+  against the current server that exposes no proposal routes;
 - regression coverage for 45% versus 15%, tax disabled/enabled, and the exact
   Core VPS 4 EUR 13.34 combination.
 
