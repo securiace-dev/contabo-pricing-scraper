@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
 
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde_json::{json, Map, Value};
@@ -195,7 +195,8 @@ struct Cli {
     #[command(subcommand)]
     command: Option<Command>,
 
-    /// Inherited from old positional flags — only used when no subcommand is given
+    /// Scrape flags accepted before a subcommand for backwards compatibility.
+    /// Explicit values are merged into `scrape`; they are rejected for `serve`.
     #[command(flatten)]
     legacy: ScrapeArgs,
 }
@@ -211,16 +212,16 @@ enum Command {
 #[derive(clap::Args, Debug, Clone)]
 struct ScrapeArgs {
     /// Output directory for JSON/CSV files
-    #[arg(short, long, env = "CONTABO_OUTPUT")]
+    #[arg(short, long)]
     output: Option<PathBuf>,
 
     /// Parallel fetches (1-16 recommended)
-    #[arg(short, long, env = "SCRAPER_CONCURRENCY", default_value_t = 4)]
-    concurrency: usize,
+    #[arg(short, long)]
+    concurrency: Option<usize>,
 
     /// Retries per URL on network error
-    #[arg(short, long, env = "SCRAPER_RETRIES", default_value_t = 3)]
-    retries: u32,
+    #[arg(short, long)]
+    retries: Option<u32>,
 
     /// Comma-separated plan slugs to limit scraping (e.g. cloud-vps-10,vds-s)
     #[arg(short, long, value_delimiter = ',')]
@@ -243,55 +244,192 @@ struct ScrapeArgs {
     dry_run: bool,
 
     /// Fetch strategy: reqwest (default), cloak (CloakBrowser only), auto (reqwest + cloak fallback on block)
-    #[arg(
-        long,
-        env = "FETCH_MODE",
-        default_value = "reqwest",
-        value_name = "MODE"
-    )]
-    fetch_mode: FetchMode,
+    #[arg(long, value_name = "MODE")]
+    fetch_mode: Option<FetchMode>,
 
     /// Path to cloak-fetch.mjs (used when --fetch-mode is cloak or auto)
-    #[arg(
-        long,
-        env = "CLOAK_SCRIPT",
-        default_value = "scripts/cloak-fetch.mjs",
-        value_name = "PATH"
-    )]
-    cloak_script: PathBuf,
+    #[arg(long, value_name = "PATH")]
+    cloak_script: Option<PathBuf>,
 
     /// Optional HTTP/HTTPS proxy for all fetches (reqwest and CloakBrowser).
     /// Format: http://user:pass@host:port
-    #[arg(long, env = "SCRAPER_PROXY", value_name = "URL")]
+    #[arg(long, value_name = "URL")]
     proxy: Option<String>,
 }
 
 impl ScrapeArgs {
-    fn into_opts(self) -> Opts {
+    /// Merge flags parsed after `scrape` over flags parsed before it. Scalar
+    /// values use the closest (subcommand) occurrence; switches are additive.
+    /// Keeping parser fields optional is important: clap defaults would make an
+    /// omitted subcommand value indistinguishable from an explicit one and
+    /// silently shadow the legacy/top-level value.
+    fn merge(self, subcommand: Self) -> Self {
+        Self {
+            output: subcommand.output.or(self.output),
+            concurrency: subcommand.concurrency.or(self.concurrency),
+            retries: subcommand.retries.or(self.retries),
+            plans: subcommand.plans.or(self.plans),
+            plan_urls_file: subcommand.plan_urls_file.or(self.plan_urls_file),
+            quiet: self.quiet || subcommand.quiet,
+            json: self.json || subcommand.json,
+            dry_run: self.dry_run || subcommand.dry_run,
+            fetch_mode: subcommand.fetch_mode.or(self.fetch_mode),
+            cloak_script: subcommand.cloak_script.or(self.cloak_script),
+            proxy: subcommand.proxy.or(self.proxy),
+        }
+    }
+
+    fn explicit_option_names(&self) -> Vec<&'static str> {
+        let mut names = Vec::new();
+        if self.output.is_some() {
+            names.push("--output");
+        }
+        if self.concurrency.is_some() {
+            names.push("--concurrency");
+        }
+        if self.retries.is_some() {
+            names.push("--retries");
+        }
+        if self.plans.is_some() {
+            names.push("--plans");
+        }
+        if self.plan_urls_file.is_some() {
+            names.push("--plan-urls-file");
+        }
+        if self.quiet {
+            names.push("--quiet");
+        }
+        if self.json {
+            names.push("--json");
+        }
+        if self.dry_run {
+            names.push("--dry-run");
+        }
+        if self.fetch_mode.is_some() {
+            names.push("--fetch-mode");
+        }
+        if self.cloak_script.is_some() {
+            names.push("--cloak-script");
+        }
+        if self.proxy.is_some() {
+            names.push("--proxy");
+        }
+        names
+    }
+
+    fn env_value(name: &str) -> Result<Option<String>, String> {
+        match std::env::var(name) {
+            Ok(value) => Ok(Some(value)),
+            Err(std::env::VarError::NotPresent) => Ok(None),
+            Err(std::env::VarError::NotUnicode(_)) => {
+                Err(format!("environment variable {name} is not valid UTF-8"))
+            }
+        }
+    }
+
+    fn into_opts(self) -> Result<Opts, String> {
         let default_output = std::env::current_dir()
             .map(|d| d.join("data").join("output"))
             .unwrap_or_else(|_| PathBuf::from("data/output"));
-        Opts {
-            output: self.output.unwrap_or(default_output),
-            concurrency: self.concurrency.max(1),
-            retries: self.retries,
+        let output = match self.output {
+            Some(path) => path,
+            None => Self::env_value("CONTABO_OUTPUT")?
+                .map(PathBuf::from)
+                .unwrap_or(default_output),
+        };
+        let concurrency = match self.concurrency {
+            Some(value) => value,
+            None => Self::env_value("SCRAPER_CONCURRENCY")?
+                .map(|value| {
+                    value.parse::<usize>().map_err(|error| {
+                        format!("invalid SCRAPER_CONCURRENCY value {value:?}: {error}")
+                    })
+                })
+                .transpose()?
+                .unwrap_or(4),
+        };
+        let retries = match self.retries {
+            Some(value) => value,
+            None => Self::env_value("SCRAPER_RETRIES")?
+                .map(|value| {
+                    value.parse::<u32>().map_err(|error| {
+                        format!("invalid SCRAPER_RETRIES value {value:?}: {error}")
+                    })
+                })
+                .transpose()?
+                .unwrap_or(3),
+        };
+        let fetch_mode = match self.fetch_mode {
+            Some(value) => value,
+            None => Self::env_value("FETCH_MODE")?
+                .map(|value| {
+                    FetchMode::from_str(&value, true)
+                        .map_err(|error| format!("invalid FETCH_MODE value {value:?}: {error}"))
+                })
+                .transpose()?
+                .unwrap_or_default(),
+        };
+        let cloak_script = match self.cloak_script {
+            Some(path) => path,
+            None => Self::env_value("CLOAK_SCRIPT")?
+                .map(PathBuf::from)
+                .unwrap_or_else(|| PathBuf::from("scripts/cloak-fetch.mjs")),
+        };
+        let proxy = match self.proxy {
+            Some(value) => Some(value),
+            None => Self::env_value("SCRAPER_PROXY")?,
+        };
+
+        Ok(Opts {
+            output,
+            concurrency: concurrency.max(1),
+            retries,
             plans: self.plans.filter(|v| !v.is_empty()),
             plan_urls_file: self.plan_urls_file,
             quiet: self.quiet,
             json_out: self.json,
             dry_run: self.dry_run,
-            fetch_mode: self.fetch_mode,
-            cloak_script: self.cloak_script,
+            fetch_mode,
+            cloak_script,
             // Normalize a schemeless proxy (user:pass@host:port) to http:// once,
             // so every downstream consumer (reqwest + the CloakBrowser subprocess,
             // whose `new URL()` is strict) receives a valid URL.
-            proxy: self.proxy.map(|p| {
+            proxy: proxy.map(|p| {
                 if p.contains("://") {
                     p
                 } else {
                     format!("http://{p}")
                 }
             }),
+        })
+    }
+}
+
+enum ResolvedCommand {
+    Scrape(Opts),
+    Serve(api::ServeArgs),
+}
+
+impl Cli {
+    fn resolve(self) -> Result<ResolvedCommand, String> {
+        match self.command {
+            Some(Command::Scrape(subcommand)) => self
+                .legacy
+                .merge(subcommand)
+                .into_opts()
+                .map(ResolvedCommand::Scrape),
+            Some(Command::Serve(args)) => {
+                let ignored = self.legacy.explicit_option_names();
+                if ignored.is_empty() {
+                    Ok(ResolvedCommand::Serve(args))
+                } else {
+                    Err(format!(
+                        "scrape option(s) supplied before `serve` would be ignored: {}; move them to `scrape` or remove them",
+                        ignored.join(", ")
+                    ))
+                }
+            }
+            None => self.legacy.into_opts().map(ResolvedCommand::Scrape),
         }
     }
 }
@@ -1905,7 +2043,14 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
     };
     if !cloak_urls.is_empty() {
         tracing::info!(count = cloak_urls.len(), "starting CloakBrowser fallback");
-        let tmp_dir = opts.output.join(".cloak-tmp");
+        // A dry run must never create the requested output tree. CloakBrowser
+        // still needs transient HTML files, so isolate them under the system
+        // temp directory and remove them after parsing.
+        let tmp_dir = if opts.dry_run {
+            std::env::temp_dir().join(format!("contabo-cloak-{}", uuid::Uuid::new_v4()))
+        } else {
+            opts.output.join(".cloak-tmp")
+        };
         let cloak_results = cloak_batch_fetch(
             &cloak_urls,
             &opts.cloak_script,
@@ -2265,14 +2410,20 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
+    let command = match cli.resolve() {
+        Ok(command) => command,
+        Err(error) => {
+            eprintln!("ERROR: {error}");
+            std::process::exit(EXIT_PARTIAL);
+        }
+    };
 
-    // Determine quiet-ness from the relevant subcommand so --quiet maps to
+    // Determine quiet-ness from the resolved command so --quiet maps to
     // RUST_LOG=warn, suppressing the info-level progress messages while
     // keeping warnings and errors visible.
-    let quiet = match &cli.command {
-        Some(Command::Scrape(args)) => args.quiet,
-        Some(Command::Serve(_)) => false,
-        None => cli.legacy.quiet,
+    let quiet = match &command {
+        ResolvedCommand::Scrape(opts) => opts.quiet,
+        ResolvedCommand::Serve(_) => false,
     };
     let default_level = if quiet { "warn" } else { "info" };
 
@@ -2286,10 +2437,9 @@ async fn main() {
         .with_writer(std::io::stderr)
         .try_init();
 
-    let code = match cli.command {
-        Some(Command::Scrape(args)) => run_scrape(args.into_opts()).await,
-        Some(Command::Serve(args)) => api::run_serve(args).await,
-        None => run_scrape(cli.legacy.into_opts()).await,
+    let code = match command {
+        ResolvedCommand::Scrape(opts) => run_scrape(opts).await,
+        ResolvedCommand::Serve(args) => api::run_serve(args).await,
     };
     std::process::exit(code);
 }
@@ -2297,6 +2447,91 @@ async fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn resolved_scrape(args: &[&str]) -> Opts {
+        let cli = Cli::try_parse_from(args).expect("CLI arguments parse");
+        match cli.resolve().expect("CLI arguments resolve") {
+            ResolvedCommand::Scrape(opts) => opts,
+            ResolvedCommand::Serve(_) => panic!("expected scrape command"),
+        }
+    }
+
+    #[test]
+    fn scrape_flags_are_equivalent_before_and_after_subcommand() {
+        let flags = [
+            "--output",
+            "/tmp/contabo-cli-contract",
+            "--concurrency",
+            "6",
+            "--retries",
+            "7",
+            "--plans",
+            "cloud-vps-core-4,vds-s",
+            "--plan-urls-file",
+            "/tmp/contabo-plans.json",
+            "--quiet",
+            "--json",
+            "--dry-run",
+            "--fetch-mode",
+            "auto",
+            "--cloak-script",
+            "/tmp/cloak-fetch.mjs",
+            "--proxy",
+            "proxy.invalid:8080",
+        ];
+        let mut before = vec!["contabo-scraper"];
+        before.extend(flags);
+        before.push("scrape");
+        let mut after = vec!["contabo-scraper", "scrape"];
+        after.extend(flags);
+
+        let before = resolved_scrape(&before);
+        let after = resolved_scrape(&after);
+        assert_eq!(before.output, after.output);
+        assert_eq!(before.concurrency, after.concurrency);
+        assert_eq!(before.retries, after.retries);
+        assert_eq!(before.plans, after.plans);
+        assert_eq!(before.plan_urls_file, after.plan_urls_file);
+        assert_eq!(before.quiet, after.quiet);
+        assert_eq!(before.json_out, after.json_out);
+        assert_eq!(before.dry_run, after.dry_run);
+        assert_eq!(before.fetch_mode, after.fetch_mode);
+        assert_eq!(before.cloak_script, after.cloak_script);
+        assert_eq!(before.proxy, after.proxy);
+        assert_eq!(before.proxy.as_deref(), Some("http://proxy.invalid:8080"));
+    }
+
+    #[test]
+    fn scrape_subcommand_values_override_top_level_values() {
+        let opts = resolved_scrape(&[
+            "contabo-scraper",
+            "--output",
+            "/tmp/top-output",
+            "--retries",
+            "1",
+            "scrape",
+            "--output",
+            "/tmp/subcommand-output",
+            "--retries",
+            "9",
+            "--dry-run",
+        ]);
+        assert_eq!(opts.output, PathBuf::from("/tmp/subcommand-output"));
+        assert_eq!(opts.retries, 9);
+        assert!(opts.dry_run);
+    }
+
+    #[test]
+    fn scrape_flags_before_serve_fail_loudly() {
+        let cli = Cli::try_parse_from(["contabo-scraper", "--dry-run", "serve"])
+            .expect("CLI arguments parse");
+        let error = match cli.resolve() {
+            Ok(_) => panic!("scrape flags before serve must not be ignored"),
+            Err(error) => error,
+        };
+        assert!(error.contains("--dry-run"));
+        assert!(error.contains("would be ignored"));
+    }
 
     // Round-trip an OptionItem with all fields populated, plus a variant where
     // all optional region fields are None, and assert both decode back to the
