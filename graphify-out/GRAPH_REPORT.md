@@ -34,7 +34,6 @@
 - [[_COMMUNITY_Community 16|Community 16]]
 - [[_COMMUNITY_Community 17|Community 17]]
 - [[_COMMUNITY_Community 18|Community 18]]
-- [[_COMMUNITY_Community 19|Community 19]]
 - [[_COMMUNITY_Community 20|Community 20]]
 - [[_COMMUNITY_Community 21|Community 21]]
 - [[_COMMUNITY_Community 22|Community 22]]
@@ -43,6 +42,7 @@
 - [[_COMMUNITY_Community 25|Community 25]]
 - [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Community 27|Community 27]]
+- [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
@@ -113,7 +113,6 @@
 - [[_COMMUNITY_Community 96|Community 96]]
 - [[_COMMUNITY_Community 97|Community 97]]
 - [[_COMMUNITY_Community 98|Community 98]]
-- [[_COMMUNITY_Community 99|Community 99]]
 - [[_COMMUNITY_Community 100|Community 100]]
 - [[_COMMUNITY_Community 101|Community 101]]
 - [[_COMMUNITY_Community 102|Community 102]]
@@ -249,15 +248,15 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `Capsule` - 361 edges
-2. `AdminController` - 97 edges
+2. `AdminController` - 104 edges
 3. `CycleSet` - 64 edges
 4. `$()` - 56 edges
-5. `InstanceService` - 35 edges
-6. `NativeLifecycleTest` - 31 edges
-7. `self` - 30 edges
-8. `SyncEngine6CycleTest` - 29 edges
-9. `ExposureResolver` - 28 edges
-10. `CyclePricingMap` - 26 edges
+5. `ProposalMaker` - 49 edges
+6. `InstanceService` - 35 edges
+7. `NativeLifecycleTest` - 31 edges
+8. `self` - 30 edges
+9. `SyncEngine6CycleTest` - 29 edges
+10. `ExposureResolver` - 28 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Preserve-on-failure snapshot behavior` --semantically_similar_to--> `Grandfathering (existing customers held to cycle boundary)`  [INFERRED] [semantically similar]
@@ -330,6 +329,10 @@ Nodes (9): CapsuleConnection, CapsuleQuery, CapsuleSchema, AuditLog, Installer, 
 Cohesion: 0.07
 Nodes (4): ExposureResolver, RetailVpsMinimalPreset, ExposureResolverTest, RetailVpsMinimalPresetTest
 
+### Community 9 - "Community 9"
+Cohesion: 0.05
+Nodes (7): MarginCalculator, ProposalMaker, MarginMathTest, ApiClient, RequestExecutor, Settings, Throwable
+
 ### Community 11 - "Community 11"
 Cohesion: 0.05
 Nodes (37): Acceptance criteria, Column additions, `computeOptionPricing(value, profile, mapping)` reuses Phase A.5's MarginCalculator, Context, Dashboard KPI tile (new), Decision points for review, Edge cases, Files to create / modify (+29 more)
@@ -351,8 +354,8 @@ Cohesion: 0.13
 Nodes (24): _contabo_vps_auth(), contabo_vps_AdminServicesTabFields(), contabo_vps_buttonReinstall(), contabo_vps_buttonResetPassword(), contabo_vps_buttonRestart(), contabo_vps_buttonStart(), contabo_vps_buttonStop(), contabo_vps_ChangePackage() (+16 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.07
-Nodes (15): ApiClient, ApiClientTest, contabo_pricing_loadModuleVars(), generateOutput(), getData(), ApiClient, CurlRequestExecutor, MockRequestExecutor (+7 more)
+Cohesion: 0.08
+Nodes (10): ApiClientTest, ApiClient, CurlRequestExecutor, RequestExecutor, MockRequestExecutor, ProposalRequestExecutor, RequestExecutor, Settings (+2 more)
 
 ### Community 17 - "Community 17"
 Cohesion: 0.05
@@ -394,10 +397,6 @@ Nodes (22): 0. Runbook corrections discovered during preflight, §11 lifecycle t
 Cohesion: 0.10
 Nodes (20): 0. Mental model (the one paragraph), 1. Image / OS is ONE choice **[OWNER]**, 2.1 What Contabo exposes, 2.2 The fallback rule (single rule, covers every gap), 2.3 EUR → local → customer, 2.4 GST placement — kept as-is, flagged for future **[OWNER]**, 2. Source pricing & fallbacks **[OWNER]**, 3. Modes — primary decision, drives the form **[OWNER]** (+12 more)
 
-### Community 30 - "Community 30"
-Cohesion: 0.09
-Nodes (8): InstanceService, ConfigOptionResolver, ContaboApiClient, ContaboInstanceMapper, ContaboProvisioningException, ImageResolver, InstanceLinker, SecretManager
-
 ### Community 32 - "Community 32"
 Cohesion: 0.12
 Nodes (20): Grandfathering (existing customers held to cycle boundary), mod_contabo_service_policy (renewal gating), AdminController (route dispatcher + page handlers), ApiClient (HTTP client to Rust API), Axum HTTP server on :8080, Three-layer architecture (acquisition/API/WHMCS), Docker compose overlays (Caddy/Traefik/Coolify), Billing/renewal path uses no API call (outage-safe) (+12 more)
@@ -435,8 +434,8 @@ Cohesion: 0.17
 Nodes (14): AuthConfig, constant_time_eq(), require_bearer(), Next, Request, AppState, Option, Response (+6 more)
 
 ### Community 44 - "Community 44"
-Cohesion: 0.11
-Nodes (7): ClientAreaPresenter, LifecycleOrchestrator, OwnershipGuard, ProviderAccount, OperationProcessor, CapabilityRegistry, OperationRepository
+Cohesion: 0.17
+Nodes (3): LifecycleOrchestrator, OwnershipGuard, ProviderAccount
 
 ### Community 48 - "Community 48"
 Cohesion: 0.12
@@ -445,6 +444,10 @@ Nodes (16): API quick start, Contabo Pricing Scraper + API, Examples, Exit codes
 ### Community 51 - "Community 51"
 Cohesion: 0.26
 Nodes (4): ScheduledChangeProcessor, DateTimeImmutable, DecisionLog, PolicyResolver
+
+### Community 53 - "Community 53"
+Cohesion: 0.11
+Nodes (3): SchemaHealth, FreshInstallSchemaTest, SchemaHealthTest
 
 ### Community 54 - "Community 54"
 Cohesion: 0.21
@@ -462,6 +465,10 @@ Nodes (6): contabo_vps_buttonSync(), contabo_vps_ClientArea(), securiacevps_butt
 Cohesion: 0.16
 Nodes (3): BillingCycleMapper, ContaboInstanceMapper, BillingCycleMapperTest
 
+### Community 58 - "Community 58"
+Cohesion: 0.09
+Nodes (4): ConfigOptionCompatibilityRepository, SelectionValidator, ConfigOptionCompatibilityRepositoryTest, ConfigOptionCapabilityRepository
+
 ### Community 59 - "Community 59"
 Cohesion: 0.16
 Nodes (15): Approval queue (admin sign-off), contabo_vps provisioning module, Per-cycle source fallback rule, Grandfathering / cycle-boundary repricing model, GST placement on cost basis (kept as-is), mod_contabo_service_policy (per-service policy), ProfileVersionInput::toLocalMonthly() (shared EUR-to-local), renewal_cycles_mask (repricing eligibility gate) (+7 more)
@@ -475,8 +482,8 @@ Cohesion: 0.17
 Nodes (13): PHP 7.4 polyglot floor constraint, predeploy-check.sh (fail-closed deploy gate), Installer (DB schema + migrations), LONGTEXT not native JSON (FastPanel PHP 7.4), Tables retained on deactivate (history preserved for audit), contabo_configs.json (per-plan configurator), contabo_consistency_report.json (drift reconciliation), report.html (interactive report + calculator) (+5 more)
 
 ### Community 62 - "Community 62"
-Cohesion: 0.11
-Nodes (18): 0.1.0 — 2026-05-21 (initial), 0.4.11 — 2026-05-23 (exposure curation — apply produces a curated catalog), 0.4.12 — 2026-05-23 (schema v6 — drift detection: re-apply won't clobber admin edits), 0.4.2 — 2026-05-22 (fresh-install schema fix + local dev/test harness), 0.4.3 — 2026-05-22 (visual-QA gap fixes: drawer, sidebar, flash, asset cache-buster), 0.4.4 — 2026-05-22 (profiles toolbar + bulk-bar fixes), 0.4.5 — 2026-05-22 (A.6.3: configurable-options preview screen), 0.4.6 — 2026-05-22 (A.6.3: configurable-options apply path) (+10 more)
+Cohesion: 0.15
+Nodes (13): 0.1.0 — 2026-05-21 (initial), 0.4.11 — 2026-05-23 (exposure curation — apply produces a curated catalog), 0.4.3 — 2026-05-22 (visual-QA gap fixes: drawer, sidebar, flash, asset cache-buster), 0.4.4 — 2026-05-22 (profiles toolbar + bulk-bar fixes), 0.4.5 — 2026-05-22 (A.6.3: configurable-options preview screen), 0.4.6 — 2026-05-22 (A.6.3: configurable-options apply path), 1.1.0 — 2026-08-05 (Proposal Studio preview boundary), Added (+5 more)
 
 ### Community 63 - "Community 63"
 Cohesion: 0.24
@@ -778,6 +785,10 @@ Nodes (3): 0.4.10 — 2026-05-23 (wire capability + compatibility into the live 
 Cohesion: 0.36
 Nodes (4): checksum(), copy_runtime_tree(), validate_version(), package-whmcs-suite.sh script
 
+### Community 203 - "Community 203"
+Cohesion: 0.09
+Nodes (22): 1.1 Four business decisions, 1.2 Deterministic commercial boundary, 1.3 WHMCS-native setup behavior, 1. Decisions and non-negotiable boundaries, 2. Supersession matrix, 3.1 Screenshot pricing contradiction, 3.2 Live release-binary audit, 3.3 Current taxonomy contract (+14 more)
+
 ### Community 204 - "Community 204"
 Cohesion: 0.40
 Nodes (5): Credential lifecycle, Customer and administrator UX, Ownership, recovery, and billing, Provisioning integrity, securiacevps 2.0.0 — 2026-07-30 (WHMCS-native lifecycle and customer experience)
@@ -785,6 +796,10 @@ Nodes (5): Credential lifecycle, Customer and administrator UX, Ownership, recov
 ### Community 207 - "Community 207"
 Cohesion: 0.50
 Nodes (4): 1.0.0 — 2026-07-30 (native catalog, pricing, mapping, and operations workbench), Catalog and order contracts, Compatibility, Operations and security
+
+### Community 208 - "Community 208"
+Cohesion: 0.10
+Nodes (19): 1. Audit — current failures & bugs (severity-ranked), 2026-08-05 taxonomy amendment, 2. Grounded design conclusions (the "don't default to simple tiers" answer), 2a. Object Storage — committed-capacity config option, NOT consumption-metered. Here's why., 2b. Dedicated Servers — fixed price + setup fee, MANUAL provisioning., 2c. Unified schema (satisfies "unified or properly formatted for WHMCS consumption")., 2d. Scraper fetch resilience — EMPIRICALLY VERIFIED (2026-07-01 live tests)., 3. Work plan (phased) (+11 more)
 
 ### Community 213 - "Community 213"
 Cohesion: 0.20
@@ -801,6 +816,10 @@ Nodes (6): BillingSagaRepository, CommunicationService, CommunicationServiceTest
 ### Community 219 - "Community 219"
 Cohesion: 0.38
 Nodes (3): ConfigurableOptionsSyncerDiffTest, ConfigOptionLinkRepository, ConfigurableOptionsSyncer
+
+### Community 220 - "Community 220"
+Cohesion: 0.11
+Nodes (18): Commands you will need, Current state, Done criteria, Git workflow, Maintenance notes, Plan 002: Add dry-run, confirmation, and prerequisite preflights to deploy.sh / local-whmcs.sh, Scope, `scripts/deploy.sh` (full, as it exists today) (+10 more)
 
 ### Community 224 - "Community 224"
 Cohesion: 0.33
@@ -847,6 +866,52 @@ Nodes (4): contabo_vps_ConfigOptions(), contabo_vps_MetaData(), securiacevps_Con
 ### Community 240 - "Community 240"
 Cohesion: 0.40
 Nodes (3): assert, model, test
+
+### Community 242 - "Community 242"
+Cohesion: 0.29
+Nodes (6): ConfigOptionResolver, ContaboApiClient, ContaboInstanceMapper, ImageResolver, InstanceLinker, SecretManager
+
+### Community 243 - "Community 243"
+Cohesion: 0.29
+Nodes (6): Cross-plan notes, Dependency notes, Execution order & status, Findings considered and rejected, Findings → plans mapping, Implementation Plans — scraper, report, and WHMCS tooling
+
+### Community 244 - "Community 244"
+Cohesion: 0.29
+Nodes (6): assert, {
+  calculateManagedQuote,
+  loadManagedCatalog,
+  makeManagedPurchaseSnapshot,
+  managedPlansForFamily,
+  validateManagedCatalog,
+}, catalog, catalogPath, path, test
+
+### Community 245 - "Community 245"
+Cohesion: 0.29
+Nodes (6): assert, fs, path, source, sourcePath, test
+
+### Community 247 - "Community 247"
+Cohesion: 0.60
+Nodes (3): contabo_pricing_loadModuleVars(), generateOutput(), getData()
+
+### Community 248 - "Community 248"
+Cohesion: 0.40
+Nodes (3): OperationProcessor, OrderSnapshotRepository, OperationRepository
+
+### Community 249 - "Community 249"
+Cohesion: 0.40
+Nodes (4): ApiClient, CatalogAuditLog, ProfileManager, Settings
+
+### Community 250 - "Community 250"
+Cohesion: 0.40
+Nodes (3): assert, model, test
+
+### Community 251 - "Community 251"
+Cohesion: 0.67
+Nodes (3): 0.4.12 — 2026-05-23 (schema v6 — drift detection: re-apply won't clobber admin edits), Added, Notes
+
+### Community 252 - "Community 252"
+Cohesion: 0.67
+Nodes (3): 0.4.2 — 2026-05-22 (fresh-install schema fix + local dev/test harness), Added, Fixed
 
 ## Knowledge Gaps
 - **665 isolated node(s):** `mempalace-mcp`, `repowise`, `name`, `version`, `description` (+660 more)
