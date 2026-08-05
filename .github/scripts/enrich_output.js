@@ -240,8 +240,12 @@ function buildViewModel() {
     for (const per of (plan.periods || [])) {
       rows.push({
         family: plan.family,
+        legacy_family: plan.legacy_family || plan.family,
+        canonical_family: plan.canonical_family || plan.family,
+        storage_policy: plan.storage_policy || 'not_applicable',
         plan_rank: plan.plan_rank,
         plan_family_rank: plan.plan_family_rank,
+        canonical_family_rank: plan.canonical_family_rank || plan.plan_family_rank,
         product_name: plan.product_name,
         product_slug: plan.product_slug,
         plan_slug: plan.product_slug,

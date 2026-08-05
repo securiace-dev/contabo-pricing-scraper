@@ -2,6 +2,38 @@
 
 Status: DRAFT for owner review · Author: audit pass 2026-07-01 · Supersedes nothing
 
+### 2026-08-05 taxonomy amendment
+
+The live pricing catalogue now has three compute labels that must remain distinct
+in the canonical render model:
+
+- **Core VPS** — `cloud-vps-core-*`; SSD storage only (`storage_policy=ssd_only`).
+- **Performance VPS** — `cloud-vps-plus-*`; NVMe storage only
+  (`storage_policy=nvme_only`).
+- **Max Performance VPS** — `vds-*`; this is the current label for the former
+  VDS category. Existing `Cloud VDS` labels and `vds-*` slugs remain as legacy
+  aliases for WHMCS and historical snapshots.
+- Generic historical `cloud-vps-*` plans remain `Cloud VPS`; they are not
+  inferred to be Core VPS. Only the explicit `cloud-vps-core-*` and
+  `cloud-vps-plus-*` slugs receive the new storage policies.
+
+The additive fields are `canonical_family`, `legacy_family`, and
+`storage_policy`; consumers must not infer the storage type from a plan name or
+silently permit an SSD/NVMe option that violates the policy. The scraper records
+a `storage_policy_violation` gap when the upstream payload contradicts the
+catalogue rule. See API schema 1.3 and
+[`docs/PROPOSAL-GENERATION.md`](../docs/PROPOSAL-GENERATION.md) for the report
+margin/proposal contract.
+
+The 2026-08-05 direct release scrape fetched all 36 current active URLs
+successfully through the automatic request/CloakBrowser fallback. It produced
+1,975 option rows and six explicit Core-VPS `storage_policy_violation` gaps
+(NVMe add-ons on SSD-only plans); localized/wrapped region labels and
+fallback-success noise are normalized rather than silently reported as
+unclassified or failed. The three historical Object Storage fragment URLs now
+redirect to `/en/storage-vps/` and expose no product payload, so they are
+retained as discontinued catalog history rather than counted as active plans.
+
 This document is (1) a consolidated audit of the current scraper + WHMCS module, and
 (2) a research-grounded plan to add **Dedicated Servers** and **Object Storage** as new
 priced categories, unified into the existing dataset/schema and WHMCS ingestion path.

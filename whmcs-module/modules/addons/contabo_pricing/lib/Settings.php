@@ -30,6 +30,12 @@ final class Settings
     /** @var float  */ public $fxMarkupPct;
     /** @var int    */ public $logRetentionDays;
     /** @var string */ public $moduleLink;
+    /** @var bool   */ public $proposalAiEnabled;
+    /** @var string */ public $proposalAiBaseUrl;
+    /** @var string */ public $proposalAiApiKey;
+    /** @var string */ public $proposalAiModel;
+    /** @var string */ public $proposalAiRequestStyle;
+    /** @var bool   */ public $proposalDeliveryEnabled;
 
     public function __construct(
         string $apiBaseUrl,
@@ -39,7 +45,13 @@ final class Settings
         bool   $applyGst18,
         float  $fxMarkupPct,
         int    $logRetentionDays,
-        string $moduleLink
+        string $moduleLink,
+        bool   $proposalAiEnabled = false,
+        string $proposalAiBaseUrl = '',
+        string $proposalAiApiKey = '',
+        string $proposalAiModel = 'gpt-5-mini',
+        string $proposalAiRequestStyle = 'chat_completions',
+        bool   $proposalDeliveryEnabled = false
     ) {
         $this->apiBaseUrl          = $apiBaseUrl;
         $this->apiToken            = $apiToken;
@@ -49,6 +61,14 @@ final class Settings
         $this->fxMarkupPct         = $fxMarkupPct;
         $this->logRetentionDays    = $logRetentionDays;
         $this->moduleLink          = $moduleLink;
+        $this->proposalAiEnabled   = $proposalAiEnabled;
+        $this->proposalAiBaseUrl   = self::trimUrl($proposalAiBaseUrl);
+        $this->proposalAiApiKey    = $proposalAiApiKey;
+        $this->proposalAiModel     = $proposalAiModel !== '' ? $proposalAiModel : 'gpt-5-mini';
+        $this->proposalAiRequestStyle = in_array($proposalAiRequestStyle, ['auto', 'chat_completions', 'responses'], true)
+            ? $proposalAiRequestStyle
+            : 'chat_completions';
+        $this->proposalDeliveryEnabled = $proposalDeliveryEnabled;
     }
 
     /**
@@ -58,6 +78,8 @@ final class Settings
     {
         $rawToken = (string) ($vars['api_token'] ?? '');
         $apiToken = self::resolveToken($rawToken);
+        $rawAiKey = (string) ($vars['proposal_ai_api_key'] ?? '');
+        $aiKey = self::resolveAiKey($rawAiKey);
 
         return new self(
             self::trimUrl((string) ($vars['api_base_url'] ?? 'http://localhost:8080/api/v1')),
@@ -67,7 +89,13 @@ final class Settings
             ((string) ($vars['apply_gst_18'] ?? 'yes')) === 'yes',
             (float) ($vars['fx_markup_pct'] ?? 3.5),
             (int) ($vars['log_retention_days'] ?? 365),
-            (string) ($vars['modulelink'] ?? 'addonmodules.php?module=contabo_pricing')
+            (string) ($vars['modulelink'] ?? 'addonmodules.php?module=contabo_pricing'),
+            ((string) ($vars['proposal_ai_enabled'] ?? 'no')) === 'yes',
+            self::trimUrl((string) ($vars['proposal_ai_base_url'] ?? '')),
+            $aiKey,
+            trim((string) ($vars['proposal_ai_model'] ?? 'gpt-5-mini')) ?: 'gpt-5-mini',
+            trim((string) ($vars['proposal_ai_request_style'] ?? 'chat_completions')),
+            ((string) ($vars['proposal_delivery_enabled'] ?? 'no')) === 'yes'
         );
     }
 
@@ -79,6 +107,16 @@ final class Settings
      */
     public static function resolveToken(string $raw): string
     {
+        return self::resolveSecret($raw, 'api_token', 'bearer token');
+    }
+
+    public static function resolveAiKey(string $raw): string
+    {
+        return self::resolveSecret($raw, 'proposal_ai_api_key', 'proposal AI key');
+    }
+
+    private static function resolveSecret(string $raw, string $setting, string $label): string
+    {
         if ($raw === '') {
             return '';
         }
@@ -89,27 +127,27 @@ final class Settings
             try {
                 return (string) decrypt($cipher);
             } catch (\Throwable $e) {
-                logActivity('Contabo Pricing: token decrypt failed: ' . $e->getMessage());
+                logActivity('Contabo Pricing: ' . $label . ' decrypt failed: ' . $e->getMessage());
                 return '';
             }
         }
 
         // Plaintext on disk → encrypt-at-rest now, but still return the
         // plaintext so this request can use it without a re-read round-trip.
-        self::migratePlaintextToEncrypted($raw);
+        self::migratePlaintextToEncrypted($raw, $setting, $label);
         return $raw;
     }
 
-    private static function migratePlaintextToEncrypted(string $plaintext): void
+    private static function migratePlaintextToEncrypted(string $plaintext, string $setting, string $label): void
     {
         try {
             $cipher = self::ENCRYPTED_PREFIX . encrypt($plaintext);
             \WHMCS\Database\Capsule::table('tbladdonmodules')
-                ->where(['module' => 'contabo_pricing', 'setting' => 'api_token'])
+                ->where(['module' => 'contabo_pricing', 'setting' => $setting])
                 ->update(['value' => $cipher]);
-            logActivity('Contabo Pricing: bearer token encrypted at rest.');
+            logActivity('Contabo Pricing: ' . $label . ' encrypted at rest.');
         } catch (\Throwable $e) {
-            logActivity('Contabo Pricing: token encrypt-at-rest failed: ' . $e->getMessage());
+            logActivity('Contabo Pricing: ' . $label . ' encrypt-at-rest failed: ' . $e->getMessage());
         }
     }
 

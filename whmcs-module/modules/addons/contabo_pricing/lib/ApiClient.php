@@ -91,6 +91,30 @@ class ApiClient
         return $this->get('/jobs/' . rawurlencode($id));
     }
 
+    /** @return array<string, mixed> */
+    public function proposalCapabilities(): array
+    {
+        return $this->get('/proposals/capabilities');
+    }
+
+    /**
+     * Queue a report proposal document for local Codex CLI generation. The
+     * server owns validation and may return a deterministic fallback.
+     *
+     * @param array<string,mixed> $body
+     * @return array<string,mixed>
+     */
+    public function proposalGenerate(array $body): array
+    {
+        return $this->post('/proposals/generate', $body);
+    }
+
+    /** @return array<string,mixed> */
+    public function proposalJob(string $id): array
+    {
+        return $this->get('/proposals/' . rawurlencode($id));
+    }
+
     // ── internals ────────────────────────────────────────────────────────────
 
     /** @return array<string, mixed> */

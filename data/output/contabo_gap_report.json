@@ -1,32 +1,32 @@
 [
   {
-    "plan_sku": "cloud-vps-50",
-    "gap": "fetch_failed",
-    "error": "HTTP 301 Moved Permanently"
+    "plan_sku": "cloud-vps-core-18",
+    "gap": "storage_policy_violation",
+    "title": "300 GB NVMe"
   },
   {
-    "plan_sku": "cloud-vps-10",
-    "gap": "fetch_failed",
-    "error": "HTTP 301 Moved Permanently"
+    "plan_sku": "cloud-vps-core-8",
+    "gap": "storage_policy_violation",
+    "title": "150 GB NVMe"
   },
   {
-    "plan_sku": "cloud-vps-30",
-    "gap": "fetch_failed",
-    "error": "HTTP 301 Moved Permanently"
+    "plan_sku": "cloud-vps-core-4",
+    "gap": "storage_policy_violation",
+    "title": "50 GB NVMe"
   },
   {
-    "plan_sku": "cloud-vps-60",
-    "gap": "fetch_failed",
-    "error": "HTTP 301 Moved Permanently"
+    "plan_sku": "cloud-vps-core-12",
+    "gap": "storage_policy_violation",
+    "title": "200 GB NVMe"
   },
   {
-    "plan_sku": "cloud-vps-40",
-    "gap": "fetch_failed",
-    "error": "HTTP 301 Moved Permanently"
+    "plan_sku": "cloud-vps-core-16",
+    "gap": "storage_policy_violation",
+    "title": "250 GB NVMe"
   },
   {
-    "plan_sku": "cloud-vps-20",
-    "gap": "fetch_failed",
-    "error": "HTTP 301 Moved Permanently"
+    "plan_sku": "cloud-vps-core-6",
+    "gap": "storage_policy_violation",
+    "title": "100 GB NVMe"
   }
 ]

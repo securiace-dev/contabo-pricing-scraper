@@ -113,6 +113,23 @@ final class ApiClientTest extends TestCase
         $this->assertContains('Content-Type: application/json', $mock->calls[0]['headers']);
     }
 
+    public function testProposalEndpointsUseTheConfiguredV1BasePath(): void
+    {
+        $mock = new MockRequestExecutor();
+        $mock->queue[] = [202, '{"job_id":"proposal-1","status":"queued"}', 0, ''];
+        $mock->queue[] = [200, '{"status":"succeeded"}', 0, ''];
+
+        $client = new ApiClient($this->settings(token: 'tok'), 8, $mock);
+        $queued = $client->proposalGenerate(['context' => ['primary' => ['plan_slug' => 'vps-1', 'period_months' => 1]]]);
+        $job = $client->proposalJob('proposal-1');
+
+        $this->assertSame('proposal-1', $queued['job_id']);
+        $this->assertSame('succeeded', $job['status']);
+        $this->assertSame('http://api.local/v1/proposals/generate', $mock->calls[0]['url']);
+        $this->assertSame('http://api.local/v1/proposals/proposal-1', $mock->calls[1]['url']);
+        $this->assertContains('Authorization: Bearer tok', $mock->calls[0]['headers']);
+    }
+
     public function testRefreshRequiresAuthTokenAndThrowsWhenMissing(): void
     {
         $client = new ApiClient($this->settings(token: ''), 8, new MockRequestExecutor());

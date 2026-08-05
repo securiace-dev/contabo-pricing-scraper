@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '0.7.0';
+    public const VERSION = '0.8.0';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -34,6 +34,11 @@ class AdminController
     {
         $action = (string) ($req['action'] ?? 'dashboard');
         switch ($action) {
+            case 'proposals':          $this->proposals($req); return;
+            case 'proposal-preview':   $this->proposalPreview($req); return;
+            case 'proposal-generate-codex': $this->proposalGenerateCodex($req); return;
+            case 'proposal-send-ticket': $this->proposalSendTicket($req); return;
+            case 'proposal-send-email':  $this->proposalSendEmail($req); return;
             case 'profiles':         $this->profiles($req); return;
             case 'profiles-trash':   $this->profilesTrash($req); return;
             case 'profile-create':   $this->profileCreate($req); return;
@@ -506,6 +511,232 @@ class AdminController
             'settings'      => $this->settings,
             'flash'        => (string) ($_REQUEST['flash'] ?? ''),
         ]);
+    }
+
+    /**
+     * Proposal workspace. The initial production-safe mode is preview-first:
+     * delivery remains fail-closed until the addon setting is explicitly
+     * enabled after the WHMCS compatibility check.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function proposals(array $req): void
+    {
+        $maker = new ProposalMaker($this->settings);
+        $catalogue = $maker->catalogue();
+        $this->render('proposal_maker.tpl', [
+            'plans' => $catalogue['plans'],
+            'catalog_error' => $catalogue['error'],
+            'managed_tiers' => ProposalMaker::managedTiers(),
+            'settings' => $this->settings,
+            'form' => $this->proposalForm($req),
+            'result' => null,
+            'error' => '',
+            'delivery_result' => '',
+        ]);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposalPreview(array $req): void
+    {
+        if (function_exists('check_token')) {
+            check_token();
+        }
+        $maker = new ProposalMaker($this->settings);
+        $catalogue = $maker->catalogue();
+        $result = null;
+        $error = '';
+        try {
+            $result = $maker->build($req);
+        } catch (\Throwable $e) {
+            $error = $e->getMessage();
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing proposal preview failed: ' . $e->getMessage());
+            }
+        }
+        $this->render('proposal_maker.tpl', [
+            'plans' => $catalogue['plans'],
+            'catalog_error' => $catalogue['error'],
+            'managed_tiers' => ProposalMaker::managedTiers(),
+            'settings' => $this->settings,
+            'form' => $this->proposalForm($req),
+            'result' => $result,
+            'error' => $error,
+            'delivery_result' => '',
+        ]);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposalGenerateCodex(array $req): void
+    {
+        if (function_exists('check_token')) {
+            check_token();
+        }
+        $maker = new ProposalMaker($this->settings);
+        $catalogue = $maker->catalogue();
+        $result = null;
+        $error = '';
+        try {
+            $result = $maker->build($req);
+            $result = $maker->generateWithCodex($req, $result);
+            if (!empty($result['report_document'])) {
+                $encoded = json_encode($result['report_document'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                if (is_string($encoded)) {
+                    $req['report_document_json'] = $encoded;
+                }
+            }
+        } catch (\Throwable $e) {
+            $error = $e->getMessage();
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing Codex proposal preview failed: ' . $e->getMessage());
+            }
+        }
+        $this->render('proposal_maker.tpl', [
+            'plans' => $catalogue['plans'],
+            'catalog_error' => $catalogue['error'],
+            'managed_tiers' => ProposalMaker::managedTiers(),
+            'settings' => $this->settings,
+            'form' => $this->proposalForm($req),
+            'result' => $result,
+            'error' => $error,
+            'delivery_result' => '',
+        ]);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposalSendTicket(array $req): void
+    {
+        if (function_exists('check_token')) {
+            check_token();
+        }
+        $result = null;
+        $error = '';
+        try {
+            if (!$this->settings->proposalDeliveryEnabled) {
+                throw new \RuntimeException('Proposal delivery is disabled in addon Settings.');
+            }
+            $clientId = (int) ($req['client_id'] ?? 0);
+            $departmentId = (int) ($req['department_id'] ?? 0);
+            if ($clientId <= 0 || $departmentId <= 0) {
+                throw new \InvalidArgumentException('A valid WHMCS client ID and support department ID are required.');
+            }
+            if (!function_exists('localAPI')) {
+                throw new \RuntimeException('WHMCS localAPI() is unavailable.');
+            }
+            $result = (new ProposalMaker($this->settings))->build($req);
+            $ticketId = (int) ($req['ticket_id'] ?? 0);
+            $ticketAttachments = [];
+            foreach (array_slice((array) ($result['attachments'] ?? []), 0, 2) as $asset) {
+                $ticketAttachments[] = [
+                    'filename' => (string) ($asset['name'] ?? 'proposal.bin'),
+                    'data' => (string) ($asset['data'] ?? ''),
+                ];
+            }
+            $params = [
+                'message' => $result['text'],
+                'clientid' => $clientId,
+                'subject' => $result['subject'],
+                'priority' => 'Medium',
+                'noemail' => ((string) ($req['notify_client'] ?? 'no')) === 'yes' ? 0 : 1,
+                'attachments' => json_encode($ticketAttachments, JSON_UNESCAPED_SLASHES),
+            ];
+            if ($ticketId > 0) {
+                $params['ticketid'] = $ticketId;
+                $response = localAPI('AddTicketReply', $params);
+            } else {
+                $params['deptid'] = $departmentId;
+                $response = localAPI('OpenTicket', $params);
+            }
+            $status = strtolower((string) ($response['result'] ?? $response['status'] ?? ''));
+            if ($status !== 'success') {
+                throw new \RuntimeException('WHMCS ticket delivery failed.');
+            }
+            $result['delivery_message'] = 'Support ticket delivery succeeded. WHMCS response ID: ' . (string) ($response['id'] ?? $response['tid'] ?? 'recorded');
+        } catch (\Throwable $e) {
+            $error = $e->getMessage();
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing ticket delivery failed: ' . $e->getMessage());
+            }
+        }
+        $this->renderProposalResult($req, $result, $error);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposalSendEmail(array $req): void
+    {
+        if (function_exists('check_token')) {
+            check_token();
+        }
+        $result = null;
+        $error = '';
+        try {
+            if (!$this->settings->proposalDeliveryEnabled) {
+                throw new \RuntimeException('Proposal delivery is disabled in addon Settings.');
+            }
+            $clientId = (int) ($req['client_id'] ?? 0);
+            if ($clientId <= 0) {
+                throw new \InvalidArgumentException('A valid WHMCS client ID is required.');
+            }
+            $result = (new ProposalMaker($this->settings))->build($req);
+            (new ProposalMaker($this->settings))->sendEmail($clientId, $result);
+            $result['delivery_message'] = 'Direct email queued through the WHMCS mail pipeline.';
+        } catch (\Throwable $e) {
+            $error = $e->getMessage();
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing email delivery failed: ' . $e->getMessage());
+            }
+        }
+        $this->renderProposalResult($req, $result, $error);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function renderProposalResult(array $req, ?array $result, string $error): void
+    {
+        $catalogue = (new ProposalMaker($this->settings))->catalogue();
+        $formReq = $req;
+        if (is_array($result) && !empty($result['report_document'])) {
+            $encoded = json_encode($result['report_document'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            if (is_string($encoded)) {
+                $formReq['report_document_json'] = $encoded;
+            }
+        }
+        $this->render('proposal_maker.tpl', [
+            'plans' => $catalogue['plans'],
+            'catalog_error' => $catalogue['error'],
+            'managed_tiers' => ProposalMaker::managedTiers(),
+            'settings' => $this->settings,
+            'form' => $this->proposalForm($formReq),
+            'result' => $result,
+            'error' => $error,
+            'delivery_result' => $result['delivery_message'] ?? '',
+        ]);
+    }
+
+    /** @param array<string,mixed> $req @return array<string,mixed> */
+    private function proposalForm(array $req): array
+    {
+        $keys = [
+            'client_id', 'client_name', 'proposal_title', 'plan_slug',
+            'period_months', 'region', 'os', 'canonical_family',
+            'selections_json', 'managed_tier', 'managed_visibility',
+            'owner_markup_pct', 'owner_markup_scope', 'owner_visibility',
+            'comparison_plan_slug', 'comparison_visibility', 'source_visibility',
+            'client_notes', 'internal_notes', 'fx_rate', 'department_id',
+            'ticket_id', 'notify_client',
+        ];
+        $out = [];
+        foreach ($keys as $key) {
+            $out[$key] = isset($req[$key]) && is_scalar($req[$key]) ? (string) $req[$key] : '';
+        }
+        if ($out['period_months'] === '') $out['period_months'] = '1';
+        if ($out['selections_json'] === '') $out['selections_json'] = '{}';
+        if ($out['managed_visibility'] === '') $out['managed_visibility'] = 'exclude';
+        if ($out['owner_visibility'] === '') $out['owner_visibility'] = 'internal_only';
+        if ($out['owner_markup_scope'] === '') $out['owner_markup_scope'] = 'provider_only';
+        if ($out['comparison_visibility'] === '') $out['comparison_visibility'] = 'show';
+        if ($out['source_visibility'] === '') $out['source_visibility'] = 'internal_only';
+        if ($out['notify_client'] === '') $out['notify_client'] = 'no';
+        return $out;
     }
 
     private function profiles(array $req): void

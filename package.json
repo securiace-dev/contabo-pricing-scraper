@@ -12,7 +12,10 @@
   "scripts": {
     "scrape": "node scripts/contabo_scraper.js",
     "cloak-fetch": "node scripts/cloak-fetch.mjs",
-    "test:managed": "node --test tests/managed_services_model.test.js"
+    "test:managed": "node --test tests/managed_services_model.test.js",
+    "test:proposal": "node --test tests/proposal_model.test.js",
+    "test:taxonomy": "node --test tests/scraper_taxonomy.test.js",
+    "test": "node --test tests/managed_services_model.test.js tests/proposal_model.test.js tests/scraper_taxonomy.test.js"
   },
   "keywords": [
     "contabo",

@@ -1,7 +1,7 @@
 {
   "tests/api_smoke.rs": {
-    "mtime": 1782887579.2967994,
-    "ast_hash": "7cf659701612ecbd82b8365ac63cf432",
+    "mtime": 1785900030.888918,
+    "ast_hash": "30dbc0f4cf9bd18d3a57d6c69b05980e",
     "semantic_hash": ""
   },
   "tests/common/mod.rs": {
@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "scripts/contabo_scraper.js": {
-    "mtime": 1781854944.5688329,
-    "ast_hash": "cf92c58d2e34ee02262a16878487af51",
+    "mtime": 1785900900.9559631,
+    "ast_hash": "495d07535a4101200977110f02db0da4",
     "semantic_hash": ""
   },
   "scripts/live-schema-smoke.php": {
@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/contabo_pricing.php": {
-    "mtime": 1781854944.5720897,
-    "ast_hash": "f0822d5359fe0517deb3936024acd065",
+    "mtime": 1785904420.6586099,
+    "ast_hash": "9a734a9cfc1f8e2f454bf7d7e9ab753e",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/ajax.php": {
@@ -270,8 +270,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ApiClientTest.php": {
-    "mtime": 1781854944.5814235,
-    "ast_hash": "de32c875e4d04fb4b1e48754d4cb12f9",
+    "mtime": 1785905180.534616,
+    "ast_hash": "2864357d04893f08074a2ce7bb7412f4",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ConfigurableOptionsApplyTest.php": {
@@ -320,8 +320,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/integration/whmcs_smoke.php": {
-    "mtime": 1781854944.5863252,
-    "ast_hash": "1565b3113bbee64179ccbc478e9a3db6",
+    "mtime": 1785905468.168004,
+    "ast_hash": "05916930cd3628c9f69a0eecf3174720",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/DecisionLog.php": {
@@ -335,8 +335,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php": {
-    "mtime": 1781854944.573388,
-    "ast_hash": "7c62f0315e3f091a3a48ed73aa3e51a7",
+    "mtime": 1785905219.5044205,
+    "ast_hash": "411c11c35a44fb652da5d07306f7f01a",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ServicePriceWriter.php": {
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/Settings.php": {
-    "mtime": 1781854944.5784411,
-    "ast_hash": "eacd8855f1445d24a4ac45b001e1af98",
+    "mtime": 1785904339.1475677,
+    "ast_hash": "5bb209ce0f2a661a196d0b2b0f2b845b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/Lock.php": {
@@ -445,8 +445,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ApiClient.php": {
-    "mtime": 1781854944.5736005,
-    "ast_hash": "66fe7767f24711d0fbc047d5af2debdf",
+    "mtime": 1785904902.5352116,
+    "ast_hash": "9b9187785b50ffe1d3ae546c67d19305",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ConfigOptionPricingContext.php": {
@@ -510,8 +510,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/EmailTemplateSeeder.php": {
-    "mtime": 1781854944.575846,
-    "ast_hash": "3da031c9f7bffafa1c5a70e100c47db2",
+    "mtime": 1785905101.1747544,
+    "ast_hash": "71ed0ca95d529293f1d082015168c975",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ServiceRevenueResolver.php": {
@@ -630,13 +630,13 @@
     "semantic_hash": ""
   },
   "src/main.rs": {
-    "mtime": 1785872375.6319072,
-    "ast_hash": "4d5d7d60a9cdc24e602360062952455a",
+    "mtime": 1785902100.510344,
+    "ast_hash": "38dfe88ced722dbff80aa4a7b427fdf4",
     "semantic_hash": ""
   },
   "src/api/handlers.rs": {
-    "mtime": 1782873803.4230292,
-    "ast_hash": "d877ef29de3a50de61a5843632155211",
+    "mtime": 1785900030.871057,
+    "ast_hash": "5e18aa147f833d4efc402c9ff2dd9f43",
     "semantic_hash": ""
   },
   "src/api/embed_assets.rs": {
@@ -645,23 +645,23 @@
     "semantic_hash": ""
   },
   "src/api/auth.rs": {
-    "mtime": 1781854944.5698984,
-    "ast_hash": "a74058fc9357eb2154d917e8c1266ad1",
+    "mtime": 1785896108.9513798,
+    "ast_hash": "b8e45ce2c55d4149782eb80d1d102bd0",
     "semantic_hash": ""
   },
   "src/api/mod.rs": {
-    "mtime": 1781854944.5701675,
-    "ast_hash": "672328b33f27cad266b8191fda112837",
+    "mtime": 1785896182.245201,
+    "ast_hash": "fe9c6cb96875fd0834dff4f242739053",
     "semantic_hash": ""
   },
   "src/api/routes.rs": {
-    "mtime": 1781854944.570244,
-    "ast_hash": "f4430f3f829064bed50dcba75fd9768a",
+    "mtime": 1785900030.8720543,
+    "ast_hash": "a40c2ac37247348c020b0247cbd0718d",
     "semantic_hash": ""
   },
   "src/api/state.rs": {
-    "mtime": 1781854944.570333,
-    "ast_hash": "d52ba66b4f1774c2d7384479b7befabf",
+    "mtime": 1785896182.2358634,
+    "ast_hash": "49d5b919677b289dd75542e85bc483bc",
     "semantic_hash": ""
   },
   "PRICES.md": {
@@ -670,13 +670,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1781854944.5600932,
-    "ast_hash": "736ea9703eedd53dc1fac8810a9f54ad",
+    "mtime": 1785901529.6940992,
+    "ast_hash": "937e046c7105772d55af777d651a8317",
     "semantic_hash": ""
   },
   "SCHEMA_VERSION.md": {
-    "mtime": 1782889292.5951896,
-    "ast_hash": "08ca795bb7f3000ab7152f0edb285001",
+    "mtime": 1785901524.891891,
+    "ast_hash": "d1d8e2eefc0c2d2deeab66569a2525d0",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -755,8 +755,8 @@
     "semantic_hash": ""
   },
   "data/plan_urls.json": {
-    "mtime": 1782889177.6651325,
-    "ast_hash": "e9d0f704e8a3ce231f3f95ea27490cfc",
+    "mtime": 1785900907.296396,
+    "ast_hash": "c52e6c5a892c14ad1f446cad8bf4bfd2",
     "semantic_hash": ""
   },
   "entities.json": {
@@ -765,8 +765,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1785872258.3107598,
-    "ast_hash": "69e56d0fd47bed90d69c60963cf50843",
+    "mtime": 1785898004.28868,
+    "ast_hash": "e0cd258a872bf4007e046dac0b428b43",
     "semantic_hash": ""
   },
   "scripts/bump-version.sh": {
@@ -775,8 +775,8 @@
     "semantic_hash": ""
   },
   "scripts/cloak-fetch.mjs": {
-    "mtime": 1782873803.422832,
-    "ast_hash": "58dcd18b41d0a8bca3d17a2b16719239",
+    "mtime": 1785900573.3566957,
+    "ast_hash": "8a312c57934c4f31074058d8bbdb1cbe",
     "semantic_hash": ""
   },
   "scripts/deploy.sh": {
@@ -885,8 +885,8 @@
     "semantic_hash": ""
   },
   "plans/README.md": {
-    "mtime": 1781906472.35445,
-    "ast_hash": "54515226f0222e3251d8200ba7206c28",
+    "mtime": 1785903390.3764443,
+    "ast_hash": "d3c0c9ca5593634a9d00132646c2aa0f",
     "semantic_hash": ""
   },
   ".repowise/jobs/f8c6e824-b3e3-41c4-ad91-2dc236f76247.json": {
@@ -935,8 +935,43 @@
     "semantic_hash": ""
   },
   "plans/003-new-categories-and-scraper-resilience.md": {
-    "mtime": 1782889325.9319236,
-    "ast_hash": "cc3d4f46131ca5d6933e7cfbf4cd2fe8",
+    "mtime": 1785901524.891062,
+    "ast_hash": "37592cf09c9243494e1a94531186054d",
+    "semantic_hash": ""
+  },
+  "src/api/proposals.rs": {
+    "mtime": 1785901458.8295338,
+    "ast_hash": "9d1b64af0cf95c698213c1a432c47e29",
+    "semantic_hash": ""
+  },
+  "tests/proposal_model.test.js": {
+    "mtime": 1785899974.2933962,
+    "ast_hash": "7c0799baaa766cdd861dd55210e96b0e",
+    "semantic_hash": ""
+  },
+  "tests/scraper_taxonomy.test.js": {
+    "mtime": 1785900573.3569534,
+    "ast_hash": "b25ac52b75d0042e37887e7b82e348b3",
+    "semantic_hash": ""
+  },
+  "docs/PROPOSAL-GENERATION.md": {
+    "mtime": 1785899979.9519641,
+    "ast_hash": "24ed99fdfeef387b0fc6ffe3fe5a8986",
+    "semantic_hash": ""
+  },
+  "whmcs-module/modules/addons/contabo_pricing/lib/ProposalMaker.php": {
+    "mtime": 1785906322.9303505,
+    "ast_hash": "451769a1bdf76c4fa2a7474a37f8e322",
+    "semantic_hash": ""
+  },
+  "whmcs-module/modules/addons/contabo_pricing/tests/ProposalMakerTest.php": {
+    "mtime": 1785906322.9307032,
+    "ast_hash": "0ac6426546d3799744d21538b064111d",
+    "semantic_hash": ""
+  },
+  "plans/004-whmcs-proposal-maker-and-delivery.md": {
+    "mtime": 1785903320.3609276,
+    "ast_hash": "48c07637f763289f564bdefc39d0c572",
     "semantic_hash": ""
   }
 }

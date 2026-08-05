@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-07-01T00:00:00.000Z",
+  "schema_version": "1.1",
+  "updated_at": "2026-08-05T03:35:00.000Z",
   "plans": [
     {
       "slug": "cloud-vps-10",
@@ -51,6 +51,138 @@
       "previous_url": null
     },
     {
+      "slug": "cloud-vps-core-4",
+      "url": "https://contabo.com/en/vps/cloud-vps-core-4/",
+      "family": "Core VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-core-6",
+      "url": "https://contabo.com/en/vps/cloud-vps-core-6/",
+      "family": "Core VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-core-8",
+      "url": "https://contabo.com/en/vps/cloud-vps-core-8/",
+      "family": "Core VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-core-12",
+      "url": "https://contabo.com/en/vps/cloud-vps-core-12/",
+      "family": "Core VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-core-16",
+      "url": "https://contabo.com/en/vps/cloud-vps-core-16/",
+      "family": "Core VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-core-18",
+      "url": "https://contabo.com/en/vps/cloud-vps-core-18/",
+      "family": "Core VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-plus-4",
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-4/",
+      "family": "Performance VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-plus-6",
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-6/",
+      "family": "Performance VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-plus-8",
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-8/",
+      "family": "Performance VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-plus-12",
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-12/",
+      "family": "Performance VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-plus-16",
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-16/",
+      "family": "Performance VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
+      "slug": "cloud-vps-plus-18",
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-18/",
+      "family": "Performance VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "status": "active",
+      "discovered_at": "2026-08-04T00:00:00.000Z",
+      "previous_url": null
+    },
+    {
       "slug": "storage-vps-10",
       "url": "https://contabo.com/en/storage-vps/storage-vps-10/",
       "family": "Storage VPS",
@@ -94,6 +226,9 @@
       "slug": "vds-s",
       "url": "https://contabo.com/en/vds/vds-s/",
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "status": "active",
       "discovered_at": "2026-04-25T00:00:00.000Z",
       "previous_url": null
@@ -102,6 +237,9 @@
       "slug": "vds-m",
       "url": "https://contabo.com/en/vds/vds-m/",
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "status": "active",
       "discovered_at": "2026-04-25T00:00:00.000Z",
       "previous_url": null
@@ -110,6 +248,9 @@
       "slug": "vds-l",
       "url": "https://contabo.com/en/vds/vds-l/",
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "status": "active",
       "discovered_at": "2026-04-25T00:00:00.000Z",
       "previous_url": null
@@ -118,6 +259,9 @@
       "slug": "vds-xl",
       "url": "https://contabo.com/en/vds/vds-xl/",
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "status": "active",
       "discovered_at": "2026-04-25T00:00:00.000Z",
       "previous_url": null
@@ -126,6 +270,9 @@
       "slug": "vds-xxl",
       "url": "https://contabo.com/en/vds/vds-xxl/",
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "status": "active",
       "discovered_at": "2026-04-25T00:00:00.000Z",
       "previous_url": null
@@ -193,31 +340,38 @@
       "status": "active",
       "discovered_at": "2026-07-01T00:00:00.000Z",
       "previous_url": null
-    },
+    }
+  ],
+  "discontinued": [
     {
       "slug": "european-union",
       "url": "https://contabo.com/en/object-storage/#european-union",
       "family": "Object Storage",
-      "status": "active",
+      "status": "discontinued",
       "discovered_at": "2026-07-01T00:00:00.000Z",
+      "discontinued_at": "2026-08-05T03:35:00.000Z",
+      "discontinued_reason": "Current endpoint redirects to /en/storage-vps/; no Object Storage product payload.",
       "previous_url": null
     },
     {
       "slug": "singapore",
       "url": "https://contabo.com/en/object-storage/#singapore",
       "family": "Object Storage",
-      "status": "active",
+      "status": "discontinued",
       "discovered_at": "2026-07-01T00:00:00.000Z",
+      "discontinued_at": "2026-08-05T03:35:00.000Z",
+      "discontinued_reason": "Current endpoint redirects to /en/storage-vps/; no Object Storage product payload.",
       "previous_url": null
     },
     {
       "slug": "united-states",
       "url": "https://contabo.com/en/object-storage/#united-states",
       "family": "Object Storage",
-      "status": "active",
+      "status": "discontinued",
       "discovered_at": "2026-07-01T00:00:00.000Z",
+      "discontinued_at": "2026-08-05T03:35:00.000Z",
+      "discontinued_reason": "Current endpoint redirects to /en/storage-vps/; no Object Storage product payload.",
       "previous_url": null
     }
-  ],
-  "discontinued": []
+  ]
 }
