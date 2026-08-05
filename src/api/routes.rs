@@ -1,6 +1,7 @@
 // Router assembly. Mutating routes get the bearer-token layer; everything
 // else is open. CORS, compression, and tracing layers wrap the whole app.
 
+use axum::extract::DefaultBodyLimit;
 use axum::routing::{get, post};
 use axum::Router;
 use tower_http::compression::CompressionLayer;
@@ -57,7 +58,8 @@ pub fn build_router(state: AppState, args: &ServeArgs) -> Router {
         .route_layer(axum::middleware::from_fn_with_state(
             state.clone(),
             super::auth::require_proposal_access,
-        ));
+        ))
+        .layer(DefaultBodyLimit::max(512 * 1024));
 
     Router::new()
         .nest("/api/v1", v1.merge(proposal_routes))

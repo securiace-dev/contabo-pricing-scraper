@@ -10,7 +10,7 @@ use std::time::Duration;
 
 // ── Stubs the api module expects at the crate root ──────────────────────────
 pub const VERSION: &str = "test-2.3.0";
-pub const SCHEMA_VERSION: &str = "1.1";
+pub const SCHEMA_VERSION: &str = "1.3";
 
 #[derive(Clone, Debug, clap::ValueEnum)]
 pub enum FetchMode {
@@ -304,6 +304,66 @@ async fn proposal_preview_rejects_unknown_plan() {
 }
 
 #[tokio::test]
+async fn proposal_preview_replaces_client_price_with_validated_selection_facts() {
+    if !common::fixture_present() {
+        eprintln!("skip proposal_preview_replaces_client_price_with_validated_selection_facts — fixture missing");
+        return;
+    }
+    let h = common::spawn_server(None).await;
+    let body = serde_json::json!({
+        "context": {
+            "primary": {
+                "plan_slug": "cloud-vps-10",
+                "period_months": 1,
+                "provider_monthly_eur": 999,
+                "selections": [{"label": "Data Protection: Auto Backup", "monthly": 999, "setup": 999}]
+            }
+        }
+    });
+    let res = client()
+        .post(format!("{}/api/v1/proposals/preview", h.base()))
+        .json(&body)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 200);
+    let json: serde_json::Value = res.json().await.unwrap();
+    assert_eq!(json["facts"]["provider_monthly_eur"], 7.0);
+    assert_eq!(
+        json["facts"]["selected_labels"][0],
+        "Data Protection: Auto Backup"
+    );
+    assert_ne!(json["facts"]["provider_monthly_eur"], 999.0);
+    h.shutdown().await;
+}
+
+#[tokio::test]
+async fn proposal_preview_rejects_unknown_selection() {
+    if !common::fixture_present() {
+        eprintln!("skip proposal_preview_rejects_unknown_selection — fixture missing");
+        return;
+    }
+    let h = common::spawn_server(None).await;
+    let body = serde_json::json!({
+        "context": {
+            "primary": {
+                "plan_slug": "cloud-vps-10",
+                "period_months": 1,
+                "selections": [{"label": "Data Protection: Invented Backup"}]
+            }
+        }
+    });
+    let res = client()
+        .post(format!("{}/api/v1/proposals/preview", h.base()))
+        .json(&body)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 400);
+    h.shutdown().await;
+}
+
+#[tokio::test]
 async fn index_endpoint_returns_embedded_html() {
     let h = common::spawn_server(None).await;
     let res = client().get(format!("{}/", h.base())).send().await.unwrap();
@@ -428,6 +488,79 @@ async fn quote_endpoint_without_gst() {
         (got - expected).abs() < 0.01,
         "final_monthly (no GST): expected {expected:.4}, got {got:.4}"
     );
+    h.shutdown().await;
+}
+
+#[tokio::test]
+async fn quote_endpoint_applies_owner_markup_to_setup_and_total() {
+    if !common::fixture_present() {
+        eprintln!("skip quote_endpoint_applies_owner_markup_to_setup_and_total — fixture missing");
+        return;
+    }
+    let h = common::spawn_server(None).await;
+    let body = serde_json::json!({
+        "plan_slug": "cloud-vps-10",
+        "period_months": 1,
+        "selections": {},
+        "currency": "EUR",
+        "gst": true,
+        "owner_markup": 0.10
+    });
+    let res = client()
+        .post(format!("{}/api/v1/quote", h.base()))
+        .json(&body)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 200);
+    let json: serde_json::Value = res.json().await.unwrap();
+    let base = json["base_monthly_eur"].as_f64().unwrap();
+    let setup = json["setup_fee_eur"].as_f64().unwrap();
+    assert!((json["final_monthly"].as_f64().unwrap() - base * 1.18 * 1.10).abs() < 0.01);
+    assert!((json["final_setup"].as_f64().unwrap() - setup * 1.18 * 1.10).abs() < 0.01);
+    assert_eq!(json["owner_markup"], 0.10);
+    assert!(json["breakdown"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|v| { v.as_str().unwrap_or_default().contains("owner markup") }));
+    h.shutdown().await;
+}
+
+#[tokio::test]
+async fn quote_endpoint_applies_known_selection_delta_and_rejects_unknown_markup() {
+    if !common::fixture_present() {
+        eprintln!("skip quote_endpoint_applies_known_selection_delta_and_rejects_unknown_markup — fixture missing");
+        return;
+    }
+    let h = common::spawn_server(None).await;
+    let body = serde_json::json!({
+        "plan_slug": "cloud-vps-10",
+        "period_months": 1,
+        "selections": {"Data Protection": "Auto Backup"},
+        "currency": "EUR"
+    });
+    let res = client()
+        .post(format!("{}/api/v1/quote", h.base()))
+        .json(&body)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 200);
+    let json: serde_json::Value = res.json().await.unwrap();
+    let base = json["base_monthly_eur"].as_f64().unwrap();
+    assert!((json["configured_monthly_eur"].as_f64().unwrap() - (base + 1.5)).abs() < 0.01);
+
+    let invalid = serde_json::json!({
+        "plan_slug": "cloud-vps-10", "period_months": 1, "currency": "EUR", "owner_markup": 1.01
+    });
+    let invalid_res = client()
+        .post(format!("{}/api/v1/quote", h.base()))
+        .json(&invalid)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(invalid_res.status(), 400);
     h.shutdown().await;
 }
 
