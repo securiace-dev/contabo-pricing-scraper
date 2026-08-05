@@ -115,5 +115,29 @@ test('CSV export is deterministic and quotes user content', () => {
   const csv = model.toCsv(snapshot);
   assert.match(csv, /^kind,label,value,currency\n/);
   assert.match(csv, /provider,monthly,14\.16,EUR/);
+  assert.match(csv, /selection,Private Networking,1,EUR\/month/);
   assert.equal(model.stableHash({ a: 1, b: 2 }), model.stableHash({ b: 2, a: 1 }));
+});
+
+test('internal CSV can disclose the separate FX and owner adjustments', () => {
+  const snapshot = model.makeSnapshot(input({ profile: 'internal' }));
+  const csv = model.toCsv(snapshot);
+  assert.match(csv, /adjustment,FX markup,10\.0%/);
+  assert.match(csv, /adjustment,Owner markup,20\.0%/);
+});
+
+test('Codex narrative cannot replace policy-filtered commercial sections', () => {
+  const snapshot = model.makeSnapshot(input());
+  const deterministic = model.deterministicDocument(snapshot);
+  const safe = model.mergeSafeNarrative(deterministic, {
+    sections: [
+      { id: 'summary', blocks: [{ type: 'paragraph', text: 'A concise migration summary.' }] },
+      { id: 'pricing', blocks: [{ type: 'table', rows: [{ label: 'Total', value: '€999999' }] }] },
+    ],
+  });
+  const html = model.renderDocument(safe);
+  assert.equal(safe.provider, 'codex-cli-safe');
+  assert.match(html, /A concise migration summary/);
+  assert.doesNotMatch(html, /999999/);
+  assert.match(html, /Estimated billed total/);
 });

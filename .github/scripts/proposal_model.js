@@ -357,6 +357,12 @@
       }
       sections.push({ id: 'configuration', title: 'Selected configuration', blocks: [{ type: 'table', rows }] });
     }
+    if (snapshot.visibility.source_links === 'show') {
+      const sourceRows = [];
+      if (primary.plan_url) sourceRows.push({ label: 'Provider plan', value: primary.plan_url });
+      if (snapshot.source.source) sourceRows.push({ label: 'Pricing snapshot', value: snapshot.source.source });
+      if (sourceRows.length) sections.push({ id: 'sources', title: 'Sources', blocks: [{ type: 'table', rows: sourceRows }] });
+    }
     if (snapshot.visibility.provider_pricing !== 'exclude') {
       const rows = [];
       const showLineItems = snapshot.visibility.provider_line_items === 'show';
@@ -364,17 +370,21 @@
         rows.push({ label: 'Provider monthly', value: `€${primary.quote.provider.taxed_monthly_eur.toFixed(2)}` });
         if (primary.quote.provider.taxed_setup_eur) rows.push({ label: 'Provider setup', value: `€${primary.quote.provider.taxed_setup_eur.toFixed(2)}` });
       }
+      if (snapshot.visibility.tax === 'show') {
+        rows.push({ label: 'Tax treatment', value: snapshot.pricing.prices_include_gst
+          ? 'Prices include GST' : (snapshot.pricing.gst_enabled ? `GST ${(snapshot.pricing.gst_rate * 100).toFixed(1)}% applied` : 'GST not applied') });
+      }
       rows.push({ label: 'Estimated billed total', value: snapshot.pricing.currency === 'INR'
         ? `₹${Math.round(primary.quote.display.period_total).toLocaleString('en-IN')}`
         : `€${primary.quote.display.period_total.toFixed(2)}` });
       sections.push({ id: 'pricing', title: 'Pricing', blocks: [{ type: 'pricing', rows }] });
     }
     if (snapshot.managed && snapshot.visibility.managed_services !== 'exclude') {
-      const managedRows = [
-        { label: 'Managed tier', value: snapshot.managed.name },
-        { label: 'Annual managed service', value: `₹${snapshot.managed.seller.annual_inr_minor.toLocaleString('en-IN')}` },
-        { label: 'Founder time', value: `${snapshot.managed.founder_minutes_per_month} minutes/month` },
-      ];
+      const managedRows = [{ label: 'Annual managed service', value: `₹${snapshot.managed.seller.annual_inr_minor.toLocaleString('en-IN')}` }];
+      if (snapshot.visibility.managed_services !== 'total_only') {
+        managedRows.unshift({ label: 'Managed tier', value: snapshot.managed.name });
+        managedRows.push({ label: 'Founder time', value: `${snapshot.managed.founder_minutes_per_month} minutes/month` });
+      }
       sections.push({ id: 'managed', title: 'Managed service add-on', blocks: [{ type: 'table', rows: managedRows }] });
     }
     if (snapshot.alternatives.length && snapshot.visibility.alternatives !== 'exclude') {
@@ -390,6 +400,12 @@
     if (snapshot.visibility.client_notes !== 'exclude' && snapshot.client.notes) {
       sections.push({ id: 'notes', title: 'Notes', blocks: [{ type: 'paragraph', text: String(snapshot.client.notes) }] });
     }
+    if (snapshot.visibility.fx_markup === 'show' || snapshot.visibility.owner_markup === 'show') {
+      const adjustmentRows = [];
+      if (snapshot.visibility.fx_markup === 'show') adjustmentRows.push({ label: 'FX markup', value: `${(snapshot.pricing.fx_markup * 100).toFixed(1)}%` });
+      if (snapshot.visibility.owner_markup === 'show') adjustmentRows.push({ label: 'Owner markup', value: `${(snapshot.pricing.owner_markup * 100).toFixed(1)}% · ${snapshot.pricing.owner_markup_scope}` });
+      sections.push({ id: 'adjustments', title: 'Commercial adjustments', blocks: [{ type: 'table', rows: adjustmentRows }] });
+    }
     sections.push({ id: 'next_steps', title: 'Next steps', blocks: [{
       type: 'list', items: ['Confirm the configuration and commercial terms.', 'Confirm quote validity before sending.', 'Provision only after the client accepts the final scope.'],
     }] });
@@ -404,6 +420,40 @@
       sections,
       warnings: snapshot.warnings,
     };
+  }
+
+  function hasCommercialClaim(text) {
+    const lower = String(text || '').toLowerCase();
+    return ['€', '₹', '$', '£', '%', 'price', 'pricing', 'cost', 'markup', 'gst', 'sla',
+      'discount', '/mo', '/month', 'annual'].some(marker => lower.includes(marker));
+  }
+
+  // Keep the report's policy-filtered deterministic sections authoritative. A
+  // Codex response may contribute safe narrative wording only; it cannot
+  // replace pricing, selections, managed terms, warnings, or visibility rules.
+  function mergeSafeNarrative(baseDocument, candidate) {
+    const base = JSON.parse(JSON.stringify(baseDocument || {}));
+    const candidateSections = Array.isArray(candidate?.sections) ? candidate.sections : [];
+    const allowed = new Set(['summary', 'next_steps']);
+    for (const section of base.sections || []) {
+      if (!allowed.has(section?.id)) continue;
+      const source = candidateSections.find(item => item?.id === section.id);
+      const blocks = Array.isArray(source?.blocks) ? source.blocks : [];
+      const safe = [];
+      for (const block of blocks) {
+        if (block?.type === 'paragraph' && typeof block.text === 'string' &&
+            block.text.length <= 2000 && !hasCommercialClaim(block.text)) {
+          safe.push({ type: 'paragraph', text: block.text });
+        } else if (block?.type === 'list' && Array.isArray(block.items)) {
+          const items = block.items.filter(item => typeof item === 'string' && item.length <= 400 && !hasCommercialClaim(item)).slice(0, 12);
+          if (items.length) safe.push({ type: 'list', items });
+        }
+        if (safe.length >= 8) break;
+      }
+      if (safe.length) section.blocks = safe;
+    }
+    base.provider = 'codex-cli-safe';
+    return base;
   }
 
   function escapeHtml(value) {
@@ -433,10 +483,24 @@
   function toCsv(snapshot) {
     const rows = [['kind', 'label', 'value', 'currency']];
     const quote = snapshot.primary.quote;
-    rows.push(['provider', 'monthly', quote.provider.taxed_monthly_eur, 'EUR']);
-    rows.push(['provider', 'setup', quote.provider.taxed_setup_eur, 'EUR']);
-    rows.push(['seller', 'period_total', quote.display.period_total, snapshot.pricing.currency]);
-    if (snapshot.managed) rows.push(['managed', snapshot.managed.name, snapshot.managed.seller.annual_inr_minor, 'INR']);
+    if (!['exclude', 'internal_only'].includes(snapshot.visibility.provider_pricing)) {
+      if (snapshot.visibility.provider_line_items === 'show') {
+        rows.push(['provider', 'monthly', quote.provider.taxed_monthly_eur, 'EUR']);
+        rows.push(['provider', 'setup', quote.provider.taxed_setup_eur, 'EUR']);
+      }
+      rows.push(['seller', 'period_total', quote.display.period_total, snapshot.pricing.currency]);
+    }
+    if (snapshot.visibility.configuration === 'show') {
+      for (const item of quote.selections) {
+        rows.push(['selection', item.label, item.monthly || 0, 'EUR/month']);
+        if (item.setup) rows.push(['selection_setup', item.label, item.setup, 'EUR']);
+      }
+    }
+    if (snapshot.managed && !['exclude', 'internal_only'].includes(snapshot.visibility.managed_services)) {
+      rows.push(['managed', snapshot.managed.name, snapshot.managed.seller.annual_inr_minor, 'INR']);
+    }
+    if (snapshot.visibility.fx_markup === 'show') rows.push(['adjustment', 'FX markup', `${(snapshot.pricing.fx_markup * 100).toFixed(1)}%`, 'percent']);
+    if (snapshot.visibility.owner_markup === 'show') rows.push(['adjustment', 'Owner markup', `${(snapshot.pricing.owner_markup * 100).toFixed(1)}% · ${snapshot.pricing.owner_markup_scope}`, 'percent']);
     return rows.map(row => row.map(value => {
       const text = String(value == null ? '' : value);
       return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
@@ -457,6 +521,7 @@
     calculateManaged,
     makeSnapshot,
     deterministicDocument,
+    mergeSafeNarrative,
     renderDocument,
     toCsv,
   };

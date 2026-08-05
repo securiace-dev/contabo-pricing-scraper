@@ -9,6 +9,7 @@
 const fs   = require('fs');
 const path = require('path');
 const { loadManagedCatalog } = require('./managed_services_model');
+const proposalModel = require('./proposal_model');
 
 const OUTPUT_DIR    = path.resolve(__dirname, '../../data/output');
 const VM_PATH       = path.join(OUTPUT_DIR, 'contabo_view_model.json');
@@ -18,6 +19,9 @@ const QR_PATH       = path.join(OUTPUT_DIR, 'contabo_quick_reference.json');
 const HTML_PATH     = path.resolve(__dirname, '../../report.html');
 const RECON_PATH    = path.join(OUTPUT_DIR, 'contabo_consistency_report.json');
 const MANAGED_CATALOG_PATH = path.resolve(__dirname, '../../data/managed_services_catalog.json');
+const PROPOSAL_MODEL_PATH = path.resolve(__dirname, './proposal_model.js');
+const PROPOSAL_MODEL_SOURCE = fs.readFileSync(PROPOSAL_MODEL_PATH, 'utf8')
+  .replace(/<\/script/gi, '<\\/script');
 
 const round2 = (x) => Math.round((Number(x) + Number.EPSILON) * 100) / 100;
 
@@ -85,6 +89,9 @@ if (dataset && Array.isArray(dataset.plans)) {
       pricing_model: p.pricing_model || 'fixed',
       availability:  p.availability || null,
       specs:         p.specs_parsed || {},
+      canonical_family: p.canonical_family || p.family || null,
+      legacy_family: p.legacy_family || p.family || null,
+      storage_policy: p.storage_policy || 'not_applicable',
     };
   }
 }
@@ -324,6 +331,11 @@ if (configsRoot) {
 payload.planMeta   = planMeta;
 payload.planExtras = planExtras;
 payload.managedServices = managedServices;
+payload.proposal = {
+  snapshot_schema_version: proposalModel.SCHEMA_VERSION,
+  document_schema_version: proposalModel.DOCUMENT_SCHEMA_VERSION,
+  profiles: proposalModel.PROFILE_DEFAULTS,
+};
 ;(async () => {
 payload.fx = await fetchFx();
 const dataJson = JSON.stringify(payload, null, 1)
@@ -447,9 +459,10 @@ const html = `<!DOCTYPE html>
   .check .pct{color:var(--accent);font-weight:600;margin-left:2px}
   .field{display:inline-flex;gap:6px;align-items:center;font-size:11.5px;
     color:var(--muted)}
-  .field input{background:var(--panel);border:1px solid var(--border);
+  .field input,.field select{background:var(--panel);border:1px solid var(--border);
     color:var(--fg);border-radius:var(--radius-sm);padding:5px 8px;
     font-size:12px;font-family:inherit;width:70px}
+  .field select{width:auto;min-width:142px}
   .field input[type=text]{width:180px}
   .field input:focus{outline:none;border-color:var(--accent)}
   .toolbar .spacer{flex:1}
@@ -634,6 +647,42 @@ const html = `<!DOCTYPE html>
   .managed-review ul{margin:6px 0 0;padding-left:18px}
   .managed-review li+li{margin-top:3px}
 
+  /* ── Proposal workspace ─────────────────────────────────────────────────── */
+  .proposal-launch{border-color:var(--accent2);color:var(--accent2);font-weight:600}
+  .proposal-launch:hover{border-color:var(--accent);color:var(--accent)}
+  .proposal-intro{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 16px}
+  .proposal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}
+  .proposal-field{display:flex;flex-direction:column;gap:5px;color:var(--muted);font-size:11px}
+  .proposal-field.wide{grid-column:1/-1}
+  .proposal-field input,.proposal-field select,.proposal-field textarea{width:100%;background:var(--panel2);color:var(--fg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 9px;font:inherit;font-size:13px}
+  .proposal-field textarea{min-height:72px;resize:vertical;line-height:1.5}
+  .proposal-controls{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px;align-items:center}
+  .proposal-controls .primary{background:var(--accent);color:#0b0d10;border-color:var(--accent);font-weight:700}
+  html[data-theme=light] .proposal-controls .primary{color:#fff}
+  .proposal-controls .secondary{border-color:var(--accent2);color:var(--accent2)}
+  .proposal-hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.55}
+  .proposal-status{font-size:12px;color:var(--muted);padding:8px 10px;background:var(--bg-elev);border-left:2px solid var(--accent2);border-radius:var(--radius-sm);margin-top:12px;white-space:pre-wrap}
+  .proposal-status.bad{border-color:var(--bad);color:var(--bad)}
+  .proposal-status.good{border-color:var(--good);color:var(--good)}
+  .proposal-preview{margin-top:18px;border-top:1px solid var(--border);padding-top:16px}
+  .proposal-document{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px 20px}
+  .proposal-document header{border:0;padding:0 0 10px;margin:0 0 12px;display:block}
+  .proposal-document h2{font-size:19px;margin:0;color:var(--fg-strong)}
+  .proposal-document h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 0 7px}
+  .proposal-document p{margin:6px 0;color:var(--fg);line-height:1.6}
+  .proposal-document .proposal-subtitle{font-family:"IBM Plex Mono",monospace;color:var(--muted);font-size:11px}
+  .proposal-table{width:100%;border-collapse:collapse;margin:6px 0}
+  .proposal-table th,.proposal-table td{padding:7px 8px;border-bottom:1px solid var(--border-soft);font-size:12px;text-align:left;vertical-align:top}
+  .proposal-table th{color:var(--muted);font-weight:500;width:42%}
+  .proposal-table td{color:var(--fg-strong);font-family:"IBM Plex Mono",monospace}
+  .proposal-document ul{margin:6px 0;padding-left:20px;color:var(--fg)}
+  .proposal-document li+li{margin-top:4px}
+  .proposal-callout{padding:8px 10px;margin:6px 0;border-left:2px solid var(--accent2);background:var(--panel);color:var(--muted);font-size:12px}
+  .proposal-callout.warning{border-color:var(--warn);color:var(--warn)}
+  .proposal-summary{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .proposal-chip{font-size:10.5px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:4px 8px}
+  @media (max-width:760px){.proposal-grid{grid-template-columns:1fr}.proposal-field.wide{grid-column:auto}}
+
   /* ── Calculator note ─────────────────────────────────────────────────────── */
   .note{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.6;
     padding:9px 11px;background:var(--bg-elev);border-radius:var(--radius-sm);
@@ -704,6 +753,17 @@ const html = `<!DOCTYPE html>
       FX markup
       <input type="number" id="fxMarkup" min="0" max="15" step="0.1" value="3.5"> %
     </label>
+    <label class="field" title="Your cost-plus margin applied after tax and FX conversion">
+      Owner markup
+      <input type="number" id="ownerMarkup" min="0" max="100" step="0.1" value="0"> %
+    </label>
+    <label class="field" title="Choose which service charges receive your owner markup">
+      Scope
+      <select id="ownerMarkupScope" aria-label="Owner markup scope">
+        <option value="provider_only">Provider charges</option>
+        <option value="provider_and_managed">Provider + managed</option>
+      </select>
+    </label>
   </div>
   <div class="tb-group">
     <span class="glabel">Period</span>
@@ -724,6 +784,7 @@ const html = `<!DOCTYPE html>
     <label class="field"><input type="text" id="search" placeholder="search plan…"></label>
   </div>
   <span class="spacer"></span>
+  <button class="iconbtn proposal-launch" id="proposalBtn" type="button">Create proposal ↗</button>
   <span class="count" id="count"></span>
 </div>
 
@@ -763,12 +824,15 @@ const html = `<!DOCTYPE html>
   </div>
   <div class="row" style="margin-top:6px">
     <span class="muted" id="gstNote" hidden>GST 18% applied — Contabo charges this on Indian invoices.</span>
-    <span class="muted" id="inrNote" hidden>INR figures are indicative estimates (live ECB mid-market + your forex markup).</span>
+    <span class="muted" id="inrNote" hidden>INR figures are indicative estimates (live ECB mid-market + FX markup + owner markup).</span>
   </div>
 </footer>
 
 <script type="application/json" id="contabo-data">
 ${dataJson}
+</script>
+<script>
+${PROPOSAL_MODEL_SOURCE}
 </script>
 <script>
 'use strict';
@@ -779,10 +843,12 @@ const CFG = DATA.planConfig || {};
 const META = DATA.planMeta || {};
 const EXTRAS = DATA.planExtras || {};
 const MANAGED = DATA.managedServices || {};
+const PROPOSAL = DATA.proposal || {};
+const PROPOSAL_MODEL = globalThis.ContaboProposalModel;
 const MANAGED_PLANS = Array.isArray(MANAGED.plans) ? MANAGED.plans : [];
 const MANAGED_FAMILIES = new Set(Array.isArray(MANAGED.eligible_families) ? MANAGED.eligible_families : []);
 const MANAGED_STORAGE_KEY = 'contabo_managed_track_v1';
-const FAMILIES = [...new Set(ROWS.map(r => r.family))];
+const FAMILIES = [...new Set(ROWS.map(r => r.canonical_family || r.family))];
 // Family → billing shape. Object Storage is capacity-priced; Dedicated adds a
 // one-off setup; the rest are plain recurring.
 const FAM_STORAGE = 'Object Storage', FAM_DEDICATED = 'Dedicated Server';
@@ -799,7 +865,10 @@ const PLANS = {};
 for (const r of ROWS) {
   const m = META[r.plan_slug] || {};
   const p = PLANS[r.plan_slug] ??= {
-    slug:r.plan_slug, family:r.family, name:r.product_name, url:r.product_url,
+    slug:r.plan_slug, family:m.canonical_family || r.canonical_family || r.family,
+    legacyFamily:m.legacy_family || r.legacy_family || r.family,
+    storagePolicy:m.storage_policy || r.storage_policy || 'not_applicable',
+    name:r.product_name, url:r.product_url,
     rank:r.plan_rank, frank:r.plan_family_rank,
     // Prefer the real per-family specs from the dataset; the view_model only
     // carries VPS-shaped keys (all null for Object Storage).
@@ -834,6 +903,14 @@ const clampFxMarkup = raw => {
   return Math.max(0, Math.min(0.15, Number.isFinite(value) ? value : fallback));
 };
 const storedFxMarkup = lsGet('contabo_fx_markup');
+const storedOwnerMarkup = lsGet('contabo_owner_markup_pct');
+const storedOwnerScope = lsGet('contabo_owner_markup_scope');
+
+const clampOwnerMarkup = raw => {
+  const value = Number(raw);
+  return Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
+};
+const ownerScope = raw => raw === 'provider_and_managed' ? raw : 'provider_only';
 
 let FX = {
   rate: (FX_META && FX_META.eurInr) || null,
@@ -853,7 +930,8 @@ function loadManagedSelections(){
     const out={};
     for(const [slug, selection] of Object.entries(raw)){
       const plan=MANAGED_PLANS.find(p=>p.id===selection?.planId);
-      if(!plan || !PLANS[slug] || !MANAGED_FAMILIES.has(PLANS[slug].family)) continue;
+      if(!plan || !PLANS[slug] ||
+        (!MANAGED_FAMILIES.has(PLANS[slug].family) && !MANAGED_FAMILIES.has(PLANS[slug].legacyFamily))) continue;
       const quantity=Math.max(1,Math.min(99,Math.round(Number(selection.quantity)||1)));
       out[slug]={planId:plan.id,quantity};
     }
@@ -867,6 +945,8 @@ let state = {
   compare:new Set(),
   cur:(lsGet('contabo_cur')||'BOTH'),
   gst:(lsGet('contabo_gst')==='1') || (PRICES_INCLUDE_GST ? false : false),
+  ownerMarkup: clampOwnerMarkup(storedOwnerMarkup === null ? 0 : Number(storedOwnerMarkup) / 100),
+  ownerMarkupScope: ownerScope(storedOwnerScope),
   managed:loadManagedSelections(),
 };
 
@@ -875,15 +955,21 @@ const inrNF = new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',max
 const eurNF = new Intl.NumberFormat('en-US',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
 
 function gstMul(){ if(PRICES_INCLUDE_GST) return 1; return state.gst ? (1+GST_RATE) : 1; }
+function ownerMul(){ return 1+(state.ownerMarkup||0); }
+function applyOwner(v, includeManaged=false){
+  if(v==null) return v;
+  if(includeManaged && state.ownerMarkupScope!=='provider_and_managed') return Number(v);
+  return Number(v)*ownerMul();
+}
 function applyGst(v){ return v==null?v: Number(v) * gstMul(); }
 function fmtEur(v){
   if(v==null||v==='') return '—';
-  return eurNF.format(applyGst(Number(v)));
+  return eurNF.format(applyOwner(applyGst(Number(v))));
 }
 function fmtInr(v){
   if(!FX.rate || v==null || v==='') return '';
   const e = applyGst(Number(v));
-  return inrNF.format(Math.round(e * FX.rate * (1 + (FX.markup||0))));
+  return inrNF.format(Math.round(e * FX.rate * (1 + (FX.markup||0)) * ownerMul()));
 }
 function money(v){
   if(v==null||v==='') return '—';
@@ -899,11 +985,14 @@ const num = v => (v==null)?'—':v;
 const r2  = x => Math.round((Number(x)+Number.EPSILON)*100)/100;
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const sgn = v => {
-  const f = eurNF.format(Math.abs(applyGst(v)));
+  const f = eurNF.format(Math.abs(applyOwner(applyGst(v))));
   return (v<0?'−':'+') + f;
 };
-const managedEligible = p => !!p && MANAGED_FAMILIES.has(p.family);
+const managedEligible = p => !!p && (MANAGED_FAMILIES.has(p.family) || MANAGED_FAMILIES.has(p.legacyFamily));
 const managedPlan = id => MANAGED_PLANS.find(p=>p.id===id) || null;
+// Managed services are already canonical INR amounts. managedQuote applies
+// the optional owner markup once and returns seller values in minor units, so
+// this formatter must never add markup again while rendering those values.
 const managedMinor = minor => inrNF.format(Math.round(Number(minor||0)/100));
 const managedTime = minutes => {
   const hours=Number(minutes||0)/60;
@@ -916,7 +1005,8 @@ function managedQuote(plan, quantity){
   const taxable=MANAGED.taxable && MANAGED.tax_basis==='exclusive';
   const gst=taxable && state.gst ? Math.round(ex*Number(MANAGED.gst_rate||0)) : 0;
   const total=MANAGED.tax_basis==='inclusive' ? ex : ex+gst;
-  return {quantity:qty,ex,gst,total,monthly:Math.round(total/Number(MANAGED.billing_term_months||12)),
+  const sellerTotal=applyOwner(total/100, true)*100;
+  return {quantity:qty,ex,gst,total,sellerTotal,monthly:Math.round(sellerTotal/Number(MANAGED.billing_term_months||12)),
     founderMinutes:Number(plan.founder_time?.minutes_per_month||0)*qty};
 }
 function persistManagedSelections(){
@@ -980,7 +1070,7 @@ const priceCols = [
   {k:'p6',  t:'6 mo',  v:p=>eur(p.periods[6]?.effective_monthly), sort:p=>p.periods[6]?.effective_monthly??1e9},
   {k:'p12', t:'12 mo', v:p=>{
       const m=p.periods[12]?.effective_monthly;
-      return m==null?'—':'<span class="price best">'+(state.cur==='INR'?fmtInr(m):eurNF.format(applyGst(m)))+'</span>'+(state.cur==='BOTH'?'<span class="inr">≈ '+fmtInr(m)+'</span>':'');
+      return m==null?'—':'<span class="price best">'+(state.cur==='INR'?fmtInr(m):fmtEur(m))+'</span>'+(state.cur==='BOTH'?'<span class="inr">≈ '+fmtInr(m)+'</span>':'');
     }, sort:p=>p.periods[12]?.effective_monthly??1e9},
   {k:'save', t:'Save', v:p=>{const s=savePct(p);return s?'<span class="save"><span class="bar" style="width:'+Math.min(s*0.6,30)+'px"></span>'+s+'%</span>':'—';}, sort:p=>savePct(p)??-1},
 ];
@@ -999,7 +1089,7 @@ const COLS_COMPUTE = [ colPlan,
 // Object-Storage-native columns (shown when that family is selected).
 const COLS_STORAGE = [ colPlan,
   {k:'cap', t:'Base',      v:p=>'<span class="mono">'+capGb(p)+'</span>', sort:p=>p.specs.capacity_tb||0},
-  {k:'ptb', t:'€ / TB·mo', v:p=>{const t=perTb(p);return t==null?'—':'<span class="price">'+eurNF.format(applyGst(t))+'</span>';}, sort:p=>perTb(p)??1e9},
+  {k:'ptb', t:'€ / TB·mo', v:p=>{const t=perTb(p);return t==null?'—':'<span class="price">'+fmtEur(t)+'</span>';}, sort:p=>perTb(p)??1e9},
   {k:'egr', t:'Egress',    v:p=>'<span class="good">free</span>', sort:p=>0},
   {k:'reg', t:'Region',    v:p=>'<span class="muted">'+esc(String(p.specs.region||'').replace('Object Storage: ',''))+'</span>', sort:p=>String(p.specs.region||'')},
   ...priceCols,
@@ -1059,7 +1149,8 @@ function render(){
   emptyEl.style.display = list.length?'none':'block';
   document.getElementById('grid').style.display = list.length?'':'none';
   document.getElementById('count').textContent =
-    list.length+' / '+PLAN_LIST.length+' plans'+(state.gst?' · incl. GST 18%':'');
+    list.length+' / '+PLAN_LIST.length+' plans'+(state.gst?' · incl. GST 18%':'')+
+    (state.ownerMarkup?' · owner +'+(state.ownerMarkup*100).toFixed(1)+'%':'');
   body.querySelectorAll('tr').forEach(tr=>{
     tr.onclick=e=>{ if(e.target.classList.contains('cmpck')) return;
       openModal(tr.dataset.slug); };
@@ -1110,7 +1201,7 @@ function renderCompare(){
     row('Storage',p=>p.specs.storage_primary_gb!=null
       ? (p.specs.storage_primary_gb+' '+(p.specs.storage_primary_type||''))
       : (p.specs.capacity_tb!=null?(Math.round(p.specs.capacity_tb*1000)+' GB base'):'—')),
-    row('€ / TB·mo',p=>{const v=perTb(p);return v!=null?eurNF.format(applyGst(v)):'—';}),
+    row('€ / TB·mo',p=>{const v=perTb(p);return v!=null?fmtEur(v):'—';}),
     row('Port / egress',p=>isStorageFam(p.family)?'free egress':(p.specs.port_speed_mbps!=null?p.specs.port_speed_mbps+' Mbps':'—')),
     row('1 mo',p=>p.periods[1]?.effective_monthly,eur,'lowerBetter'),
     row('6 mo',p=>p.periods[6]?.effective_monthly,eur,'lowerBetter'),
@@ -1122,11 +1213,12 @@ function renderCompare(){
 
 // ── Detail modal ───────────────────────────────────────────────────────────
 const modal=document.getElementById('modal');
-function closeModal(){ modal.classList.remove('open'); }
+let modalMode='none';
+function closeModal(){ modal.classList.remove('open'); modalMode='none'; }
 function tagList(items){
   return items.map(o=>{
     const cls=o.isDefault?'tag def':(o.delta>0?'tag paid':'tag');
-    const price=o.delta>0?(' <code>+'+eurNF.format(applyGst(o.delta))+'</code>'):(o.isDefault?' (default)':'');
+    const price=o.delta>0?(' <code>+'+fmtEur(o.delta)+'</code>'):(o.isDefault?' (default)':'');
     return '<span class="'+cls+'">'+esc(o.label)+price+'</span>';
   }).join('');
 }
@@ -1143,8 +1235,8 @@ function cfgInitPeriod(per){
 }
 function optText(o){
   let t=esc(o.label);
-  t += o.monthly>0 ? ' (+'+eurNF.format(applyGst(o.monthly))+'/mo)' : ' — free';
-  if(o.setup>0) t += ' +'+eurNF.format(applyGst(o.setup))+' setup';
+  t += o.monthly>0 ? ' (+'+fmtEur(o.monthly)+'/mo)' : ' — free';
+  if(o.setup>0) t += ' +'+fmtEur(o.setup)+' setup';
   return t;
 }
 function renderConfigurator(cfg, per){
@@ -1196,13 +1288,14 @@ function recalcCfg(){
   h+='<div class="ln tot"><span>Configured monthly</span><span class="v">'+eur(cfgM)+'/mo</span></div>';
   h+='<div class="ln"><span>Setup (one-time)</span><span>'+(cfgS>0?eur(cfgS):'—')+'</span></div>';
   h+='<div class="ln"><span>Billed total ('+p+' mo)</span><span>'+eur(tot)+'</span></div>';
-  if(state.gst || state.cur!=='EUR'){
+  if(state.gst || state.cur!=='EUR' || state.ownerMarkup){
     const bits=[];
     if(state.gst) bits.push('+18% GST');
     if(state.cur!=='EUR' && FX.rate){
       bits.push('× '+FX.rate.toFixed(3)+' EUR→INR');
       if(FX.markup) bits.push('× '+(1+FX.markup).toFixed(3)+' card markup');
     }
+    if(state.ownerMarkup) bits.push('× '+ownerMul().toFixed(3)+' owner markup');
     h+='<div class="breakdown">'+bits.join('  ')+'</div>';
   }
   h+='<div class="sel"><b>Selected:</b> '+selected.join(' · ')+'</div>';
@@ -1225,7 +1318,7 @@ function specsLine(p){
   const s=p.specs||{};
   if(isStorageFam(p.family)){
     const t=perTb(p);
-    return '<b>'+capGb(p)+'</b> base · <b>'+(t==null?'—':eurNF.format(applyGst(t)))+'</b>/TB·mo · '+
+    return '<b>'+capGb(p)+'</b> base · <b>'+(t==null?'—':fmtEur(t))+'</b>/TB·mo · '+
            '<span class="good">free egress</span> · '+esc(String(s.region||'').replace('Object Storage: ',''));
   }
   const cores = p.family===FAM_DEDICATED ? 'cores' : 'vCPU';
@@ -1282,8 +1375,8 @@ function renderExtras(slug){
     const items=cats[cat]; if(!items) continue;
     h+='<div class="chk-cat">'+esc(cat)+'</div>';
     for(const o of items){
-      const price=o.monthly>0?('+'+eurNF.format(applyGst(o.monthly))+'/mo'):(o.setup>0?'setup only':'free');
-      const setup=o.setup>0?(' <span class="chk-setup">+'+eurNF.format(applyGst(o.setup))+' setup</span>'):'';
+      const price=o.monthly>0?('+'+fmtEur(o.monthly)+'/mo'):(o.setup>0?'setup only':'free');
+      const setup=o.setup>0?(' <span class="chk-setup">+'+fmtEur(o.setup)+' setup</span>'):'';
       h+='<label class="chk"><input type="checkbox" class="exck" data-m="'+o.monthly+'" data-s="'+o.setup+'">'+
          '<span class="chk-l">'+esc(o.label)+'</span><span class="chk-p">'+price+setup+'</span></label>';
       idx++;
@@ -1323,7 +1416,7 @@ function renderManagedCard(plan, selectedId){
     '<input type="radio" class="managed-plan-radio" name="managedPlan" value="'+esc(plan.id)+'"'+(selected?' checked':'')+'>'+
     '<span class="managed-card-body">'+
       '<span class="managed-card-top"><span class="managed-card-name">'+esc(plan.name)+'</span>'+
-        '<span class="managed-card-price">'+managedMinor(quote.total)+'<small>/year · '+(state.gst?'incl. GST':'ex GST')+'</small></span></span>'+
+        '<span class="managed-card-price">'+managedMinor(quote.sellerTotal)+'<small>/year · '+(state.gst?'incl. GST':'ex GST')+'</small></span></span>'+
       '<span class="managed-card-time">'+esc(plan.founder_time?.label||managedTime(plan.founder_time?.minutes_per_month))+'</span>'+
       '<ul>'+plan.includes.map(item=>'<li>'+esc(item)+'</li>').join('')+'</ul>'+status+
     '</span></label>';
@@ -1372,11 +1465,12 @@ function recalcManaged(slug){
   persistManagedSelections();
   const quote=managedQuote(plan,quantity);
   let h='<div class="ln muted"><span>'+esc(plan.name)+' × '+quantity+' '+esc(MANAGED.scope_unit||'server')+'</span><span>'+(state.gst?'incl. GST':'ex GST')+'</span></div>';
-  h+='<div class="ln tot"><span>Annual managed service</span><span class="v">'+managedMinor(quote.total)+'</span></div>';
+  h+='<div class="ln tot"><span>Annual managed service</span><span class="v">'+managedMinor(quote.sellerTotal)+'</span></div>';
   h+='<div class="ln"><span>Monthly equivalent</span><span>'+managedMinor(quote.monthly)+'</span></div>';
   h+='<div class="ln"><span>Founder time</span><span>'+esc(managedTime(quote.founderMinutes))+'</span></div>';
   if(quote.gst) h+='<div class="ln muted"><span>GST 18%</span><span>'+managedMinor(quote.gst)+'</span></div>';
-  h+='<div class="breakdown">Canonical INR quote · EUR→INR FX and card markup do not apply to managed services.</div>';
+  if(quote.sellerTotal!==quote.total) h+='<div class="ln muted"><span>Owner markup</span><span>'+managedMinor(quote.sellerTotal-quote.total)+'</span></div>';
+  h+='<div class="breakdown">Canonical INR quote · EUR→INR FX and card markup do not apply to managed services; owner markup '+(state.ownerMarkupScope==='provider_and_managed'?'is included.':'is not applied.')+'</div>';
   if(plan.sla?.status==='approval_required')
     h+='<div class="pending">'+esc(plan.sla.label)+' is a target in the pricing brief, not a published guarantee. Evidence and scope approval are required before sale.</div>';
   h+='<div class="managed-review"><b>Includes:</b> '+plan.includes.map(esc).join(' · ')+'<br><b>Excludes:</b> '+[...(MANAGED.common_exclusions||[]),...(plan.excludes||[])].map(esc).join(' · ')+'</div>';
@@ -1397,6 +1491,7 @@ function wireManagedTrack(slug){
 
 function openModal(slug){
   const p=PLANS[slug]; if(!p) return;
+  modalMode='plan';
   MSLUG=slug;
   const per=p.periods;
   const order=[1,3,6,12].filter(m=>per[m]);
@@ -1412,13 +1507,14 @@ function openModal(slug){
     h+='<tr><td class="l">Setup fee</td>'+order.map(m=>'<td>'+(per[m].setup_fee>0?eur(per[m].setup_fee):'—')+'</td>').join('')+'</tr>';
   h+='<tr><td class="l">Billed total</td>'+order.map(m=>'<td>'+eur(per[m].total_period_cost)+'</td>').join('')+'</tr>';
   h+='</table>';
-  if(state.gst || state.cur!=='EUR'){
+  if(state.gst || state.cur!=='EUR' || state.ownerMarkup){
     const bits=[];
     if(state.gst) bits.push('+18% GST');
     if(state.cur!=='EUR' && FX.rate){
       bits.push('EUR→INR @ '+FX.rate.toFixed(3));
       if(FX.markup) bits.push((FX.markup*100).toFixed(1)+'% card markup');
     }
+    if(state.ownerMarkup) bits.push((state.ownerMarkup*100).toFixed(1)+'% owner markup');
     h+='<div class="breakdown">Applied: '+bits.join(' · ')+'</div>';
   }
 
@@ -1448,7 +1544,7 @@ function openModal(slug){
       const ord=G.flatMap(x=>g[x]||[]);
       h+='<h4>Regions</h4><table><tr>'+
         ord.map(o=>'<th>'+o.label.replace('European Union','EU')+(o.isDefault?' *':'')+'</th>').join('')+'</tr><tr>'+
-        ord.map(o=>'<td>'+(o.delta===0?'free':'+'+eurNF.format(applyGst(o.delta)))+'</td>').join('')+'</tr></table>';
+        ord.map(o=>'<td>'+(o.delta===0?'free':'+'+fmtEur(o.delta))+'</td>').join('')+'</tr></table>';
     }
     const net=ad['Networking']||[];
     if(net.length){
@@ -1477,7 +1573,259 @@ function openModal(slug){
   if(managedEligible(p)) wireManagedTrack(slug);
 }
 
+// ── Proposal workspace ─────────────────────────────────────────────────────
+// Proposal inputs are captured as structured data first. The preview/export
+// renderer only accepts the allow-listed ProposalDocument blocks from the
+// shared model, so Codex can never inject arbitrary HTML into the report.
+const PROPOSAL_POLICY_KEYS=['configuration','provider_pricing','provider_line_items',
+  'managed_services','alternatives','source_links','tax','fx_markup','owner_markup',
+  'client_notes','internal_notes'];
+const PROPOSAL_POLICY_LABELS={
+  configuration:'Configuration', provider_pricing:'Provider pricing',
+  provider_line_items:'Provider line items', managed_services:'Managed services',
+  alternatives:'Plan comparison', source_links:'Source links', tax:'Tax treatment',
+  fx_markup:'FX markup', owner_markup:'Owner markup', client_notes:'Client notes',
+  internal_notes:'Internal notes'
+};
+const PROPOSAL_POLICY_OPTIONS=[['show','Show'],['total_only','Total only'],
+  ['silent_include','Silent include'],['internal_only','Internal only'],['exclude','Exclude']];
+let proposalSnapshot=null, proposalDocument=null, proposalPrimarySlug=null;
+
+function proposalPolicySelect(key, selected){
+  return '<label class="proposal-field"><span>'+esc(PROPOSAL_POLICY_LABELS[key]||key)+'</span>'+\
+    '<select id="proposalPolicy_'+esc(key)+'">'+\
+    PROPOSAL_POLICY_OPTIONS.map(o=>'<option value="'+o[0]+'"'+(selected===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+\
+    '</select></label>';
+}
+function proposalProfileOptions(selected){
+  const profiles=PROPOSAL.profiles||PROPOSAL_MODEL.PROFILE_DEFAULTS||{};
+  return Object.entries(profiles).map(([id,p])=>'<option value="'+esc(id)+'"'+(id===selected?' selected':'')+'>'+esc(p.label||id)+'</option>').join('');
+}
+function proposalProfileVisibility(profile){
+  const base={...(PROPOSAL_MODEL.DEFAULT_VISIBILITY||{})};
+  const profileCfg=(PROPOSAL_MODEL.PROFILE_DEFAULTS||{})[profile];
+  return Object.assign(base,profileCfg?.visibility||{});
+}
+function proposalTermFor(p){
+  const available=Object.keys(p.periods||{}).map(Number).sort((a,b)=>a-b);
+  const wanted=Number(state.period);
+  return available.includes(wanted)?wanted:(available.includes(6)?6:(available[0]||1));
+}
+function proposalPlanInput(slug, current){
+  const p=PLANS[slug]; if(!p) return null;
+  const active=!!current && modalMode==='plan' && MSLUG===slug;
+  let period=proposalTermFor(p), providerMonthly=Number(p.periods[period]?.effective_monthly)||0;
+  let providerSetup=Number(p.periods[period]?.setup_fee)||0, selections=[], addons=[];
+  const specs={...(p.specs||{})};
+  if(isStorageFam(p.family) && active && document.getElementById('stTerm')){
+    period=Number(document.getElementById('stTerm').value)||period;
+    const baseCap=Number(p.specs.capacity_tb)||0.25;
+    const base=Number(p.periods[period]?.effective_monthly)||0;
+    let tb=Number(document.getElementById('stTb').value)||baseCap;
+    tb=Math.max(baseCap,Math.round(tb/0.25)*0.25);
+    providerMonthly=r2(base*(tb/baseCap));
+    specs.capacity_tb=tb;
+    selections.push({label:'Storage capacity: '+tb+' TB',monthly:0,setup:0});
+  } else if(!isStorageFam(p.family) && active && MCFG && document.getElementById('cfgPeriod')){
+    period=Number(document.getElementById('cfgPeriod').value)||period;
+    const row=p.periods[period]||{};
+    providerMonthly=Number(MCFG.defaultMonthlyByPeriod?.[String(period)] ?? row.effective_monthly)||0;
+    providerSetup=Number(MCFG.defaultSetupByPeriod?.[String(period)] ?? row.setup_fee)||0;
+    MCFG.controls.forEach((c,ci)=>{
+      const select=document.getElementById('csel_'+ci); if(!select) return;
+      const selected=c.options[Number(select.value)]||c.options[c.defaultIdx];
+      const def=c.options[c.defaultIdx]||{monthly:0,setup:0};
+      selections.push({label:c.label+': '+selected.label,
+        monthly:r2(Number(selected.monthly)-Number(def.monthly)),
+        setup:r2(Number(selected.setup)-Number(def.setup))});
+    });
+  } else if(active && document.getElementById('exTerm')){
+    period=Number(document.getElementById('exTerm').value)||period;
+    providerMonthly=Number(p.periods[period]?.effective_monthly)||providerMonthly;
+    providerSetup=Number(p.periods[period]?.setup_fee)||providerSetup;
+    document.querySelectorAll('.exck').forEach(ck=>{
+      if(ck.checked) addons.push({label:ck.parentElement?.querySelector('.chk-l')?.textContent||'Add-on',
+        monthly:Number(ck.dataset.m)||0,setup:Number(ck.dataset.s)||0});
+    });
+  } else if(p.options && typeof p.options==='object'){
+    for(const [dimension,summary] of Object.entries(p.options)){
+      if(summary?.default_label) selections.push({label:dimension+': '+summary.default_label,monthly:0,setup:0});
+    }
+  }
+  return {plan_slug:p.slug,plan_name:p.name,family:p.family,plan_url:p.url,period_months:period,
+    provider_monthly_eur:providerMonthly,provider_setup_eur:providerSetup,selections,addons,specs};
+}
+function proposalManagedInput(slug){
+  const saved=state.managed[slug]; if(!saved) return null;
+  const plan=managedPlan(saved.planId); if(!plan) return null;
+  return {plan_id:plan.id,name:plan.name,quantity:saved.quantity,
+    annual_price_minor:plan.annual_price_minor,
+    founder_minutes_per_month:plan.founder_time?.minutes_per_month||0,
+    billing_term_months:MANAGED.billing_term_months||12,
+    taxable:MANAGED.taxable,tax_basis:MANAGED.tax_basis,
+    includes:plan.includes||[],excludes:[...(MANAGED.common_exclusions||[]),...(plan.excludes||[])]};
+}
+function proposalPricing(){
+  return {currency:state.cur==='EUR'||!FX.rate?'EUR':'INR',prices_include_gst:PRICES_INCLUDE_GST,
+    gst_enabled:state.gst,gst_rate:GST_RATE,fx_rate:FX.rate,fx_markup:FX.markup,
+    owner_markup:state.ownerMarkup,owner_markup_scope:state.ownerMarkupScope,
+    fx_source:FX.source,fx_rate_date:FX.rateDate};
+}
+function proposalDefaultSlugs(){
+  const selected=[...state.compare];
+  const current=modalMode==='plan'&&MSLUG?MSLUG:null;
+  const primary=current||selected[0]||filtered()[0]?.slug||PLAN_LIST[0]?.slug;
+  return {primary,alternatives:selected.filter(slug=>slug!==primary).slice(0,4)};
+}
+function proposalSnapshotFromForm(){
+  const primarySlug=document.getElementById('proposalPlan')?.value||proposalPrimarySlug;
+  const selectedAlt=[...state.compare].filter(slug=>slug!==primarySlug).slice(0,4);
+  const profile=document.getElementById('proposalProfile')?.value||'quick-quote';
+  const visibility={};
+  for(const key of PROPOSAL_POLICY_KEYS){
+    const el=document.getElementById('proposalPolicy_'+key);
+    visibility[key]=el?.value||'show';
+  }
+  const client={project_name:document.getElementById('proposalProject')?.value?.trim()||'',
+    recipient:document.getElementById('proposalRecipient')?.value?.trim()||'',
+    notes:document.getElementById('proposalNotes')?.value?.trim()||''};
+  return PROPOSAL_MODEL.makeSnapshot({profile,visibility,client,pricing:proposalPricing(),
+    primary:proposalPlanInput(primarySlug,primarySlug===MSLUG),
+    alternatives:selectedAlt.map(slug=>proposalPlanInput(slug,false)),
+    managed:proposalManagedInput(primarySlug),
+    source:{snapshot_generated_at:DATA.meta?.generated_at||'',report_generated_at:DATA.meta?.generated_at||'',
+      source:'contabo_view_model.json + contabo_pricing_dataset.json',consistency:DATA.consistency||{},
+      fx_source:FX.source,fx_rate_date:FX.rateDate}});
+}
+function proposalStatus(message, kind){
+  const el=document.getElementById('proposalStatus'); if(!el) return;
+  el.className='proposal-status'+(kind?' '+kind:''); el.textContent=message||'';
+}
+function proposalSummary(snapshot){
+  const q=snapshot.primary.quote;
+  const moneyLabel=snapshot.pricing.currency==='INR'?'₹'+Math.round(q.display.period_total).toLocaleString('en-IN'):'€'+q.display.period_total.toFixed(2);
+  return '<div class="proposal-summary"><span class="proposal-chip">'+esc(snapshot.primary.plan_name)+'</span>'+\
+    '<span class="proposal-chip">'+esc(snapshot.primary.period_months+' mo')+'</span>'+\
+    '<span class="proposal-chip">Estimated billed total '+esc(moneyLabel)+'</span>'+\
+    (snapshot.managed?'<span class="proposal-chip">Managed add-on included</span>':'')+\
+    (snapshot.warnings.length?'<span class="proposal-chip">'+snapshot.warnings.length+' review note'+(snapshot.warnings.length===1?'':'s')+'</span>':'')+'</div>';
+}
+function showProposalPreview(snapshot, proposalDoc, status){
+  proposalSnapshot=snapshot; proposalDocument=proposalDoc;
+  const preview=document.getElementById('proposalPreview'); if(!preview) return;
+  preview.innerHTML=proposalSummary(snapshot)+PROPOSAL_MODEL.renderDocument(proposalDoc);
+  const buttons=document.querySelectorAll('[data-proposal-export]'); buttons.forEach(b=>b.disabled=false);
+  if(status) proposalStatus(status,'good');
+}
+function proposalExportHtml(document){
+  const body=PROPOSAL_MODEL.renderDocument(document);
+  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(document.title||'Proposal')+'</title><style>'+\
+    'body{margin:40px auto;max-width:820px;padding:0 20px;font:15px/1.6 system-ui,sans-serif;color:#20252d}article{border:1px solid #d8dee8;border-radius:12px;padding:28px}h2{margin:0}h3{margin-top:24px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#687386}.proposal-subtitle{color:#687386}.proposal-table{width:100%;border-collapse:collapse}.proposal-table th,.proposal-table td{padding:8px;border-bottom:1px solid #e7ebf0;text-align:left}.proposal-table th{color:#687386;font-weight:500;width:42%}.proposal-callout{padding:10px;border-left:3px solid #e4a11b;background:#fff7df}'+'</style></head><body>'+body+'</body></html>';
+}
+function downloadProposal(name, content, type){
+  const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function copyProposalBrief(){
+  if(!proposalSnapshot) return;
+  const q=proposalSnapshot.primary.quote;
+  const lines=['Proposal: '+proposalSnapshot.primary.plan_name,
+    'Term: '+proposalSnapshot.primary.period_months+' month(s)',
+    'Estimated total: '+(proposalSnapshot.pricing.currency==='INR'?'₹'+Math.round(q.display.period_total).toLocaleString('en-IN'):'€'+q.display.period_total.toFixed(2))];
+  if(proposalSnapshot.managed) lines.push('Managed add-on: '+proposalSnapshot.managed.name);
+  const text=lines.join('\\n');
+  if(navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(()=>proposalStatus('Brief copied to clipboard.','good')).catch(()=>proposalStatus('Clipboard permission was not available.','bad'));
+  else { const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); proposalStatus('Brief copied to clipboard.','good'); }
+}
+async function generateProposalWithCodex(){
+  if(!proposalSnapshot) previewProposal();
+  if(!proposalSnapshot) return;
+  const deterministic=PROPOSAL_MODEL.deterministicDocument(proposalSnapshot);
+  if(location.protocol==='file:'){
+    showProposalPreview(proposalSnapshot,deterministic,'Local file mode: deterministic proposal preview is ready. Start the Rust server to use Codex CLI generation.');
+    return;
+  }
+  proposalStatus('Submitting the structured snapshot to the local proposal service…');
+  try{
+    const response=await fetch('/api/v1/proposals/generate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
+      profile:proposalSnapshot.profile,visibility:proposalSnapshot.visibility,client:proposalSnapshot.client,context:proposalSnapshot})});
+    if(!response.ok) throw new Error('proposal service returned HTTP '+response.status);
+    const queued=await response.json(); const id=queued.job_id;
+    if(!id) throw new Error('proposal service did not return a job id');
+    for(let attempt=0;attempt<60;attempt++){
+      await new Promise(resolve=>setTimeout(resolve,1000));
+      const poll=await fetch('/api/v1/proposals/'+encodeURIComponent(id));
+      if(!poll.ok) throw new Error('proposal job polling failed with HTTP '+poll.status);
+      const job=await poll.json();
+      if(job.status==='succeeded'&&job.document){
+        const safeDocument=PROPOSAL_MODEL.mergeSafeNarrative(deterministic,job.document);
+        const usedCodex=job.provider==='codex-cli-safe'||job.provider==='codex-cli';
+        showProposalPreview(proposalSnapshot,safeDocument,usedCodex
+          ?'Proposal wording generated locally via Codex CLI; server-validated pricing and visibility policy retained. Review it before exporting.'
+          :'Codex CLI was unavailable; deterministic server fallback is ready. Review it before exporting.');
+        return;
+      }
+      if(job.status==='failed') throw new Error(job.error||'proposal generation failed');
+      proposalStatus('Generating locally… '+(job.status||'working'));
+    }
+    throw new Error('proposal generation timed out in the report UI');
+  }catch(error){
+    showProposalPreview(proposalSnapshot,deterministic,'Codex generation was unavailable; deterministic proposal fallback is ready. '+String(error.message||error));
+  }
+}
+function previewProposal(){
+  try{
+    const snapshot=proposalSnapshotFromForm();
+    const document=PROPOSAL_MODEL.deterministicDocument(snapshot);
+    showProposalPreview(snapshot,document,'Deterministic preview ready. Adjust visibility or client fields, then generate or export.');
+  }catch(error){ proposalStatus('Could not build proposal preview: '+String(error.message||error),'bad'); }
+}
+function wireProposalForm(){
+  const profile=document.getElementById('proposalProfile');
+  const syncProfile=()=>{
+    const defaults=proposalProfileVisibility(profile.value);
+    for(const key of PROPOSAL_POLICY_KEYS){
+      const el=document.getElementById('proposalPolicy_'+key);
+      if(el && !el.dataset.touched) el.value=defaults[key]||'show';
+    }
+  };
+  profile.onchange=()=>{syncProfile();previewProposal();};
+  PROPOSAL_POLICY_KEYS.forEach(key=>document.getElementById('proposalPolicy_'+key)?.addEventListener('change',e=>{e.target.dataset.touched='1';}));
+  document.getElementById('proposalPreviewBtn').onclick=previewProposal;
+  document.getElementById('proposalGenerateBtn').onclick=generateProposalWithCodex;
+  document.getElementById('proposalCopyBtn').onclick=copyProposalBrief;
+  document.querySelectorAll('[data-proposal-export]').forEach(button=>button.onclick=()=>{
+    if(!proposalSnapshot||!proposalDocument) return;
+    const kind=button.dataset.proposalExport;
+    if(kind==='html') downloadProposal('contabo-proposal.html',proposalExportHtml(proposalDocument),'text/html');
+    if(kind==='json') downloadProposal('contabo-proposal.json',JSON.stringify(proposalSnapshot,null,2)+'\\n','application/json');
+    if(kind==='csv') downloadProposal('contabo-proposal.csv',PROPOSAL_MODEL.toCsv(proposalSnapshot),'text/csv');
+  });
+  syncProfile();
+  previewProposal();
+}
+function openProposalWizard(){
+  const defaults=proposalDefaultSlugs(); if(!defaults.primary) return;
+  proposalPrimarySlug=defaults.primary; modalMode='proposal';
+  const profile='quick-quote', visibility=proposalProfileVisibility(profile);
+  let h='<div class="top"><div><h2>Create proposal</h2><div class="specs">Structured quote workspace · local-only generation · review before export</div></div><button class="iconbtn" onclick="closeModal()" aria-label="Close">Close ✕</button></div>';
+  h+='<p class="proposal-intro">Choose what the client sees, what is included only in totals, and what remains internal. Provider facts and prices come from this report snapshot; Codex may improve wording but cannot add arbitrary HTML or invent commercial terms.</p>';
+  h+='<div class="proposal-grid">';
+  h+='<label class="proposal-field"><span>Primary plan</span><select id="proposalPlan">'+PLAN_LIST.map(p=>'<option value="'+esc(p.slug)+'"'+(p.slug===defaults.primary?' selected':'')+'>'+esc(p.name+' · '+p.family)+'</option>').join('')+'</select></label>';
+  h+='<label class="proposal-field"><span>Proposal profile</span><select id="proposalProfile">'+proposalProfileOptions(profile)+'</select></label>';
+  h+='<label class="proposal-field"><span>Client / project name</span><input id="proposalProject" type="text" maxlength="120" placeholder="Optional"></label>';
+  h+='<label class="proposal-field"><span>Recipient</span><input id="proposalRecipient" type="text" maxlength="160" placeholder="Optional"></label>';
+  h+='<label class="proposal-field wide"><span>Client-facing notes</span><textarea id="proposalNotes" maxlength="2000" placeholder="Scope, goals, or assumptions to include…"></textarea></label>';
+  h+='</div><h4>Content policy</h4><div class="proposal-grid">';
+  for(const key of PROPOSAL_POLICY_KEYS) h+=proposalPolicySelect(key,visibility[key]||'show');
+  h+='</div><div class="proposal-hint">Compared plans are taken from the compare drawer (up to four). “Silent include” keeps a value in pricing/context without mentioning it in the client document. Mandatory stale-data, missing-FX, and comparison warnings remain visible.</div>';
+  h+='<div class="proposal-controls"><button class="iconbtn primary" id="proposalPreviewBtn" type="button">Preview deterministic</button><button class="iconbtn secondary" id="proposalGenerateBtn" type="button">Generate with local Codex</button><button class="iconbtn" id="proposalCopyBtn" type="button">Copy brief</button><button class="iconbtn" data-proposal-export="html" type="button" disabled>Export HTML</button><button class="iconbtn" data-proposal-export="json" type="button" disabled>Export JSON</button><button class="iconbtn" data-proposal-export="csv" type="button" disabled>Export CSV</button></div>';
+  h+='<div class="proposal-status" id="proposalStatus" role="status" aria-live="polite"></div><div class="proposal-preview" id="proposalPreview"></div>';
+  document.getElementById('sheet').innerHTML=h; modal.classList.add('open'); wireProposalForm();
+}
+
 // ── Wire toolbar ───────────────────────────────────────────────────────────
+document.getElementById('proposalBtn').onclick=openProposalWizard;
 const periodTog=document.getElementById('periodTog');
 function setPeriod(v){
   state.period=v; lsSet('contabo_period',v);
@@ -1509,7 +1857,7 @@ const gstNote=document.getElementById('gstNote');
 function applyGstUi(){
   gstNote.hidden=!state.gst;
   render(); renderCompare();
-  if(modal.classList.contains('open') && MSLUG) openModal(MSLUG);
+  if(modal.classList.contains('open') && modalMode==='plan' && MSLUG) openModal(MSLUG);
 }
 gstToggle.onchange=e=>{ state.gst=e.target.checked; lsSet('contabo_gst', state.gst?'1':'0'); applyGstUi(); };
 if(PRICES_INCLUDE_GST){
@@ -1527,8 +1875,36 @@ if(storedFxMarkup!==null && Number(storedFxMarkup)!==FX.markup)
 fxMarkupEl.oninput=e=>{
   const v=clampFxMarkup((Number(e.target.value)||0)/100);
   FX.markup=v; e.target.value=(v*100).toFixed(1); lsSet('contabo_fx_markup', String(v));
+  renderFxBadge();
   render(); renderCompare();
-  if(modal.classList.contains('open') && MSLUG) openModal(MSLUG);
+  if(modal.classList.contains('open') && modalMode==='plan' && MSLUG) openModal(MSLUG);
+};
+
+// Owner markup is a separate cost-plus adjustment. It is intentionally stored
+// as a fraction, like FX, while the input is displayed as a percentage. The
+// normalized value is written back immediately so stale values cannot remain
+// visible while calculations use a capped value.
+const ownerMarkupEl=document.getElementById('ownerMarkup');
+const ownerMarkupScopeEl=document.getElementById('ownerMarkupScope');
+ownerMarkupEl.value=((state.ownerMarkup||0)*100).toFixed(1);
+ownerMarkupScopeEl.value=state.ownerMarkupScope;
+if(storedOwnerMarkup!==null && Number(storedOwnerMarkup)/100!==state.ownerMarkup)
+  lsSet('contabo_owner_markup_pct',String(state.ownerMarkup*100));
+ownerMarkupEl.oninput=e=>{
+  const v=clampOwnerMarkup((Number(e.target.value)||0)/100);
+  state.ownerMarkup=v; e.target.value=(v*100).toFixed(1);
+  lsSet('contabo_owner_markup_pct',String(v*100));
+  renderFxBadge();
+  render(); renderCompare();
+  if(modal.classList.contains('open') && modalMode==='plan' && MSLUG) openModal(MSLUG);
+};
+ownerMarkupScopeEl.onchange=e=>{
+  state.ownerMarkupScope=ownerScope(e.target.value);
+  e.target.value=state.ownerMarkupScope;
+  lsSet('contabo_owner_markup_scope',state.ownerMarkupScope);
+  renderFxBadge();
+  render(); renderCompare();
+  if(modal.classList.contains('open') && modalMode==='plan' && MSLUG) openModal(MSLUG);
 };
 
 // Currency toggle
@@ -1542,7 +1918,7 @@ function updateCurUI(){
 }
 function applyFx(){
   render(); renderCompare();
-  if(modal.classList.contains('open') && MSLUG) openModal(MSLUG);
+  if(modal.classList.contains('open') && modalMode==='plan' && MSLUG) openModal(MSLUG);
   updateCurUI();
 }
 curTog.querySelectorAll('button').forEach(b=>b.onclick=()=>{
@@ -1579,7 +1955,7 @@ function renderFxBadge(){
   fxb.innerHTML='<span class="dot-i"></span>EUR→INR <strong>'+FX.rate.toFixed(2)+'</strong> · '+age;
   document.getElementById('fxLine').innerHTML =
     'FX: EUR→INR <b>'+FX.rate.toFixed(4)+'</b> ('+esc(FX.source||'')+', '+age+
-    '), card markup '+((FX.markup||0)*100).toFixed(1)+'%';
+    '), FX markup '+((FX.markup||0)*100).toFixed(1)+'%, owner markup '+((state.ownerMarkup||0)*100).toFixed(1)+'%';
 }
 renderFxBadge();
 
