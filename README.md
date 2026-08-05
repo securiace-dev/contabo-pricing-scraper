@@ -1,6 +1,6 @@
 # Contabo Pricing Scraper + API
 
-Extracts pricing for all Contabo Cloud VPS, Storage VPS, and Cloud VDS plans from Contabo's embedded `__SAPPER__` server-side payload. Outputs structured JSON and CSV files ready for analysis or further automation — **and exposes the data as a versioned REST API** for downstream integrations (WHMCS, dashboards, billing systems).
+Extracts pricing for Contabo Core VPS, Performance VPS, Max Performance VPS (legacy VDS), Storage VPS, and Dedicated Server plans from Contabo's embedded `__SAPPER__` server-side payload. The schema retains a compatibility parser for historical Object Storage snapshots, but the current catalog marks its three old region URLs discontinued because Contabo now redirects them to Storage VPS. Outputs structured JSON and CSV files ready for analysis or further automation — **and exposes the data as a versioned REST API** for downstream integrations (WHMCS, dashboards, billing systems).
 
 Ships as a single Rust binary with two subcommands:
 
@@ -42,12 +42,16 @@ Endpoints (versioned under `/api/v1`):
 | GET | `/api/v1/plans/:slug/configurator` | open | option matrix + defaults |
 | GET | `/api/v1/options` | open | flat option catalog |
 | GET | `/api/v1/fx` | open | EUR→INR rate + source + age |
-| POST | `/api/v1/quote` | open | calculate configured price (GST + FX) |
+| POST | `/api/v1/quote` | open | calculate configured price (GST + FX + owner markup) |
+| GET | `/api/v1/proposals/capabilities` | loopback/token | local proposal-generation capabilities |
+| POST | `/api/v1/proposals/preview` | loopback/token | validate a structured proposal snapshot |
+| POST | `/api/v1/proposals/generate` | loopback/token | queue local Codex proposal generation |
+| GET | `/api/v1/proposals/:id` | loopback/token | proposal job status and document |
 | POST | `/api/v1/refresh` | **bearer** | trigger async scrape |
 | GET | `/api/v1/jobs/:id` | open | refresh job status |
 | GET | `/` | open | the interactive report (embedded HTML) |
 
-Auth model: read endpoints are open and cacheable; `POST /refresh` requires `Authorization: Bearer <token>` matching `--auth-token` / `--auth-token-file` / `CONTABO_AUTH_TOKEN`. When no token is configured the mutating endpoint returns 503 (fail-closed).
+Auth model: read endpoints are open and cacheable; `POST /refresh` requires `Authorization: Bearer <token>` matching `--auth-token` / `--auth-token-file` / `CONTABO_AUTH_TOKEN`. Proposal routes are available without a token only when the server is bound to loopback; an exposed bind requires the same bearer token. When no token is configured, exposed proposal routes return 503 (fail-closed). See [`docs/PROPOSAL-GENERATION.md`](docs/PROPOSAL-GENERATION.md).
 
 ---
 
@@ -540,6 +544,8 @@ Response:
 > See [Production Architecture & Operational Reality](#production-architecture--operational-reality-dev--ops-deep-dive) for the load-bearing 2026-05 findings: native-systemd prod runtime (not Docker), the Cloudflare datacenter-IP block on `contabo.com`, the missing refresh automation, the dual version streams, and the uncommitted API/deploy stack.
 
 - Rust is the operational primary path; Node is intentionally retained for fallback/parity workflows.
+- The 2026-08-05 live catalog has 36 active plans and 1,975 options; six rejected Core-VPS NVMe labels remain visible as `storage_policy_violation` audit gaps.
+- Historical Object Storage fragment URLs are retained in the `discontinued` array of `data/plan_urls.json`; they are not scraped as current inventory after the live endpoint began redirecting to Storage VPS.
 - Mutating API operations are intentionally fail-closed; absence of token should be treated as configuration hard-stop, not degraded-open behavior.
 - `contabo_consistency_report.json` is critical for catching transform drift between canonical view model and aggregate dataset.
 - Deployment overlays are topology-specific: base compose, Caddy, Traefik, and Coolify each optimize different operational constraints.
@@ -752,8 +758,10 @@ All files are written to `--output` (default `data/output/`). The directory is c
 `report.html` (repo root) is a self-contained, interactive view of all plans: sortable
 comparison table, 2–4 plan side-by-side compare, per-plan detail with an **interactive
 plan + add-on cost calculator** (pick OS / region / storage / backup / networking and
-see the live configured monthly, setup, and period total), dark mode. It is regenerated
-alongside `PRICES.md`.
+see the live configured monthly, setup, and period total), separate FX and owner
+markup controls, managed-service add-ons, and a reviewed proposal workspace with
+deterministic/Codex generation and HTML/JSON/CSV export. It is regenerated alongside
+`PRICES.md`.
 
 ```bash
 # Generate locally after a scrape (Node ≥ 18, no dependencies):
@@ -769,13 +777,21 @@ panel degrades to a static add-on list and the calculator is omitted. The defaul
 configuration shown is anchored to the scraper's own `default_monthly_by_period`, and
 `contabo_consistency_report.json` reconciles that arithmetic every run.
 
+Owner markup is a cost-plus percentage, separate from card/FX markup. The report
+applies tax → FX conversion → FX markup → owner markup, includes setup fees, and
+stores the normalized controls in exported proposal JSON. Managed-service prices
+remain canonical INR unless the proposal scope explicitly includes owner markup.
+
 ## Data model
 
 ### Base plan fields
 
 | Field | Description |
 |-------|-------------|
-| `family` | `Cloud VPS`, `Storage VPS`, or `Cloud VDS` |
+| `family` | Legacy/source family label, retained for compatibility |
+| `canonical_family` | Current or retained catalogue family: `Core VPS`, `Performance VPS`, `Max Performance VPS`, legacy `Cloud VPS`, `Storage VPS`, `Dedicated Server`, or `Object Storage` |
+| `legacy_family` | Previous label when Contabo renames a category, e.g. `Cloud VDS` |
+| `storage_policy` | Additive policy such as `ssd_only`, `nvme_only`, `legacy_vds_options`, or `legacy_cloud_vps_options` |
 | `product_slug` | Contabo plan slug, e.g. `cloud-vps-10` |
 | `fetched_at` | ISO 8601 timestamp of when this plan was fetched |
 | `cpu`, `ram`, `base_storage` | Spec strings |

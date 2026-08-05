@@ -17,6 +17,39 @@ sections (Added / Renamed / Removed / Migration).
 
 ---
 
+## API 1.3 — current (2026-08-05)
+
+Adds the current Contabo VPS taxonomy and proposal/quote fields while retaining
+legacy labels for compatibility.
+
+### Added
+
+- `plans[].canonical_family`: `Core VPS`, `Performance VPS`, `Max Performance VPS`,
+  legacy `Cloud VPS`, `Storage VPS`, `Dedicated Server`, or `Object Storage`.
+- `plans[].legacy_family` and `plans[].storage_policy`; `vds-*` remains addressable
+  as the legacy `Cloud VDS` family while its canonical family is `Max Performance VPS`.
+- Generic historical `cloud-vps-*` plans remain `Cloud VPS` and are not inferred
+  to be Core VPS; only `cloud-vps-core-*` receives the SSD-only policy.
+- Core VPS storage policy `ssd_only`; Performance VPS storage policy `nvme_only`.
+- `POST /api/v1/quote` accepts `owner_markup` and returns separate setup/tax/owner
+  fields. Selection deltas are validated against `contabo_configs.json` instead of
+  silently ignored.
+- `proposal.snapshot.v1` and `proposal.v1` are separate report/proposal contracts;
+  see [`docs/PROPOSAL-GENERATION.md`](docs/PROPOSAL-GENERATION.md).
+- The active catalog currently excludes the three historical Object Storage
+  fragment URLs because the live endpoint redirects to Storage VPS; the
+  Object Storage fields remain additive for retained historical snapshots.
+
+### Migration
+
+No destructive migration is required. Consumers may continue using `family` and
+existing VDS slugs. New consumers should prefer `canonical_family` and preserve
+`legacy_family` in audit views. Owner markup defaults to zero, so old quote
+requests retain their previous monthly result; setup totals are now calculated
+consistently through tax and currency adjustments.
+
+---
+
 ## API 1.2 — current
 
 Adds two new product families and per-family typing so the dataset is unified across
