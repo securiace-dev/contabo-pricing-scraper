@@ -352,7 +352,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_bump_version_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_bump_version_sh__entry",
       "community": 186,
       "norm_label": "bump-version.sh script"
     },
@@ -850,7 +850,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_deploy_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_deploy_sh__entry",
       "community": 159,
       "norm_label": "deploy.sh script"
     },
@@ -878,7 +878,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_extract_changelog_section_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_extract_changelog_section_sh__entry",
       "community": 223,
       "norm_label": "extract-changelog-section.sh script"
     },
@@ -1006,7 +1006,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_inspect_github_release_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_inspect_github_release_sh__entry",
       "community": 230,
       "norm_label": "inspect-github-release.sh script"
     },
@@ -1072,7 +1072,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_live_schema_smoke_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_live_schema_smoke_sh__entry",
       "community": 187,
       "norm_label": "live-schema-smoke.sh script"
     },
@@ -1100,7 +1100,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_local_whmcs_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_local_whmcs_sh__entry",
       "community": 147,
       "norm_label": "local-whmcs.sh script"
     },
@@ -1128,7 +1128,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_package_whmcs_suite_sh__entry",
       "community": 201,
       "norm_label": "package-whmcs-suite.sh script"
     },
@@ -1240,7 +1240,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_predeploy_check_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_predeploy_check_sh__entry",
       "community": 171,
       "norm_label": "predeploy-check.sh script"
     },
@@ -1273,6 +1273,46 @@
       "norm_label": "stage()"
     },
     {
+      "label": "repair-whmcs-invoice-template.php",
+      "file_type": "code",
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "scripts_repair_whmcs_invoice_template",
+      "community": 46,
+      "norm_label": "repair-whmcs-invoice-template.php"
+    },
+    {
+      "label": "repairWhmcsInvoiceTemplate()",
+      "file_type": "code",
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "scripts_repair_whmcs_invoice_template_repairwhmcsinvoicetemplate",
+      "community": 46,
+      "norm_label": "repairwhmcsinvoicetemplate()"
+    },
+    {
+      "label": "assertWhmcsInvoiceTemplateRepaired()",
+      "file_type": "code",
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L66",
+      "_origin": "ast",
+      "id": "scripts_repair_whmcs_invoice_template_assertwhmcsinvoicetemplaterepaired",
+      "community": 46,
+      "norm_label": "assertwhmcsinvoicetemplaterepaired()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L90",
+      "_origin": "ast",
+      "id": "scripts_repair_whmcs_invoice_template_main",
+      "community": 46,
+      "norm_label": "main()"
+    },
+    {
       "label": "resolve-scraper-release.sh",
       "file_type": "code",
       "source_file": "scripts/resolve-scraper-release.sh",
@@ -1296,7 +1336,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_resolve_scraper_release_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_resolve_scraper_release_sh__entry",
       "community": 224,
       "norm_label": "resolve-scraper-release.sh script"
     },
@@ -1394,7 +1434,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_setup_memory_tools_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_setup_memory_tools_sh__entry",
       "community": 180,
       "norm_label": "setup-memory-tools.sh script"
     },
@@ -1436,7 +1476,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_resolve_scraper_release_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_resolve_scraper_release_sh__entry",
       "community": 234,
       "norm_label": "test-resolve-scraper-release.sh script"
     },
@@ -1492,7 +1532,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_whmcs_release_contract_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_whmcs_release_contract_sh__entry",
       "community": 222,
       "norm_label": "test-whmcs-release-contract.sh script"
     },
@@ -1548,7 +1588,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_workflow_trust_contract_sh__entry",
       "community": 236,
       "norm_label": "test-workflow-trust-contract.sh script"
     },
@@ -1632,7 +1672,7 @@
         "kind": "bash_entrypoint"
       },
       "_origin": "ast",
-      "id": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_whmcs_integration_smoke_sh__entry",
+      "id": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_whmcs_integration_smoke_sh__entry",
       "community": 188,
       "norm_label": "whmcs-integration-smoke.sh script"
     },
@@ -4127,6 +4167,16 @@
       "norm_label": "schema_constants_and_documentation_are_aligned()"
     },
     {
+      "label": "whmcs_invoice_template_repair_test.php",
+      "file_type": "code",
+      "source_file": "tests/whmcs_invoice_template_repair_test.php",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tests_whmcs_invoice_template_repair_test",
+      "community": 217,
+      "norm_label": "whmcs_invoice_template_repair_test.php"
+    },
+    {
       "label": "ajax.php",
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/ajax.php",
@@ -5053,7 +5103,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_admincontroller",
-      "community": 99,
+      "community": 28,
       "norm_label": "admincontroller.php"
     },
     {
@@ -5063,7 +5113,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller",
-      "community": 99,
+      "community": 28,
       "norm_label": "admincontroller"
     },
     {
@@ -5073,7 +5123,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_construct",
-      "community": 99,
+      "community": 208,
       "norm_label": ".__construct()"
     },
     {
@@ -5083,7 +5133,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_admincontroller_php_settings",
-      "community": 99,
+      "community": 208,
       "norm_label": "settings"
     },
     {
@@ -5143,7 +5193,7 @@
       "source_location": "L194",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_ajaxmetaprobe",
-      "community": 99,
+      "community": 86,
       "norm_label": ".ajaxmetaprobe()"
     },
     {
@@ -5183,7 +5233,7 @@
       "source_location": "L331",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_buildconfiguratorcontrols",
-      "community": 99,
+      "community": 28,
       "norm_label": ".buildconfiguratorcontrols()"
     },
     {
@@ -5193,7 +5243,7 @@
       "source_location": "L396",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_finalizecontrol",
-      "community": 99,
+      "community": 28,
       "norm_label": ".finalizecontrol()"
     },
     {
@@ -5223,7 +5273,7 @@
       "source_location": "L520",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_profiles",
-      "community": 46,
+      "community": 28,
       "norm_label": ".profiles()"
     },
     {
@@ -5273,7 +5323,7 @@
       "source_location": "L694",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_annotatedrift",
-      "community": 46,
+      "community": 28,
       "norm_label": ".annotatedrift()"
     },
     {
@@ -5283,7 +5333,7 @@
       "source_location": "L740",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_currenteffectivemonthly",
-      "community": 46,
+      "community": 28,
       "norm_label": ".currenteffectivemonthly()"
     },
     {
@@ -5403,7 +5453,7 @@
       "source_location": "L1081",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_configpreview",
-      "community": 99,
+      "community": 28,
       "norm_label": ".configpreview()"
     },
     {
@@ -5413,7 +5463,7 @@
       "source_location": "L1182",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_defaultselectionfromspecs",
-      "community": 99,
+      "community": 28,
       "norm_label": ".defaultselectionfromspecs()"
     },
     {
@@ -5423,7 +5473,7 @@
       "source_location": "L1216",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_mappedproductsforprofile",
-      "community": 99,
+      "community": 28,
       "norm_label": ".mappedproductsforprofile()"
     },
     {
@@ -5473,7 +5523,7 @@
       "source_location": "L1520",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_profileplanspecs",
-      "community": 99,
+      "community": 28,
       "norm_label": ".profileplanspecs()"
     },
     {
@@ -5483,7 +5533,7 @@
       "source_location": "L1549",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_mergespecrows",
-      "community": 99,
+      "community": 28,
       "norm_label": ".mergespecrows()"
     },
     {
@@ -5493,7 +5543,7 @@
       "source_location": "L1572",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_editorprofilemissing",
-      "community": 99,
+      "community": 28,
       "norm_label": ".editorprofilemissing()"
     },
     {
@@ -5503,7 +5553,7 @@
       "source_location": "L1587",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_capabilityeditor",
-      "community": 99,
+      "community": 28,
       "norm_label": ".capabilityeditor()"
     },
     {
@@ -5523,7 +5573,7 @@
       "source_location": "L1663",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_compatibilityeditor",
-      "community": 99,
+      "community": 28,
       "norm_label": ".compatibilityeditor()"
     },
     {
@@ -5543,7 +5593,7 @@
       "source_location": "L1749",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_splitvaluelist",
-      "community": 99,
+      "community": 28,
       "norm_label": ".splitvaluelist()"
     },
     {
@@ -5563,7 +5613,7 @@
       "source_location": "L1831",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_mappingsave",
-      "community": 19,
+      "community": 26,
       "norm_label": ".mappingsave()"
     },
     {
@@ -5593,7 +5643,7 @@
       "source_location": "L1952",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_coercemask",
-      "community": 19,
+      "community": 26,
       "norm_label": ".coercemask()"
     },
     {
@@ -5603,7 +5653,7 @@
       "source_location": "L1971",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_coercejsonobject",
-      "community": 19,
+      "community": 26,
       "norm_label": ".coercejsonobject()"
     },
     {
@@ -5743,7 +5793,7 @@
       "source_location": "L2346",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_admincontroller_php_throwable",
-      "community": 19,
+      "community": 26,
       "norm_label": "throwable"
     },
     {
@@ -5803,7 +5853,7 @@
       "source_location": "L2563",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_approvalpendingquery",
-      "community": 99,
+      "community": 28,
       "norm_label": ".approvalpendingquery()"
     },
     {
@@ -5843,7 +5893,7 @@
       "source_location": "L2795",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_ajaxapprovalcount",
-      "community": 99,
+      "community": 28,
       "norm_label": ".ajaxapprovalcount()"
     },
     {
@@ -5883,7 +5933,7 @@
       "source_location": "L2856",
       "_origin": "ast",
       "id": "lib_admincontroller_admincontroller_rendersaveerror",
-      "community": 19,
+      "community": 26,
       "norm_label": ".rendersaveerror()"
     },
     {
@@ -6223,7 +6273,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_auditlog",
-      "community": 7,
+      "community": 148,
       "norm_label": "auditlog.php"
     },
     {
@@ -6233,7 +6283,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "lib_auditlog_auditlog",
-      "community": 7,
+      "community": 148,
       "norm_label": "auditlog"
     },
     {
@@ -6243,7 +6293,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "lib_auditlog_auditlog_prune",
-      "community": 7,
+      "community": 148,
       "norm_label": ".prune()"
     },
     {
@@ -6253,7 +6303,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "lib_auditlog_auditlog_recent",
-      "community": 7,
+      "community": 148,
       "norm_label": ".recent()"
     },
     {
@@ -8743,7 +8793,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_optionauditlog",
-      "community": 218,
+      "community": 37,
       "norm_label": "optionauditlog.php"
     },
     {
@@ -8753,7 +8803,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "lib_optionauditlog_optionauditlog",
-      "community": 218,
+      "community": 37,
       "norm_label": "optionauditlog"
     },
     {
@@ -8763,7 +8813,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "lib_optionauditlog_optionauditlog_construct",
-      "community": 218,
+      "community": 37,
       "norm_label": ".__construct()"
     },
     {
@@ -8773,7 +8823,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "lib_optionauditlog_optionauditlog_batchid",
-      "community": 218,
+      "community": 37,
       "norm_label": ".batchid()"
     },
     {
@@ -8783,7 +8833,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "lib_optionauditlog_optionauditlog_record",
-      "community": 218,
+      "community": 37,
       "norm_label": ".record()"
     },
     {
@@ -8793,7 +8843,7 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "lib_optionauditlog_optionauditlog_observe",
-      "community": 218,
+      "community": 37,
       "norm_label": ".observe()"
     },
     {
@@ -8803,7 +8853,7 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "lib_optionauditlog_optionauditlog_storerow",
-      "community": 218,
+      "community": 37,
       "norm_label": ".storerow()"
     },
     {
@@ -8813,7 +8863,7 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "lib_optionauditlog_optionauditlog_encode",
-      "community": 218,
+      "community": 37,
       "norm_label": ".encode()"
     },
     {
@@ -9393,7 +9443,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_profilemanager",
-      "community": 233,
+      "community": 109,
       "norm_label": "profilemanager.php"
     },
     {
@@ -9403,7 +9453,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_profilemanager_profileslugconflictexception",
-      "community": 233,
+      "community": 109,
       "norm_label": "profileslugconflictexception"
     },
     {
@@ -9413,7 +9463,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "lib_profilemanager_profileslugconflictexception_construct",
-      "community": 233,
+      "community": 109,
       "norm_label": ".__construct()"
     },
     {
@@ -9423,7 +9473,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager",
-      "community": 7,
+      "community": 45,
       "norm_label": "profilemanager"
     },
     {
@@ -9433,7 +9483,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_construct",
-      "community": 7,
+      "community": 45,
       "norm_label": ".__construct()"
     },
     {
@@ -9443,7 +9493,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_profilemanager_php_settings",
-      "community": 7,
+      "community": 45,
       "norm_label": "settings"
     },
     {
@@ -9453,7 +9503,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listprofiles",
-      "community": 7,
+      "community": 45,
       "norm_label": ".listprofiles()"
     },
     {
@@ -9463,7 +9513,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listtrashed",
-      "community": 7,
+      "community": 45,
       "norm_label": ".listtrashed()"
     },
     {
@@ -9473,7 +9523,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_softdelete",
-      "community": 7,
+      "community": 45,
       "norm_label": ".softdelete()"
     },
     {
@@ -9483,7 +9533,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_restore",
-      "community": 7,
+      "community": 45,
       "norm_label": ".restore()"
     },
     {
@@ -9493,7 +9543,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_find",
-      "community": 7,
+      "community": 45,
       "norm_label": ".find()"
     },
     {
@@ -9503,7 +9553,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_findbyslug",
-      "community": 7,
+      "community": 45,
       "norm_label": ".findbyslug()"
     },
     {
@@ -9513,7 +9563,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_create",
-      "community": 7,
+      "community": 45,
       "norm_label": ".create()"
     },
     {
@@ -9523,7 +9573,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_update",
-      "community": 7,
+      "community": 45,
       "norm_label": ".update()"
     },
     {
@@ -9533,7 +9583,7 @@
       "source_location": "L199",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_setactive",
-      "community": 7,
+      "community": 45,
       "norm_label": ".setactive()"
     },
     {
@@ -9543,7 +9593,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_appendversion",
-      "community": 7,
+      "community": 45,
       "norm_label": ".appendversion()"
     },
     {
@@ -9553,7 +9603,7 @@
       "source_location": "L205",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_profilemanager_php_profileversioninput",
-      "community": 7,
+      "community": 45,
       "norm_label": "profileversioninput"
     },
     {
@@ -9563,7 +9613,7 @@
       "source_location": "L243",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_latestversion",
-      "community": 7,
+      "community": 45,
       "norm_label": ".latestversion()"
     },
     {
@@ -9573,7 +9623,7 @@
       "source_location": "L253",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_listversions",
-      "community": 7,
+      "community": 45,
       "norm_label": ".listversions()"
     },
     {
@@ -10393,7 +10443,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_selectionvalidator",
-      "community": 225,
+      "community": 103,
       "norm_label": "selectionvalidator.php"
     },
     {
@@ -10403,7 +10453,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "lib_selectionvalidator_selectionvalidator",
-      "community": 225,
+      "community": 103,
       "norm_label": "selectionvalidator"
     },
     {
@@ -10413,7 +10463,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "lib_selectionvalidator_selectionvalidator_construct",
-      "community": 225,
+      "community": 103,
       "norm_label": ".__construct()"
     },
     {
@@ -10423,7 +10473,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "configoptioncompatibilityrepository",
-      "community": 17,
+      "community": 103,
       "norm_label": "configoptioncompatibilityrepository"
     },
     {
@@ -10433,7 +10483,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_selectionvalidator_php_configoptioncapabilityrepository",
-      "community": 225,
+      "community": 103,
       "norm_label": "configoptioncapabilityrepository"
     },
     {
@@ -10443,7 +10493,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "lib_selectionvalidator_selectionvalidator_validate",
-      "community": 225,
+      "community": 103,
       "norm_label": ".validate()"
     },
     {
@@ -11263,7 +11313,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench",
-      "community": 45,
+      "community": 7,
       "norm_label": "vpsoperationsworkbench"
     },
     {
@@ -11273,7 +11323,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_overview",
-      "community": 45,
+      "community": 7,
       "norm_label": ".overview()"
     },
     {
@@ -11283,7 +11333,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_operationdetail",
-      "community": 45,
+      "community": 7,
       "norm_label": ".operationdetail()"
     },
     {
@@ -11293,7 +11343,7 @@
       "source_location": "L208",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_queuecommand",
-      "community": 45,
+      "community": 7,
       "norm_label": ".queuecommand()"
     },
     {
@@ -11303,7 +11353,7 @@
       "source_location": "L319",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_certifycapability",
-      "community": 45,
+      "community": 7,
       "norm_label": ".certifycapability()"
     },
     {
@@ -11313,7 +11363,7 @@
       "source_location": "L365",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_operationcounts",
-      "community": 45,
+      "community": 7,
       "norm_label": ".operationcounts()"
     },
     {
@@ -11323,7 +11373,7 @@
       "source_location": "L394",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_openfindings",
-      "community": 45,
+      "community": 7,
       "norm_label": ".openfindings()"
     },
     {
@@ -11333,7 +11383,7 @@
       "source_location": "L410",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_rows",
-      "community": 45,
+      "community": 7,
       "norm_label": ".rows()"
     },
     {
@@ -11343,7 +11393,7 @@
       "source_location": "L420",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_firstrow",
-      "community": 45,
+      "community": 7,
       "norm_label": ".firstrow()"
     },
     {
@@ -11353,7 +11403,7 @@
       "source_location": "L430",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_whererows",
-      "community": 45,
+      "community": 7,
       "norm_label": ".whererows()"
     },
     {
@@ -11363,7 +11413,7 @@
       "source_location": "L446",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_provideraccounts",
-      "community": 45,
+      "community": 7,
       "norm_label": ".provideraccounts()"
     },
     {
@@ -11373,7 +11423,7 @@
       "source_location": "L468",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_schemasetting",
-      "community": 45,
+      "community": 7,
       "norm_label": ".schemasetting()"
     },
     {
@@ -11383,7 +11433,7 @@
       "source_location": "L475",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_capabilitywritesettings",
-      "community": 45,
+      "community": 7,
       "norm_label": ".capabilitywritesettings()"
     },
     {
@@ -11393,7 +11443,7 @@
       "source_location": "L489",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_uuid",
-      "community": 45,
+      "community": 7,
       "norm_label": ".uuid()"
     },
     {
@@ -12123,7 +12173,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest",
-      "community": 208,
+      "community": 109,
       "norm_label": "catalogimportservicetest.php"
     },
     {
@@ -12133,7 +12183,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest",
-      "community": 208,
+      "community": 149,
       "norm_label": "catalogimportservicetest"
     },
     {
@@ -12143,7 +12193,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_setup",
-      "community": 208,
+      "community": 149,
       "norm_label": ".setup()"
     },
     {
@@ -12153,7 +12203,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testimportsonlyaddonownedversionanditems",
-      "community": 208,
+      "community": 149,
       "norm_label": ".testimportsonlyaddonownedversionanditems()"
     },
     {
@@ -12163,7 +12213,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testrepeatingsameversionandhashisnoop",
-      "community": 208,
+      "community": 149,
       "norm_label": ".testrepeatingsameversionandhashisnoop()"
     },
     {
@@ -12173,7 +12223,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testtamperedenvelopeisrejectedbeforewrite",
-      "community": 208,
+      "community": 149,
       "norm_label": ".testtamperedenvelopeisrejectedbeforewrite()"
     },
     {
@@ -12183,7 +12233,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_catalog",
-      "community": 208,
+      "community": 149,
       "norm_label": ".catalog()"
     },
     {
@@ -12483,7 +12533,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_configoptioncompatibilityrepositorytest",
-      "community": 17,
+      "community": 103,
       "norm_label": "configoptioncompatibilityrepositorytest.php"
     },
     {
@@ -14203,7 +14253,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest",
-      "community": 220,
+      "community": 17,
       "norm_label": "emailtemplateseedertest.php"
     },
     {
@@ -14213,7 +14263,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest",
-      "community": 220,
+      "community": 17,
       "norm_label": "emailtemplateseedertest"
     },
     {
@@ -14223,7 +14273,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_setup",
-      "community": 220,
+      "community": 17,
       "norm_label": ".setup()"
     },
     {
@@ -14233,7 +14283,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_testlifecycletemplatesareinstalledwithoutcredentials",
-      "community": 220,
+      "community": 17,
       "norm_label": ".testlifecycletemplatesareinstalledwithoutcredentials()"
     },
     {
@@ -14243,7 +14293,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_testseedingandmigrationareidempotent",
-      "community": 220,
+      "community": 17,
       "norm_label": ".testseedingandmigrationareidempotent()"
     },
     {
@@ -14253,7 +14303,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_testmigrationdoesnotoverwriteadministratorcustomisation",
-      "community": 220,
+      "community": 17,
       "norm_label": ".testmigrationdoesnotoverwriteadministratorcustomisation()"
     },
     {
@@ -16873,7 +16923,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest",
-      "community": 17,
+      "community": 103,
       "norm_label": "profileconfigwiringtest.php"
     },
     {
@@ -16883,7 +16933,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest_profileconfigwiringtest",
-      "community": 128,
+      "community": 103,
       "norm_label": "profileconfigwiringtest"
     },
     {
@@ -16893,7 +16943,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest_profileconfigwiringtest_setup",
-      "community": 128,
+      "community": 103,
       "norm_label": ".setup()"
     },
     {
@@ -16903,7 +16953,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest_profileconfigwiringtest_baseinput",
-      "community": 128,
+      "community": 103,
       "norm_label": ".baseinput()"
     },
     {
@@ -16913,7 +16963,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest_profileconfigwiringtest_testprofilemodedefaultstofixedandexposetoone",
-      "community": 128,
+      "community": 103,
       "norm_label": ".testprofilemodedefaultstofixedandexposetoone()"
     },
     {
@@ -16923,7 +16973,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest_profileconfigwiringtest_testconfigurablemodeandexposezeropersist",
-      "community": 128,
+      "community": 103,
       "norm_label": ".testconfigurablemodeandexposezeropersist()"
     },
     {
@@ -16933,7 +16983,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest_profileconfigwiringtest_testupdatewhitelistdropsunknowncolumns",
-      "community": 128,
+      "community": 103,
       "norm_label": ".testupdatewhitelistdropsunknowncolumns()"
     },
     {
@@ -16943,7 +16993,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest_profileconfigwiringtest_testcapabilitylistforplanroundtrip",
-      "community": 128,
+      "community": 103,
       "norm_label": ".testcapabilitylistforplanroundtrip()"
     },
     {
@@ -16953,7 +17003,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest_profileconfigwiringtest_testcompatibilitylistforplanandvalidate",
-      "community": 128,
+      "community": 103,
       "norm_label": ".testcompatibilitylistforplanandvalidate()"
     },
     {
@@ -16963,7 +17013,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_profilecreatetest",
-      "community": 148,
+      "community": 203,
       "norm_label": "profilecreatetest.php"
     },
     {
@@ -16973,7 +17023,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_profilecreatetest_profilecreatetest",
-      "community": 148,
+      "community": 203,
       "norm_label": "profilecreatetest"
     },
     {
@@ -16983,7 +17033,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_profilecreatetest_profilecreatetest_setup",
-      "community": 148,
+      "community": 203,
       "norm_label": ".setup()"
     },
     {
@@ -16993,7 +17043,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_profilecreatetest_profilecreatetest_input",
-      "community": 148,
+      "community": 203,
       "norm_label": ".input()"
     },
     {
@@ -17003,7 +17053,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "tests_profilecreatetest_profilecreatetest_testfirstcreateinsertswithidentitycolumns",
-      "community": 148,
+      "community": 203,
       "norm_label": ".testfirstcreateinsertswithidentitycolumns()"
     },
     {
@@ -17013,7 +17063,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "tests_profilecreatetest_profilecreatetest_testduplicateslugsamefingerprintloadsexisting",
-      "community": 148,
+      "community": 203,
       "norm_label": ".testduplicateslugsamefingerprintloadsexisting()"
     },
     {
@@ -17023,7 +17073,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "tests_profilecreatetest_profilecreatetest_testduplicateslugdifferentfingerprintreturnsconflict",
-      "community": 148,
+      "community": 203,
       "norm_label": ".testduplicateslugdifferentfingerprintreturnsconflict()"
     },
     {
@@ -17033,7 +17083,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "tests_profilecreatetest_profilecreatetest_testslugsuffixgeneration",
-      "community": 148,
+      "community": 203,
       "norm_label": ".testslugsuffixgeneration()"
     },
     {
@@ -17043,7 +17093,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "tests_profilecreatetest_profilecreatetest_testlegacyrowwithoutfingerprintprefersloadedexisting",
-      "community": 148,
+      "community": 203,
       "norm_label": ".testlegacyrowwithoutfingerprintprefersloadedexisting()"
     },
     {
@@ -18223,7 +18273,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_selectionvalidatortest",
-      "community": 17,
+      "community": 103,
       "norm_label": "selectionvalidatortest.php"
     },
     {
@@ -18453,7 +18503,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_servicepricewritertest",
-      "community": 17,
+      "community": 90,
       "norm_label": "servicepricewritertest.php"
     },
     {
@@ -18463,7 +18513,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest",
-      "community": 17,
+      "community": 90,
       "norm_label": "servicepricewritertest"
     },
     {
@@ -18473,7 +18523,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_setup",
-      "community": 17,
+      "community": 90,
       "norm_label": ".setup()"
     },
     {
@@ -18483,7 +18533,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_teardown",
-      "community": 17,
+      "community": 90,
       "norm_label": ".teardown()"
     },
     {
@@ -18493,7 +18543,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_testdisabledinphaseawritesnothing",
-      "community": 17,
+      "community": 90,
       "norm_label": ".testdisabledinphaseawritesnothing()"
     },
     {
@@ -18503,7 +18553,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_testlocalapipayloadusesrecurringamountparam",
-      "community": 17,
+      "community": 90,
       "norm_label": ".testlocalapipayloadusesrecurringamountparam()"
     },
     {
@@ -18513,7 +18563,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "tests_servicepricewritertest_servicepricewritertest_testrawfallbackwritesamountcolumn",
-      "community": 17,
+      "community": 90,
       "norm_label": ".testrawfallbackwritesamountcolumn()"
     },
     {
@@ -19803,7 +19853,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest",
-      "community": 227,
+      "community": 149,
       "norm_label": "vpsoperationsworkbenchtest.php"
     },
     {
@@ -19813,7 +19863,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest",
-      "community": 227,
+      "community": 149,
       "norm_label": "vpsoperationsworkbenchtest"
     },
     {
@@ -19823,7 +19873,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest_setup",
-      "community": 227,
+      "community": 149,
       "norm_label": ".setup()"
     },
     {
@@ -19833,7 +19883,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest_testrecoveryrequestisappendonlyandhashprotected",
-      "community": 227,
+      "community": 149,
       "norm_label": ".testrecoveryrequestisappendonlyandhashprotected()"
     },
     {
@@ -19843,7 +19893,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest_testenablingwritesrequiresexactconfirmation",
-      "community": 227,
+      "community": 149,
       "norm_label": ".testenablingwritesrequiresexactconfirmation()"
     },
     {
@@ -19853,7 +19903,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "tests_vpsoperationsworkbenchtest_vpsoperationsworkbenchtest_testcapabilitycertificationandwriteswitchremainseparate",
-      "community": 227,
+      "community": 149,
       "norm_label": ".testcapabilitycertificationandwriteswitchremainseparate()"
     },
     {
@@ -20263,7 +20313,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_admincustombuttonarray",
-      "community": 90,
+      "community": 17,
       "norm_label": "contabo_vps_admincustombuttonarray()"
     },
     {
@@ -20273,7 +20323,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_buttonstart",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_buttonstart()"
     },
     {
@@ -20283,7 +20333,7 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_buttonstop",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_buttonstop()"
     },
     {
@@ -20313,7 +20363,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_buttonreinstall",
-      "community": 15,
+      "community": 39,
       "norm_label": "contabo_vps_buttonreinstall()"
     },
     {
@@ -20343,7 +20393,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientareacustombuttonarray",
-      "community": 90,
+      "community": 15,
       "norm_label": "contabo_vps_clientareacustombuttonarray()"
     },
     {
@@ -20353,7 +20403,7 @@
       "source_location": "L122",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientstart",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_clientstart()"
     },
     {
@@ -20363,7 +20413,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientstop",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_clientstop()"
     },
     {
@@ -20373,7 +20423,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientrestart",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_clientrestart()"
     },
     {
@@ -20383,7 +20433,7 @@
       "source_location": "L140",
       "_origin": "ast",
       "id": "contabo_vps_contabo_vps_contabo_vps_clientresetpassword",
-      "community": 15,
+      "community": 91,
       "norm_label": "contabo_vps_clientresetpassword()"
     },
     {
@@ -20793,7 +20843,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_capabilityregistry",
-      "community": 73,
+      "community": 175,
       "norm_label": "capabilityregistry.php"
     },
     {
@@ -20803,7 +20853,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_capabilityregistry_capabilityregistry",
-      "community": 73,
+      "community": 175,
       "norm_label": "capabilityregistry"
     },
     {
@@ -20813,7 +20863,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_capabilityregistry_capabilityregistry_assertwriteallowed",
-      "community": 73,
+      "community": 175,
       "norm_label": ".assertwriteallowed()"
     },
     {
@@ -20823,7 +20873,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "lib_capabilityregistry_capabilityregistry_canread",
-      "community": 73,
+      "community": 175,
       "norm_label": ".canread()"
     },
     {
@@ -20903,7 +20953,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_communicationservice",
-      "community": 42,
+      "community": 175,
       "norm_label": "communicationservice.php"
     },
     {
@@ -20913,7 +20963,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_communicationservice_communicationservice",
-      "community": 42,
+      "community": 175,
       "norm_label": "communicationservice"
     },
     {
@@ -20923,7 +20973,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_communicationservice_communicationservice_queueforoperation",
-      "community": 42,
+      "community": 175,
       "norm_label": ".queueforoperation()"
     },
     {
@@ -20933,7 +20983,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "lib_communicationservice_communicationservice_processqueue",
-      "community": 42,
+      "community": 175,
       "norm_label": ".processqueue()"
     },
     {
@@ -20943,7 +20993,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_configoptionresolver",
-      "community": 221,
+      "community": 198,
       "norm_label": "configoptionresolver.php"
     },
     {
@@ -20953,7 +21003,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "lib_configoptionresolver_configoptionresolver",
-      "community": 221,
+      "community": 198,
       "norm_label": "configoptionresolver"
     },
     {
@@ -20963,7 +21013,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "lib_configoptionresolver_configoptionresolver_selectionsforservice",
-      "community": 221,
+      "community": 198,
       "norm_label": ".selectionsforservice()"
     },
     {
@@ -20973,7 +21023,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "lib_configoptionresolver_configoptionresolver_linktablespresent",
-      "community": 221,
+      "community": 198,
       "norm_label": ".linktablespresent()"
     },
     {
@@ -21263,7 +21313,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception",
-      "community": 198,
+      "community": 109,
       "norm_label": "contaboprovisioningexception.php"
     },
     {
@@ -21273,7 +21323,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception",
-      "community": 198,
+      "community": 109,
       "norm_label": "contaboprovisioningexception"
     },
     {
@@ -21283,7 +21333,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception_construct",
-      "community": 198,
+      "community": 109,
       "norm_label": ".__construct()"
     },
     {
@@ -21293,7 +21343,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception_safecode",
-      "community": 198,
+      "community": 109,
       "norm_label": ".safecode()"
     },
     {
@@ -21303,7 +21353,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception_retryclassification",
-      "community": 198,
+      "community": 109,
       "norm_label": ".retryclassification()"
     },
     {
@@ -21313,7 +21363,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "lib_contaboprovisioningexception_contaboprovisioningexception_hasambiguousoutcome",
-      "community": 198,
+      "community": 109,
       "norm_label": ".hasambiguousoutcome()"
     },
     {
@@ -21713,7 +21763,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "lib_instanceservice_instanceservice_submitcreatefromsnapshot",
-      "community": 30,
+      "community": 228,
       "norm_label": ".submitcreatefromsnapshot()"
     },
     {
@@ -22083,7 +22133,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "ordersnapshotrepository",
-      "community": 122,
+      "community": 44,
       "norm_label": "ordersnapshotrepository"
     },
     {
@@ -22363,7 +22413,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "lib_operationprocessor_operationprocessor_construct",
-      "community": 217,
+      "community": 42,
       "norm_label": ".__construct()"
     },
     {
@@ -22373,7 +22423,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_operationprocessor_php_operationrepository",
-      "community": 217,
+      "community": 42,
       "norm_label": "operationrepository"
     },
     {
@@ -22383,7 +22433,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_operationprocessor_php_capabilityregistry",
-      "community": 217,
+      "community": 42,
       "norm_label": "capabilityregistry"
     },
     {
@@ -22393,7 +22443,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "whmcs_module_modules_servers_securiacevps_lib_operationprocessor_php_auditlogger",
-      "community": 217,
+      "community": 42,
       "norm_label": "auditlogger"
     },
     {
@@ -22403,7 +22453,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "billingsagarepository",
-      "community": 217,
+      "community": 42,
       "norm_label": "billingsagarepository"
     },
     {
@@ -22413,7 +22463,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "communicationservice",
-      "community": 217,
+      "community": 37,
       "norm_label": "communicationservice"
     },
     {
@@ -22763,7 +22813,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_ordersnapshotrepository",
-      "community": 73,
+      "community": 175,
       "norm_label": "ordersnapshotrepository.php"
     },
     {
@@ -22773,7 +22823,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_ordersnapshotrepository_ordersnapshotrepository",
-      "community": 73,
+      "community": 175,
       "norm_label": "ordersnapshotrepository"
     },
     {
@@ -22783,7 +22833,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_ordersnapshotrepository_ordersnapshotrepository_sealedforservice",
-      "community": 73,
+      "community": 175,
       "norm_label": ".sealedforservice()"
     },
     {
@@ -22963,7 +23013,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_schemaguard",
-      "community": 73,
+      "community": 175,
       "norm_label": "schemaguard.php"
     },
     {
@@ -22973,7 +23023,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard",
-      "community": 73,
+      "community": 175,
       "norm_label": "schemaguard"
     },
     {
@@ -22983,7 +23033,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard_assertready",
-      "community": 73,
+      "community": 175,
       "norm_label": ".assertready()"
     },
     {
@@ -22993,7 +23043,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard_assertproviderwriteenabled",
-      "community": 73,
+      "community": 175,
       "norm_label": ".assertproviderwriteenabled()"
     },
     {
@@ -23003,7 +23053,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard_installationid",
-      "community": 73,
+      "community": 175,
       "norm_label": ".installationid()"
     },
     {
@@ -23013,7 +23063,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard_setting",
-      "community": 73,
+      "community": 175,
       "norm_label": ".setting()"
     },
     {
@@ -23173,7 +23223,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_testconnection",
-      "community": 15,
+      "community": 91,
       "norm_label": "securiacevps_testconnection()"
     },
     {
@@ -23193,7 +23243,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_suspendaccount",
-      "community": 91,
+      "community": 96,
       "norm_label": "securiacevps_suspendaccount()"
     },
     {
@@ -23233,7 +23283,7 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_admincustombuttonarray",
-      "community": 90,
+      "community": 17,
       "norm_label": "securiacevps_admincustombuttonarray()"
     },
     {
@@ -23273,7 +23323,7 @@
       "source_location": "L201",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_buttonresetpassword",
-      "community": 90,
+      "community": 91,
       "norm_label": "securiacevps_buttonresetpassword()"
     },
     {
@@ -23283,7 +23333,7 @@
       "source_location": "L207",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_buttonreinstall",
-      "community": 91,
+      "community": 39,
       "norm_label": "securiacevps_buttonreinstall()"
     },
     {
@@ -23303,7 +23353,7 @@
       "source_location": "L225",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_adminservicestabfields",
-      "community": 91,
+      "community": 56,
       "norm_label": "securiacevps_adminservicestabfields()"
     },
     {
@@ -23313,7 +23363,7 @@
       "source_location": "L263",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_clientareacustombuttonarray",
-      "community": 90,
+      "community": 15,
       "norm_label": "securiacevps_clientareacustombuttonarray()"
     },
     {
@@ -23423,7 +23473,7 @@
       "source_location": "L530",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_cached_ip",
-      "community": 91,
+      "community": 56,
       "norm_label": "_securiacevps_cached_ip()"
     },
     {
@@ -23443,7 +23493,7 @@
       "source_location": "L581",
       "_origin": "ast",
       "id": "securiacevps_securiacevps_securiacevps_sanitize",
-      "community": 91,
+      "community": 228,
       "norm_label": "_securiacevps_sanitize()"
     },
     {
@@ -23813,7 +23863,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_communicationservicetest",
-      "community": 217,
+      "community": 37,
       "norm_label": "communicationservicetest.php"
     },
     {
@@ -23823,7 +23873,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_communicationservicetest_communicationservicetest",
-      "community": 217,
+      "community": 37,
       "norm_label": "communicationservicetest"
     },
     {
@@ -23833,7 +23883,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "tests_communicationservicetest_communicationservicetest_setup",
-      "community": 217,
+      "community": 37,
       "norm_label": ".setup()"
     },
     {
@@ -23843,7 +23893,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_communicationservicetest_communicationservicetest_teardown",
-      "community": 217,
+      "community": 37,
       "norm_label": ".teardown()"
     },
     {
@@ -23853,7 +23903,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "tests_communicationservicetest_communicationservicetest_testreadymessageisqueuedoncewithoutsecretpayload",
-      "community": 217,
+      "community": 37,
       "norm_label": ".testreadymessageisqueuedoncewithoutsecretpayload()"
     },
     {
@@ -23863,7 +23913,7 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "tests_communicationservicetest_communicationservicetest_testonlyeligibleoperationtransitionscreatemessages",
-      "community": 217,
+      "community": 37,
       "norm_label": ".testonlyeligibleoperationtransitionscreatemessages()"
     },
     {
@@ -23873,7 +23923,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "tests_communicationservicetest_communicationservicetest_testqueuesendsthroughwhmcsproductemailcontract",
-      "community": 217,
+      "community": 37,
       "norm_label": ".testqueuesendsthroughwhmcsproductemailcontract()"
     },
     {
@@ -23883,7 +23933,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "tests_communicationservicetest_communicationservicetest_testdeliveryfailureretriesthenrequiresoperatorattention",
-      "community": 217,
+      "community": 37,
       "norm_label": ".testdeliveryfailureretriesthenrequiresoperatorattention()"
     },
     {
@@ -23893,7 +23943,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "tests_communicationservicetest_communicationservicetest_testexpiredsendingclaimisrecoveredwithnewfencingtoken",
-      "community": 217,
+      "community": 37,
       "norm_label": ".testexpiredsendingclaimisrecoveredwithnewfencingtoken()"
     },
     {
@@ -23903,7 +23953,7 @@
       "source_location": "L143",
       "_origin": "ast",
       "id": "tests_communicationservicetest_communicationservicetest_operation",
-      "community": 217,
+      "community": 37,
       "norm_label": ".operation()"
     },
     {
@@ -24033,7 +24083,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest",
-      "community": 17,
+      "community": 128,
       "norm_label": "directmutationbypasstest.php"
     },
     {
@@ -24043,7 +24093,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest",
-      "community": 17,
+      "community": 128,
       "norm_label": "directmutationbypasstest"
     },
     {
@@ -24053,7 +24103,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest_setup",
-      "community": 17,
+      "community": 128,
       "norm_label": ".setup()"
     },
     {
@@ -24063,7 +24113,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest_teardown",
-      "community": 17,
+      "community": 128,
       "norm_label": ".teardown()"
     },
     {
@@ -24073,7 +24123,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest_testlegacymutationmethodscannotreachtheprovider",
-      "community": 17,
+      "community": 128,
       "norm_label": ".testlegacymutationmethodscannotreachtheprovider()"
     },
     {
@@ -24903,7 +24953,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "tests_logredactiontest_logredactiontest_testloggermaskssecretbearingrequests",
-      "community": 228,
+      "community": 91,
       "norm_label": ".testloggermaskssecretbearingrequests()"
     },
     {
@@ -24923,7 +24973,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_nativefoundationtest",
-      "community": 122,
+      "community": 44,
       "norm_label": "nativefoundationtest.php"
     },
     {
@@ -24953,7 +25003,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testschemaguardfailsclosedwhensuitetablesareabsent",
-      "community": 73,
+      "community": 175,
       "norm_label": ".testschemaguardfailsclosedwhensuitetablesareabsent()"
     },
     {
@@ -25423,7 +25473,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_reinstallflowtest",
-      "community": 90,
+      "community": 17,
       "norm_label": "reinstallflowtest.php"
     },
     {
@@ -25433,7 +25483,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "tests_reinstallflowtest_reinstallflowtest",
-      "community": 90,
+      "community": 17,
       "norm_label": "reinstallflowtest"
     },
     {
@@ -25443,7 +25493,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_reinstallflowtest_reinstallflowtest_teardown",
-      "community": 90,
+      "community": 17,
       "norm_label": ".teardown()"
     },
     {
@@ -25453,7 +25503,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_reinstallflowtest_reinstallflowtest_testadminreinstallcallbackdelegatestodurablelifecycle",
-      "community": 90,
+      "community": 39,
       "norm_label": ".testadminreinstallcallbackdelegatestodurablelifecycle()"
     },
     {
@@ -25463,7 +25513,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "tests_reinstallflowtest_reinstallflowtest_testuncertifiedreinstallisnotadvertisedasanadminbutton",
-      "community": 90,
+      "community": 17,
       "norm_label": ".testuncertifiedreinstallisnotadvertisedasanadminbutton()"
     },
     {
@@ -25473,7 +25523,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_resetpasswordflowtest",
-      "community": 90,
+      "community": 17,
       "norm_label": "resetpasswordflowtest.php"
     },
     {
@@ -25483,7 +25533,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_resetpasswordflowtest_resetpasswordflowtest",
-      "community": 90,
+      "community": 17,
       "norm_label": "resetpasswordflowtest"
     },
     {
@@ -25493,7 +25543,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_resetpasswordflowtest_resetpasswordflowtest_teardown",
-      "community": 90,
+      "community": 17,
       "norm_label": ".teardown()"
     },
     {
@@ -25503,7 +25553,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_resetpasswordflowtest_resetpasswordflowtest_testcustomercustombuttonsneverexposeuncertifiedreset",
-      "community": 90,
+      "community": 15,
       "norm_label": ".testcustomercustombuttonsneverexposeuncertifiedreset()"
     },
     {
@@ -25513,7 +25563,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_resetpasswordflowtest_resetpasswordflowtest_testadmincustombuttonskeeponlyreadonlysync",
-      "community": 90,
+      "community": 17,
       "norm_label": ".testadmincustombuttonskeeponlyreadonlysync()"
     },
     {
@@ -25523,7 +25573,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "tests_resetpasswordflowtest_resetpasswordflowtest_testresetcallbackdelegatestodurablelifecycle",
-      "community": 90,
+      "community": 39,
       "norm_label": ".testresetcallbackdelegatestodurablelifecycle()"
     },
     {
@@ -26090,7 +26140,7 @@
       "label": "[Cloud VPS 20](https://contabo.com/en/vps/cloud-vps-20/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L41",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "prices_cloud_vps_20_https_contabo_com_en_vps_cloud_vps_20",
       "community": 88,
@@ -26100,7 +26150,7 @@
       "label": "[Cloud VPS 30](https://contabo.com/en/vps/cloud-vps-30/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L63",
+      "source_location": "L62",
       "_origin": "ast",
       "id": "prices_cloud_vps_30_https_contabo_com_en_vps_cloud_vps_30",
       "community": 88,
@@ -26110,7 +26160,7 @@
       "label": "[Cloud VPS 40](https://contabo.com/en/vps/cloud-vps-40/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L85",
+      "source_location": "L84",
       "_origin": "ast",
       "id": "prices_cloud_vps_40_https_contabo_com_en_vps_cloud_vps_40",
       "community": 88,
@@ -26120,7 +26170,7 @@
       "label": "[Cloud VPS 50](https://contabo.com/en/vps/cloud-vps-50/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L107",
+      "source_location": "L106",
       "_origin": "ast",
       "id": "prices_cloud_vps_50_https_contabo_com_en_vps_cloud_vps_50",
       "community": 88,
@@ -26130,7 +26180,7 @@
       "label": "[Cloud VPS 60](https://contabo.com/en/vps/cloud-vps-60/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L129",
+      "source_location": "L128",
       "_origin": "ast",
       "id": "prices_cloud_vps_60_https_contabo_com_en_vps_cloud_vps_60",
       "community": 88,
@@ -26140,7 +26190,7 @@
       "label": "\ud83d\udcbe Storage VPS",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L151",
+      "source_location": "L150",
       "_origin": "ast",
       "id": "prices_storage_vps",
       "community": 38,
@@ -26150,7 +26200,7 @@
       "label": "[Storage VPS 10](https://contabo.com/en/storage-vps/storage-vps-10/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L161",
+      "source_location": "L160",
       "_origin": "ast",
       "id": "prices_storage_vps_10_https_contabo_com_en_storage_vps_storage_vps_10",
       "community": 38,
@@ -26160,7 +26210,7 @@
       "label": "[Storage VPS 20](https://contabo.com/en/storage-vps/storage-vps-20/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L183",
+      "source_location": "L181",
       "_origin": "ast",
       "id": "prices_storage_vps_20_https_contabo_com_en_storage_vps_storage_vps_20",
       "community": 38,
@@ -26170,7 +26220,7 @@
       "label": "[Storage VPS 30](https://contabo.com/en/storage-vps/storage-vps-30/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L204",
+      "source_location": "L202",
       "_origin": "ast",
       "id": "prices_storage_vps_30_https_contabo_com_en_storage_vps_storage_vps_30",
       "community": 38,
@@ -26180,7 +26230,7 @@
       "label": "[Storage VPS 40](https://contabo.com/en/storage-vps/storage-vps-40/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L225",
+      "source_location": "L223",
       "_origin": "ast",
       "id": "prices_storage_vps_40_https_contabo_com_en_storage_vps_storage_vps_40",
       "community": 38,
@@ -26190,7 +26240,7 @@
       "label": "[Storage VPS 50](https://contabo.com/en/storage-vps/storage-vps-50/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L246",
+      "source_location": "L244",
       "_origin": "ast",
       "id": "prices_storage_vps_50_https_contabo_com_en_storage_vps_storage_vps_50",
       "community": 38,
@@ -26200,7 +26250,7 @@
       "label": "\ud83d\udda5\ufe0f Cloud VDS",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L267",
+      "source_location": "L265",
       "_origin": "ast",
       "id": "prices_cloud_vds",
       "community": 38,
@@ -26210,7 +26260,7 @@
       "label": "[Cloud VDS S](https://contabo.com/en/vds/vds-s/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L277",
+      "source_location": "L275",
       "_origin": "ast",
       "id": "prices_cloud_vds_s_https_contabo_com_en_vds_vds_s",
       "community": 38,
@@ -26220,7 +26270,7 @@
       "label": "[Cloud VDS M](https://contabo.com/en/vds/vds-m/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L299",
+      "source_location": "L297",
       "_origin": "ast",
       "id": "prices_cloud_vds_m_https_contabo_com_en_vds_vds_m",
       "community": 38,
@@ -26230,7 +26280,7 @@
       "label": "[Cloud VDS L](https://contabo.com/en/vds/vds-l/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L321",
+      "source_location": "L319",
       "_origin": "ast",
       "id": "prices_cloud_vds_l_https_contabo_com_en_vds_vds_l",
       "community": 38,
@@ -26240,7 +26290,7 @@
       "label": "[Cloud VDS XL](https://contabo.com/en/vds/vds-xl/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L343",
+      "source_location": "L341",
       "_origin": "ast",
       "id": "prices_cloud_vds_xl_https_contabo_com_en_vds_vds_xl",
       "community": 38,
@@ -26250,7 +26300,7 @@
       "label": "[Cloud VDS XXL](https://contabo.com/en/vds/vds-xxl/)",
       "file_type": "document",
       "source_file": "PRICES.md",
-      "source_location": "L365",
+      "source_location": "L363",
       "_origin": "ast",
       "id": "prices_cloud_vds_xxl_https_contabo_com_en_vds_vds_xxl",
       "community": 38,
@@ -30358,7 +30408,7 @@
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProfileManager.php",
       "source_location": "L28",
-      "community": 233,
+      "community": 109,
       "norm_label": ".__construct()",
       "id": "profilemanager_profileslugconflictexception_construct"
     },
@@ -30367,7 +30417,7 @@
       "file_type": "code",
       "source_file": "whmcs-module/modules/addons/contabo_pricing/lib/ProfileManager.php",
       "source_location": "L54",
-      "community": 7,
+      "community": 45,
       "norm_label": ".__construct()",
       "id": "profilemanager_profilemanager_construct"
     },
@@ -33216,9 +33266,9 @@
       "source_file": "scripts/bump-version.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_bump_version",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_bump_version_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_bump_version_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -33950,9 +34000,9 @@
       "source_file": "scripts/deploy.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_deploy",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_deploy_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_deploy_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -33960,9 +34010,9 @@
       "source_file": "scripts/extract-changelog-section.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_extract_changelog_section",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_extract_changelog_section_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_extract_changelog_section_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -34114,9 +34164,9 @@
       "source_file": "scripts/inspect-github-release.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_inspect_github_release",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_inspect_github_release_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_inspect_github_release_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34125,9 +34175,9 @@
       "source_location": "L63",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_inspect_github_release_sh__entry",
-      "target": "scripts_inspect_github_release_resolve_tag_commit"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_inspect_github_release_sh__entry",
+      "target": "scripts_inspect_github_release_resolve_tag_commit",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -34135,9 +34185,9 @@
       "source_file": "scripts/live-schema-smoke.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_live_schema_smoke_sh_scripts_live_schema_smoke",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_live_schema_smoke_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_live_schema_smoke_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -34145,9 +34195,9 @@
       "source_file": "scripts/local-whmcs.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_local_whmcs",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_local_whmcs_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_local_whmcs_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "defines",
@@ -34215,31 +34265,31 @@
       "source_file": "scripts/package-whmcs-suite.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_package_whmcs_suite",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_package_whmcs_suite_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/package-whmcs-suite.sh",
-      "source_location": "L71",
+      "source_location": "L96",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry",
-      "target": "scripts_package_whmcs_suite_checksum"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_package_whmcs_suite_sh__entry",
+      "target": "scripts_package_whmcs_suite_checksum",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/package-whmcs-suite.sh",
-      "source_location": "L66",
+      "source_location": "L91",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry",
-      "target": "scripts_package_whmcs_suite_copy_runtime_tree"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_package_whmcs_suite_sh__entry",
+      "target": "scripts_package_whmcs_suite_copy_runtime_tree",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34248,9 +34298,9 @@
       "source_location": "L88",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_package_whmcs_suite_sh__entry",
-      "target": "scripts_package_whmcs_suite_validate_version"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_package_whmcs_suite_sh__entry",
+      "target": "scripts_package_whmcs_suite_validate_version",
+      "confidence_score": 1.0
     },
     {
       "relation": "defines",
@@ -34278,31 +34328,94 @@
       "source_file": "scripts/predeploy-check.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_predeploy_check",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_predeploy_check_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_predeploy_check_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/predeploy-check.sh",
-      "source_location": "L34",
+      "source_location": "L37",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_predeploy_check_sh__entry",
-      "target": "scripts_predeploy_check_record"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_predeploy_check_sh__entry",
+      "target": "scripts_predeploy_check_record",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/predeploy-check.sh",
-      "source_location": "L33",
+      "source_location": "L36",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_predeploy_check_sh__entry",
-      "target": "scripts_predeploy_check_stage"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_predeploy_check_sh__entry",
+      "target": "scripts_predeploy_check_stage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "scripts_repair_whmcs_invoice_template",
+      "target": "scripts_repair_whmcs_invoice_template_assertwhmcsinvoicetemplaterepaired",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L90",
+      "weight": 1.0,
+      "source": "scripts_repair_whmcs_invoice_template",
+      "target": "scripts_repair_whmcs_invoice_template_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "scripts_repair_whmcs_invoice_template",
+      "target": "scripts_repair_whmcs_invoice_template_repairwhmcsinvoicetemplate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L98",
+      "weight": 1.0,
+      "source": "scripts_repair_whmcs_invoice_template_main",
+      "target": "scripts_repair_whmcs_invoice_template_repairwhmcsinvoicetemplate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "scripts_repair_whmcs_invoice_template_main",
+      "target": "scripts_repair_whmcs_invoice_template_assertwhmcsinvoicetemplaterepaired",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "scripts/repair-whmcs-invoice-template.php",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "scripts_repair_whmcs_invoice_template_main",
+      "target": "tests_fakecapsule_capsulequery_count"
     },
     {
       "relation": "defines",
@@ -34360,9 +34473,9 @@
       "source_file": "scripts/resolve-scraper-release.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_resolve_scraper_release",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_resolve_scraper_release_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_resolve_scraper_release_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34371,9 +34484,9 @@
       "source_location": "L41",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_resolve_scraper_release_sh__entry",
-      "target": "scripts_resolve_scraper_release_has_required_assets"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_resolve_scraper_release_sh__entry",
+      "target": "scripts_resolve_scraper_release_has_required_assets",
+      "confidence_score": 1.0
     },
     {
       "relation": "defines",
@@ -34391,9 +34504,9 @@
       "source_file": "scripts/setup-memory-tools.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_setup_memory_tools",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_setup_memory_tools_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_setup_memory_tools_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34402,9 +34515,9 @@
       "source_location": "L30",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_setup_memory_tools_sh__entry",
-      "target": "scripts_setup_memory_tools_say"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_setup_memory_tools_sh__entry",
+      "target": "scripts_setup_memory_tools_say",
+      "confidence_score": 1.0
     },
     {
       "relation": "defines",
@@ -34432,9 +34545,9 @@
       "source_file": "scripts/test-resolve-scraper-release.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_test_resolve_scraper_release",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_resolve_scraper_release_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_resolve_scraper_release_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34443,9 +34556,9 @@
       "source_location": "L62",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_resolve_scraper_release_sh__entry",
-      "target": "scripts_test_resolve_scraper_release_run_resolver"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_resolve_scraper_release_sh__entry",
+      "target": "scripts_test_resolve_scraper_release_run_resolver",
+      "confidence_score": 1.0
     },
     {
       "relation": "defines",
@@ -34473,20 +34586,20 @@
       "source_file": "scripts/test-whmcs-release-contract.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_test_whmcs_release_contract",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_whmcs_release_contract_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_whmcs_release_contract_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "scripts/test-whmcs-release-contract.sh",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_whmcs_release_contract_sh__entry",
-      "target": "scripts_test_whmcs_release_contract_fail"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_whmcs_release_contract_sh__entry",
+      "target": "scripts_test_whmcs_release_contract_fail",
+      "confidence_score": 1.0
     },
     {
       "relation": "defines",
@@ -34534,9 +34647,9 @@
       "source_file": "scripts/test-workflow-trust-contract.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_test_workflow_trust_contract",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_workflow_trust_contract_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34545,9 +34658,9 @@
       "source_location": "L66",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry",
-      "target": "scripts_test_workflow_trust_contract_expect_fail"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_workflow_trust_contract_sh__entry",
+      "target": "scripts_test_workflow_trust_contract_expect_fail",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34556,9 +34669,9 @@
       "source_location": "L41",
       "weight": 1.0,
       "context": "call",
-      "confidence_score": 1.0,
-      "source": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_test_workflow_trust_contract_sh__entry",
-      "target": "scripts_test_workflow_trust_contract_expect_pass"
+      "source": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_test_workflow_trust_contract_sh__entry",
+      "target": "scripts_test_workflow_trust_contract_expect_pass",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -34566,9 +34679,9 @@
       "source_file": "scripts/whmcs-integration-smoke.sh",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "scripts_whmcs_integration_smoke",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_whmcs_native_scripts_whmcs_integration_smoke_sh__entry"
+      "target": "users_kritananda_projects_contabo_pricing_scraper_invoice_template_scripts_whmcs_integration_smoke_sh__entry",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -95429,5 +95542,5 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_CONFIGURABLE_OPTIONS.md"
     }
   ],
-  "built_at_commit": "324b7a4b82470bcdd8a17fbf878f68b539c7a753"
+  "built_at_commit": "73ae299f0965c2ae4cefa212d741cda54c9c9ebc"
 }

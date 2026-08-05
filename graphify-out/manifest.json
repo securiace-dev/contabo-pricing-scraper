@@ -1,1322 +1,1332 @@
 {
   "tests/api_smoke.rs": {
-    "mtime": 1785381852.7522397,
+    "mtime": 1785934243.4798675,
     "ast_hash": "efc4b7bc54e5a40eae93e76b8f8076a0",
     "semantic_hash": ""
   },
   "tests/common/mod.rs": {
-    "mtime": 1785384000.226127,
+    "mtime": 1785934243.4799902,
     "ast_hash": "ea5ffd19fd1d3a14f0bfd4cafbfb3b28",
     "semantic_hash": ""
   },
   "scripts/contabo_scraper.js": {
-    "mtime": 1785357875.7515185,
+    "mtime": 1785934243.4704196,
     "ast_hash": "cf92c58d2e34ee02262a16878487af51",
     "semantic_hash": ""
   },
   "scripts/live-schema-smoke.php": {
-    "mtime": 1785381852.7480075,
+    "mtime": 1785934243.4726043,
     "ast_hash": "08b93345d5a9def003fc3eda1a668d20",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/hooks.php": {
-    "mtime": 1785381852.7566416,
+    "mtime": 1785934243.490683,
     "ast_hash": "7c33fe274c0092f00de613ec303bc771",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/contabo_pricing.php": {
-    "mtime": 1785381852.754476,
+    "mtime": 1785934243.4858735,
     "ast_hash": "ae6245bda1ca6529b4af1b328e356366",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/ajax.php": {
-    "mtime": 1785357875.7544546,
+    "mtime": 1785934243.4840524,
     "ast_hash": "a24ca527668a138ed70c4272270f8784",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/MappingUpdateTest.php": {
-    "mtime": 1785357875.771556,
+    "mtime": 1785934243.5270174,
     "ast_hash": "e9e0189719ac04a6a73afae779812875",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/DashboardCycleTilesTest.php": {
-    "mtime": 1785357875.7699087,
+    "mtime": 1785934243.5230637,
     "ast_hash": "55b191e31d5afa359ebd8e797bb1d046",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ConfigOptionCompatibilityRepositoryTest.php": {
-    "mtime": 1785357875.7686183,
+    "mtime": 1785934243.5208864,
     "ast_hash": "af877aeb5b00f09ee78574daff449fc1",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ProfileCreateTest.php": {
-    "mtime": 1785357875.772669,
+    "mtime": 1785934243.5287273,
     "ast_hash": "2c5f5d5bb9b1353c642674555061377a",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/CronDriverTest.php": {
-    "mtime": 1785357875.7695024,
+    "mtime": 1785934243.5225515,
     "ast_hash": "bff062ba534dbb9cbb0c537534af668b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/FakeCapsule.php": {
-    "mtime": 1785384892.3177621,
+    "mtime": 1785934243.5244343,
     "ast_hash": "d6a20af6874a76bbd013a9037fc42954",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ScheduledChangeCycleTest.php": {
-    "mtime": 1785357875.7737138,
+    "mtime": 1785934243.5304787,
     "ast_hash": "c77e1ba1244506db3424e8d9d61fa920",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/MappingRepositoryTest.php": {
-    "mtime": 1785357875.7714548,
+    "mtime": 1785934243.526925,
     "ast_hash": "9ead8f8f970490c3c7f80cf37c949885",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/OptionAuditLogTest.php": {
-    "mtime": 1785357875.772168,
+    "mtime": 1785934243.5278094,
     "ast_hash": "50e996c276c8f458201774c7e6df9f5e",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/FreshInstallSchemaTest.php": {
-    "mtime": 1785381852.7718432,
+    "mtime": 1785934243.5252545,
     "ast_hash": "530615827cba11993a0fc931ca4414ed",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ProfileConfigWiringTest.php": {
-    "mtime": 1785357875.7725441,
+    "mtime": 1785934243.5285938,
     "ast_hash": "5199a3842048c4052024d9ec65c585bd",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ServicePriceWriterTest.php": {
-    "mtime": 1785357875.7741687,
+    "mtime": 1785934243.5314271,
     "ast_hash": "1fea7f532ee70d7a186ade25825479c0",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/MappingFormTest.php": {
-    "mtime": 1785357875.7713273,
+    "mtime": 1785934243.5262275,
     "ast_hash": "4a654ec9d5db24bb435e07e1ec26d657",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/MaintenanceTest.php": {
-    "mtime": 1785357875.77104,
+    "mtime": 1785934243.525992,
     "ast_hash": "83b0d2582609a1a45affb48631ce7f66",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ConfigOptionCapabilityRepositoryTest.php": {
-    "mtime": 1785357875.7684867,
+    "mtime": 1785934243.520701,
     "ast_hash": "e8af730fb0903699d17bd1149027eb5a",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/BackfillCommandTest.php": {
-    "mtime": 1785357875.768188,
+    "mtime": 1785934243.519527,
     "ast_hash": "d8d9455dc2566645cfea73d26da2819e",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ConfigurableOptionsSyncerTest.php": {
-    "mtime": 1785357875.769284,
+    "mtime": 1785934243.522274,
     "ast_hash": "2eb4c3fafbecadaf2875c46480764bda",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ServiceConfigSnapshotTest.php": {
-    "mtime": 1785357875.7740805,
+    "mtime": 1785934243.5313478,
     "ast_hash": "cdf5d2ccf10232ee174894457b7ee960",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/StdClassModeTest.php": {
-    "mtime": 1785357875.7746897,
+    "mtime": 1785934243.5322173,
     "ast_hash": "71c8e2daf0652a2738cb96a24240c2c1",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/MigrationV3Test.php": {
-    "mtime": 1785357875.7718482,
+    "mtime": 1785934243.5273104,
     "ast_hash": "14c747147694bc6c9439d78cdf34f409",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/RetailVpsMinimalPresetTest.php": {
-    "mtime": 1785357875.773559,
+    "mtime": 1785934243.5300503,
     "ast_hash": "024d7e14ed4e4abda823297163164197",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ProfileVersionInputTest.php": {
-    "mtime": 1785357875.7731378,
+    "mtime": 1785934243.5292304,
     "ast_hash": "48ef94da4e2ae4907c9aa08d700005c2",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/DimensionParserTest.php": {
-    "mtime": 1785357875.7701147,
+    "mtime": 1785934243.5232484,
     "ast_hash": "cb8a17fff54e307cacf49d6bc60e0779",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/SettingsTest.php": {
-    "mtime": 1785357875.77458,
+    "mtime": 1785934243.5320492,
     "ast_hash": "f773a0fd59eeb0cadc4a75355d9e00df",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ConfigurableOptionsSyncerValueDriftTest.php": {
-    "mtime": 1785357875.7694156,
+    "mtime": 1785934243.5224552,
     "ast_hash": "8603c6889a62a84e523b9828fbb56421",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ExposureResolverTest.php": {
-    "mtime": 1785357875.7704244,
+    "mtime": 1785934243.5241022,
     "ast_hash": "3ded421b02417e7e8a6a7b5b51502b8c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ServiceRevenueResolverTest.php": {
-    "mtime": 1785357875.7744672,
+    "mtime": 1785934243.5318906,
     "ast_hash": "70353ec05d35cbf37cdfdae813711214",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ConfigPurgeServiceTest.php": {
-    "mtime": 1785357875.768884,
+    "mtime": 1785934243.5212653,
     "ast_hash": "ac99a58730c90e11d9cc695a5dbfc00c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineTest.php": {
-    "mtime": 1785357875.774946,
+    "mtime": 1785934243.5332518,
     "ast_hash": "19cc5c82a05d547b8ee8f75bc5c4ef05",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/WhmcsConfigOptionsAdapterTest.php": {
-    "mtime": 1785357875.775095,
+    "mtime": 1785934243.533666,
     "ast_hash": "6853b5254d6a3d2fb28901bdce638539",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/CapabilityDefaultsProviderTest.php": {
-    "mtime": 1785357875.7683465,
+    "mtime": 1785934243.5197012,
     "ast_hash": "f71965aef11bb099101148504cf4ee12",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ImageOptionNormalizerTest.php": {
-    "mtime": 1785357875.7708087,
+    "mtime": 1785934243.525757,
     "ast_hash": "accc2830f3f720dac53e0f4da6f54e8b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/OptionTypeMapperTest.php": {
-    "mtime": 1785357875.7722945,
+    "mtime": 1785934243.5279446,
     "ast_hash": "b27017f613f5c6831c0867e7415e8f92",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/SelectionValidatorTest.php": {
-    "mtime": 1785357875.773972,
+    "mtime": 1785934243.5311794,
     "ast_hash": "28e4a9a47a609f9bf7b0a3e552f4f8e2",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/LegacyFieldGrepTest.php": {
-    "mtime": 1785357875.7709591,
+    "mtime": 1785934243.5259027,
     "ast_hash": "421e32497c1541c2c1d049845a95ee2b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/bootstrap.php": {
-    "mtime": 1785357875.7752545,
+    "mtime": 1785934243.5338182,
     "ast_hash": "6788f668855e7bb6190a090c8222c322",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/RenewalRevenueWiringTest.php": {
-    "mtime": 1785357875.7734392,
+    "mtime": 1785934243.529897,
     "ast_hash": "7491a7f2188b684fd87b6349666d24d7",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/_localapi_stub.php": {
-    "mtime": 1785357875.775174,
+    "mtime": 1785934243.5337389,
     "ast_hash": "c18e850f3588e2af15cdff27dd4fbad2",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/DriftHasherTest.php": {
-    "mtime": 1785357875.770282,
+    "mtime": 1785934243.5234098,
     "ast_hash": "a293d61915eb17fe52c2ad55aed0071e",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ProfileManagerTest.php": {
-    "mtime": 1785357875.7728858,
+    "mtime": 1785934243.5289414,
     "ast_hash": "55ed40ccb2aae12495e99e88939b8ee0",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ConfigOptionLinkRepositoryTest.php": {
-    "mtime": 1785357875.7687535,
+    "mtime": 1785934243.5210695,
     "ast_hash": "03fcfc4c320defa70d9f9749611eeff6",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ConfigurableOptionsSyncerDiffTest.php": {
-    "mtime": 1785357875.7691314,
+    "mtime": 1785934243.5217776,
     "ast_hash": "ebe0fc1cb0537f394c8f5c5adb1ff7eb",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngine6CycleTest.php": {
-    "mtime": 1785384892.318648,
+    "mtime": 1785934243.5325491,
     "ast_hash": "7ed1a3da1f3aad1c589435a95994c426",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/CycleSetTest.php": {
-    "mtime": 1785357875.7697446,
+    "mtime": 1785934243.5228946,
     "ast_hash": "5234a82a17ed5eed49e5f4c635aae8b1",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/SchemaHealthTest.php": {
-    "mtime": 1785381852.7729428,
+    "mtime": 1785934243.531013,
     "ast_hash": "152decc62df1ac6b0513ae801373a74d",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ServiceRevenueResolverDiscountTest.php": {
-    "mtime": 1785357875.7743115,
+    "mtime": 1785934243.5317194,
     "ast_hash": "a4402f37c0679f0829651612d7766e5f",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/MappingCreateTest.php": {
-    "mtime": 1785357875.7711723,
+    "mtime": 1785934243.526081,
     "ast_hash": "f87a292bd61369b5ff60b63db86b0452",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ApiClientTest.php": {
-    "mtime": 1785381852.7701883,
+    "mtime": 1785934243.5194328,
     "ast_hash": "fe33cba11469babc3015518b90504ab8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ConfigurableOptionsApplyTest.php": {
-    "mtime": 1785357875.769017,
+    "mtime": 1785934243.5214381,
     "ast_hash": "4b2d2b73c54927204e1f7282d1abdd39",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/PerCycleSourcePricingTest.php": {
-    "mtime": 1785357875.7724288,
+    "mtime": 1785934243.5284503,
     "ast_hash": "14e329d4af22d26f4022cb76bccfcaa3",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ProfileIdentityTest.php": {
-    "mtime": 1785357875.7727892,
+    "mtime": 1785934243.5288715,
     "ast_hash": "390e8944cc709da2274ad279ec49719e",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/NoticeIdempotencyTest.php": {
-    "mtime": 1785357875.77207,
+    "mtime": 1785934243.5277412,
     "ast_hash": "206a85721002e59811a4c57591f0b899",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/MigrationV5Test.php": {
-    "mtime": 1785381852.772374,
+    "mtime": 1785934243.5276704,
     "ast_hash": "3435d085fd5ae236f7b4c3e57f3e1916",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/ProfilePurgeServiceTest.php": {
-    "mtime": 1785357875.7730265,
+    "mtime": 1785934243.5290906,
     "ast_hash": "80fcf96f283defa97d1622c1b5276e92",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/MarginMathTest.php": {
-    "mtime": 1785357875.771691,
+    "mtime": 1785934243.5271654,
     "ast_hash": "94026333d71ebf69e6fba3f86c939f3c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/RenewalEngineCycleTest.php": {
-    "mtime": 1785384892.3181808,
+    "mtime": 1785934243.5296934,
     "ast_hash": "ef8b05d19c886021755f94acd223c41b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/CurrencySupportReportTest.php": {
-    "mtime": 1785357875.769614,
+    "mtime": 1785934243.5227284,
     "ast_hash": "cfa3e2416b7c24a4c66d2e415f701362",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/integration/whmcs_smoke.php": {
-    "mtime": 1785381852.773531,
+    "mtime": 1785934243.5341787,
     "ast_hash": "ff02f4e9ea01d7878f9b896daa32eb69",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/DecisionLog.php": {
-    "mtime": 1785357875.7593641,
+    "mtime": 1785934243.4961045,
     "ast_hash": "55abccb52d304ad54bd8b23db848f7f7",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/Rounding.php": {
-    "mtime": 1785384892.3163414,
+    "mtime": 1785934243.5027099,
     "ast_hash": "e85cbc7b983ceb330cef8c5a5f19262c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php": {
-    "mtime": 1785384892.3146398,
+    "mtime": 1785934243.4915633,
     "ast_hash": "d9aadd1fad7c1b29ba36c7b5abd98f6b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ServicePriceWriter.php": {
-    "mtime": 1785357875.7635674,
+    "mtime": 1785934243.50394,
     "ast_hash": "b47979cd9c6dcd6b2af396ee9bbd529a",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ConfigOptionCapabilityRepository.php": {
-    "mtime": 1785357875.7579267,
+    "mtime": 1785934243.494208,
     "ast_hash": "3ffd35a8e44d1759455be325241255c0",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ConfigurableOptionsSyncer.php": {
-    "mtime": 1785357875.7585351,
+    "mtime": 1785934243.4950407,
     "ast_hash": "8045176a287847690b0165dbbfe7611b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ImageOptionNormalizer.php": {
-    "mtime": 1785357875.7600186,
+    "mtime": 1785934243.4970536,
     "ast_hash": "957ec8c233c78687720187ff74432a8f",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/RetailVpsMinimalPreset.php": {
-    "mtime": 1785357875.7624705,
+    "mtime": 1785934243.5022202,
     "ast_hash": "bb39645fba7ff447b4aeccfa63ae8a39",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ConfigOptionLinkRepository.php": {
-    "mtime": 1785357875.758226,
+    "mtime": 1785934243.494691,
     "ast_hash": "58f81230f48e9903db02edd44ed747bc",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/SchemaMismatchException.php": {
-    "mtime": 1785357875.7630875,
+    "mtime": 1785934243.5034657,
     "ast_hash": "139fe25883657b1a7e6e7f5d19fde638",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/Settings.php": {
-    "mtime": 1785357875.7638168,
+    "mtime": 1785934243.504463,
     "ast_hash": "eacd8855f1445d24a4ac45b001e1af98",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/Lock.php": {
-    "mtime": 1785357875.760386,
+    "mtime": 1785934243.497809,
     "ast_hash": "0b756f3f4bea72dcc6c04ffc0ac79eec",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/MappingRepository.php": {
-    "mtime": 1785357875.7605271,
+    "mtime": 1785934243.4983873,
     "ast_hash": "87532809621d1b5388f8fc1f799f29a4",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ServiceConfigSnapshot.php": {
-    "mtime": 1785357875.763418,
+    "mtime": 1785934243.5037928,
     "ast_hash": "99709f545bdb4299761e6d094490f516",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/DimensionParser.php": {
-    "mtime": 1785357875.759499,
+    "mtime": 1785934243.4962518,
     "ast_hash": "13f10035f66ddfab2281ee2363169483",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ConfigPurgeService.php": {
-    "mtime": 1785357875.7584121,
+    "mtime": 1785934243.494927,
     "ast_hash": "625000af093d2f85eaac21c601bac35b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CycleNormalizer.php": {
-    "mtime": 1785357875.7590292,
+    "mtime": 1785934243.4955707,
     "ast_hash": "19ac6994a9b46138ad0799d2f365ab75",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/WhmcsConfigOptionsAdapter.php": {
-    "mtime": 1785357875.7643766,
+    "mtime": 1785934243.5065587,
     "ast_hash": "ae21cfbb7db9c4cf7a9df29208a227fd",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/RenewalEngine.php": {
-    "mtime": 1785384892.315816,
+    "mtime": 1785934243.5018365,
     "ast_hash": "88387aae21d29ac2e92e38d9e4c63898",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/SyncEngine.php": {
-    "mtime": 1785384892.3167422,
+    "mtime": 1785934243.5048082,
     "ast_hash": "16a62eebaccd4f4a5dd939333a4e6713",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CurrencySupportReport.php": {
-    "mtime": 1785357875.7589538,
+    "mtime": 1785934243.4954836,
     "ast_hash": "bd4c25bcbd98fd0deaaaca80f95fdb5a",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/MarginCalculator.php": {
-    "mtime": 1785357875.7606902,
+    "mtime": 1785934243.4987614,
     "ast_hash": "cc6ad7b081bf843b6e0f62acb31f186b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ProfileManager.php": {
-    "mtime": 1785357875.761641,
+    "mtime": 1785934243.5008676,
     "ast_hash": "3c59b2bde7cabb88d1577c1edaa4b224",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/TaxRuleManager.php": {
-    "mtime": 1785357875.7641551,
+    "mtime": 1785934243.5056577,
     "ast_hash": "6bccaf0c9af172c8b1bcfb21274af705",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ApiClient.php": {
-    "mtime": 1785381852.7578025,
+    "mtime": 1785934243.4919446,
     "ast_hash": "315020f2f783b53b15494f006555e9b6",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ConfigOptionPricingContext.php": {
-    "mtime": 1785357875.7583027,
+    "mtime": 1785934243.4947731,
     "ast_hash": "b901ea8d830b4b77c445e79b04396384",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ScheduledChangeProcessor.php": {
-    "mtime": 1785357875.7627149,
+    "mtime": 1785934243.5028293,
     "ast_hash": "1a136bdc8554c39860df0ddc2989394b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/Notifier.php": {
-    "mtime": 1785357875.7608602,
+    "mtime": 1785934243.498943,
     "ast_hash": "71952bb181ada160bf9988f83b10ac79",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ProfileRepository.php": {
-    "mtime": 1785357875.7619317,
+    "mtime": 1785934243.501194,
     "ast_hash": "620c4e17c893e5c234db0ce59bc180d3",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ExposureResolver.php": {
-    "mtime": 1785357875.7598653,
+    "mtime": 1785934243.4969053,
     "ast_hash": "2fbe96a9da6521bdc42ce221bc07cff8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/SchemaHealth.php": {
-    "mtime": 1785381852.7616138,
+    "mtime": 1785934243.5033522,
     "ast_hash": "ff83d5f59aebc9f617d74fe2d8db7576",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ProfileVersionInput.php": {
-    "mtime": 1785357875.7621,
+    "mtime": 1785934243.5015056,
     "ast_hash": "d8df0b3c5b40b87f08968f9a25f5c538",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/SelectionValidator.php": {
-    "mtime": 1785357875.7632275,
+    "mtime": 1785934243.503604,
     "ast_hash": "dd387ef28dcc94810024a4ea2b65cc1a",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CurlRequestExecutor.php": {
-    "mtime": 1785357875.7588127,
+    "mtime": 1785934243.4953156,
     "ast_hash": "d9e10df84698f7431744ea59d6beb2ba",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/PricingActionLog.php": {
-    "mtime": 1785357875.7613232,
+    "mtime": 1785934243.500308,
     "ast_hash": "71c2e81591d483107acce97a8a5ee601",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CapabilityDefaultsProvider.php": {
-    "mtime": 1785357875.7576442,
+    "mtime": 1785934243.492689,
     "ast_hash": "325d5282f30993999ee30c4fd73796d6",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/Watchdog.php": {
-    "mtime": 1785357875.7642622,
+    "mtime": 1785934243.506313,
     "ast_hash": "79d36671706b85205880f8768650ee44",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/EmailTemplateSeeder.php": {
-    "mtime": 1785381852.7586691,
+    "mtime": 1785934243.4967644,
     "ast_hash": "753da5819b3587941315277288810e42",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ServiceRevenueResolver.php": {
-    "mtime": 1785357875.763691,
+    "mtime": 1785934243.5040557,
     "ast_hash": "12f2fbe1b37c938905e04374330f84b0",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/TaxModeEngine.php": {
-    "mtime": 1785357875.7640777,
+    "mtime": 1785934243.5055845,
     "ast_hash": "32163213bd0148a90b0e589a914063ad",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/OptionAuditLog.php": {
-    "mtime": 1785357875.7609499,
+    "mtime": 1785934243.4990244,
     "ast_hash": "34ed5da99c586ec7b1c92fd02aaf168e",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/DriftHasher.php": {
-    "mtime": 1785357875.7596285,
+    "mtime": 1785934243.4964347,
     "ast_hash": "d6a1262187d002497406e2c6dc3d97b8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ProfileIdentityResolver.php": {
-    "mtime": 1785357875.7614703,
+    "mtime": 1785934243.5006912,
     "ast_hash": "974894eb62e5d85f14ee5cef0bc4be11",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ProfilePurgeService.php": {
-    "mtime": 1785357875.7617927,
+    "mtime": 1785934243.5010257,
     "ast_hash": "44fdfd13325f4f81cec6685e9f8d3781",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/Installer.php": {
-    "mtime": 1785381852.7592013,
+    "mtime": 1785934243.497616,
     "ast_hash": "10bc744350705d2c8a9fe6d244d4da6c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/OptionTypeMapper.php": {
-    "mtime": 1785357875.7610695,
+    "mtime": 1785934243.4992144,
     "ast_hash": "48ce4827a631f46c5f96eb77c6e98770",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ConfigOptionCompatibilityRepository.php": {
-    "mtime": 1785357875.7580786,
+    "mtime": 1785934243.494497,
     "ast_hash": "6127bf27c69dad3c8266ea8fce8f359c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CatalogAuditLog.php": {
-    "mtime": 1785357875.75778,
+    "mtime": 1785934243.4928737,
     "ast_hash": "274ca86cab20f0d3fb6e10731b0c0cc8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/PolicyResolver.php": {
-    "mtime": 1785357875.7611861,
+    "mtime": 1785934243.499904,
     "ast_hash": "6d16b4fa4deb4d9fad460ac9cf7652ee",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/BackfillCommand.php": {
-    "mtime": 1785357875.7574844,
+    "mtime": 1785934243.492344,
     "ast_hash": "29e4b822704a91e10f95e3590d4846b7",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/AuditLog.php": {
-    "mtime": 1785357875.7573476,
+    "mtime": 1785934243.4920294,
     "ast_hash": "8ab53bd6b23200f8474e7f6ed0b6d879",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/RequestExecutor.php": {
-    "mtime": 1785357875.7623508,
+    "mtime": 1785934243.502066,
     "ast_hash": "1ae70c4f8bc4203d828774fe047e7b9f",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CycleSet.php": {
-    "mtime": 1785357875.7592564,
+    "mtime": 1785934243.4959614,
     "ast_hash": "153432ba8cff6c5eafd77cd18713ea0e",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CronDriver.php": {
-    "mtime": 1785357875.758716,
+    "mtime": 1785934243.4952228,
     "ast_hash": "0620f78271686dc668b015bb56fdcd00",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CyclePricingMap.php": {
-    "mtime": 1785357875.7591448,
+    "mtime": 1785934243.4957545,
     "ast_hash": "a29ac93c5574b690b93f1153b0335b73",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/assets/app.js": {
-    "mtime": 1785381852.754111,
+    "mtime": 1785934243.4850416,
     "ast_hash": "14d3eb8541716915d63888f22d5a5053",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/contabo_vps/contabo_vps.php": {
-    "mtime": 1785381852.7738683,
+    "mtime": 1785934243.534947,
     "ast_hash": "8e823e095492b3f8fe3f521611a129e4",
     "semantic_hash": ""
   },
   "src/main.rs": {
-    "mtime": 1785381852.7517757,
+    "mtime": 1785934243.478895,
     "ast_hash": "4fa15e382e4e702ac36e8ad011e3cc49",
     "semantic_hash": ""
   },
   "src/api/handlers.rs": {
-    "mtime": 1785384892.3121495,
+    "mtime": 1785934243.4769511,
     "ast_hash": "e113a5ca30ed3bb66b334623d0edfd0c",
     "semantic_hash": ""
   },
   "src/api/embed_assets.rs": {
-    "mtime": 1785357875.7526567,
+    "mtime": 1785934243.476468,
     "ast_hash": "29b193ef9b6461693ae26a267d883319",
     "semantic_hash": ""
   },
   "src/api/auth.rs": {
-    "mtime": 1785357875.752569,
+    "mtime": 1785934243.4759145,
     "ast_hash": "a74058fc9357eb2154d917e8c1266ad1",
     "semantic_hash": ""
   },
   "src/api/mod.rs": {
-    "mtime": 1785381852.7508426,
+    "mtime": 1785934243.4773564,
     "ast_hash": "a56a362881466514b363e8590b1529c3",
     "semantic_hash": ""
   },
   "src/api/routes.rs": {
-    "mtime": 1785381852.7511601,
+    "mtime": 1785934243.4775996,
     "ast_hash": "ebb45cca2473787bca3e7834da6050d6",
     "semantic_hash": ""
   },
   "src/api/state.rs": {
-    "mtime": 1785357875.7530887,
+    "mtime": 1785934243.4779685,
     "ast_hash": "d52ba66b4f1774c2d7384479b7befabf",
     "semantic_hash": ""
   },
   "PRICES.md": {
-    "mtime": 1785357875.7362833,
-    "ast_hash": "1e5450dd49860349a6fcec1726e5d439",
+    "mtime": 1785934243.4432256,
+    "ast_hash": "af835fc5d5a579bf0266b4f75b08c4a8",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785410967.570211,
+    "mtime": 1785934243.443964,
     "ast_hash": "bee91dda0e32903738355c900af70319",
     "semantic_hash": ""
   },
   "SCHEMA_VERSION.md": {
-    "mtime": 1785384892.3007011,
+    "mtime": 1785934243.4444401,
     "ast_hash": "df809579c11f485ce271ac384464f0af",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1785357875.7355542,
+    "mtime": 1785934243.44094,
     "ast_hash": "d70a5c25e7e0e475caf477aef267e464",
     "semantic_hash": ""
   },
   "deploy/README.md": {
-    "mtime": 1785357875.7449782,
+    "mtime": 1785934243.4555762,
     "ast_hash": "bea178c8f1828bfc3a3cfc662c2122a9",
     "semantic_hash": ""
   },
   "whmcs-module/README.md": {
-    "mtime": 1785381852.7525861,
+    "mtime": 1785934243.4828143,
     "ast_hash": "3fabd67a866fb2d4afc29f471125b92e",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/CHANGELOG.md": {
-    "mtime": 1785381852.7531304,
+    "mtime": 1785934243.4836001,
     "ast_hash": "e214df9910c83d1b31e0debff5e5a844",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/UI_ARCHITECTURE.md": {
-    "mtime": 1785381852.7560833,
+    "mtime": 1785934243.4897678,
     "ast_hash": "4a5eebb28145525cd850a5015ae492d8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_D_PRICING_SPEC.md": {
-    "mtime": 1785357875.7559094,
+    "mtime": 1785934243.4883637,
     "ast_hash": "26ac99edb8d0d11af810ff7a1082b55f",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md": {
-    "mtime": 1785381852.7548802,
+    "mtime": 1785934243.486276,
     "ast_hash": "2ed459bc61f64c13ef7c2ad75accc17f",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_PREFLIGHT_CONFIGOPTIONS.md": {
-    "mtime": 1785357875.75572,
+    "mtime": 1785934243.4877236,
     "ast_hash": "7ff5d2be4191944dfc2775b75c0caf18",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A52_DESIGN_IMPACT.md": {
-    "mtime": 1785357875.755417,
+    "mtime": 1785934243.4868803,
     "ast_hash": "8259524c96f12e3f03b99877ca10c733",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/TESTING_SCOPE.md": {
-    "mtime": 1785381852.7557116,
+    "mtime": 1785934243.4894423,
     "ast_hash": "a96f34c6e4c1031460392392af1e6b01",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_CONFIGURABLE_OPTIONS.md": {
-    "mtime": 1785357875.7555442,
+    "mtime": 1785934243.4873085,
     "ast_hash": "d52e4a6c06c0e5a74dfd34ef56f1721a",
     "semantic_hash": ""
   },
   ".codex/hooks.json": {
-    "mtime": 1785357875.732474,
+    "mtime": 1785934243.4317992,
     "ast_hash": "e015226490d68d9d8a501366c080d442",
     "semantic_hash": ""
   },
   ".gemini/settings.json": {
-    "mtime": 1785357875.7329018,
+    "mtime": 1785934243.4322557,
     "ast_hash": "9fea93fb6ffeee4512985b180a7757d7",
     "semantic_hash": ""
   },
   ".mcp.json": {
-    "mtime": 1785357875.7353194,
+    "mtime": 1785934243.440599,
     "ast_hash": "dacd61806856442d4a7b85df674995b8",
     "semantic_hash": ""
   },
   "data/plan_urls.json": {
-    "mtime": 1785357875.7409647,
+    "mtime": 1785934243.4531837,
     "ast_hash": "7e8a5cc6641bdb8f69c9a9010288edb2",
     "semantic_hash": ""
   },
   "entities.json": {
-    "mtime": 1785357875.7457414,
+    "mtime": 1785934243.4567106,
     "ast_hash": "33b3e336ab8541575c1bbb4f6d25c1fb",
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1785357875.750618,
+    "mtime": 1785934243.468943,
     "ast_hash": "dcf84b9769d3dbd6362b353f3a9ab26d",
     "semantic_hash": ""
   },
   "scripts/bump-version.sh": {
-    "mtime": 1785357875.7513108,
+    "mtime": 1785934243.4699798,
     "ast_hash": "628ca7506979e596de174821f585b759",
     "semantic_hash": ""
   },
   "scripts/cloak-fetch.mjs": {
-    "mtime": 1785357875.7513986,
+    "mtime": 1785934243.4703286,
     "ast_hash": "c2efb1435c37544fec81acc8b55e8cc7",
     "semantic_hash": ""
   },
   "scripts/deploy.sh": {
-    "mtime": 1785381852.7470353,
+    "mtime": 1785934243.4708035,
     "ast_hash": "18db1baebdb997eaf410a91b3ca51e89",
     "semantic_hash": ""
   },
   "scripts/graphify-rebuild.py": {
-    "mtime": 1785357875.7516952,
+    "mtime": 1785934243.471481,
     "ast_hash": "595abac9dea540c9cf03b639d0fdaa06",
     "semantic_hash": ""
   },
   "scripts/live-schema-smoke.sh": {
-    "mtime": 1785381852.74844,
+    "mtime": 1785934243.4729645,
     "ast_hash": "d1c1f5a6033cf0464b66ddb8d662092d",
     "semantic_hash": ""
   },
   "scripts/local-whmcs.sh": {
-    "mtime": 1785381852.748824,
+    "mtime": 1785934243.4732645,
     "ast_hash": "da030bb1c5360bf919a81e0aac5aed91",
     "semantic_hash": ""
   },
   "scripts/predeploy-check.sh": {
-    "mtime": 1785386607.6071916,
+    "mtime": 1785934243.4740882,
     "ast_hash": "7c33a7e354d229530462d6da1881c9b1",
     "semantic_hash": ""
   },
   "scripts/setup-memory-tools.sh": {
-    "mtime": 1785357875.7521687,
+    "mtime": 1785934243.4745054,
     "ast_hash": "4a47d45999c9df44bb969e54c6695005",
     "semantic_hash": ""
   },
   "scripts/whmcs-integration-smoke.sh": {
-    "mtime": 1785381852.74978,
+    "mtime": 1785934243.475761,
     "ast_hash": "5ca01c72379069e6de2200ce5b41a459",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/composer.json": {
-    "mtime": 1785357875.7547991,
+    "mtime": 1785934243.48528,
     "ast_hash": "da9eea5e9819445972d5081f3b2635e5",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/contabo_vps/hooks.php": {
-    "mtime": 1785381852.7741416,
+    "mtime": 1785934243.5352218,
     "ast_hash": "5c169b2de7d421ecd912dfa67099424f",
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1785357875.7354152,
+    "mtime": 1785934243.4406626,
     "ast_hash": "31e0358c19f45d8f8354305cd71a126a",
     "semantic_hash": ""
   },
   "GEMINI.md": {
-    "mtime": 1785357875.7361577,
+    "mtime": 1785934243.442811,
     "ast_hash": "31e0358c19f45d8f8354305cd71a126a",
     "semantic_hash": ""
   },
   "deploy/docker-compose.caddy.yml": {
-    "mtime": 1785357875.7452273,
+    "mtime": 1785934243.4557865,
     "ast_hash": "5cd31916a3c57f54754f1f8991d89827",
     "semantic_hash": ""
   },
   "deploy/docker-compose.coolify.yml": {
-    "mtime": 1785357875.7453146,
+    "mtime": 1785934243.4558523,
     "ast_hash": "6d3c34493fa4eba2dee224f5823df8b4",
     "semantic_hash": ""
   },
   "deploy/docker-compose.traefik.yml": {
-    "mtime": 1785357875.7454023,
+    "mtime": 1785934243.4559183,
     "ast_hash": "e7e122c4a7bd0ca8e21a01ab6d0ffd2f",
     "semantic_hash": ""
   },
   "deploy/docker-compose.yml": {
-    "mtime": 1785357875.7455645,
+    "mtime": 1785934243.4559836,
     "ast_hash": "889a2d9ba282eb53f95328d261c351c4",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260604_063149_what_connects_catalog_cycles_mask_to_published_cyc.md": {
-    "mtime": 1785357875.750067,
+    "mtime": 1785934243.4663534,
     "ast_hash": "09351205045c9921b5bbd40d7baed59b",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260604_063328_how_does_the_per_cycle_source_fallback_rule_connec.md": {
-    "mtime": 1785357875.750157,
+    "mtime": 1785934243.4664428,
     "ast_hash": "5a295c36ca220964c4ab41a97579fda7",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260604_063439_how_does_the_eur_to_local_conversion__tolocalmonth.md": {
-    "mtime": 1785357875.7502515,
+    "mtime": 1785934243.4665172,
     "ast_hash": "2738642776a3ed88cc4c593d37813599",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260604_063603_how_is_the_catalog_renewal_write_boundary__tblpric.md": {
-    "mtime": 1785357875.7503314,
+    "mtime": 1785934243.466596,
     "ast_hash": "1903d9b7a87c810ed73b6b3b0fc9c674",
     "semantic_hash": ""
   },
   "mempalace.yaml": {
-    "mtime": 1785357875.7504063,
+    "mtime": 1785934243.466694,
     "ast_hash": "6bcc0054190d2e02dfbc37a86c5a14ca",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/PROVISIONING_CONTRACT.md": {
-    "mtime": 1785381852.7554557,
+    "mtime": 1785934243.4887848,
     "ast_hash": "02cee81790ca05dd6eea94e4ec415432",
     "semantic_hash": ""
   },
   ".hallmark/log.json": {
-    "mtime": 1785381852.7354283,
+    "mtime": 1785934243.440256,
     "ast_hash": "58e2fdacf574e8048245b9f3a795fc24",
     "semantic_hash": ""
   },
   ".hallmark/preflight.json": {
-    "mtime": 1785381852.7356532,
+    "mtime": 1785934243.4405284,
     "ast_hash": "d3d4bdc9539d71afb2c497e16e249bc1",
     "semantic_hash": ""
   },
   "scripts/package-whmcs-suite.sh": {
-    "mtime": 1785386607.606963,
+    "mtime": 1785934243.473733,
     "ast_hash": "76de5cba75059693ec951ba8838ccfbd",
     "semantic_hash": ""
   },
   "src/api/catalog.rs": {
-    "mtime": 1785384892.311702,
+    "mtime": 1785934243.4763796,
     "ast_hash": "c1c75273d35376d33bc1be6218aab86c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CatalogImportService.php": {
-    "mtime": 1785384892.3148694,
+    "mtime": 1785934243.4934013,
     "ast_hash": "1d3f4c279d2064fe8b1b1b71b9c30fc1",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/CheckoutGuard.php": {
-    "mtime": 1785381852.7583609,
+    "mtime": 1785934243.4940538,
     "ast_hash": "51ffe46032d2a4a9994be04b616cee0f",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/MappingPublicationService.php": {
-    "mtime": 1785381852.7594264,
+    "mtime": 1785934243.4981182,
     "ast_hash": "6e2767278c25b8148c983499f6516bd2",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/PaidOrderSnapshotService.php": {
-    "mtime": 1785381852.7612352,
+    "mtime": 1785934243.4997091,
     "ast_hash": "fd29754d0ab1433cd0679cce1c6d4bd0",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/VpsOperationsWorkbench.php": {
-    "mtime": 1785381852.7619278,
+    "mtime": 1785934243.506032,
     "ast_hash": "0effa71c21f2071caf0c2d59cda08754",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/CatalogImportServiceTest.php": {
-    "mtime": 1785381852.7704535,
+    "mtime": 1785934243.519977,
     "ast_hash": "d6a2ba830089f52a5f58bdf3eb1afe74",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/CheckoutGuardTest.php": {
-    "mtime": 1785381852.7708623,
+    "mtime": 1785934243.5205142,
     "ast_hash": "53252a61b611f7b5c15339028a7e417a",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/EmailTemplateSeederTest.php": {
-    "mtime": 1785381852.7711244,
+    "mtime": 1785934243.5239286,
     "ast_hash": "5f1815d8657a186ad5de3e75dc1f757b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/MappingPublicationServiceTest.php": {
-    "mtime": 1785381852.7720418,
+    "mtime": 1785934243.5265477,
     "ast_hash": "490101f4a9c502a1c7f3c65d9fb4b613",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/PaidOrderSnapshotServiceTest.php": {
-    "mtime": 1785381852.7726343,
+    "mtime": 1785934243.5283022,
     "ast_hash": "f9c08297ac00560ba2c0c5829d99df62",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/VpsOperationsWorkbenchTest.php": {
-    "mtime": 1785381852.7731953,
+    "mtime": 1785934243.5335152,
     "ast_hash": "bac30e3bc27dbccdfde17af9d678cf2c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/hooks.php": {
-    "mtime": 1785381852.775312,
+    "mtime": 1785934243.537109,
     "ast_hash": "c3bec878e7ab7cd890bd7b57738e0ca4",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/AdoptionService.php": {
-    "mtime": 1785381852.7756362,
+    "mtime": 1785934243.5375674,
     "ast_hash": "8b60c2009739656e5e286f78a6daf9f4",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/AuditLogger.php": {
-    "mtime": 1785381852.7759054,
+    "mtime": 1785934243.5381494,
     "ast_hash": "a7836483b8ffab7b8ab7c91c30520e58",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/BillingCycleMapper.php": {
-    "mtime": 1785381852.7761254,
+    "mtime": 1785934243.5383806,
     "ast_hash": "25ab1b9045dbe5bfdc07851377c0c7e7",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/BillingSagaRepository.php": {
-    "mtime": 1785381852.7763555,
+    "mtime": 1785934243.5386112,
     "ast_hash": "6b1ab96751b466377ef06af5cda7a9de",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/CanonicalJson.php": {
-    "mtime": 1785381852.7765825,
+    "mtime": 1785934243.5388591,
     "ast_hash": "a7283afd55de93cfe3d2d959330222c9",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/CapabilityRegistry.php": {
-    "mtime": 1785381852.7768383,
+    "mtime": 1785934243.5391123,
     "ast_hash": "f20e1aaec20398ee8045ea2e5b663533",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/ClientAreaPresenter.php": {
-    "mtime": 1785381852.7772527,
+    "mtime": 1785934243.539554,
     "ast_hash": "858bcf7a4e6475f797fc43def0104c15",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/CommunicationService.php": {
-    "mtime": 1785381852.7775402,
+    "mtime": 1785934243.539977,
     "ast_hash": "e5a696bccafba4b40d5409a2688401e4",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/ConfigOptionResolver.php": {
-    "mtime": 1785381852.7777777,
+    "mtime": 1785934243.5403001,
     "ast_hash": "5673d7afbf6e295d0b9c46b86e854659",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/ContaboApiClient.php": {
-    "mtime": 1785381852.7781484,
+    "mtime": 1785934243.540713,
     "ast_hash": "2277df28381a70f2a516dc0b8fdc40b3",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/ContaboAuth.php": {
-    "mtime": 1785381852.7782938,
+    "mtime": 1785934243.5408602,
     "ast_hash": "e8365834ad94b598e4be7325136c8eb2",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/ContaboInstanceMapper.php": {
-    "mtime": 1785381852.7784781,
+    "mtime": 1785934243.541077,
     "ast_hash": "d0c888dd09e0f0f9938fd3c3f450c92c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/ContaboProvisioningException.php": {
-    "mtime": 1785381852.7787046,
+    "mtime": 1785934243.5414248,
     "ast_hash": "f9972e261f3c01f6a979400077e945c8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/CurlHttpExecutor.php": {
-    "mtime": 1785381852.7788486,
+    "mtime": 1785934243.54157,
     "ast_hash": "c9346a56b7b5bf6eae6b860545f7d0ad",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/HttpExecutor.php": {
-    "mtime": 1785381852.7789829,
+    "mtime": 1785934243.5418057,
     "ast_hash": "edf74ed9b57a3549b5fc5411b6a8126a",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/ImageResolver.php": {
-    "mtime": 1785381852.7791655,
+    "mtime": 1785934243.5420127,
     "ast_hash": "15497fa9959afc66169a7e8b5f432e95",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/InstanceLinker.php": {
-    "mtime": 1785381852.779518,
+    "mtime": 1785934243.54252,
     "ast_hash": "ae0debaee2d0f81aac80bd43927b1149",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/InstanceService.php": {
-    "mtime": 1785381852.7798321,
+    "mtime": 1785934243.5428386,
     "ast_hash": "0f03c70d62314e7ed29cddc0e1c697e8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/LifecycleOrchestrator.php": {
-    "mtime": 1785381852.7801285,
+    "mtime": 1785934243.5434144,
     "ast_hash": "b8b41e1e320402a05ac443cdd7bcdd8d",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/OneTimeSecretStore.php": {
-    "mtime": 1785381852.7803848,
+    "mtime": 1785934243.543785,
     "ast_hash": "541a6ab515880ed7089cca71b05853c1",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/OperationProcessor.php": {
-    "mtime": 1785381852.7806835,
+    "mtime": 1785934243.544154,
     "ast_hash": "eaf4e8e65c940945b517eb8d058d88ba",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/OperationRepository.php": {
-    "mtime": 1785381852.7809725,
+    "mtime": 1785934243.5449343,
     "ast_hash": "3c55ab27f454198797f6a1cb0a48e1bd",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/OrderSnapshotRepository.php": {
-    "mtime": 1785381852.7812119,
+    "mtime": 1785934243.5456157,
     "ast_hash": "2bea5763376389cadf78d0bb44aa9ba2",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/OwnershipGuard.php": {
-    "mtime": 1785381852.7814314,
+    "mtime": 1785934243.545883,
     "ast_hash": "64863ca84f214474fc028db14256418b",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/ProviderAccount.php": {
-    "mtime": 1785381852.7816546,
+    "mtime": 1785934243.546159,
     "ast_hash": "3f66d0d64116bcfd316d4e9157102a16",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/Runtime.php": {
-    "mtime": 1785381852.7819164,
+    "mtime": 1785934243.5465438,
     "ast_hash": "a6309dc5e85252c1b682c2d871e8320d",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/SchemaGuard.php": {
-    "mtime": 1785381852.7822726,
+    "mtime": 1785934243.5468135,
     "ast_hash": "0847341f3dc693425be449527187d232",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/SecretManager.php": {
-    "mtime": 1785381852.7826042,
+    "mtime": 1785934243.5471873,
     "ast_hash": "2ad58c561ed6b1d8503e49c5d2acbcbe",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/lib/Uuid.php": {
-    "mtime": 1785381852.7828827,
+    "mtime": 1785934243.5474205,
     "ast_hash": "8ed273bae6872001d6b3b44d910f6ef7",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/securiacevps.php": {
-    "mtime": 1785381852.7834122,
+    "mtime": 1785934243.547882,
     "ast_hash": "9cf4559797098946161cc03532a409d8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/AdoptionServiceTest.php": {
-    "mtime": 1785381852.784155,
+    "mtime": 1785934243.5488756,
     "ast_hash": "36811e5d8779e70175ee9b986fdf3e28",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/ApiClientTest.php": {
-    "mtime": 1785381852.7844505,
+    "mtime": 1785934243.549196,
     "ast_hash": "5aaa439f67b728292ef62f9ff81f1075",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/BillingCycleMapperTest.php": {
-    "mtime": 1785381852.7846146,
+    "mtime": 1785934243.5493593,
     "ast_hash": "6f0e7ba071a18a7c66b91361b02c6266",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/CommunicationServiceTest.php": {
-    "mtime": 1785381852.7849035,
+    "mtime": 1785934243.549682,
     "ast_hash": "ef30e817021b1572db401af88ac8208d",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/CompatibilityShimTest.php": {
-    "mtime": 1785381852.785051,
+    "mtime": 1785934243.5498645,
     "ast_hash": "08557c1bf2567f1b713e6a6b1e98e659",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/ConfigOptionResolverTest.php": {
-    "mtime": 1785381852.7851968,
+    "mtime": 1785934243.550066,
     "ast_hash": "668844bd6971b32921771649e5055ae7",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/DirectMutationBypassTest.php": {
-    "mtime": 1785381852.78542,
+    "mtime": 1785934243.550306,
     "ast_hash": "e2b7dc50b304213446c7a4aaf3d51e74",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/FakeHttpExecutor.php": {
-    "mtime": 1785381852.7855694,
+    "mtime": 1785934243.5504694,
     "ast_hash": "e7e288010f1e9b71667307085c2fa920",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/Harness.php": {
-    "mtime": 1785381852.7857823,
+    "mtime": 1785934243.550704,
     "ast_hash": "4e5abb3e0e69f56dec6555d95216bcf8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/ImageResolverTest.php": {
-    "mtime": 1785381852.7860527,
+    "mtime": 1785934243.550979,
     "ast_hash": "adf32851a4e47e61dc37764be59b3513",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/InstanceLinkerTest.php": {
-    "mtime": 1785381852.7862473,
+    "mtime": 1785934243.5514917,
     "ast_hash": "a169e1f5464a1f7ca1d66fc53c2e05b5",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/InstanceMapperTest.php": {
-    "mtime": 1785381852.7864416,
+    "mtime": 1785934243.5518088,
     "ast_hash": "d5e1d859acd88e5bc59b576916a960dc",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/LogRedactionTest.php": {
-    "mtime": 1785381852.7866821,
+    "mtime": 1785934243.5522976,
     "ast_hash": "3a3d4c6da40e7332ceec0ef48e851242",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/NativeFoundationTest.php": {
-    "mtime": 1785381852.786971,
+    "mtime": 1785934243.5526342,
     "ast_hash": "0319993c2c98819e5abbb8e267d5bc32",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/NativeLifecycleTest.php": {
-    "mtime": 1785381852.7872684,
+    "mtime": 1785934243.5530734,
     "ast_hash": "27efb2433e7160c42d4c8a60de27c931",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/ReinstallFlowTest.php": {
-    "mtime": 1785381852.787834,
+    "mtime": 1785934243.5545177,
     "ast_hash": "fcd0cdf81eed6526218ddd15ef6039a4",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/ResetPasswordFlowTest.php": {
-    "mtime": 1785381852.7881346,
+    "mtime": 1785934243.5547822,
     "ast_hash": "f324c584df4625a9d63f6eca426fde73",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/SecretManagerTest.php": {
-    "mtime": 1785381852.7883418,
+    "mtime": 1785934243.5550227,
     "ast_hash": "f93c4597c76ed086ce90eb9cc3513786",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/SyncFlowTest.php": {
-    "mtime": 1785381852.7886293,
+    "mtime": 1785934243.555353,
     "ast_hash": "d0869f7236caa23f5c16bba4c02ef271",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/bootstrap.php": {
-    "mtime": 1785381852.788905,
+    "mtime": 1785934243.5556178,
     "ast_hash": "ad68058fe4a6dac632260abc9d5a233e",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/integration/native_whmcs_smoke.php": {
-    "mtime": 1785381852.789302,
+    "mtime": 1785934243.555988,
     "ast_hash": "39110023a412355c1431750d47bf4c3c",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/WHMCS_NATIVE_ARCHITECTURE.md": {
-    "mtime": 1785381852.7562776,
+    "mtime": 1785934243.4902487,
     "ast_hash": "be6252ebca7b91dd1bb36acc171d233d",
     "semantic_hash": ""
   },
   "whmcs-module/templates/orderforms/securiace-vps/README.md": {
-    "mtime": 1785381852.7897313,
+    "mtime": 1785934243.5566397,
     "ast_hash": "0b2e721f937cb627bd59c61f254850a2",
     "semantic_hash": ""
   },
   "whmcs-module/templates/orderforms/securiace-vps/theme.yaml": {
-    "mtime": 1785381852.79101,
+    "mtime": 1785934243.557808,
     "ast_hash": "2700aa911072be11a526071584c29234",
     "semantic_hash": ""
   },
   "scripts/hallmark-audit.rb": {
-    "mtime": 1785381852.7474933,
+    "mtime": 1785934243.4719224,
     "ast_hash": "49bb53ab45197c1a79ea23b553b6ed22",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/HALLMARK_REVIEW.md": {
-    "mtime": 1785381852.7551525,
+    "mtime": 1785934243.4867656,
     "ast_hash": "0bf93f9dc13d38301d70a17f71d81f96",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/securiacevps/tests/QueueRecoveryTest.php": {
-    "mtime": 1785381852.7875948,
+    "mtime": 1785934243.554266,
     "ast_hash": "54a6a8d9faafa96613db15f37da853cd",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/PriceInvariant.php": {
-    "mtime": 1785384892.315132,
+    "mtime": 1785934243.5002182,
     "ast_hash": "83e5f99d86f4ba772bc4ac4997b1fed8",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/PricingInvariantViolation.php": {
-    "mtime": 1785384892.3153892,
+    "mtime": 1785934243.5005534,
     "ast_hash": "94a2e38f3f8634f9f310a20c8bbcb3dc",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/RoundingTest.php": {
-    "mtime": 1785384892.3183312,
+    "mtime": 1785934243.5302885,
     "ast_hash": "186485a6177599c8755f675a2b8e1a53",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/SyncEngineObserveTest.php": {
-    "mtime": 1785384892.3189318,
+    "mtime": 1785934243.533155,
     "ast_hash": "06c55665f5ce2b0b453b8732850c18b4",
     "semantic_hash": ""
   },
   "tests/fixtures/api/v1.1/catalog.json": {
-    "mtime": 1785384892.3125167,
+    "mtime": 1785934243.4803689,
     "ast_hash": "14e6cd7a555e9babd70e187f2e485cc1",
     "semantic_hash": ""
   },
   "tests/fixtures/api/v1.1/meta.json": {
-    "mtime": 1785384892.3127444,
+    "mtime": 1785934243.4805913,
     "ast_hash": "12845d4d10e4209b64a05433072cdd00",
     "semantic_hash": ""
   },
   "tests/fixtures/api/v1.1/openapi.json": {
-    "mtime": 1785384892.313296,
+    "mtime": 1785934243.4813082,
     "ast_hash": "29d4ec3d3a22b86a1d4f2dc8bcecf8df",
     "semantic_hash": ""
   },
   "tests/fixtures/api/v1.1/plans.json": {
-    "mtime": 1785384892.3134434,
+    "mtime": 1785934243.4817455,
     "ast_hash": "4497af9981577ba02f1f3b99e358863e",
     "semantic_hash": ""
   },
   "tests/fixtures/api/v1.1/quote.json": {
-    "mtime": 1785384892.3136044,
+    "mtime": 1785934243.4819052,
     "ast_hash": "85275f0e287c8b40da16d4f8912bdc07",
     "semantic_hash": ""
   },
   "tests/schema_contract.rs": {
-    "mtime": 1785384892.3138027,
+    "mtime": 1785934243.482141,
     "ast_hash": "67e206d1536cd202e8821eb205deeb6d",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/tests/GoldenApiContractTest.php": {
-    "mtime": 1785384892.317949,
+    "mtime": 1785934243.5255928,
     "ast_hash": "ca247ce89d490a194a6b9a516bc27411",
     "semantic_hash": ""
   },
   "scripts/extract-changelog-section.sh": {
-    "mtime": 1785386607.6066072,
+    "mtime": 1785934243.4711773,
     "ast_hash": "65f5b71c236589f9cd983645a43ab63a",
     "semantic_hash": ""
   },
   "scripts/test-whmcs-release-contract.sh": {
-    "mtime": 1785386607.6074195,
+    "mtime": 1785934243.4752362,
     "ast_hash": "d5661383791278a5f4fa76011a0d6f38",
     "semantic_hash": ""
   },
   "scripts/inspect-github-release.sh": {
-    "mtime": 1785386607.6067474,
+    "mtime": 1785934243.4722586,
     "ast_hash": "2e7e8fdd979866681257830e803f1beb",
     "semantic_hash": ""
   },
   "docs/operations/self-hosted-runners.md": {
-    "mtime": 1785416885.7349758,
+    "mtime": 1785934243.456618,
     "ast_hash": "8979fc7fe9a9efa722250e3db7f17834",
     "semantic_hash": ""
   },
   "scripts/resolve-scraper-release.sh": {
-    "mtime": 1785410967.5831494,
+    "mtime": 1785934243.474423,
     "ast_hash": "86235e86bfcc0f03983fece4c832bdf2",
     "semantic_hash": ""
   },
   "scripts/test-resolve-scraper-release.sh": {
-    "mtime": 1785410967.5833988,
+    "mtime": 1785934243.4747756,
     "ast_hash": "c008a7148620c9f01a657c62089e01f6",
     "semantic_hash": ""
   },
   "scripts/check-workflow-trust.rb": {
-    "mtime": 1785410967.582842,
+    "mtime": 1785934243.4702418,
     "ast_hash": "ca56e3038f6132f404bfde100a738342",
     "semantic_hash": ""
   },
   "scripts/test-workflow-trust-contract.sh": {
-    "mtime": 1785410967.5843508,
+    "mtime": 1785934243.475479,
     "ast_hash": "9f75f4baa3551d42da1ef60d37c359d4",
+    "semantic_hash": ""
+  },
+  "scripts/repair-whmcs-invoice-template.php": {
+    "mtime": 1785934828.3860927,
+    "ast_hash": "fb4ca5aba6149c29eaac01427e706663",
+    "semantic_hash": ""
+  },
+  "tests/whmcs_invoice_template_repair_test.php": {
+    "mtime": 1785934828.386282,
+    "ast_hash": "655d286bc686ba8dd9e7df862e838b60",
     "semantic_hash": ""
   }
 }
