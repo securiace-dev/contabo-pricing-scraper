@@ -1,15 +1,50 @@
 [
   {
-    "gap": "fetch_failed",
-    "title": "",
-    "count": 6,
+    "gap": "storage_policy_violation",
+    "title": "100 GB NVMe",
+    "count": 1,
     "plans": [
-      "cloud-vps-50",
-      "cloud-vps-10",
-      "cloud-vps-30",
-      "cloud-vps-60",
-      "cloud-vps-40",
-      "cloud-vps-20"
+      "cloud-vps-core-6"
+    ]
+  },
+  {
+    "gap": "storage_policy_violation",
+    "title": "150 GB NVMe",
+    "count": 1,
+    "plans": [
+      "cloud-vps-core-8"
+    ]
+  },
+  {
+    "gap": "storage_policy_violation",
+    "title": "200 GB NVMe",
+    "count": 1,
+    "plans": [
+      "cloud-vps-core-12"
+    ]
+  },
+  {
+    "gap": "storage_policy_violation",
+    "title": "250 GB NVMe",
+    "count": 1,
+    "plans": [
+      "cloud-vps-core-16"
+    ]
+  },
+  {
+    "gap": "storage_policy_violation",
+    "title": "300 GB NVMe",
+    "count": 1,
+    "plans": [
+      "cloud-vps-core-18"
+    ]
+  },
+  {
+    "gap": "storage_policy_violation",
+    "title": "50 GB NVMe",
+    "count": 1,
+    "plans": [
+      "cloud-vps-core-4"
     ]
   }
 ]

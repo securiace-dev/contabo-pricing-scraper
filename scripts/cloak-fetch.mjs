@@ -51,7 +51,9 @@ if (!Array.isArray(urls) || urls.length === 0) {
 mkdirSync(outDir, { recursive: true });
 
 function slugFromUrl(url) {
-  return url.replace(/\/$/, '').split('/').pop();
+  const [pathPart, fragment] = String(url).split('#');
+  if (fragment) return fragment;
+  return pathPart.replace(/\/$/, '').split('/').pop();
 }
 
 let succeeded = 0;

@@ -6,7 +6,7 @@ const path = require('path');
 const vm = require('vm');
 
 const SCRAPER_VERSION = require(path.join(__dirname, '..', 'package.json')).version;
-const SCHEMA_VERSION = '1.1';
+const SCHEMA_VERSION = '1.3';
 
 // ─── Optional proxy ─────────────────────────────────────────────────────────
 // When SCRAPER_PROXY is set, route every fetch() through it via undici's
@@ -52,6 +52,18 @@ const ALL_PLAN_URLS = [
   'https://contabo.com/en/vps/cloud-vps-40/',
   'https://contabo.com/en/vps/cloud-vps-50/',
   'https://contabo.com/en/vps/cloud-vps-60/',
+  'https://contabo.com/en/vps/cloud-vps-core-4/',
+  'https://contabo.com/en/vps/cloud-vps-core-6/',
+  'https://contabo.com/en/vps/cloud-vps-core-8/',
+  'https://contabo.com/en/vps/cloud-vps-core-12/',
+  'https://contabo.com/en/vps/cloud-vps-core-16/',
+  'https://contabo.com/en/vps/cloud-vps-core-18/',
+  'https://contabo.com/en/vps/cloud-vps-plus-4/',
+  'https://contabo.com/en/vps/cloud-vps-plus-6/',
+  'https://contabo.com/en/vps/cloud-vps-plus-8/',
+  'https://contabo.com/en/vps/cloud-vps-plus-12/',
+  'https://contabo.com/en/vps/cloud-vps-plus-16/',
+  'https://contabo.com/en/vps/cloud-vps-plus-18/',
   'https://contabo.com/en/storage-vps/storage-vps-10/',
   'https://contabo.com/en/storage-vps/storage-vps-20/',
   'https://contabo.com/en/storage-vps/storage-vps-30/',
@@ -62,6 +74,14 @@ const ALL_PLAN_URLS = [
   'https://contabo.com/en/vds/vds-l/',
   'https://contabo.com/en/vds/vds-xl/',
   'https://contabo.com/en/vds/vds-xxl/',
+  'https://contabo.com/en/dedicated-servers/ds-40/',
+  'https://contabo.com/en/dedicated-servers/amd-ryzen-12-cores/',
+  'https://contabo.com/en/dedicated-servers/ds-50/',
+  'https://contabo.com/en/dedicated-servers/amd-genoa-24-cores/',
+  'https://contabo.com/en/dedicated-servers/ds-3/',
+  'https://contabo.com/en/dedicated-servers/ds-2/',
+  'https://contabo.com/en/dedicated-servers/ds-1/',
+  'https://contabo.com/en/dedicated-servers/amd-9-7900-ryzen-12-cores-dedicated-server/',
 ];
 
 // ─── Classification tables ────────────────────────────────────────────────────
@@ -70,11 +90,13 @@ const ALL_PLAN_URLS = [
 const ASIA_ISO_CODES = { India: 'IN', Japan: 'JP', Singapore: 'SG', Korea: 'KR', Taiwan: 'TW' };
 
 const REGION_RULES = [
+  [/^Location:\s*([^\[]+)\s*\[[^\]]+\]$/i, (m) => classifyRegion(m[1].trim())],
   [/^European Union$/i,           { region_group: 'Europe',    country: 'European Union',   country_code: 'EU' }],
   [/^United Kingdom$/i,           { region_group: 'Europe',    country: 'United Kingdom',   country_code: 'UK' }],
   [/^Germany$/i,                  { region_group: 'Europe',    country: 'Germany',           country_code: 'DE' }],
   [/^Canada/i,                    { region_group: 'America',   country: 'Canada',            country_code: 'CA' }],
   [/^United States \(([^)]+)\)$/i, (m) => ({ region_group: 'America', country: `United States (${m[1]})`, country_code: 'US', subregion: m[1] })],
+  [/^Vereinigte Staaten \(([^)]+)\)$/i, (m) => ({ region_group: 'America', country: `United States (${m[1]})`, country_code: 'US', subregion: m[1] })],
   [/^United States$/i,            { region_group: 'America',   country: 'United States',     country_code: 'US' }],
   [/^Asia \(([^)]+)\)$/i,        (m) => ({ region_group: 'Asia', country: m[1], country_code: ASIA_ISO_CODES[m[1]] ?? m[1].slice(0, 2).toUpperCase() })],
   [/^Australia \(([^)]+)\)$/i,    { region_group: 'Australia', country: 'Australia',         country_code: 'AU' }],
@@ -315,10 +337,14 @@ function escapeCsv(value) {
 }
 
 function slugFromUrl(url) {
-  return url.replace(/\/$/, '').split('/').pop();
+  const [pathPart, fragment] = String(url).split('#');
+  if (fragment) return fragment;
+  return pathPart.replace(/\/$/, '').split('/').pop();
 }
 
 function titleFromSlug(slug) {
+  if (slug.startsWith('cloud-vps-core-')) return `Core VPS ${slug.split('-').pop()}`;
+  if (slug.startsWith('cloud-vps-plus-')) return `Performance VPS ${slug.split('-').pop()}`;
   if (slug.startsWith('cloud-vps-'))   return `Cloud VPS ${slug.split('-').pop()}`;
   if (slug.startsWith('storage-vps-')) return `Storage VPS ${slug.split('-').pop()}`;
   if (slug.startsWith('vds-'))         return `Cloud VDS ${slug.split('-').pop().toUpperCase()}`;
@@ -330,6 +356,29 @@ function familyFromProduct(product) {
   if (product.type === 'storage-vps') return 'Storage VPS';
   if (product.type === 'vds')         return 'Cloud VDS';
   return product.type ?? 'Unknown';
+}
+
+function canonicalFamilyFromProduct(product) {
+  const type = String(product?.type ?? '').toLowerCase();
+  const slug = String(product?.slug ?? '').toLowerCase();
+  const title = String(product?.title ?? '').toLowerCase();
+  if (type === 'vds' || slug.startsWith('vds-') || title.includes('max performance')) return 'Max Performance VPS';
+  if (type.includes('performance') || type.includes('plus') || slug.startsWith('cloud-vps-plus-') || title.includes('performance vps')) return 'Performance VPS';
+  if (slug.startsWith('cloud-vps-core-') || title.includes('core vps')) return 'Core VPS';
+  if (type === 'vps' || slug.startsWith('cloud-vps-')) return 'Cloud VPS';
+  if (type === 'storage-vps') return 'Storage VPS';
+  if (type === 'ds') return 'Dedicated Server';
+  if (type === 'object-storage') return 'Object Storage';
+  return 'Unknown';
+}
+
+function storagePolicyFor(canonicalFamily) {
+  if (canonicalFamily === 'Core VPS') return 'ssd_only';
+  if (canonicalFamily === 'Performance VPS') return 'nvme_only';
+  if (canonicalFamily === 'Max Performance VPS') return 'legacy_vds_options';
+  if (canonicalFamily === 'Cloud VPS') return 'legacy_cloud_vps_options';
+  if (canonicalFamily === 'Storage VPS') return 'storage_vps_options';
+  return 'not_applicable';
 }
 
 function normalizeStorageLabel(label) {
@@ -414,9 +463,14 @@ function classifyAddon(addon, product, html) {
   const storageMd = title.match(/^(\d+(?:\.\d+)?)\s*(GB|TB)\s*(NVMe|SSD)(?: SSD)?$/i);
   if (storageMd) {
     const storageType = storageMd[3].toUpperCase() === 'NVME' ? 'NVMe' : storageMd[3].toUpperCase();
+    const canonicalFamily = canonicalFamilyFromProduct(product);
+    if ((canonicalFamily === 'Core VPS' && storageType !== 'SSD') ||
+        (canonicalFamily === 'Performance VPS' && storageType !== 'NVMe')) {
+      return { action: 'gap', reason: 'storage_policy_violation', title };
+    }
     return {
       action: 'include',
-      dimension: product.type === 'vds' ? 'Storage' : 'Storage Type',
+      dimension: canonicalFamilyFromProduct(product) === 'Max Performance VPS' ? 'Storage' : 'Storage Type',
       category: storageType,
       option_label: normalizeStorageLabel(`${storageMd[1]} ${storageMd[2]} ${storageMd[3]}`),
       ...delta,
@@ -489,9 +543,11 @@ function injectDefaults(product, html, classified) {
     }
   };
   const base = { plan_sku: product.slug, currency: 'EUR' };
+  const canonicalFamily = canonicalFamilyFromProduct(product);
+  const storageDimension = canonicalFamily === 'Max Performance VPS' ? 'Storage' : 'Storage Type';
 
   add({ ...base, dimension: 'Data Protection', category: 'None',
-    option_label: product.type === 'vds' ? 'No Backup Space' : 'No Data Protection',
+    option_label: canonicalFamily === 'Max Performance VPS' ? 'No Backup Space' : 'No Data Protection',
     monthly_price_delta: 0, setup_fee_delta: 0, is_default: true });
 
   add({ ...base, dimension: 'Networking', category: 'Private Networking',
@@ -508,7 +564,7 @@ function injectDefaults(product, html, classified) {
     const primary = normalizeStorageLabel(storageSpec.title ?? '');
     if (primary) {
       add({ ...base,
-        dimension: product.type === 'vds' ? 'Storage' : 'Storage Type',
+        dimension: storageDimension,
         category: /NVMe/i.test(primary) ? 'NVMe' : 'SSD',
         option_label: primary,
         monthly_price_delta: 0, setup_fee_delta: 0, is_default: true });
@@ -516,7 +572,7 @@ function injectDefaults(product, html, classified) {
     if (storageSpec.subtitle && !/More storage available/i.test(storageSpec.subtitle)) {
       const alt = normalizeStorageLabel(storageSpec.subtitle.replace(/^or\s+/i, ''));
       add({ ...base,
-        dimension: product.type === 'vds' ? 'Storage' : 'Storage Type',
+        dimension: storageDimension,
         category: /NVMe/i.test(alt) ? 'NVMe' : 'SSD',
         option_label: alt,
         monthly_price_delta: 0, setup_fee_delta: 0, is_default: false });
@@ -550,6 +606,8 @@ async function processPlan(url, html, gapReport) {
   }
 
   const family = familyFromProduct(product);
+  const canonical_family = canonicalFamilyFromProduct(product);
+  const storage_policy = storagePolicyFor(canonical_family);
   const storageSpec = (product.specs ?? []).find((s) => s.type === 'storage');
 
   const plan_rank = ALL_PLAN_URLS.indexOf(url) + 1;
@@ -559,6 +617,9 @@ async function processPlan(url, html, gapReport) {
       if (family === 'Storage VPS') return s.startsWith('storage-vps-');
       if (family === 'Cloud VDS')   return s.startsWith('vds-');
       return false; })
+    .indexOf(url) + 1;
+  const canonical_family_rank = ALL_PLAN_URLS
+    .filter((u) => canonicalFamilyFromProduct({ type: '', slug: slugFromUrl(u), title: '' }) === canonical_family)
     .indexOf(url) + 1;
 
   const periods = (product.periods ?? []).map((period) => {
@@ -572,6 +633,10 @@ async function processPlan(url, html, gapReport) {
 
   const basePlan = {
     family,
+    legacy_family: family,
+    canonical_family,
+    storage_policy,
+    canonical_family_rank,
     plan_rank,
     plan_family_rank,
     product_name: product.title,
@@ -666,7 +731,7 @@ async function processPlan(url, html, gapReport) {
   }
 
   // VDS storage default guard — checked after all default-marking is complete
-  if (product.type === 'vds') {
+  if (canonicalFamilyFromProduct(product) === 'Max Performance VPS') {
     const ok = finalOptions.some((item) => item.dimension === 'Storage' && item.is_default === true);
     if (!ok) {
       process.stderr.write(`  WARN   ${product.slug}: no default Storage option — storageSpec.title may not match any addon label\n`);
@@ -683,6 +748,9 @@ async function processPlan(url, html, gapReport) {
   const planConfig = {
     slug: product.slug,
     family,
+    legacy_family: family,
+    canonical_family,
+    storage_policy,
     title: product.title,
     fetched_at: basePlan.fetched_at,
     base_monthly_price: product.price?.EUR ?? 0,
@@ -718,7 +786,11 @@ function buildQuickReference(basePlans, planConfigs, generatedAt) {
       plan_slug:            plan.product_slug,
       plan_rank:            plan.plan_rank,
       plan_family_rank:     plan.plan_family_rank,
+      canonical_family_rank: plan.canonical_family_rank,
       family:               plan.family,
+      legacy_family:        plan.legacy_family,
+      canonical_family:     plan.canonical_family,
+      storage_policy:       plan.storage_policy,
       product_name:         plan.product_name,
       cpu_count:            plan.specs_parsed?.cpu_count            ?? null,
       ram_gb:               plan.specs_parsed?.ram_gb               ?? null,
@@ -977,7 +1049,18 @@ async function main() {
   process.exit(EXIT_OK);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  canonicalFamilyFromProduct,
+  familyFromProduct,
+  classifyRegion,
+  slugFromUrl,
+  storagePolicyFor,
+  titleFromSlug,
+};

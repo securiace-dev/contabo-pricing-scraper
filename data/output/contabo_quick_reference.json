@@ -1,14 +1,618 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "scraper_version": "2.3.2",
-  "generated_at": "2026-08-04T19:39:17.751Z",
-  "plan_count": 27,
+  "generated_at": "2026-08-05T03:36:58.556Z",
+  "plan_count": 36,
   "plans": [
     {
-      "plan_slug": "storage-vps-10",
+      "plan_slug": "cloud-vps-core-4",
       "plan_rank": 7,
+      "plan_family_rank": 7,
+      "canonical_family_rank": 1,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "product_name": "Cloud VPS 4",
+      "cpu_count": 4,
+      "ram_gb": 8,
+      "storage_primary_gb": 100,
+      "storage_primary_type": "SSD",
+      "port_speed_mbps": 200,
+      "base_monthly_eur": 5.5,
+      "default_monthly_eur": 5.5,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 5.5,
+          "setup_fee": 0,
+          "total_period": 5.5,
+          "total_period_cost": 5.5
+        },
+        "6m": {
+          "effective_monthly": 5.5,
+          "setup_fee": 0,
+          "total_period": 33,
+          "total_period_cost": 33
+        },
+        "12m": {
+          "effective_monthly": 4.68,
+          "setup_fee": 0,
+          "total_period": 56.1,
+          "total_period_cost": 56.1
+        },
+        "24m": {
+          "effective_monthly": 4.4,
+          "setup_fee": 0,
+          "total_period": 105.6,
+          "total_period_cost": 105.6
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-core-4/",
+      "fetched_at": "2026-08-05T03:36:31.588Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 4.68,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-core-6",
+      "plan_rank": 8,
+      "plan_family_rank": 8,
+      "canonical_family_rank": 2,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "product_name": "Cloud VPS 6",
+      "cpu_count": 6,
+      "ram_gb": 12,
+      "storage_primary_gb": 200,
+      "storage_primary_type": "SSD",
+      "port_speed_mbps": 300,
+      "base_monthly_eur": 7.5,
+      "default_monthly_eur": 7.5,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 7.5,
+          "setup_fee": 0,
+          "total_period": 7.5,
+          "total_period_cost": 7.5
+        },
+        "6m": {
+          "effective_monthly": 7.5,
+          "setup_fee": 0,
+          "total_period": 45,
+          "total_period_cost": 45
+        },
+        "12m": {
+          "effective_monthly": 6.38,
+          "setup_fee": 0,
+          "total_period": 76.5,
+          "total_period_cost": 76.5
+        },
+        "24m": {
+          "effective_monthly": 6,
+          "setup_fee": 0,
+          "total_period": 144,
+          "total_period_cost": 144
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-core-6/",
+      "fetched_at": "2026-08-05T03:36:35.988Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 6.38,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-core-8",
+      "plan_rank": 9,
+      "plan_family_rank": 9,
+      "canonical_family_rank": 3,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "product_name": "Cloud VPS 8",
+      "cpu_count": 8,
+      "ram_gb": 24,
+      "storage_primary_gb": 300,
+      "storage_primary_type": "SSD",
+      "port_speed_mbps": 600,
+      "base_monthly_eur": 14,
+      "default_monthly_eur": 14,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 14,
+          "setup_fee": 0,
+          "total_period": 14,
+          "total_period_cost": 14
+        },
+        "6m": {
+          "effective_monthly": 14,
+          "setup_fee": 0,
+          "total_period": 84,
+          "total_period_cost": 84
+        },
+        "12m": {
+          "effective_monthly": 11.9,
+          "setup_fee": 0,
+          "total_period": 142.8,
+          "total_period_cost": 142.8
+        },
+        "24m": {
+          "effective_monthly": 11.2,
+          "setup_fee": 0,
+          "total_period": 268.8,
+          "total_period_cost": 268.8
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-core-8/",
+      "fetched_at": "2026-08-05T03:36:17.046Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 11.9,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-core-12",
+      "plan_rank": 10,
+      "plan_family_rank": 10,
+      "canonical_family_rank": 4,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "product_name": "Cloud VPS 12",
+      "cpu_count": 12,
+      "ram_gb": 48,
+      "storage_primary_gb": 400,
+      "storage_primary_type": "SSD",
+      "port_speed_mbps": 800,
+      "base_monthly_eur": 25,
+      "default_monthly_eur": 25,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 25,
+          "setup_fee": 0,
+          "total_period": 25,
+          "total_period_cost": 25
+        },
+        "6m": {
+          "effective_monthly": 25,
+          "setup_fee": 0,
+          "total_period": 150,
+          "total_period_cost": 150
+        },
+        "12m": {
+          "effective_monthly": 21.25,
+          "setup_fee": 0,
+          "total_period": 255,
+          "total_period_cost": 255
+        },
+        "24m": {
+          "effective_monthly": 20,
+          "setup_fee": 0,
+          "total_period": 480,
+          "total_period_cost": 480
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-core-12/",
+      "fetched_at": "2026-08-05T03:36:32.059Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 21.25,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-core-16",
+      "plan_rank": 11,
+      "plan_family_rank": 11,
+      "canonical_family_rank": 5,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "product_name": "Cloud VPS 16",
+      "cpu_count": 16,
+      "ram_gb": 64,
+      "storage_primary_gb": 500,
+      "storage_primary_type": "SSD",
+      "port_speed_mbps": 1000,
+      "base_monthly_eur": 37,
+      "default_monthly_eur": 37,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 37,
+          "setup_fee": 0,
+          "total_period": 37,
+          "total_period_cost": 37
+        },
+        "6m": {
+          "effective_monthly": 37,
+          "setup_fee": 0,
+          "total_period": 222,
+          "total_period_cost": 222
+        },
+        "12m": {
+          "effective_monthly": 31.45,
+          "setup_fee": 0,
+          "total_period": 377.4,
+          "total_period_cost": 377.4
+        },
+        "24m": {
+          "effective_monthly": 29.6,
+          "setup_fee": 0,
+          "total_period": 710.4,
+          "total_period_cost": 710.4
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-core-16/",
+      "fetched_at": "2026-08-05T03:36:35.588Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 31.45,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-core-18",
+      "plan_rank": 12,
+      "plan_family_rank": 12,
+      "canonical_family_rank": 6,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Core VPS",
+      "storage_policy": "ssd_only",
+      "product_name": "Cloud VPS 18",
+      "cpu_count": 18,
+      "ram_gb": 96,
+      "storage_primary_gb": 600,
+      "storage_primary_type": "SSD",
+      "port_speed_mbps": 1000,
+      "base_monthly_eur": 49,
+      "default_monthly_eur": 49,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 49,
+          "setup_fee": 0,
+          "total_period": 49,
+          "total_period_cost": 49
+        },
+        "6m": {
+          "effective_monthly": 49,
+          "setup_fee": 0,
+          "total_period": 294,
+          "total_period_cost": 294
+        },
+        "12m": {
+          "effective_monthly": 41.65,
+          "setup_fee": 0,
+          "total_period": 499.8,
+          "total_period_cost": 499.8
+        },
+        "24m": {
+          "effective_monthly": 39.2,
+          "setup_fee": 0,
+          "total_period": 940.8,
+          "total_period_cost": 940.8
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-core-18/",
+      "fetched_at": "2026-08-05T03:36:14.924Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 41.65,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-plus-4",
+      "plan_rank": 13,
+      "plan_family_rank": 13,
+      "canonical_family_rank": 1,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "product_name": "Cloud VPS Plus 4",
+      "cpu_count": 4,
+      "ram_gb": 8,
+      "storage_primary_gb": 150,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 500,
+      "base_monthly_eur": 13.5,
+      "default_monthly_eur": 13.5,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 13.5,
+          "setup_fee": 0,
+          "total_period": 13.5,
+          "total_period_cost": 13.5
+        },
+        "6m": {
+          "effective_monthly": 13.5,
+          "setup_fee": 0,
+          "total_period": 81,
+          "total_period_cost": 81
+        },
+        "12m": {
+          "effective_monthly": 11.48,
+          "setup_fee": 0,
+          "total_period": 137.7,
+          "total_period_cost": 137.7
+        },
+        "24m": {
+          "effective_monthly": 10.8,
+          "setup_fee": 0,
+          "total_period": 259.2,
+          "total_period_cost": 259.2
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-4/",
+      "fetched_at": "2026-08-05T03:36:32.437Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 11.48,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-plus-6",
+      "plan_rank": 14,
+      "plan_family_rank": 14,
+      "canonical_family_rank": 2,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "product_name": "Cloud VPS Plus 6",
+      "cpu_count": 6,
+      "ram_gb": 12,
+      "storage_primary_gb": 300,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 500,
+      "base_monthly_eur": 19,
+      "default_monthly_eur": 19,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 19,
+          "setup_fee": 0,
+          "total_period": 19,
+          "total_period_cost": 19
+        },
+        "6m": {
+          "effective_monthly": 19,
+          "setup_fee": 0,
+          "total_period": 114,
+          "total_period_cost": 114
+        },
+        "12m": {
+          "effective_monthly": 16.15,
+          "setup_fee": 0,
+          "total_period": 193.8,
+          "total_period_cost": 193.8
+        },
+        "24m": {
+          "effective_monthly": 15.2,
+          "setup_fee": 0,
+          "total_period": 364.8,
+          "total_period_cost": 364.8
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-6/",
+      "fetched_at": "2026-08-05T03:36:31.793Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 16.15,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-plus-8",
+      "plan_rank": 15,
+      "plan_family_rank": 15,
+      "canonical_family_rank": 3,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "product_name": "Cloud VPS Plus 8",
+      "cpu_count": 8,
+      "ram_gb": 24,
+      "storage_primary_gb": 450,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 1000,
+      "base_monthly_eur": 35,
+      "default_monthly_eur": 35,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 35,
+          "setup_fee": 0,
+          "total_period": 35,
+          "total_period_cost": 35
+        },
+        "6m": {
+          "effective_monthly": 35,
+          "setup_fee": 0,
+          "total_period": 210,
+          "total_period_cost": 210
+        },
+        "12m": {
+          "effective_monthly": 29.75,
+          "setup_fee": 0,
+          "total_period": 357,
+          "total_period_cost": 357
+        },
+        "24m": {
+          "effective_monthly": 28,
+          "setup_fee": 0,
+          "total_period": 672,
+          "total_period_cost": 672
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-8/",
+      "fetched_at": "2026-08-05T03:36:15.544Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 29.75,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-plus-12",
+      "plan_rank": 16,
+      "plan_family_rank": 16,
+      "canonical_family_rank": 4,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "product_name": "Cloud VPS Plus 12",
+      "cpu_count": 12,
+      "ram_gb": 48,
+      "storage_primary_gb": 600,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 1000,
+      "base_monthly_eur": 59,
+      "default_monthly_eur": 59,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 59,
+          "setup_fee": 0,
+          "total_period": 59,
+          "total_period_cost": 59
+        },
+        "6m": {
+          "effective_monthly": 59,
+          "setup_fee": 0,
+          "total_period": 354,
+          "total_period_cost": 354
+        },
+        "12m": {
+          "effective_monthly": 50.15,
+          "setup_fee": 0,
+          "total_period": 601.8,
+          "total_period_cost": 601.8
+        },
+        "24m": {
+          "effective_monthly": 47.2,
+          "setup_fee": 0,
+          "total_period": 1132.8,
+          "total_period_cost": 1132.8
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-12/",
+      "fetched_at": "2026-08-05T03:36:30.045Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 50.15,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-plus-16",
+      "plan_rank": 17,
+      "plan_family_rank": 17,
+      "canonical_family_rank": 5,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "product_name": "Cloud VPS Plus 16",
+      "cpu_count": 16,
+      "ram_gb": 64,
+      "storage_primary_gb": 750,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 1000,
+      "base_monthly_eur": 79,
+      "default_monthly_eur": 79,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 79,
+          "setup_fee": 0,
+          "total_period": 79,
+          "total_period_cost": 79
+        },
+        "6m": {
+          "effective_monthly": 79,
+          "setup_fee": 0,
+          "total_period": 474,
+          "total_period_cost": 474
+        },
+        "12m": {
+          "effective_monthly": 67.15,
+          "setup_fee": 0,
+          "total_period": 805.8,
+          "total_period_cost": 805.8
+        },
+        "24m": {
+          "effective_monthly": 63.2,
+          "setup_fee": 0,
+          "total_period": 1516.8,
+          "total_period_cost": 1516.8
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-16/",
+      "fetched_at": "2026-08-05T03:36:17.350Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 67.15,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-plus-18",
+      "plan_rank": 18,
+      "plan_family_rank": 18,
+      "canonical_family_rank": 6,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Performance VPS",
+      "storage_policy": "nvme_only",
+      "product_name": "Cloud VPS Plus 18",
+      "cpu_count": 18,
+      "ram_gb": 96,
+      "storage_primary_gb": 900,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 1000,
+      "base_monthly_eur": 99,
+      "default_monthly_eur": 99,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 99,
+          "setup_fee": 0,
+          "total_period": 99,
+          "total_period_cost": 99
+        },
+        "6m": {
+          "effective_monthly": 99,
+          "setup_fee": 0,
+          "total_period": 594,
+          "total_period_cost": 594
+        },
+        "12m": {
+          "effective_monthly": 84.15,
+          "setup_fee": 0,
+          "total_period": 1009.8,
+          "total_period_cost": 1009.8
+        },
+        "24m": {
+          "effective_monthly": 79.2,
+          "setup_fee": 0,
+          "total_period": 1900.8,
+          "total_period_cost": 1900.8
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-plus-18/",
+      "fetched_at": "2026-08-05T03:36:29.165Z",
+      "savings_6m_pct": 0,
+      "savings_12m_pct": 15,
+      "best_price_eur": 84.15,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "storage-vps-10",
+      "plan_rank": 19,
       "plan_family_rank": 1,
+      "canonical_family_rank": 0,
       "family": "Storage VPS",
+      "legacy_family": "Storage VPS",
+      "canonical_family": "Storage VPS",
+      "storage_policy": "storage_vps_options",
       "product_name": "Storage VPS 10",
       "cpu_count": 2,
       "ram_gb": 4,
@@ -44,7 +648,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-10/",
-      "fetched_at": "2026-08-04T19:39:13.222Z",
+      "fetched_at": "2026-08-05T03:36:18.397Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 4.68,
@@ -52,9 +656,13 @@
     },
     {
       "plan_slug": "storage-vps-20",
-      "plan_rank": 8,
+      "plan_rank": 20,
       "plan_family_rank": 2,
+      "canonical_family_rank": 0,
       "family": "Storage VPS",
+      "legacy_family": "Storage VPS",
+      "canonical_family": "Storage VPS",
+      "storage_policy": "storage_vps_options",
       "product_name": "Storage VPS 20",
       "cpu_count": 3,
       "ram_gb": 8,
@@ -90,7 +698,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-20/",
-      "fetched_at": "2026-08-04T19:39:13.192Z",
+      "fetched_at": "2026-08-05T03:36:29.380Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 6.38,
@@ -98,9 +706,13 @@
     },
     {
       "plan_slug": "storage-vps-30",
-      "plan_rank": 9,
+      "plan_rank": 21,
       "plan_family_rank": 3,
+      "canonical_family_rank": 0,
       "family": "Storage VPS",
+      "legacy_family": "Storage VPS",
+      "canonical_family": "Storage VPS",
+      "storage_policy": "storage_vps_options",
       "product_name": "Storage VPS 30",
       "cpu_count": 6,
       "ram_gb": 18,
@@ -136,7 +748,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-30/",
-      "fetched_at": "2026-08-04T19:39:12.902Z",
+      "fetched_at": "2026-08-05T03:36:18.488Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 11.9,
@@ -144,9 +756,13 @@
     },
     {
       "plan_slug": "storage-vps-40",
-      "plan_rank": 10,
+      "plan_rank": 22,
       "plan_family_rank": 4,
+      "canonical_family_rank": 0,
       "family": "Storage VPS",
+      "legacy_family": "Storage VPS",
+      "canonical_family": "Storage VPS",
+      "storage_policy": "storage_vps_options",
       "product_name": "Storage VPS 40",
       "cpu_count": 8,
       "ram_gb": 30,
@@ -182,7 +798,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-40/",
-      "fetched_at": "2026-08-04T19:39:13.360Z",
+      "fetched_at": "2026-08-05T03:36:26.951Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 21.25,
@@ -190,9 +806,13 @@
     },
     {
       "plan_slug": "storage-vps-50",
-      "plan_rank": 11,
+      "plan_rank": 23,
       "plan_family_rank": 5,
+      "canonical_family_rank": 0,
       "family": "Storage VPS",
+      "legacy_family": "Storage VPS",
+      "canonical_family": "Storage VPS",
+      "storage_policy": "storage_vps_options",
       "product_name": "Storage VPS 50",
       "cpu_count": 14,
       "ram_gb": 50,
@@ -228,7 +848,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-50/",
-      "fetched_at": "2026-08-04T19:39:15.418Z",
+      "fetched_at": "2026-08-05T03:36:19.915Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 31.45,
@@ -236,9 +856,13 @@
     },
     {
       "plan_slug": "vds-s",
-      "plan_rank": 12,
+      "plan_rank": 24,
       "plan_family_rank": 1,
+      "canonical_family_rank": 1,
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "product_name": "Cloud VDS S",
       "cpu_count": null,
       "ram_gb": 24,
@@ -274,7 +898,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-s/",
-      "fetched_at": "2026-08-04T19:39:15.878Z",
+      "fetched_at": "2026-08-05T03:36:21.577Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 33.15,
@@ -282,9 +906,13 @@
     },
     {
       "plan_slug": "vds-m",
-      "plan_rank": 13,
+      "plan_rank": 25,
       "plan_family_rank": 2,
+      "canonical_family_rank": 2,
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "product_name": "Cloud VDS M",
       "cpu_count": null,
       "ram_gb": 32,
@@ -320,7 +948,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-m/",
-      "fetched_at": "2026-08-04T19:39:15.561Z",
+      "fetched_at": "2026-08-05T03:36:19.604Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 41.65,
@@ -328,9 +956,13 @@
     },
     {
       "plan_slug": "vds-l",
-      "plan_rank": 14,
+      "plan_rank": 26,
       "plan_family_rank": 3,
+      "canonical_family_rank": 3,
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "product_name": "Cloud VDS L",
       "cpu_count": null,
       "ram_gb": 48,
@@ -366,7 +998,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-l/",
-      "fetched_at": "2026-08-04T19:39:15.420Z",
+      "fetched_at": "2026-08-05T03:36:29.091Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 58.65,
@@ -374,9 +1006,13 @@
     },
     {
       "plan_slug": "vds-xl",
-      "plan_rank": 15,
+      "plan_rank": 27,
       "plan_family_rank": 4,
+      "canonical_family_rank": 4,
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "product_name": "Cloud VDS XL",
       "cpu_count": null,
       "ram_gb": 64,
@@ -412,7 +1048,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-xl/",
-      "fetched_at": "2026-08-04T19:39:17.741Z",
+      "fetched_at": "2026-08-05T03:36:21.590Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 79.9,
@@ -420,9 +1056,13 @@
     },
     {
       "plan_slug": "vds-xxl",
-      "plan_rank": 16,
+      "plan_rank": 28,
       "plan_family_rank": 5,
+      "canonical_family_rank": 5,
       "family": "Cloud VDS",
+      "legacy_family": "Cloud VDS",
+      "canonical_family": "Max Performance VPS",
+      "storage_policy": "legacy_vds_options",
       "product_name": "Cloud VDS XXL",
       "cpu_count": null,
       "ram_gb": 96,
@@ -458,417 +1098,197 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-xxl/",
-      "fetched_at": "2026-08-04T19:39:17.283Z",
+      "fetched_at": "2026-08-05T03:36:22.292Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 118.15,
       "best_price_period": "12m"
     },
     {
-      "plan_slug": "cloud-vps-10",
-      "plan_rank": 1,
-      "plan_family_rank": 1,
-      "family": "Cloud VPS",
-      "product_name": "Cloud VPS 10",
-      "cpu_count": 4,
-      "ram_gb": 8,
-      "storage_primary_gb": 75,
-      "storage_primary_type": "NVMe",
-      "port_speed_mbps": 200,
-      "base_monthly_eur": 5.5,
-      "default_monthly_eur": 5.5,
-      "pricing": {
-        "1m": {
-          "effective_monthly": 5.5,
-          "setup_fee": 0,
-          "total_period": 5.5,
-          "total_period_cost": 5.5
-        },
-        "6m": {
-          "effective_monthly": 4.95,
-          "setup_fee": 0,
-          "total_period": 29.7,
-          "total_period_cost": 29.7
-        },
-        "12m": {
-          "effective_monthly": 4.4,
-          "setup_fee": 0,
-          "total_period": 52.8,
-          "total_period_cost": 52.8
-        }
-      },
-      "url": "https://contabo.com/en/vps/cloud-vps-10/",
-      "fetched_at": "2026-07-01T06:59:41.570Z",
-      "savings_6m_pct": 10,
-      "savings_12m_pct": 20,
-      "best_price_eur": 4.4,
-      "best_price_period": "12m"
-    },
-    {
-      "plan_slug": "cloud-vps-20",
-      "plan_rank": 2,
-      "plan_family_rank": 2,
-      "family": "Cloud VPS",
-      "product_name": "Cloud VPS 20",
-      "cpu_count": 6,
-      "ram_gb": 12,
-      "storage_primary_gb": 100,
-      "storage_primary_type": "NVMe",
-      "port_speed_mbps": 300,
-      "base_monthly_eur": 7.5,
-      "default_monthly_eur": 7.5,
-      "pricing": {
-        "1m": {
-          "effective_monthly": 7.5,
-          "setup_fee": 0,
-          "total_period": 7.5,
-          "total_period_cost": 7.5
-        },
-        "6m": {
-          "effective_monthly": 6.75,
-          "setup_fee": 0,
-          "total_period": 40.5,
-          "total_period_cost": 40.5
-        },
-        "12m": {
-          "effective_monthly": 6,
-          "setup_fee": 0,
-          "total_period": 72,
-          "total_period_cost": 72
-        }
-      },
-      "url": "https://contabo.com/en/vps/cloud-vps-20/",
-      "fetched_at": "2026-07-01T06:59:41.085Z",
-      "savings_6m_pct": 10,
-      "savings_12m_pct": 20,
-      "best_price_eur": 6.0,
-      "best_price_period": "12m"
-    },
-    {
-      "plan_slug": "cloud-vps-30",
-      "plan_rank": 3,
-      "plan_family_rank": 3,
-      "family": "Cloud VPS",
-      "product_name": "Cloud VPS 30",
-      "cpu_count": 8,
-      "ram_gb": 24,
-      "storage_primary_gb": 200,
-      "storage_primary_type": "NVMe",
-      "port_speed_mbps": 600,
-      "base_monthly_eur": 14,
-      "default_monthly_eur": 14,
-      "pricing": {
-        "1m": {
-          "effective_monthly": 14,
-          "setup_fee": 0,
-          "total_period": 14,
-          "total_period_cost": 14
-        },
-        "6m": {
-          "effective_monthly": 12.6,
-          "setup_fee": 0,
-          "total_period": 75.6,
-          "total_period_cost": 75.6
-        },
-        "12m": {
-          "effective_monthly": 11.2,
-          "setup_fee": 0,
-          "total_period": 134.4,
-          "total_period_cost": 134.4
-        }
-      },
-      "url": "https://contabo.com/en/vps/cloud-vps-30/",
-      "fetched_at": "2026-07-01T06:59:41.299Z",
-      "savings_6m_pct": 10,
-      "savings_12m_pct": 20,
-      "best_price_eur": 11.2,
-      "best_price_period": "12m"
-    },
-    {
-      "plan_slug": "cloud-vps-40",
-      "plan_rank": 4,
-      "plan_family_rank": 4,
-      "family": "Cloud VPS",
-      "product_name": "Cloud VPS 40",
-      "cpu_count": 12,
-      "ram_gb": 48,
-      "storage_primary_gb": 250,
-      "storage_primary_type": "NVMe",
-      "port_speed_mbps": 800,
-      "base_monthly_eur": 25,
-      "default_monthly_eur": 25,
-      "pricing": {
-        "1m": {
-          "effective_monthly": 25,
-          "setup_fee": 0,
-          "total_period": 25,
-          "total_period_cost": 25
-        },
-        "6m": {
-          "effective_monthly": 22.5,
-          "setup_fee": 0,
-          "total_period": 135,
-          "total_period_cost": 135
-        },
-        "12m": {
-          "effective_monthly": 20,
-          "setup_fee": 0,
-          "total_period": 240,
-          "total_period_cost": 240
-        }
-      },
-      "url": "https://contabo.com/en/vps/cloud-vps-40/",
-      "fetched_at": "2026-07-01T06:59:58.479Z",
-      "savings_6m_pct": 10,
-      "savings_12m_pct": 20,
-      "best_price_eur": 20.0,
-      "best_price_period": "12m"
-    },
-    {
-      "plan_slug": "cloud-vps-50",
-      "plan_rank": 5,
-      "plan_family_rank": 5,
-      "family": "Cloud VPS",
-      "product_name": "Cloud VPS 50",
-      "cpu_count": 16,
-      "ram_gb": 64,
-      "storage_primary_gb": 300,
-      "storage_primary_type": "NVMe",
-      "port_speed_mbps": 1000,
-      "base_monthly_eur": 37,
-      "default_monthly_eur": 37,
-      "pricing": {
-        "1m": {
-          "effective_monthly": 37,
-          "setup_fee": 0,
-          "total_period": 37,
-          "total_period_cost": 37
-        },
-        "6m": {
-          "effective_monthly": 33.3,
-          "setup_fee": 0,
-          "total_period": 199.8,
-          "total_period_cost": 199.8
-        },
-        "12m": {
-          "effective_monthly": 29.6,
-          "setup_fee": 0,
-          "total_period": 355.2,
-          "total_period_cost": 355.2
-        }
-      },
-      "url": "https://contabo.com/en/vps/cloud-vps-50/",
-      "fetched_at": "2026-07-01T06:59:42.986Z",
-      "savings_6m_pct": 10,
-      "savings_12m_pct": 20,
-      "best_price_eur": 29.6,
-      "best_price_period": "12m"
-    },
-    {
-      "plan_slug": "cloud-vps-60",
-      "plan_rank": 6,
-      "plan_family_rank": 6,
-      "family": "Cloud VPS",
-      "product_name": "Cloud VPS 60",
-      "cpu_count": 18,
-      "ram_gb": 96,
-      "storage_primary_gb": 350,
-      "storage_primary_type": "NVMe",
-      "port_speed_mbps": 1000,
-      "base_monthly_eur": 49,
-      "default_monthly_eur": 49,
-      "pricing": {
-        "1m": {
-          "effective_monthly": 49,
-          "setup_fee": 0,
-          "total_period": 49,
-          "total_period_cost": 49
-        },
-        "6m": {
-          "effective_monthly": 44.1,
-          "setup_fee": 0,
-          "total_period": 264.6,
-          "total_period_cost": 264.6
-        },
-        "12m": {
-          "effective_monthly": 39.2,
-          "setup_fee": 0,
-          "total_period": 470.4,
-          "total_period_cost": 470.4
-        }
-      },
-      "url": "https://contabo.com/en/vps/cloud-vps-60/",
-      "fetched_at": "2026-07-01T06:59:42.994Z",
-      "savings_6m_pct": 10,
-      "savings_12m_pct": 20,
-      "best_price_eur": 39.2,
-      "best_price_period": "12m"
-    },
-    {
       "plan_slug": "ds-40",
-      "plan_rank": 0,
+      "plan_rank": 29,
       "plan_family_rank": 0,
+      "canonical_family_rank": 0,
       "family": "Dedicated Server",
+      "legacy_family": "Dedicated Server",
+      "canonical_family": "Dedicated Server",
+      "storage_policy": "not_applicable",
       "product_name": "AMD Turin 32 Cores",
       "cpu_count": 32,
       "ram_gb": 128,
       "storage_primary_gb": 2000,
       "storage_primary_type": "NVMe",
       "port_speed_mbps": 1000,
-      "base_monthly_eur": 249,
-      "default_monthly_eur": 249,
+      "base_monthly_eur": 399,
+      "default_monthly_eur": 399,
       "pricing": {
         "1m": {
-          "effective_monthly": 249,
+          "effective_monthly": 399,
           "setup_fee": 0,
-          "total_period": 249,
-          "total_period_cost": 249
+          "total_period": 399,
+          "total_period_cost": 399
         },
         "6m": {
-          "effective_monthly": 249,
+          "effective_monthly": 399,
           "setup_fee": 0,
-          "total_period": 1494,
-          "total_period_cost": 1494
+          "total_period": 2394,
+          "total_period_cost": 2394
         },
         "12m": {
-          "effective_monthly": 224.1,
+          "effective_monthly": 359.1,
           "setup_fee": 0,
-          "total_period": 2689.2,
-          "total_period_cost": 2689.2
+          "total_period": 4309.2,
+          "total_period_cost": 4309.2
         }
       },
       "url": "https://contabo.com/en/dedicated-servers/ds-40/",
-      "fetched_at": "2026-07-01T06:59:46.801Z",
+      "fetched_at": "2026-08-05T03:36:22.286Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 10,
-      "best_price_eur": 224.1,
+      "best_price_eur": 359.1,
       "best_price_period": "12m"
     },
     {
       "plan_slug": "amd-ryzen-12-cores",
-      "plan_rank": 0,
+      "plan_rank": 30,
       "plan_family_rank": 0,
+      "canonical_family_rank": 0,
       "family": "Dedicated Server",
+      "legacy_family": "Dedicated Server",
+      "canonical_family": "Dedicated Server",
+      "storage_policy": "not_applicable",
       "product_name": "AMD Ryzen 12 Cores",
       "cpu_count": 12,
       "ram_gb": 64,
       "storage_primary_gb": 1000,
       "storage_primary_type": "NVMe",
       "port_speed_mbps": 1000,
-      "base_monthly_eur": 96,
-      "default_monthly_eur": 96,
+      "base_monthly_eur": 149,
+      "default_monthly_eur": 149,
       "pricing": {
         "1m": {
-          "effective_monthly": 96,
+          "effective_monthly": 149,
           "setup_fee": 0,
-          "total_period": 96,
-          "total_period_cost": 96
+          "total_period": 149,
+          "total_period_cost": 149
         },
         "6m": {
-          "effective_monthly": 96,
+          "effective_monthly": 149,
           "setup_fee": 0,
-          "total_period": 576,
-          "total_period_cost": 576
+          "total_period": 894,
+          "total_period_cost": 894
         },
         "12m": {
-          "effective_monthly": 86.4,
+          "effective_monthly": 134.1,
           "setup_fee": 0,
-          "total_period": 1036.8,
-          "total_period_cost": 1036.8
+          "total_period": 1609.2,
+          "total_period_cost": 1609.2
         }
       },
       "url": "https://contabo.com/en/dedicated-servers/amd-ryzen-12-cores/",
-      "fetched_at": "2026-07-01T06:59:48.727Z",
+      "fetched_at": "2026-08-05T03:36:24.155Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 10,
-      "best_price_eur": 86.4,
+      "best_price_eur": 134.1,
       "best_price_period": "12m"
     },
     {
       "plan_slug": "ds-50",
-      "plan_rank": 0,
+      "plan_rank": 31,
       "plan_family_rank": 0,
+      "canonical_family_rank": 0,
       "family": "Dedicated Server",
+      "legacy_family": "Dedicated Server",
+      "canonical_family": "Dedicated Server",
+      "storage_policy": "not_applicable",
       "product_name": "AMD Turin 64 Cores",
       "cpu_count": 64,
       "ram_gb": 192,
       "storage_primary_gb": 2000,
       "storage_primary_type": "NVMe",
       "port_speed_mbps": 1000,
-      "base_monthly_eur": 666,
-      "default_monthly_eur": 666,
+      "base_monthly_eur": 699,
+      "default_monthly_eur": 699,
       "pricing": {
         "1m": {
-          "effective_monthly": 666,
+          "effective_monthly": 699,
           "setup_fee": 0,
-          "total_period": 666,
-          "total_period_cost": 666
+          "total_period": 699,
+          "total_period_cost": 699
         },
         "6m": {
-          "effective_monthly": 666,
+          "effective_monthly": 699,
           "setup_fee": 0,
-          "total_period": 3996,
-          "total_period_cost": 3996
+          "total_period": 4194,
+          "total_period_cost": 4194
         },
         "12m": {
-          "effective_monthly": 599.4,
+          "effective_monthly": 629.1,
           "setup_fee": 0,
-          "total_period": 7192.8,
-          "total_period_cost": 7192.8
+          "total_period": 7549.2,
+          "total_period_cost": 7549.2
         }
       },
       "url": "https://contabo.com/en/dedicated-servers/ds-50/",
-      "fetched_at": "2026-07-01T06:59:50.568Z",
+      "fetched_at": "2026-08-05T03:36:24.312Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 10,
-      "best_price_eur": 599.4,
+      "best_price_eur": 629.1,
       "best_price_period": "12m"
     },
     {
       "plan_slug": "amd-genoa-24-cores",
-      "plan_rank": 0,
+      "plan_rank": 32,
       "plan_family_rank": 0,
+      "canonical_family_rank": 0,
       "family": "Dedicated Server",
+      "legacy_family": "Dedicated Server",
+      "canonical_family": "Dedicated Server",
+      "storage_policy": "not_applicable",
       "product_name": "AMD Genoa 24 Cores",
       "cpu_count": 24,
       "ram_gb": 128,
       "storage_primary_gb": 2000,
       "storage_primary_type": "SSD",
       "port_speed_mbps": 1000,
-      "base_monthly_eur": 169,
-      "default_monthly_eur": 169,
+      "base_monthly_eur": 199,
+      "default_monthly_eur": 199,
       "pricing": {
         "1m": {
-          "effective_monthly": 169,
+          "effective_monthly": 199,
           "setup_fee": 0,
-          "total_period": 169,
-          "total_period_cost": 169
+          "total_period": 199,
+          "total_period_cost": 199
         },
         "6m": {
-          "effective_monthly": 169,
+          "effective_monthly": 199,
           "setup_fee": 0,
-          "total_period": 1014,
-          "total_period_cost": 1014
+          "total_period": 1194,
+          "total_period_cost": 1194
         },
         "12m": {
-          "effective_monthly": 152.1,
+          "effective_monthly": 179.1,
           "setup_fee": 0,
-          "total_period": 1825.2,
-          "total_period_cost": 1825.2
+          "total_period": 2149.2,
+          "total_period_cost": 2149.2
         }
       },
       "url": "https://contabo.com/en/dedicated-servers/amd-genoa-24-cores/",
-      "fetched_at": "2026-07-01T06:59:52.373Z",
+      "fetched_at": "2026-08-05T03:36:24.601Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 10,
-      "best_price_eur": 152.1,
+      "best_price_eur": 179.1,
       "best_price_period": "12m"
     },
     {
       "plan_slug": "ds-3",
-      "plan_rank": 0,
+      "plan_rank": 33,
       "plan_family_rank": 0,
+      "canonical_family_rank": 0,
       "family": "Dedicated Server",
+      "legacy_family": "Dedicated Server",
+      "canonical_family": "Dedicated Server",
+      "storage_policy": "not_applicable",
       "product_name": "AMD Ryzen 12 Cores",
       "cpu_count": 12,
       "ram_gb": 64,
@@ -898,7 +1318,7 @@
         }
       },
       "url": "https://contabo.com/en/dedicated-servers/ds-3/",
-      "fetched_at": "2026-07-01T06:59:50.889Z",
+      "fetched_at": "2026-08-05T03:36:24.170Z",
       "savings_6m_pct": 7,
       "savings_12m_pct": 10,
       "best_price_eur": 108.9,
@@ -906,9 +1326,13 @@
     },
     {
       "plan_slug": "ds-2",
-      "plan_rank": 0,
+      "plan_rank": 34,
       "plan_family_rank": 0,
+      "canonical_family_rank": 0,
       "family": "Dedicated Server",
+      "legacy_family": "Dedicated Server",
+      "canonical_family": "Dedicated Server",
+      "storage_policy": "not_applicable",
       "product_name": "AMD Ryzen 12 Cores",
       "cpu_count": 12,
       "ram_gb": 64,
@@ -938,7 +1362,7 @@
         }
       },
       "url": "https://contabo.com/en/dedicated-servers/ds-2/",
-      "fetched_at": "2026-07-01T06:59:50.683Z",
+      "fetched_at": "2026-08-05T03:36:26.917Z",
       "savings_6m_pct": 7,
       "savings_12m_pct": 10,
       "best_price_eur": 108.9,
@@ -946,9 +1370,13 @@
     },
     {
       "plan_slug": "ds-1",
-      "plan_rank": 0,
+      "plan_rank": 35,
       "plan_family_rank": 0,
+      "canonical_family_rank": 0,
       "family": "Dedicated Server",
+      "legacy_family": "Dedicated Server",
+      "canonical_family": "Dedicated Server",
+      "storage_policy": "not_applicable",
       "product_name": "AMD Ryzen 12 Cores",
       "cpu_count": 12,
       "ram_gb": 64,
@@ -978,7 +1406,7 @@
         }
       },
       "url": "https://contabo.com/en/dedicated-servers/ds-1/",
-      "fetched_at": "2026-07-01T06:59:50.506Z",
+      "fetched_at": "2026-08-05T03:36:26.748Z",
       "savings_6m_pct": 7,
       "savings_12m_pct": 10,
       "best_price_eur": 108.9,
@@ -986,9 +1414,13 @@
     },
     {
       "plan_slug": "amd-9-7900-ryzen-12-cores-dedicated-server",
-      "plan_rank": 0,
+      "plan_rank": 36,
       "plan_family_rank": 0,
+      "canonical_family_rank": 0,
       "family": "Dedicated Server",
+      "legacy_family": "Dedicated Server",
+      "canonical_family": "Dedicated Server",
+      "storage_policy": "not_applicable",
       "product_name": "AMD 9 7900 Ryzen 12 Cores Dedicated Server",
       "cpu_count": null,
       "ram_gb": null,
@@ -1018,131 +1450,275 @@
         }
       },
       "url": "https://contabo.com/en/dedicated-servers/amd-9-7900-ryzen-12-cores-dedicated-server/",
-      "fetched_at": "2026-07-01T06:59:54.745Z",
+      "fetched_at": "2026-08-05T03:36:26.691Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 10,
       "best_price_eur": 112.5,
       "best_price_period": "12m"
     },
     {
-      "plan_slug": "european-union",
-      "plan_rank": 0,
-      "plan_family_rank": 0,
-      "family": "Object Storage",
-      "product_name": "Object Storage: Europe",
-      "cpu_count": null,
-      "ram_gb": null,
-      "storage_primary_gb": null,
-      "storage_primary_type": null,
-      "port_speed_mbps": null,
-      "base_monthly_eur": 2.49,
-      "default_monthly_eur": 2.49,
+      "plan_slug": "cloud-vps-10",
+      "plan_rank": 1,
+      "plan_family_rank": 1,
+      "canonical_family_rank": 1,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Cloud VPS",
+      "storage_policy": "legacy_cloud_vps_options",
+      "product_name": "Cloud VPS 10",
+      "cpu_count": 4,
+      "ram_gb": 8,
+      "storage_primary_gb": 75,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 200,
+      "base_monthly_eur": 5.5,
+      "default_monthly_eur": 5.5,
       "pricing": {
         "1m": {
-          "effective_monthly": 2.49,
+          "effective_monthly": 5.5,
           "setup_fee": 0,
-          "total_period": 2.49,
-          "total_period_cost": 2.49
+          "total_period": 5.5,
+          "total_period_cost": 5.5
         },
         "6m": {
-          "effective_monthly": 2.49,
+          "effective_monthly": 4.95,
           "setup_fee": 0,
-          "total_period": 14.94,
-          "total_period_cost": 14.94
+          "total_period": 29.7,
+          "total_period_cost": 29.7
         },
         "12m": {
-          "effective_monthly": 2.49,
+          "effective_monthly": 4.4,
           "setup_fee": 0,
-          "total_period": 29.88,
-          "total_period_cost": 29.88
+          "total_period": 52.8,
+          "total_period_cost": 52.8
         }
       },
-      "url": "https://contabo.com/en/object-storage/",
-      "fetched_at": "2026-07-01T06:59:52.688Z",
-      "savings_6m_pct": 0,
-      "savings_12m_pct": 0,
-      "best_price_eur": 2.49,
-      "best_price_period": "1m"
+      "url": "https://contabo.com/en/vps/cloud-vps-10/",
+      "fetched_at": "2026-08-05T03:36:56.995Z",
+      "savings_6m_pct": 10,
+      "savings_12m_pct": 20,
+      "best_price_eur": 4.4,
+      "best_price_period": "12m"
     },
     {
-      "plan_slug": "singapore",
-      "plan_rank": 0,
-      "plan_family_rank": 0,
-      "family": "Object Storage",
-      "product_name": "Singapore",
-      "cpu_count": null,
-      "ram_gb": null,
-      "storage_primary_gb": null,
-      "storage_primary_type": null,
-      "port_speed_mbps": null,
-      "base_monthly_eur": 2.99,
-      "default_monthly_eur": 2.99,
+      "plan_slug": "cloud-vps-40",
+      "plan_rank": 4,
+      "plan_family_rank": 4,
+      "canonical_family_rank": 4,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Cloud VPS",
+      "storage_policy": "legacy_cloud_vps_options",
+      "product_name": "Cloud VPS 40",
+      "cpu_count": 12,
+      "ram_gb": 48,
+      "storage_primary_gb": 250,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 800,
+      "base_monthly_eur": 25,
+      "default_monthly_eur": 25,
       "pricing": {
         "1m": {
-          "effective_monthly": 2.99,
+          "effective_monthly": 25,
           "setup_fee": 0,
-          "total_period": 2.99,
-          "total_period_cost": 2.99
+          "total_period": 25,
+          "total_period_cost": 25
         },
         "6m": {
-          "effective_monthly": 2.99,
+          "effective_monthly": 22.5,
           "setup_fee": 0,
-          "total_period": 17.94,
-          "total_period_cost": 17.94
+          "total_period": 135,
+          "total_period_cost": 135
         },
         "12m": {
-          "effective_monthly": 2.99,
+          "effective_monthly": 20,
           "setup_fee": 0,
-          "total_period": 35.88,
-          "total_period_cost": 35.88
+          "total_period": 240,
+          "total_period_cost": 240
         }
       },
-      "url": "https://contabo.com/en/object-storage/",
-      "fetched_at": "2026-07-01T06:59:53.124Z",
-      "savings_6m_pct": 0,
-      "savings_12m_pct": 0,
-      "best_price_eur": 2.99,
-      "best_price_period": "1m"
+      "url": "https://contabo.com/en/vps/cloud-vps-40/",
+      "fetched_at": "2026-08-05T03:36:57.304Z",
+      "savings_6m_pct": 10,
+      "savings_12m_pct": 20,
+      "best_price_eur": 20,
+      "best_price_period": "12m"
     },
     {
-      "plan_slug": "united-states",
-      "plan_rank": 0,
-      "plan_family_rank": 0,
-      "family": "Object Storage",
-      "product_name": "United States",
-      "cpu_count": null,
-      "ram_gb": null,
-      "storage_primary_gb": null,
-      "storage_primary_type": null,
-      "port_speed_mbps": null,
-      "base_monthly_eur": 2.49,
-      "default_monthly_eur": 2.49,
+      "plan_slug": "cloud-vps-20",
+      "plan_rank": 2,
+      "plan_family_rank": 2,
+      "canonical_family_rank": 2,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Cloud VPS",
+      "storage_policy": "legacy_cloud_vps_options",
+      "product_name": "Cloud VPS 20",
+      "cpu_count": 6,
+      "ram_gb": 12,
+      "storage_primary_gb": 100,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 300,
+      "base_monthly_eur": 7.5,
+      "default_monthly_eur": 7.5,
       "pricing": {
         "1m": {
-          "effective_monthly": 2.49,
+          "effective_monthly": 7.5,
           "setup_fee": 0,
-          "total_period": 2.49,
-          "total_period_cost": 2.49
+          "total_period": 7.5,
+          "total_period_cost": 7.5
         },
         "6m": {
-          "effective_monthly": 2.49,
+          "effective_monthly": 6.75,
           "setup_fee": 0,
-          "total_period": 14.94,
-          "total_period_cost": 14.94
+          "total_period": 40.5,
+          "total_period_cost": 40.5
         },
         "12m": {
-          "effective_monthly": 2.49,
+          "effective_monthly": 6,
           "setup_fee": 0,
-          "total_period": 29.88,
-          "total_period_cost": 29.88
+          "total_period": 72,
+          "total_period_cost": 72
         }
       },
-      "url": "https://contabo.com/en/object-storage/",
-      "fetched_at": "2026-07-01T06:59:56.644Z",
-      "savings_6m_pct": 0,
-      "savings_12m_pct": 0,
-      "best_price_eur": 2.49,
-      "best_price_period": "1m"
+      "url": "https://contabo.com/en/vps/cloud-vps-20/",
+      "fetched_at": "2026-08-05T03:36:57.614Z",
+      "savings_6m_pct": 10,
+      "savings_12m_pct": 20,
+      "best_price_eur": 6,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-30",
+      "plan_rank": 3,
+      "plan_family_rank": 3,
+      "canonical_family_rank": 3,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Cloud VPS",
+      "storage_policy": "legacy_cloud_vps_options",
+      "product_name": "Cloud VPS 30",
+      "cpu_count": 8,
+      "ram_gb": 24,
+      "storage_primary_gb": 200,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 600,
+      "base_monthly_eur": 14,
+      "default_monthly_eur": 14,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 14,
+          "setup_fee": 0,
+          "total_period": 14,
+          "total_period_cost": 14
+        },
+        "6m": {
+          "effective_monthly": 12.6,
+          "setup_fee": 0,
+          "total_period": 75.6,
+          "total_period_cost": 75.6
+        },
+        "12m": {
+          "effective_monthly": 11.2,
+          "setup_fee": 0,
+          "total_period": 134.4,
+          "total_period_cost": 134.4
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-30/",
+      "fetched_at": "2026-08-05T03:36:57.926Z",
+      "savings_6m_pct": 10,
+      "savings_12m_pct": 20,
+      "best_price_eur": 11.2,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-60",
+      "plan_rank": 6,
+      "plan_family_rank": 6,
+      "canonical_family_rank": 6,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Cloud VPS",
+      "storage_policy": "legacy_cloud_vps_options",
+      "product_name": "Cloud VPS 60",
+      "cpu_count": 18,
+      "ram_gb": 96,
+      "storage_primary_gb": 350,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 1000,
+      "base_monthly_eur": 49,
+      "default_monthly_eur": 49,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 49,
+          "setup_fee": 0,
+          "total_period": 49,
+          "total_period_cost": 49
+        },
+        "6m": {
+          "effective_monthly": 44.1,
+          "setup_fee": 0,
+          "total_period": 264.6,
+          "total_period_cost": 264.6
+        },
+        "12m": {
+          "effective_monthly": 39.2,
+          "setup_fee": 0,
+          "total_period": 470.4,
+          "total_period_cost": 470.4
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-60/",
+      "fetched_at": "2026-08-05T03:36:58.237Z",
+      "savings_6m_pct": 10,
+      "savings_12m_pct": 20,
+      "best_price_eur": 39.2,
+      "best_price_period": "12m"
+    },
+    {
+      "plan_slug": "cloud-vps-50",
+      "plan_rank": 5,
+      "plan_family_rank": 5,
+      "canonical_family_rank": 5,
+      "family": "Cloud VPS",
+      "legacy_family": "Cloud VPS",
+      "canonical_family": "Cloud VPS",
+      "storage_policy": "legacy_cloud_vps_options",
+      "product_name": "Cloud VPS 50",
+      "cpu_count": 16,
+      "ram_gb": 64,
+      "storage_primary_gb": 300,
+      "storage_primary_type": "NVMe",
+      "port_speed_mbps": 1000,
+      "base_monthly_eur": 37,
+      "default_monthly_eur": 37,
+      "pricing": {
+        "1m": {
+          "effective_monthly": 37,
+          "setup_fee": 0,
+          "total_period": 37,
+          "total_period_cost": 37
+        },
+        "6m": {
+          "effective_monthly": 33.3,
+          "setup_fee": 0,
+          "total_period": 199.8,
+          "total_period_cost": 199.8
+        },
+        "12m": {
+          "effective_monthly": 29.6,
+          "setup_fee": 0,
+          "total_period": 355.2,
+          "total_period_cost": 355.2
+        }
+      },
+      "url": "https://contabo.com/en/vps/cloud-vps-50/",
+      "fetched_at": "2026-08-05T03:36:58.551Z",
+      "savings_6m_pct": 10,
+      "savings_12m_pct": 20,
+      "best_price_eur": 29.6,
+      "best_price_period": "12m"
     }
   ]
 }

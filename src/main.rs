@@ -14,7 +14,7 @@ use tokio::sync::{Mutex, Semaphore};
 use tokio::time::{sleep, Duration};
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-pub const SCHEMA_VERSION: &str = "1.2";
+pub const SCHEMA_VERSION: &str = "1.3";
 
 // Exit codes
 const EXIT_OK: i32 = 0;
@@ -28,6 +28,18 @@ static ALL_PLAN_URLS: &[&str] = &[
     "https://contabo.com/en/vps/cloud-vps-40/",
     "https://contabo.com/en/vps/cloud-vps-50/",
     "https://contabo.com/en/vps/cloud-vps-60/",
+    "https://contabo.com/en/vps/cloud-vps-core-4/",
+    "https://contabo.com/en/vps/cloud-vps-core-6/",
+    "https://contabo.com/en/vps/cloud-vps-core-8/",
+    "https://contabo.com/en/vps/cloud-vps-core-12/",
+    "https://contabo.com/en/vps/cloud-vps-core-16/",
+    "https://contabo.com/en/vps/cloud-vps-core-18/",
+    "https://contabo.com/en/vps/cloud-vps-plus-4/",
+    "https://contabo.com/en/vps/cloud-vps-plus-6/",
+    "https://contabo.com/en/vps/cloud-vps-plus-8/",
+    "https://contabo.com/en/vps/cloud-vps-plus-12/",
+    "https://contabo.com/en/vps/cloud-vps-plus-16/",
+    "https://contabo.com/en/vps/cloud-vps-plus-18/",
     "https://contabo.com/en/storage-vps/storage-vps-10/",
     "https://contabo.com/en/storage-vps/storage-vps-20/",
     "https://contabo.com/en/storage-vps/storage-vps-30/",
@@ -38,6 +50,14 @@ static ALL_PLAN_URLS: &[&str] = &[
     "https://contabo.com/en/vds/vds-l/",
     "https://contabo.com/en/vds/vds-xl/",
     "https://contabo.com/en/vds/vds-xxl/",
+    "https://contabo.com/en/dedicated-servers/ds-40/",
+    "https://contabo.com/en/dedicated-servers/amd-ryzen-12-cores/",
+    "https://contabo.com/en/dedicated-servers/ds-50/",
+    "https://contabo.com/en/dedicated-servers/amd-genoa-24-cores/",
+    "https://contabo.com/en/dedicated-servers/ds-3/",
+    "https://contabo.com/en/dedicated-servers/ds-2/",
+    "https://contabo.com/en/dedicated-servers/ds-1/",
+    "https://contabo.com/en/dedicated-servers/amd-9-7900-ryzen-12-cores-dedicated-server/",
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -482,6 +502,12 @@ fn escape_csv(v: &str) -> String {
 }
 
 fn title_from_slug(slug: &str) -> String {
+    if let Some(n) = slug.strip_prefix("cloud-vps-core-") {
+        return format!("Core VPS {n}");
+    }
+    if let Some(n) = slug.strip_prefix("cloud-vps-plus-") {
+        return format!("Performance VPS {n}");
+    }
     if let Some(n) = slug.strip_prefix("cloud-vps-") {
         return format!("Cloud VPS {n}");
     }
@@ -502,6 +528,52 @@ fn family_from_type(t: &str) -> &'static str {
         "ds" => "Dedicated Server",
         "object-storage" => "Object Storage",
         _ => "Unknown",
+    }
+}
+
+/// Canonical product taxonomy introduced by Contabo's current pricing page.
+/// `family` remains the legacy/source label for compatibility; consumers that
+/// need the current catalogue should use this additive field instead.
+fn canonical_family_for(product_type: &str, slug: &str, title: &str) -> &'static str {
+    let product_type = product_type.to_ascii_lowercase();
+    let slug = slug.to_ascii_lowercase();
+    let title = title.to_ascii_lowercase();
+    if product_type == "vds"
+        || slug.starts_with("vds-")
+        || title.contains("max performance")
+    {
+        "Max Performance VPS"
+    } else if product_type.contains("performance")
+        || product_type.contains("plus")
+        || slug.starts_with("cloud-vps-plus-")
+        || title.contains("performance vps")
+    {
+        "Performance VPS"
+    } else if slug.starts_with("cloud-vps-core-") || title.contains("core vps") {
+        "Core VPS"
+    } else if product_type == "vps" || slug.starts_with("cloud-vps-") {
+        // Generic cloud-vps-* slugs are historical plans. Keep them separate
+        // from the newly named Core VPS catalogue instead of applying the
+        // SSD-only policy to a legacy plan by inference.
+        "Cloud VPS"
+    } else {
+        match product_type.as_str() {
+            "storage-vps" => "Storage VPS",
+            "ds" => "Dedicated Server",
+            "object-storage" => "Object Storage",
+            _ => "Unknown",
+        }
+    }
+}
+
+fn storage_policy_for(canonical_family: &str) -> &'static str {
+    match canonical_family {
+        "Core VPS" => "ssd_only",
+        "Performance VPS" => "nvme_only",
+        "Max Performance VPS" => "legacy_vds_options",
+        "Cloud VPS" => "legacy_cloud_vps_options",
+        "Storage VPS" => "storage_vps_options",
+        _ => "not_applicable",
     }
 }
 
@@ -678,13 +750,21 @@ struct RegionInfo {
 }
 
 fn classify_region(title: &str) -> Option<RegionInfo> {
+    static RE_LOCATION: Lazy<Regex> = Lazy::new(|| {
+        Regex::new(r"(?i)^Location:\s*([^\[]+)\s*\[[^\]]+\]$").unwrap()
+    });
     static RE_US_SUB: Lazy<Regex> =
         Lazy::new(|| Regex::new(r"(?i)^United States \(([^)]+)\)$").unwrap());
+    static RE_DE_US_SUB: Lazy<Regex> =
+        Lazy::new(|| Regex::new(r"(?i)^Vereinigte Staaten \(([^)]+)\)$").unwrap());
     static RE_ASIA: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)^Asia \(([^)]+)\)$").unwrap());
     static RE_AU_SUB: Lazy<Regex> =
         Lazy::new(|| Regex::new(r"(?i)^Australia \(([^)]+)\)$").unwrap());
 
     let tl = title.to_lowercase();
+    if let Some(caps) = RE_LOCATION.captures(title) {
+        return classify_region(caps[1].trim());
+    }
     if tl == "european union" {
         return Some(RegionInfo {
             region_group: "Europe",
@@ -727,6 +807,14 @@ fn classify_region(title: &str) -> Option<RegionInfo> {
     }
 
     if let Some(caps) = RE_US_SUB.captures(title) {
+        return Some(RegionInfo {
+            region_group: "America",
+            country: format!("United States ({})", &caps[1]),
+            country_code: "US".into(),
+            subregion: Some(caps[1].to_string()),
+        });
+    }
+    if let Some(caps) = RE_DE_US_SUB.captures(title) {
         return Some(RegionInfo {
             region_group: "America",
             country: format!("United States ({})", &caps[1]),
@@ -788,9 +876,10 @@ fn is_ignored_title(title: &str) -> bool {
 }
 
 #[allow(clippy::large_enum_variant)]
+#[derive(Debug)]
 enum ClassifyResult {
     Include(OptionItem),
-    Gap { title: String },
+    Gap { title: String, reason: &'static str },
     Skip,
 }
 
@@ -865,8 +954,17 @@ fn classify_addon(
             } else {
                 "SSD"
             };
+            let canonical_family = canonical_family_for(product_type, plan_sku, "");
+            if (canonical_family == "Core VPS" && st != "SSD")
+                || (canonical_family == "Performance VPS" && st != "NVMe")
+            {
+                return ClassifyResult::Gap {
+                    title: title.to_string(),
+                    reason: "storage_policy_violation",
+                };
+            }
             let lbl = normalize_storage_label(&format!("{} {} {}", &caps[1], &caps[2], &caps[3]));
-            let dim = if product_type == "vds" {
+            let dim = if canonical_family == "Max Performance VPS" {
                 "Storage"
             } else {
                 "Storage Type"
@@ -978,6 +1076,7 @@ fn classify_addon(
 
     ClassifyResult::Gap {
         title: title.to_string(),
+        reason: "unclassified",
     }
 }
 
@@ -998,6 +1097,12 @@ fn inject_defaults(
     if product_type == "ds" || product_type == "object-storage" {
         return;
     }
+    let canonical_family = canonical_family_for(product_type, plan_sku, "");
+    let storage_dimension = if canonical_family == "Max Performance VPS" {
+        "Storage"
+    } else {
+        "Storage Type"
+    };
 
     // Build existing set up front (don't hold borrow while mutating)
     let existing: HashSet<String> = classified
@@ -1038,7 +1143,7 @@ fn inject_defaults(
     };
 
     // No backup / data protection default
-    let dp_label = if product_type == "vds" {
+    let dp_label = if canonical_family == "Max Performance VPS" {
         "No Backup Space"
     } else {
         "No Data Protection"
@@ -1068,11 +1173,7 @@ fn inject_defaults(
     if let Some(st) = storage_title {
         let primary = normalize_storage_label(st);
         if !primary.is_empty() {
-            let dimension = if product_type == "vds" {
-                "Storage"
-            } else {
-                "Storage Type"
-            };
+            let dimension = storage_dimension;
             let cat = if primary.contains("NVMe") {
                 "NVMe"
             } else {
@@ -1087,11 +1188,7 @@ fn inject_defaults(
         static RE_OR: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)^or\s+").unwrap());
         if !RE_MORE.is_match(sub) {
             let alt = normalize_storage_label(RE_OR.replace(sub, "").as_ref());
-            let dimension = if product_type == "vds" {
-                "Storage"
-            } else {
-                "Storage Type"
-            };
+            let dimension = storage_dimension;
             let cat = if alt.contains("NVMe") { "NVMe" } else { "SSD" };
             add(dimension, cat, &alt, false, 0.0, 0.0);
         }
@@ -1172,6 +1269,8 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     let family = family_from_type(product_type);
     let product_slug = product.get("slug").and_then(Value::as_str).unwrap_or(slug);
     let product_title = product.get("title").and_then(Value::as_str).unwrap_or(slug);
+    let canonical_family = canonical_family_for(product_type, product_slug, product_title);
+    let storage_policy = storage_policy_for(canonical_family);
     let base_monthly = product
         .get("price")
         .and_then(|p| p.get("EUR"))
@@ -1256,6 +1355,18 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
         .position(|&u| u == url)
         .map(|i| i + 1)
         .unwrap_or(0);
+    let canonical_family_urls: Vec<&str> = ALL_PLAN_URLS
+        .iter()
+        .filter(|&&u| {
+            canonical_family_for("", slug_from_url(u), "") == canonical_family
+        })
+        .copied()
+        .collect();
+    let canonical_family_rank = canonical_family_urls
+        .iter()
+        .position(|&u| u == url)
+        .map(|i| i + 1)
+        .unwrap_or(0);
 
     // Periods
     let empty_arr = vec![];
@@ -1311,10 +1422,10 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
                 .unwrap_or(0.0);
             match classify_addon(title, monthly, setup_a, product_slug, product_type) {
                 ClassifyResult::Include(item) => classified.push(item),
-                ClassifyResult::Gap { title: t } => {
+                ClassifyResult::Gap { title: t, reason } => {
                     gap_report.push(GapEntry {
                         plan_sku: Some(product_slug.to_string()),
-                        gap: "unclassified".into(),
+                        gap: reason.into(),
                         title: Some(t),
                         error: None,
                     });
@@ -1414,7 +1525,7 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     }
 
     // VDS storage default guard (runs after all marking is complete)
-    if product_type == "vds" {
+    if canonical_family == "Max Performance VPS" {
         let ok = final_options
             .iter()
             .any(|o| o.dimension == "Storage" && o.is_default);
@@ -1479,10 +1590,14 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
 
     let base_plan = json!({
         "family":             family,
+        "legacy_family":      family,
+        "canonical_family":   canonical_family,
+        "storage_policy":     storage_policy,
         "pricing_model":      pricing_model_for(family),
         "availability":       json!({ "out_of_stock": out_of_stock, "unavailable": unavailable }),
         "plan_rank":          plan_rank,
         "plan_family_rank":   plan_family_rank,
+        "canonical_family_rank": canonical_family_rank,
         "product_name":       product_title,
         "product_slug":       product_slug,
         "product_url":        base_url(url),
@@ -1509,6 +1624,9 @@ fn process_plan(url: &str, html: &str, gap_report: &mut Vec<GapEntry>) -> Option
     let plan_config = json!({
         "slug":                   product_slug,
         "family":                 family,
+        "legacy_family":          family,
+        "canonical_family":       canonical_family,
+        "storage_policy":         storage_policy,
         "title":                  product_title,
         "fetched_at":             fetched_at,
         "base_monthly_price":     base_monthly,
@@ -1614,7 +1732,11 @@ fn build_quick_reference(
                 "plan_slug":            plan["product_slug"],
                 "plan_rank":            plan["plan_rank"],
                 "plan_family_rank":     plan["plan_family_rank"],
+                "canonical_family_rank": plan["canonical_family_rank"],
                 "family":               plan["family"],
+                "legacy_family":        plan["legacy_family"],
+                "canonical_family":     plan["canonical_family"],
+                "storage_policy":       plan["storage_policy"],
                 "product_name":         plan["product_name"],
                 "cpu_count":            plan["specs_parsed"]["cpu_count"],
                 "ram_gb":               plan["specs_parsed"]["ram_gb"],
@@ -1698,8 +1820,12 @@ fn build_view_model(
                     "product_url":       plan["product_url"],
                     "plan_rank":         plan["plan_rank"],
                     "plan_family_rank":  plan["plan_family_rank"],
+                    "canonical_family_rank": plan["canonical_family_rank"],
                     "period_months":     p["months"],
                     "is_hidden_from_ui": p["is_hidden_from_ui"],
+                    "legacy_family":     plan["legacy_family"],
+                    "canonical_family":  plan["canonical_family"],
+                    "storage_policy":    plan["storage_policy"],
                     "effective_monthly": p["effective_monthly"],
                     "setup_fee":         p["setup_fee"],
                     "discount_total":    p["discount_total"],
@@ -1847,7 +1973,9 @@ async fn cloak_batch_fetch(
 
     let mut results = Vec::with_capacity(urls.len());
     for url in urls {
-        let slug = slug_from_url(url).to_string();
+        // Fragment-targeted catalogue products (Object Storage regions) share
+        // one path, so the fragment is the only collision-free output key.
+        let slug = target_slug_from_url(url).to_string();
         let html_path = html_dir.join(format!("{slug}.html"));
 
         let html = match fs::read_to_string(&html_path) {
@@ -1930,7 +2058,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
         ALL_PLAN_URLS.iter().map(|s| s.to_string()).collect()
     };
     if let Some(ref slugs) = opts.plans {
-        urls.retain(|u| slugs.contains(&slug_from_url(u).to_string()));
+        urls.retain(|u| slugs.contains(&target_slug_from_url(u).to_string()));
         if urls.is_empty() {
             eprintln!("No matching URLs for plans: {}", slugs.join(", "));
             return EXIT_ERROR;
@@ -1998,7 +2126,7 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
 
             let handle = tokio::spawn(async move {
                 let _permit = semaphore.acquire().await.expect("semaphore acquire");
-                let slug = slug_from_url(&url).to_string();
+                let slug = target_slug_from_url(&url).to_string();
                 let t0 = Instant::now();
                 tracing::info!(slug = %slug, "fetch");
 
@@ -2006,12 +2134,6 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
                     Ok(h) => h,
                     Err(e) => {
                         tracing::error!(slug = %slug, error = %e, "fetch failed");
-                        gap_report.lock().await.push(GapEntry {
-                            plan_sku: Some(slug.clone()),
-                            gap: "fetch_failed".into(),
-                            title: None,
-                            error: Some(e),
-                        });
                         failed_fetch_urls.lock().await.push(url.clone());
                         return None;
                     }
@@ -2068,6 +2190,17 @@ pub(crate) async fn run_scrape(opts: Opts) -> i32 {
     let failed_fetched = Arc::try_unwrap(failed_fetch_urls)
         .expect("all reqwest tasks completed before CloakBrowser pass")
         .into_inner();
+    if opts.fetch_mode == FetchMode::Reqwest {
+        let mut gaps = gap_report.lock().await;
+        for url in &failed_fetched {
+            gaps.push(GapEntry {
+                plan_sku: Some(target_slug_from_url(url).to_string()),
+                gap: "fetch_failed".into(),
+                title: None,
+                error: None,
+            });
+        }
+    }
     let cloak_urls: Vec<String> = match opts.fetch_mode {
         FetchMode::Cloak   => urls.clone(),
         FetchMode::Auto    => failed_fetched,
@@ -2529,6 +2662,14 @@ async fn main() {
 mod tests {
     use super::*;
 
+    #[test]
+    fn fragment_url_uses_target_slug_for_catalogue_products() {
+        let url = "https://contabo.com/en/object-storage/#european-union";
+        assert_eq!(base_url(url), "https://contabo.com/en/object-storage/");
+        assert_eq!(slug_from_url(url), "object-storage");
+        assert_eq!(target_slug_from_url(url), "european-union");
+    }
+
     // Round-trip an OptionItem with all fields populated, plus a variant where
     // all optional region fields are None, and assert both decode back to the
     // original struct. Catches accidental drift between serde derive and the
@@ -2638,5 +2779,46 @@ mod tests {
             rows_len > 0,
             "view model rows should be non-empty, got {rows_len}"
         );
+    }
+
+    #[test]
+    fn canonical_vps_taxonomy_preserves_legacy_aliases() {
+        assert_eq!(canonical_family_for("vps", "cloud-vps-core-4", ""), "Core VPS");
+        assert_eq!(
+            canonical_family_for("vps", "cloud-vps-plus-4", ""),
+            "Performance VPS"
+        );
+        assert_eq!(canonical_family_for("vps", "cloud-vps-10", ""), "Cloud VPS");
+        assert_eq!(canonical_family_for("vds", "vds-s", ""), "Max Performance VPS");
+        assert_eq!(storage_policy_for("Core VPS"), "ssd_only");
+        assert_eq!(storage_policy_for("Performance VPS"), "nvme_only");
+    }
+
+    #[test]
+    fn storage_policy_mismatches_are_auditable_gaps() {
+        match classify_addon("50 GB NVMe", 1.0, 0.0, "cloud-vps-core-4", "vps") {
+            ClassifyResult::Gap { title, reason } => {
+                assert_eq!(title, "50 GB NVMe");
+                assert_eq!(reason, "storage_policy_violation");
+            }
+            other => panic!("expected a storage policy gap, got {other:?}"),
+        }
+        match classify_addon("Unexpected option", 1.0, 0.0, "cloud-vps-core-4", "vps") {
+            ClassifyResult::Gap { reason, .. } => assert_eq!(reason, "unclassified"),
+            other => panic!("expected an unclassified gap, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn region_classifier_handles_wrapped_and_localized_live_labels() {
+        let australia = classify_region("Location: Australia [Cloud VPS Plus 8]")
+            .expect("wrapped Australia should classify");
+        assert_eq!(australia.country, "Australia");
+        assert_eq!(australia.country_code, "AU");
+
+        let united_states = classify_region("Vereinigte Staaten (Central)")
+            .expect("localized United States should classify");
+        assert_eq!(united_states.country, "United States (Central)");
+        assert_eq!(united_states.country_code, "US");
     }
 }
