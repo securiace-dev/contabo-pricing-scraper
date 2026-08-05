@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "scripts/contabo_scraper.js": {
-    "mtime": 1785915482.7522929,
-    "ast_hash": "cf92c58d2e34ee02262a16878487af51",
+    "mtime": 1785932573.4347188,
+    "ast_hash": "a3ce0b4a0b9b80a7baa8b00b19b4fe56",
     "semantic_hash": ""
   },
   "scripts/live-schema-smoke.php": {
@@ -740,8 +740,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1785915482.751284,
-    "ast_hash": "dcf84b9769d3dbd6362b353f3a9ab26d",
+    "mtime": 1785932573.6999433,
+    "ast_hash": "641853b18f97c8ee04a3600d3a9a77b7",
     "semantic_hash": ""
   },
   "scripts/bump-version.sh": {
@@ -1347,6 +1347,11 @@
   "tests/fixtures/api/v1.2/quote.json": {
     "mtime": 1785916744.351177,
     "ast_hash": "c81f604d5ed8dbfb5152c66fb80d06e6",
+    "semantic_hash": ""
+  },
+  "tests/scraper_taxonomy.test.js": {
+    "mtime": 1785932573.832473,
+    "ast_hash": "fd0e8684f2acb11e27465bec029d8ca7",
     "semantic_hash": ""
   }
 }

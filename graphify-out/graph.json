@@ -259,10 +259,20 @@
       "norm_label": "cloak-fetch"
     },
     {
+      "label": "test:taxonomy",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "package_scripts_test_taxonomy",
+      "community": 34,
+      "norm_label": "test:taxonomy"
+    },
+    {
       "label": "keywords",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "package_keywords",
       "community": 34,
@@ -272,7 +282,7 @@
       "label": "dependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "package_dependencies",
       "community": 34,
@@ -282,7 +292,7 @@
       "label": "cloakbrowser",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L24",
       "_origin": "ast",
       "id": "package_dependencies_cloakbrowser",
       "community": 34,
@@ -292,7 +302,7 @@
       "label": "playwright-core",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "package_dependencies_playwright_core",
       "community": 34,
@@ -302,7 +312,7 @@
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "package_devdependencies",
       "community": 34,
@@ -312,7 +322,7 @@
       "label": "typescript",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L27",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "package_devdependencies_typescript",
       "community": 34,
@@ -322,7 +332,7 @@
       "label": "undici",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L28",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "package_devdependencies_undici",
       "community": 34,
@@ -510,7 +520,7 @@
       "label": "ASIA_ISO_CODES",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L70",
+      "source_location": "L76",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_asia_iso_codes",
       "community": 12,
@@ -520,7 +530,7 @@
       "label": "REGION_RULES",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L72",
+      "source_location": "L78",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_region_rules",
       "community": 12,
@@ -530,7 +540,7 @@
       "label": "DIMENSION_META",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L86",
+      "source_location": "L94",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_dimension_meta",
       "community": 12,
@@ -540,7 +550,7 @@
       "label": "IGNORE_TITLE_PATTERNS",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L102",
+      "source_location": "L110",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_ignore_title_patterns",
       "community": 12,
@@ -550,7 +560,7 @@
       "label": "requireArgValue()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L125",
+      "source_location": "L133",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_requireargvalue",
       "community": 12,
@@ -560,7 +570,7 @@
       "label": "parseArgs()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L134",
+      "source_location": "L142",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_parseargs",
       "community": 12,
@@ -570,7 +580,7 @@
       "label": "printHelp()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L166",
+      "source_location": "L174",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_printhelp",
       "community": 12,
@@ -580,7 +590,7 @@
       "label": "createSemaphore()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L207",
+      "source_location": "L215",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_createsemaphore",
       "community": 12,
@@ -590,7 +600,7 @@
       "label": "FETCH_HEADERS",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L226",
+      "source_location": "L234",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_fetch_headers",
       "community": 12,
@@ -600,7 +610,7 @@
       "label": "fetchHtml()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L232",
+      "source_location": "L240",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_fetchhtml",
       "community": 12,
@@ -610,7 +620,7 @@
       "label": "sleep()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L238",
+      "source_location": "L246",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_sleep",
       "community": 12,
@@ -620,7 +630,7 @@
       "label": "fetchWithRetry()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L242",
+      "source_location": "L250",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_fetchwithretry",
       "community": 12,
@@ -630,7 +640,7 @@
       "label": "SAPPER_END_MARKERS",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L263",
+      "source_location": "L271",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_sapper_end_markers",
       "community": 12,
@@ -640,7 +650,7 @@
       "label": "extractSapper()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L268",
+      "source_location": "L276",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_extractsapper",
       "community": 12,
@@ -650,7 +660,7 @@
       "label": "extractPasswordRules()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L299",
+      "source_location": "L307",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_extractpasswordrules",
       "community": 12,
@@ -660,17 +670,27 @@
       "label": "escapeCsv()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L312",
+      "source_location": "L320",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_escapecsv",
       "community": 12,
       "norm_label": "escapecsv()"
     },
     {
+      "label": "baseUrl()",
+      "file_type": "code",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L325",
+      "_origin": "ast",
+      "id": "scripts_contabo_scraper_baseurl",
+      "community": 12,
+      "norm_label": "baseurl()"
+    },
+    {
       "label": "slugFromUrl()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L317",
+      "source_location": "L329",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_slugfromurl",
       "community": 12,
@@ -680,27 +700,57 @@
       "label": "titleFromSlug()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L321",
+      "source_location": "L333",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_titlefromslug",
       "community": 12,
       "norm_label": "titlefromslug()"
     },
     {
+      "label": "familyInfoFromProduct()",
+      "file_type": "code",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L342",
+      "_origin": "ast",
+      "id": "scripts_contabo_scraper_familyinfofromproduct",
+      "community": 12,
+      "norm_label": "familyinfofromproduct()"
+    },
+    {
       "label": "familyFromProduct()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L328",
+      "source_location": "L353",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_familyfromproduct",
       "community": 12,
       "norm_label": "familyfromproduct()"
     },
     {
+      "label": "requiresExactProductSlug()",
+      "file_type": "code",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L357",
+      "_origin": "ast",
+      "id": "scripts_contabo_scraper_requiresexactproductslug",
+      "community": 12,
+      "norm_label": "requiresexactproductslug()"
+    },
+    {
+      "label": "storagePolicyAllows()",
+      "file_type": "code",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L361",
+      "_origin": "ast",
+      "id": "scripts_contabo_scraper_storagepolicyallows",
+      "community": 12,
+      "norm_label": "storagepolicyallows()"
+    },
+    {
       "label": "normalizeStorageLabel()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L335",
+      "source_location": "L376",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_normalizestoragelabel",
       "community": 12,
@@ -710,7 +760,7 @@
       "label": "parseCpuCount()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L344",
+      "source_location": "L385",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_parsecpucount",
       "community": 12,
@@ -720,7 +770,7 @@
       "label": "parseRamGb()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L350",
+      "source_location": "L391",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_parseramgb",
       "community": 12,
@@ -730,7 +780,7 @@
       "label": "parsePortSpeedMbps()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L355",
+      "source_location": "L396",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_parseportspeedmbps",
       "community": 12,
@@ -740,7 +790,7 @@
       "label": "parseStorageGb()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L362",
+      "source_location": "L403",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_parsestoragegb",
       "community": 12,
@@ -750,7 +800,7 @@
       "label": "monthlyPriceForPeriod()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L368",
+      "source_location": "L409",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_monthlypriceforperiod",
       "community": 12,
@@ -760,7 +810,7 @@
       "label": "classifyRegion()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L386",
+      "source_location": "L427",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_classifyregion",
       "community": 12,
@@ -770,7 +820,7 @@
       "label": "isIgnoredTitle()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L394",
+      "source_location": "L435",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_isignoredtitle",
       "community": 12,
@@ -780,7 +830,7 @@
       "label": "classifyAddon()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L398",
+      "source_location": "L439",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_classifyaddon",
       "community": 12,
@@ -790,7 +840,7 @@
       "label": "injectDefaults()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L482",
+      "source_location": "L526",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_injectdefaults",
       "community": 12,
@@ -800,7 +850,7 @@
       "label": "processPlan()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L539",
+      "source_location": "L583",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_processplan",
       "community": 12,
@@ -810,7 +860,7 @@
       "label": "buildQuickReference()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L706",
+      "source_location": "L759",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_buildquickreference",
       "community": 12,
@@ -820,7 +870,7 @@
       "label": "main()",
       "file_type": "code",
       "source_file": "scripts/contabo_scraper.js",
-      "source_location": "L740",
+      "source_location": "L793",
       "_origin": "ast",
       "id": "scripts_contabo_scraper_main",
       "community": 12,
@@ -2853,7 +2903,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_main_fetchmode",
-      "community": 102,
+      "community": 4,
       "norm_label": "fetchmode"
     },
     {
@@ -2863,7 +2913,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "src_main_opts",
-      "community": 102,
+      "community": 4,
       "norm_label": "opts"
     },
     {
@@ -2873,7 +2923,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_main_rs_pathbuf",
-      "community": 102,
+      "community": 4,
       "norm_label": "pathbuf"
     },
     {
@@ -2893,7 +2943,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_main_rs_vec",
-      "community": 102,
+      "community": 4,
       "norm_label": "vec"
     },
     {
@@ -2903,7 +2953,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_main_rs_string",
-      "community": 102,
+      "community": 4,
       "norm_label": "string"
     },
     {
@@ -2913,7 +2963,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "src_main_gapentry",
-      "community": 139,
+      "community": 4,
       "norm_label": "gapentry"
     },
     {
@@ -2923,7 +2973,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_main_gapentry_to_json",
-      "community": 139,
+      "community": 4,
       "norm_label": ".to_json()"
     },
     {
@@ -2933,7 +2983,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_main_rs_value",
-      "community": 139,
+      "community": 4,
       "norm_label": "value"
     },
     {
@@ -2943,7 +2993,7 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "src_main_optionitem",
-      "community": 102,
+      "community": 4,
       "norm_label": "optionitem"
     },
     {
@@ -2953,7 +3003,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "src_main_serialize_whole_f64",
-      "community": 41,
+      "community": 4,
       "norm_label": "serialize_whole_f64()"
     },
     {
@@ -2963,7 +3013,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "s",
-      "community": 41,
+      "community": 4,
       "norm_label": "s"
     },
     {
@@ -2973,7 +3023,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "src_main_rs_result",
-      "community": 41,
+      "community": 4,
       "norm_label": "result"
     },
     {
@@ -2983,7 +3033,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "ok",
-      "community": 41,
+      "community": 4,
       "norm_label": "ok"
     },
     {
@@ -2993,7 +3043,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "error",
-      "community": 41,
+      "community": 4,
       "norm_label": "error"
     },
     {
@@ -3003,7 +3053,7 @@
       "source_location": "L142",
       "_origin": "ast",
       "id": "src_main_optionitem_sort_key",
-      "community": 102,
+      "community": 4,
       "norm_label": ".sort_key()"
     },
     {
@@ -3013,7 +3063,7 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "src_main_optionitem_dedup_key",
-      "community": 102,
+      "community": 4,
       "norm_label": ".dedup_key()"
     },
     {
@@ -3023,7 +3073,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "src_main_optionitem_to_json",
-      "community": 139,
+      "community": 4,
       "norm_label": ".to_json()"
     },
     {
@@ -3033,7 +3083,7 @@
       "source_location": "L158",
       "_origin": "ast",
       "id": "src_main_optionitem_to_csv_row",
-      "community": 102,
+      "community": 4,
       "norm_label": ".to_csv_row()"
     },
     {
@@ -3043,7 +3093,7 @@
       "source_location": "L180",
       "_origin": "ast",
       "id": "src_main_planresult",
-      "community": 102,
+      "community": 4,
       "norm_label": "planresult"
     },
     {
@@ -3053,7 +3103,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "src_main_base_url",
-      "community": 109,
+      "community": 4,
       "norm_label": "base_url()"
     },
     {
@@ -3063,7 +3113,7 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "src_main_slug_from_url",
-      "community": 109,
+      "community": 4,
       "norm_label": "slug_from_url()"
     },
     {
@@ -3073,7 +3123,7 @@
       "source_location": "L201",
       "_origin": "ast",
       "id": "src_main_requires_exact_product_slug",
-      "community": 109,
+      "community": 4,
       "norm_label": "requires_exact_product_slug()"
     },
     {
@@ -3083,7 +3133,7 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "src_main_cli",
-      "community": 149,
+      "community": 4,
       "norm_label": "cli"
     },
     {
@@ -3093,7 +3143,7 @@
       "source_location": "L220",
       "_origin": "ast",
       "id": "command",
-      "community": 149,
+      "community": 4,
       "norm_label": "command"
     },
     {
@@ -3103,7 +3153,7 @@
       "source_location": "L225",
       "_origin": "ast",
       "id": "scrapeargs",
-      "community": 149,
+      "community": 4,
       "norm_label": "scrapeargs"
     },
     {
@@ -3123,7 +3173,7 @@
       "source_location": "L237",
       "_origin": "ast",
       "id": "src_main_scrapeargs",
-      "community": 102,
+      "community": 4,
       "norm_label": "scrapeargs"
     },
     {
@@ -3133,7 +3183,7 @@
       "source_location": "L290",
       "_origin": "ast",
       "id": "src_main_scrapeargs_merge",
-      "community": 102,
+      "community": 4,
       "norm_label": ".merge()"
     },
     {
@@ -3143,7 +3193,7 @@
       "source_location": "L290",
       "_origin": "ast",
       "id": "src_main_rs_self",
-      "community": 102,
+      "community": 4,
       "norm_label": "self"
     },
     {
@@ -3153,7 +3203,7 @@
       "source_location": "L306",
       "_origin": "ast",
       "id": "src_main_scrapeargs_explicit_option_names",
-      "community": 102,
+      "community": 4,
       "norm_label": ".explicit_option_names()"
     },
     {
@@ -3163,7 +3213,7 @@
       "source_location": "L344",
       "_origin": "ast",
       "id": "src_main_scrapeargs_env_value",
-      "community": 41,
+      "community": 4,
       "norm_label": ".env_value()"
     },
     {
@@ -3173,7 +3223,7 @@
       "source_location": "L354",
       "_origin": "ast",
       "id": "src_main_scrapeargs_into_opts",
-      "community": 41,
+      "community": 4,
       "norm_label": ".into_opts()"
     },
     {
@@ -3183,7 +3233,7 @@
       "source_location": "L432",
       "_origin": "ast",
       "id": "src_main_resolvedcommand",
-      "community": 41,
+      "community": 4,
       "norm_label": "resolvedcommand"
     },
     {
@@ -3193,7 +3243,7 @@
       "source_location": "L438",
       "_origin": "ast",
       "id": "src_main_cli_resolve",
-      "community": 41,
+      "community": 4,
       "norm_label": ".resolve()"
     },
     {
@@ -3203,7 +3253,7 @@
       "source_location": "L463",
       "_origin": "ast",
       "id": "src_main_fetch_html",
-      "community": 41,
+      "community": 4,
       "norm_label": "fetch_html()"
     },
     {
@@ -3213,7 +3263,7 @@
       "source_location": "L463",
       "_origin": "ast",
       "id": "src_main_rs_client",
-      "community": 41,
+      "community": 4,
       "norm_label": "client"
     },
     {
@@ -3223,7 +3273,7 @@
       "source_location": "L486",
       "_origin": "ast",
       "id": "src_main_fetch_with_retry",
-      "community": 41,
+      "community": 4,
       "norm_label": "fetch_with_retry()"
     },
     {
@@ -3233,7 +3283,7 @@
       "source_location": "L522",
       "_origin": "ast",
       "id": "src_main_extract_sapper_snippet",
-      "community": 41,
+      "community": 4,
       "norm_label": "extract_sapper_snippet()"
     },
     {
@@ -3243,7 +3293,7 @@
       "source_location": "L550",
       "_origin": "ast",
       "id": "src_main_eval_sapper_js",
-      "community": 41,
+      "community": 4,
       "norm_label": "eval_sapper_js()"
     },
     {
@@ -3253,7 +3303,7 @@
       "source_location": "L576",
       "_origin": "ast",
       "id": "src_main_extract_sapper",
-      "community": 41,
+      "community": 4,
       "norm_label": "extract_sapper()"
     },
     {
@@ -3273,7 +3323,7 @@
       "source_location": "L595",
       "_origin": "ast",
       "id": "src_main_escape_csv",
-      "community": 102,
+      "community": 4,
       "norm_label": "escape_csv()"
     },
     {
@@ -3283,7 +3333,7 @@
       "source_location": "L603",
       "_origin": "ast",
       "id": "src_main_title_from_slug",
-      "community": 109,
+      "community": 4,
       "norm_label": "title_from_slug()"
     },
     {
@@ -3333,7 +3383,7 @@
       "source_location": "L695",
       "_origin": "ast",
       "id": "src_main_normalize_storage_label",
-      "community": 102,
+      "community": 4,
       "norm_label": "normalize_storage_label()"
     },
     {
@@ -3343,7 +3393,7 @@
       "source_location": "L702",
       "_origin": "ast",
       "id": "src_main_iso_now",
-      "community": 109,
+      "community": 4,
       "norm_label": "iso_now()"
     },
     {
@@ -3353,7 +3403,7 @@
       "source_location": "L708",
       "_origin": "ast",
       "id": "src_main_round2",
-      "community": 109,
+      "community": 4,
       "norm_label": "round2()"
     },
     {
@@ -3363,7 +3413,7 @@
       "source_location": "L717",
       "_origin": "ast",
       "id": "src_main_json_num",
-      "community": 139,
+      "community": 4,
       "norm_label": "json_num()"
     },
     {
@@ -3383,7 +3433,7 @@
       "source_location": "L733",
       "_origin": "ast",
       "id": "src_main_parse_ram_gb",
-      "community": 139,
+      "community": 4,
       "norm_label": "parse_ram_gb()"
     },
     {
@@ -3413,7 +3463,7 @@
       "source_location": "L765",
       "_origin": "ast",
       "id": "src_main_monthly_price_for_period",
-      "community": 109,
+      "community": 4,
       "norm_label": "monthly_price_for_period()"
     },
     {
@@ -3493,7 +3543,7 @@
       "source_location": "L1108",
       "_origin": "ast",
       "id": "src_main_inject_defaults",
-      "community": 102,
+      "community": 4,
       "norm_label": "inject_defaults()"
     },
     {
@@ -3503,7 +3553,7 @@
       "source_location": "L1229",
       "_origin": "ast",
       "id": "src_main_process_plan",
-      "community": 109,
+      "community": 4,
       "norm_label": "process_plan()"
     },
     {
@@ -3513,7 +3563,7 @@
       "source_location": "L1621",
       "_origin": "ast",
       "id": "src_main_dimension_meta_json",
-      "community": 139,
+      "community": 4,
       "norm_label": "dimension_meta_json()"
     },
     {
@@ -3523,7 +3573,7 @@
       "source_location": "L1646",
       "_origin": "ast",
       "id": "src_main_build_quick_reference",
-      "community": 139,
+      "community": 4,
       "norm_label": "build_quick_reference()"
     },
     {
@@ -3533,7 +3583,7 @@
       "source_location": "L1646",
       "_origin": "ast",
       "id": "src_main_rs_map",
-      "community": 139,
+      "community": 4,
       "norm_label": "map"
     },
     {
@@ -3543,7 +3593,7 @@
       "source_location": "L1749",
       "_origin": "ast",
       "id": "src_main_build_view_model",
-      "community": 139,
+      "community": 4,
       "norm_label": "build_view_model()"
     },
     {
@@ -3553,7 +3603,7 @@
       "source_location": "L1835",
       "_origin": "ast",
       "id": "src_main_gap_summary",
-      "community": 139,
+      "community": 4,
       "norm_label": "gap_summary()"
     },
     {
@@ -3563,7 +3613,7 @@
       "source_location": "L1858",
       "_origin": "ast",
       "id": "src_main_write_csv",
-      "community": 102,
+      "community": 4,
       "norm_label": "write_csv()"
     },
     {
@@ -3573,7 +3623,7 @@
       "source_location": "L1872",
       "_origin": "ast",
       "id": "src_main_get_period",
-      "community": 139,
+      "community": 4,
       "norm_label": "get_period()"
     },
     {
@@ -3583,7 +3633,7 @@
       "source_location": "L1887",
       "_origin": "ast",
       "id": "src_main_cloak_batch_fetch",
-      "community": 109,
+      "community": 4,
       "norm_label": "cloak_batch_fetch()"
     },
     {
@@ -3593,7 +3643,7 @@
       "source_location": "L1887",
       "_origin": "ast",
       "id": "src_main_rs_path",
-      "community": 109,
+      "community": 4,
       "norm_label": "path"
     },
     {
@@ -3603,7 +3653,7 @@
       "source_location": "L1887",
       "_origin": "ast",
       "id": "src_main_rs_arc",
-      "community": 109,
+      "community": 4,
       "norm_label": "arc"
     },
     {
@@ -3613,7 +3663,7 @@
       "source_location": "L1887",
       "_origin": "ast",
       "id": "src_main_rs_mutex",
-      "community": 109,
+      "community": 4,
       "norm_label": "mutex"
     },
     {
@@ -3623,7 +3673,7 @@
       "source_location": "L2009",
       "_origin": "ast",
       "id": "src_main_run_scrape",
-      "community": 139,
+      "community": 4,
       "norm_label": "run_scrape()"
     },
     {
@@ -3633,7 +3683,7 @@
       "source_location": "L2551",
       "_origin": "ast",
       "id": "src_main_main",
-      "community": 41,
+      "community": 4,
       "norm_label": "main()"
     },
     {
@@ -3673,7 +3723,7 @@
       "source_location": "L2665",
       "_origin": "ast",
       "id": "src_main_scrape_flags_before_serve_fail_loudly",
-      "community": 41,
+      "community": 4,
       "norm_label": "scrape_flags_before_serve_fail_loudly()"
     },
     {
@@ -3723,7 +3773,7 @@
       "source_location": "L2799",
       "_origin": "ast",
       "id": "src_main_canonical_url_rejects_same_title_legacy_product_when_exact_slug_is_missing",
-      "community": 109,
+      "community": 4,
       "norm_label": "canonical_url_rejects_same_title_legacy_product_when_exact_slug_is_missing()"
     },
     {
@@ -3733,7 +3783,7 @@
       "source_location": "L2832",
       "_origin": "ast",
       "id": "src_main_core_vps_4_hydrated_state_beats_legacy_payload_and_stale_query",
-      "community": 109,
+      "community": 4,
       "norm_label": "core_vps_4_hydrated_state_beats_legacy_payload_and_stale_query()"
     },
     {
@@ -4465,6 +4515,46 @@
       "id": "tests_schema_contract_schema_constants_and_documentation_are_aligned",
       "community": 14,
       "norm_label": "schema_constants_and_documentation_are_aligned()"
+    },
+    {
+      "label": "scraper_taxonomy.test.js",
+      "file_type": "code",
+      "source_file": "tests/scraper_taxonomy.test.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tests_scraper_taxonomy_test",
+      "community": 12,
+      "norm_label": "scraper_taxonomy.test.js"
+    },
+    {
+      "label": "test",
+      "file_type": "code",
+      "source_file": "tests/scraper_taxonomy.test.js",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "tests_scraper_taxonomy_test_test",
+      "community": 12,
+      "norm_label": "test"
+    },
+    {
+      "label": "assert",
+      "file_type": "code",
+      "source_file": "tests/scraper_taxonomy.test.js",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "tests_scraper_taxonomy_test_assert",
+      "community": 12,
+      "norm_label": "assert"
+    },
+    {
+      "label": "taxonomy",
+      "file_type": "code",
+      "source_file": "tests/scraper_taxonomy.test.js",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "tests_scraper_taxonomy_test_taxonomy",
+      "community": 12,
+      "norm_label": "taxonomy"
     },
     {
       "label": "ajax.php",
@@ -6783,7 +6873,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_catalogimportservice",
-      "community": 92,
+      "community": 227,
       "norm_label": "catalogimportservice.php"
     },
     {
@@ -6793,7 +6883,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice",
-      "community": 92,
+      "community": 227,
       "norm_label": "catalogimportservice"
     },
     {
@@ -6803,7 +6893,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_import",
-      "community": 92,
+      "community": 227,
       "norm_label": ".import()"
     },
     {
@@ -6813,7 +6903,7 @@
       "source_location": "L174",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_canonicaljson",
-      "community": 92,
+      "community": 227,
       "norm_label": ".canonicaljson()"
     },
     {
@@ -6823,7 +6913,7 @@
       "source_location": "L190",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_normalize",
-      "community": 92,
+      "community": 227,
       "norm_label": ".normalize()"
     },
     {
@@ -6833,7 +6923,7 @@
       "source_location": "L206",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_islist",
-      "community": 92,
+      "community": 227,
       "norm_label": ".islist()"
     },
     {
@@ -6843,7 +6933,7 @@
       "source_location": "L217",
       "_origin": "ast",
       "id": "lib_catalogimportservice_catalogimportservice_mysqltimestamp",
-      "community": 92,
+      "community": 227,
       "norm_label": ".mysqltimestamp()"
     },
     {
@@ -7103,7 +7193,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository",
-      "community": 7,
+      "community": 109,
       "norm_label": "configoptionlinkrepository.php"
     },
     {
@@ -7113,7 +7203,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository",
-      "community": 7,
+      "community": 109,
       "norm_label": "configoptionlinkrepository"
     },
     {
@@ -7123,7 +7213,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_upsertgrouplink",
-      "community": 7,
+      "community": 109,
       "norm_label": ".upsertgrouplink()"
     },
     {
@@ -7133,7 +7223,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findgrouplink",
-      "community": 7,
+      "community": 109,
       "norm_label": ".findgrouplink()"
     },
     {
@@ -7143,7 +7233,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_upsertoptionlink",
-      "community": 7,
+      "community": 109,
       "norm_label": ".upsertoptionlink()"
     },
     {
@@ -7153,7 +7243,7 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findoptionlink",
-      "community": 7,
+      "community": 109,
       "norm_label": ".findoptionlink()"
     },
     {
@@ -7163,7 +7253,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_listoptionlinksforprofile",
-      "community": 7,
+      "community": 109,
       "norm_label": ".listoptionlinksforprofile()"
     },
     {
@@ -7173,7 +7263,7 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_upsertvaluelink",
-      "community": 7,
+      "community": 109,
       "norm_label": ".upsertvaluelink()"
     },
     {
@@ -7183,7 +7273,7 @@
       "source_location": "L192",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findvaluelink",
-      "community": 7,
+      "community": 109,
       "norm_label": ".findvaluelink()"
     },
     {
@@ -7193,7 +7283,7 @@
       "source_location": "L207",
       "_origin": "ast",
       "id": "lib_configoptionlinkrepository_configoptionlinkrepository_findvaluelinkbywhmcssubid",
-      "community": 7,
+      "community": 109,
       "norm_label": ".findvaluelinkbywhmcssubid()"
     },
     {
@@ -7333,7 +7423,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer",
-      "community": 27,
+      "community": 41,
       "norm_label": "configurableoptionssyncer.php"
     },
     {
@@ -7343,7 +7433,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer",
-      "community": 27,
+      "community": 41,
       "norm_label": "configurableoptionssyncer"
     },
     {
@@ -7353,7 +7443,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_construct",
-      "community": 27,
+      "community": 41,
       "norm_label": ".__construct()"
     },
     {
@@ -7363,7 +7453,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "whmcsconfigoptionsadapter",
-      "community": 27,
+      "community": 41,
       "norm_label": "whmcsconfigoptionsadapter"
     },
     {
@@ -7373,7 +7463,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_configurableoptionssyncer_php_optionauditlog",
-      "community": 27,
+      "community": 41,
       "norm_label": "optionauditlog"
     },
     {
@@ -7383,7 +7473,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_configurableoptionssyncer_php_configoptionlinkrepository",
-      "community": 27,
+      "community": 41,
       "norm_label": "configoptionlinkrepository"
     },
     {
@@ -7393,7 +7483,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_observe",
-      "community": 27,
+      "community": 41,
       "norm_label": ".observe()"
     },
     {
@@ -7403,7 +7493,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_configurableoptionssyncer_php_configoptionpricingcontext",
-      "community": 27,
+      "community": 41,
       "norm_label": "configoptionpricingcontext"
     },
     {
@@ -7413,7 +7503,7 @@
       "source_location": "L237",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_apply",
-      "community": 27,
+      "community": 41,
       "norm_label": ".apply()"
     },
     {
@@ -7423,7 +7513,7 @@
       "source_location": "L474",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_diff",
-      "community": 27,
+      "community": 41,
       "norm_label": ".diff()"
     },
     {
@@ -7433,7 +7523,7 @@
       "source_location": "L554",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_valuedriftfields",
-      "community": 27,
+      "community": 41,
       "norm_label": ".valuedriftfields()"
     },
     {
@@ -7443,7 +7533,7 @@
       "source_location": "L569",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_tally",
-      "community": 27,
+      "community": 41,
       "norm_label": ".tally()"
     },
     {
@@ -7453,7 +7543,7 @@
       "source_location": "L583",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_auditaction",
-      "community": 27,
+      "community": 41,
       "norm_label": ".auditaction()"
     },
     {
@@ -7463,7 +7553,7 @@
       "source_location": "L607",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_pricecycles",
-      "community": 27,
+      "community": 41,
       "norm_label": ".pricecycles()"
     },
     {
@@ -7473,7 +7563,7 @@
       "source_location": "L644",
       "_origin": "ast",
       "id": "lib_configurableoptionssyncer_configurableoptionssyncer_pricesetup",
-      "community": 27,
+      "community": 41,
       "norm_label": ".pricesetup()"
     },
     {
@@ -8643,7 +8733,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_lock",
-      "community": 121,
+      "community": 7,
       "norm_label": "lock.php"
     },
     {
@@ -8653,7 +8743,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "lib_lock_lock",
-      "community": 121,
+      "community": 7,
       "norm_label": "lock"
     },
     {
@@ -8663,7 +8753,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "lib_lock_lock_acquire",
-      "community": 121,
+      "community": 7,
       "norm_label": ".acquire()"
     },
     {
@@ -8673,7 +8763,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "lib_lock_lock_release",
-      "community": 121,
+      "community": 7,
       "norm_label": ".release()"
     },
     {
@@ -8683,7 +8773,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "lib_lock_lock_trygetlock",
-      "community": 121,
+      "community": 7,
       "norm_label": ".trygetlock()"
     },
     {
@@ -8693,7 +8783,7 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "lib_lock_lock_tryreleaselock",
-      "community": 121,
+      "community": 7,
       "norm_label": ".tryreleaselock()"
     },
     {
@@ -8703,7 +8793,7 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "lib_lock_lock_tryfallbacktable",
-      "community": 121,
+      "community": 7,
       "norm_label": ".tryfallbacktable()"
     },
     {
@@ -8713,7 +8803,7 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "lib_lock_lock_uuidv4",
-      "community": 121,
+      "community": 7,
       "norm_label": ".uuidv4()"
     },
     {
@@ -9923,7 +10013,7 @@
       "source_location": "L267",
       "_origin": "ast",
       "id": "lib_profilemanager_profilemanager_buildslug",
-      "community": 45,
+      "community": 13,
       "norm_label": ".buildslug()"
     },
     {
@@ -10673,7 +10763,7 @@
       "source_location": "L291",
       "_origin": "ast",
       "id": "lib_schemahealth_schemahealth_requiredcolumnspresent",
-      "community": 53,
+      "community": 7,
       "norm_label": ".requiredcolumnspresent()"
     },
     {
@@ -10703,7 +10793,7 @@
       "source_location": "L367",
       "_origin": "ast",
       "id": "lib_schemahealth_schemahealth_currentschemaversion",
-      "community": 53,
+      "community": 7,
       "norm_label": ".currentschemaversion()"
     },
     {
@@ -10733,7 +10823,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_selectionvalidator",
-      "community": 225,
+      "community": 103,
       "norm_label": "selectionvalidator.php"
     },
     {
@@ -10743,7 +10833,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "lib_selectionvalidator_selectionvalidator",
-      "community": 225,
+      "community": 103,
       "norm_label": "selectionvalidator"
     },
     {
@@ -10753,7 +10843,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "lib_selectionvalidator_selectionvalidator_construct",
-      "community": 225,
+      "community": 103,
       "norm_label": ".__construct()"
     },
     {
@@ -10763,7 +10853,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "configoptioncompatibilityrepository",
-      "community": 17,
+      "community": 103,
       "norm_label": "configoptioncompatibilityrepository"
     },
     {
@@ -10773,7 +10863,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_lib_selectionvalidator_php_configoptioncapabilityrepository",
-      "community": 225,
+      "community": 103,
       "norm_label": "configoptioncapabilityrepository"
     },
     {
@@ -10783,7 +10873,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "lib_selectionvalidator_selectionvalidator_validate",
-      "community": 225,
+      "community": 103,
       "norm_label": ".validate()"
     },
     {
@@ -11603,7 +11693,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench",
-      "community": 7,
+      "community": 100,
       "norm_label": "vpsoperationsworkbench"
     },
     {
@@ -11613,7 +11703,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_overview",
-      "community": 7,
+      "community": 100,
       "norm_label": ".overview()"
     },
     {
@@ -11623,7 +11713,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_operationdetail",
-      "community": 7,
+      "community": 100,
       "norm_label": ".operationdetail()"
     },
     {
@@ -11633,7 +11723,7 @@
       "source_location": "L208",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_queuecommand",
-      "community": 7,
+      "community": 100,
       "norm_label": ".queuecommand()"
     },
     {
@@ -11643,7 +11733,7 @@
       "source_location": "L319",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_certifycapability",
-      "community": 7,
+      "community": 100,
       "norm_label": ".certifycapability()"
     },
     {
@@ -11653,7 +11743,7 @@
       "source_location": "L365",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_operationcounts",
-      "community": 7,
+      "community": 100,
       "norm_label": ".operationcounts()"
     },
     {
@@ -11663,7 +11753,7 @@
       "source_location": "L394",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_openfindings",
-      "community": 7,
+      "community": 100,
       "norm_label": ".openfindings()"
     },
     {
@@ -11673,7 +11763,7 @@
       "source_location": "L410",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_rows",
-      "community": 7,
+      "community": 100,
       "norm_label": ".rows()"
     },
     {
@@ -11683,7 +11773,7 @@
       "source_location": "L420",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_firstrow",
-      "community": 7,
+      "community": 100,
       "norm_label": ".firstrow()"
     },
     {
@@ -11693,7 +11783,7 @@
       "source_location": "L430",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_whererows",
-      "community": 7,
+      "community": 100,
       "norm_label": ".whererows()"
     },
     {
@@ -11703,7 +11793,7 @@
       "source_location": "L446",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_provideraccounts",
-      "community": 7,
+      "community": 100,
       "norm_label": ".provideraccounts()"
     },
     {
@@ -11713,7 +11803,7 @@
       "source_location": "L468",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_schemasetting",
-      "community": 7,
+      "community": 100,
       "norm_label": ".schemasetting()"
     },
     {
@@ -11723,7 +11813,7 @@
       "source_location": "L475",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_capabilitywritesettings",
-      "community": 7,
+      "community": 100,
       "norm_label": ".capabilitywritesettings()"
     },
     {
@@ -11733,7 +11823,7 @@
       "source_location": "L489",
       "_origin": "ast",
       "id": "lib_vpsoperationsworkbench_vpsoperationsworkbench_uuid",
-      "community": 7,
+      "community": 100,
       "norm_label": ".uuid()"
     },
     {
@@ -12473,7 +12563,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest",
-      "community": 92,
+      "community": 227,
       "norm_label": "catalogimportservicetest"
     },
     {
@@ -12483,7 +12573,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_setup",
-      "community": 92,
+      "community": 227,
       "norm_label": ".setup()"
     },
     {
@@ -12493,7 +12583,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testimportsonlyaddonownedversionanditems",
-      "community": 92,
+      "community": 227,
       "norm_label": ".testimportsonlyaddonownedversionanditems()"
     },
     {
@@ -12503,7 +12593,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testrepeatingsameversionandhashisnoop",
-      "community": 92,
+      "community": 227,
       "norm_label": ".testrepeatingsameversionandhashisnoop()"
     },
     {
@@ -12513,7 +12603,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_testtamperedenvelopeisrejectedbeforewrite",
-      "community": 92,
+      "community": 227,
       "norm_label": ".testtamperedenvelopeisrejectedbeforewrite()"
     },
     {
@@ -12523,7 +12613,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "tests_catalogimportservicetest_catalogimportservicetest_catalog",
-      "community": 92,
+      "community": 227,
       "norm_label": ".catalog()"
     },
     {
@@ -12823,7 +12913,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_configoptioncompatibilityrepositorytest",
-      "community": 17,
+      "community": 103,
       "norm_label": "configoptioncompatibilityrepositorytest.php"
     },
     {
@@ -13343,7 +13433,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest",
-      "community": 27,
+      "community": 121,
       "norm_label": "configurableoptionssyncerdifftest.php"
     },
     {
@@ -13353,7 +13443,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest",
-      "community": 27,
+      "community": 121,
       "norm_label": "configurableoptionssyncerdifftest"
     },
     {
@@ -13363,7 +13453,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_setup",
-      "community": 27,
+      "community": 121,
       "norm_label": ".setup()"
     },
     {
@@ -13373,7 +13463,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_syncer",
-      "community": 27,
+      "community": 121,
       "norm_label": ".syncer()"
     },
     {
@@ -13383,7 +13473,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_configurableoptionssyncerdifftest_php_configoptionlinkrepository",
-      "community": 27,
+      "community": 121,
       "norm_label": "configoptionlinkrepository"
     },
     {
@@ -13393,7 +13483,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_configurableoptionssyncerdifftest_php_configurableoptionssyncer",
-      "community": 27,
+      "community": 121,
       "norm_label": "configurableoptionssyncer"
     },
     {
@@ -13403,7 +13493,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_spec",
-      "community": 27,
+      "community": 121,
       "norm_label": ".spec()"
     },
     {
@@ -13413,7 +13503,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_seedliveoption",
-      "community": 27,
+      "community": 121,
       "norm_label": ".seedliveoption()"
     },
     {
@@ -13423,7 +13513,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_testdiffclassifieseachdimension",
-      "community": 27,
+      "community": 121,
       "norm_label": ".testdiffclassifieseachdimension()"
     },
     {
@@ -13433,7 +13523,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "tests_configurableoptionssyncerdifftest_configurableoptionssyncerdifftest_testdiffwritesnothing",
-      "community": 27,
+      "community": 121,
       "norm_label": ".testdiffwritesnothing()"
     },
     {
@@ -13763,7 +13853,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_crondrivertest",
-      "community": 17,
+      "community": 7,
       "norm_label": "crondrivertest.php"
     },
     {
@@ -13773,7 +13863,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "tests_crondrivertest_crondrivertest",
-      "community": 17,
+      "community": 7,
       "norm_label": "crondrivertest"
     },
     {
@@ -13783,7 +13873,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_crondrivertest_crondrivertest_setup",
-      "community": 17,
+      "community": 7,
       "norm_label": ".setup()"
     },
     {
@@ -13793,7 +13883,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_crondrivertest_crondrivertest_testloadactivemappedserviceidsusesamountcolumn",
-      "community": 17,
+      "community": 7,
       "norm_label": ".testloadactivemappedserviceidsusesamountcolumn()"
     },
     {
@@ -13803,7 +13893,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "tests_crondrivertest_crondrivertest_testobservesweepcompletesandpruneswithouttypeerror",
-      "community": 17,
+      "community": 7,
       "norm_label": ".testobservesweepcompletesandpruneswithouttypeerror()"
     },
     {
@@ -13813,7 +13903,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest",
-      "community": 137,
+      "community": 7,
       "norm_label": "currencysupportreporttest.php"
     },
     {
@@ -13823,7 +13913,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest",
-      "community": 137,
+      "community": 7,
       "norm_label": "currencysupportreporttest"
     },
     {
@@ -13833,7 +13923,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_setup",
-      "community": 137,
+      "community": 7,
       "norm_label": ".setup()"
     },
     {
@@ -13843,7 +13933,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_seedcurrencies",
-      "community": 137,
+      "community": 7,
       "norm_label": ".seedcurrencies()"
     },
     {
@@ -13853,7 +13943,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testallinrservicescleanverdict",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testallinrservicescleanverdict()"
     },
     {
@@ -13863,7 +13953,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testonecancelledusdserviceonlystaysclean",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testonecancelledusdserviceonlystaysclean()"
     },
     {
@@ -13873,7 +13963,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testnoninractiveunmappedislatent",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testnoninractiveunmappedislatent()"
     },
     {
@@ -13883,7 +13973,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testnoninractivemappedisactiverisk",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testnoninractivemappedisactiverisk()"
     },
     {
@@ -13893,7 +13983,7 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testclassifypurelogic",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testclassifypurelogic()"
     },
     {
@@ -13903,7 +13993,7 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "tests_currencysupportreporttest_currencysupportreporttest_testbasecurrencyflaggedbyid",
-      "community": 137,
+      "community": 7,
       "norm_label": ".testbasecurrencyflaggedbyid()"
     },
     {
@@ -14543,7 +14633,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest",
-      "community": 220,
+      "community": 17,
       "norm_label": "emailtemplateseedertest.php"
     },
     {
@@ -14553,7 +14643,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest",
-      "community": 220,
+      "community": 17,
       "norm_label": "emailtemplateseedertest"
     },
     {
@@ -14563,7 +14653,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_setup",
-      "community": 220,
+      "community": 17,
       "norm_label": ".setup()"
     },
     {
@@ -14573,7 +14663,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_testlifecycletemplatesareinstalledwithoutcredentials",
-      "community": 220,
+      "community": 17,
       "norm_label": ".testlifecycletemplatesareinstalledwithoutcredentials()"
     },
     {
@@ -14583,7 +14673,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_testseedingandmigrationareidempotent",
-      "community": 220,
+      "community": 17,
       "norm_label": ".testseedingandmigrationareidempotent()"
     },
     {
@@ -14593,7 +14683,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "tests_emailtemplateseedertest_emailtemplateseedertest_testmigrationdoesnotoverwriteadministratorcustomisation",
-      "community": 220,
+      "community": 17,
       "norm_label": ".testmigrationdoesnotoverwriteadministratorcustomisation()"
     },
     {
@@ -15473,7 +15563,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_freshinstallschematest",
-      "community": 7,
+      "community": 139,
       "norm_label": "freshinstallschematest.php"
     },
     {
@@ -15483,7 +15573,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest",
-      "community": 7,
+      "community": 139,
       "norm_label": "freshinstallschematest"
     },
     {
@@ -15493,7 +15583,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_setup",
-      "community": 7,
+      "community": 139,
       "norm_label": ".setup()"
     },
     {
@@ -15503,7 +15593,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testfreshinstallendsatcurrentschemaversion",
-      "community": 7,
+      "community": 139,
       "norm_label": ".testfreshinstallendsatcurrentschemaversion()"
     },
     {
@@ -15513,7 +15603,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testfreshinstallschemaishealthy",
-      "community": 7,
+      "community": 139,
       "norm_label": ".testfreshinstallschemaishealthy()"
     },
     {
@@ -15523,7 +15613,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testfreshinstallassertormigrateisnoop",
-      "community": 7,
+      "community": 139,
       "norm_label": ".testfreshinstallassertormigrateisnoop()"
     },
     {
@@ -15533,7 +15623,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testfreshinstallcreatesprovisioningsuiteschema",
-      "community": 7,
+      "community": 139,
       "norm_label": ".testfreshinstallcreatesprovisioningsuiteschema()"
     },
     {
@@ -15543,7 +15633,7 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "tests_freshinstallschematest_freshinstallschematest_testprovisioningsuitemigrationisidempotent",
-      "community": 7,
+      "community": 139,
       "norm_label": ".testprovisioningsuitemigrationisidempotent()"
     },
     {
@@ -15553,7 +15643,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_goldenapicontracttest",
-      "community": 92,
+      "community": 137,
       "norm_label": "goldenapicontracttest.php"
     },
     {
@@ -15563,7 +15653,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_goldenapicontracttest_goldenapicontracttest",
-      "community": 92,
+      "community": 137,
       "norm_label": "goldenapicontracttest"
     },
     {
@@ -15573,7 +15663,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_goldenapicontracttest_goldenapicontracttest_setup",
-      "community": 92,
+      "community": 137,
       "norm_label": ".setup()"
     },
     {
@@ -15583,7 +15673,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_goldenapicontracttest_goldenapicontracttest_testallrequiredgoldenfixturesarepresentandnestedtypesarestable",
-      "community": 92,
+      "community": 137,
       "norm_label": ".testallrequiredgoldenfixturesarepresentandnestedtypesarestable()"
     },
     {
@@ -15593,7 +15683,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "tests_goldenapicontracttest_goldenapicontracttest_testgoldencatalogisacceptedbythewhmcsconsumerwithoutproductwrites",
-      "community": 92,
+      "community": 137,
       "norm_label": ".testgoldencatalogisacceptedbythewhmcsconsumerwithoutproductwrites()"
     },
     {
@@ -15603,7 +15693,7 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "tests_goldenapicontracttest_goldenapicontracttest_testdocumentedwhmcsschemaversionmatchesinstaller",
-      "community": 92,
+      "community": 137,
       "norm_label": ".testdocumentedwhmcsschemaversionmatchesinstaller()"
     },
     {
@@ -15613,7 +15703,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "tests_goldenapicontracttest_goldenapicontracttest_fixture",
-      "community": 92,
+      "community": 137,
       "norm_label": ".fixture()"
     },
     {
@@ -15623,7 +15713,7 @@
       "source_location": "L143",
       "_origin": "ast",
       "id": "tests_goldenapicontracttest_goldenapicontracttest_requiredroutes",
-      "community": 92,
+      "community": 137,
       "norm_label": ".requiredroutes()"
     },
     {
@@ -15633,7 +15723,7 @@
       "source_location": "L161",
       "_origin": "ast",
       "id": "tests_goldenapicontracttest_goldenapicontracttest_repositoryroot",
-      "community": 92,
+      "community": 137,
       "norm_label": ".repositoryroot()"
     },
     {
@@ -15813,7 +15903,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_legacyfieldgreptest",
-      "community": 100,
+      "community": 17,
       "norm_label": "legacyfieldgreptest.php"
     },
     {
@@ -15823,7 +15913,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_legacyfieldgreptest_legacyfieldgreptest",
-      "community": 100,
+      "community": 17,
       "norm_label": "legacyfieldgreptest"
     },
     {
@@ -15833,7 +15923,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "tests_legacyfieldgreptest_legacyfieldgreptest_testnolegacyapplytoinruntime",
-      "community": 100,
+      "community": 17,
       "norm_label": ".testnolegacyapplytoinruntime()"
     },
     {
@@ -15843,7 +15933,7 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "tests_legacyfieldgreptest_legacyfieldgreptest_runtimefiles",
-      "community": 100,
+      "community": 17,
       "norm_label": ".runtimefiles()"
     },
     {
@@ -15853,7 +15943,7 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "tests_legacyfieldgreptest_legacyfieldgreptest_stripcomments",
-      "community": 100,
+      "community": 17,
       "norm_label": ".stripcomments()"
     },
     {
@@ -15863,7 +15953,7 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "tests_legacyfieldgreptest_legacyfieldgreptest_relative",
-      "community": 100,
+      "community": 17,
       "norm_label": ".relative()"
     },
     {
@@ -16393,7 +16483,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_migrationv3test",
-      "community": 17,
+      "community": 220,
       "norm_label": "migrationv3test.php"
     },
     {
@@ -16403,7 +16493,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test",
-      "community": 17,
+      "community": 220,
       "norm_label": "migrationv3test"
     },
     {
@@ -16413,7 +16503,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_setup",
-      "community": 17,
+      "community": 220,
       "norm_label": ".setup()"
     },
     {
@@ -16423,7 +16513,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_testmigrateto3succeedsonfreshschemawithnolegacycolumns",
-      "community": 17,
+      "community": 220,
       "norm_label": ".testmigrateto3succeedsonfreshschemawithnolegacycolumns()"
     },
     {
@@ -16433,7 +16523,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_testmigrateto3isidempotentonalreadymigratedschema",
-      "community": 17,
+      "community": 220,
       "norm_label": ".testmigrateto3isidempotentonalreadymigratedschema()"
     },
     {
@@ -16443,7 +16533,7 @@
       "source_location": "L142",
       "_origin": "ast",
       "id": "tests_migrationv3test_migrationv3test_testmigrateto3backfillslegacybooleansintobitmasks",
-      "community": 17,
+      "community": 220,
       "norm_label": ".testmigrateto3backfillslegacybooleansintobitmasks()"
     },
     {
@@ -17213,7 +17303,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_profileconfigwiringtest",
-      "community": 17,
+      "community": 103,
       "norm_label": "profileconfigwiringtest.php"
     },
     {
@@ -18563,7 +18653,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_selectionvalidatortest",
-      "community": 17,
+      "community": 103,
       "norm_label": "selectionvalidatortest.php"
     },
     {
@@ -19393,7 +19483,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_stdclassmodetest",
-      "community": 27,
+      "community": 102,
       "norm_label": "stdclassmodetest.php"
     },
     {
@@ -19403,7 +19493,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest",
-      "community": 27,
+      "community": 102,
       "norm_label": "stdclassmodetest"
     },
     {
@@ -19413,7 +19503,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_setup",
-      "community": 27,
+      "community": 102,
       "norm_label": ".setup()"
     },
     {
@@ -19423,7 +19513,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_teardown",
-      "community": 27,
+      "community": 102,
       "norm_label": ".teardown()"
     },
     {
@@ -19433,7 +19523,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_specs",
-      "community": 27,
+      "community": 102,
       "norm_label": ".specs()"
     },
     {
@@ -19443,7 +19533,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_ctx",
-      "community": 27,
+      "community": 102,
       "norm_label": ".ctx()"
     },
     {
@@ -19453,7 +19543,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_stdclassmodetest_php_configoptionpricingcontext",
-      "community": 27,
+      "community": 102,
       "norm_label": "configoptionpricingcontext"
     },
     {
@@ -19463,7 +19553,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_syncer",
-      "community": 27,
+      "community": 102,
       "norm_label": ".syncer()"
     },
     {
@@ -19473,7 +19563,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_stdclassmodetest_php_configoptionlinkrepository",
-      "community": 27,
+      "community": 102,
       "norm_label": "configoptionlinkrepository"
     },
     {
@@ -19483,7 +19573,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "whmcs_module_modules_addons_contabo_pricing_tests_stdclassmodetest_php_configurableoptionssyncer",
-      "community": 27,
+      "community": 102,
       "norm_label": "configurableoptionssyncer"
     },
     {
@@ -19493,7 +19583,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_testlinkrepofindreturnsusablearrayunderstdclass",
-      "community": 27,
+      "community": 102,
       "norm_label": ".testlinkrepofindreturnsusablearrayunderstdclass()"
     },
     {
@@ -19503,7 +19593,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_testapplyreapplyanddriftsurvivestdclass",
-      "community": 27,
+      "community": 102,
       "norm_label": ".testapplyreapplyanddriftsurvivestdclass()"
     },
     {
@@ -19513,7 +19603,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "tests_stdclassmodetest_stdclassmodetest_testservicerevenueresolversurvivesstdclass",
-      "community": 27,
+      "community": 102,
       "norm_label": ".testservicerevenueresolversurvivesstdclass()"
     },
     {
@@ -20203,7 +20293,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_whmcsconfigoptionsadaptertest",
-      "community": 27,
+      "community": 41,
       "norm_label": "whmcsconfigoptionsadaptertest.php"
     },
     {
@@ -20473,7 +20563,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "integration_whmcs_smoke",
-      "community": 27,
+      "community": 229,
       "norm_label": "whmcs_smoke.php"
     },
     {
@@ -20483,7 +20573,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "integration_whmcs_smoke_smoke_assert",
-      "community": 27,
+      "community": 229,
       "norm_label": "smoke_assert()"
     },
     {
@@ -20493,7 +20583,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "integration_whmcs_smoke_smoke_section",
-      "community": 27,
+      "community": 229,
       "norm_label": "smoke_section()"
     },
     {
@@ -20503,7 +20593,7 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "integration_whmcs_smoke_smoke_note",
-      "community": 27,
+      "community": 229,
       "norm_label": "smoke_note()"
     },
     {
@@ -21133,7 +21223,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_capabilityregistry",
-      "community": 175,
+      "community": 73,
       "norm_label": "capabilityregistry.php"
     },
     {
@@ -21143,7 +21233,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_capabilityregistry_capabilityregistry",
-      "community": 175,
+      "community": 73,
       "norm_label": "capabilityregistry"
     },
     {
@@ -21153,7 +21243,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_capabilityregistry_capabilityregistry_assertwriteallowed",
-      "community": 175,
+      "community": 73,
       "norm_label": ".assertwriteallowed()"
     },
     {
@@ -21163,7 +21253,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "lib_capabilityregistry_capabilityregistry_canread",
-      "community": 175,
+      "community": 73,
       "norm_label": ".canread()"
     },
     {
@@ -21243,7 +21333,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_communicationservice",
-      "community": 175,
+      "community": 42,
       "norm_label": "communicationservice.php"
     },
     {
@@ -21253,7 +21343,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_communicationservice_communicationservice",
-      "community": 175,
+      "community": 42,
       "norm_label": "communicationservice"
     },
     {
@@ -21263,7 +21353,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "lib_communicationservice_communicationservice_queueforoperation",
-      "community": 175,
+      "community": 42,
       "norm_label": ".queueforoperation()"
     },
     {
@@ -21273,7 +21363,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "lib_communicationservice_communicationservice_processqueue",
-      "community": 175,
+      "community": 42,
       "norm_label": ".processqueue()"
     },
     {
@@ -21283,7 +21373,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_configoptionresolver",
-      "community": 229,
+      "community": 7,
       "norm_label": "configoptionresolver.php"
     },
     {
@@ -21293,7 +21383,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "lib_configoptionresolver_configoptionresolver",
-      "community": 229,
+      "community": 7,
       "norm_label": "configoptionresolver"
     },
     {
@@ -21303,7 +21393,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "lib_configoptionresolver_configoptionresolver_selectionsforservice",
-      "community": 229,
+      "community": 7,
       "norm_label": ".selectionsforservice()"
     },
     {
@@ -21313,7 +21403,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "lib_configoptionresolver_configoptionresolver_linktablespresent",
-      "community": 229,
+      "community": 7,
       "norm_label": ".linktablespresent()"
     },
     {
@@ -22423,7 +22513,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "ordersnapshotrepository",
-      "community": 44,
+      "community": 122,
       "norm_label": "ordersnapshotrepository"
     },
     {
@@ -22613,7 +22703,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_onetimesecretstore",
-      "community": 42,
+      "community": 208,
       "norm_label": "onetimesecretstore.php"
     },
     {
@@ -22623,7 +22713,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore",
-      "community": 42,
+      "community": 208,
       "norm_label": "onetimesecretstore"
     },
     {
@@ -22633,7 +22723,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_store",
-      "community": 42,
+      "community": 208,
       "norm_label": ".store()"
     },
     {
@@ -22643,7 +22733,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_prepareforoperation",
-      "community": 42,
+      "community": 208,
       "norm_label": ".prepareforoperation()"
     },
     {
@@ -22653,7 +22743,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_reveal",
-      "community": 42,
+      "community": 208,
       "norm_label": ".reveal()"
     },
     {
@@ -22663,7 +22753,7 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_availableforservice",
-      "community": 42,
+      "community": 208,
       "norm_label": ".availableforservice()"
     },
     {
@@ -22673,7 +22763,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "lib_onetimesecretstore_onetimesecretstore_destroyexpired",
-      "community": 42,
+      "community": 208,
       "norm_label": ".destroyexpired()"
     },
     {
@@ -23103,7 +23193,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_ordersnapshotrepository",
-      "community": 175,
+      "community": 73,
       "norm_label": "ordersnapshotrepository.php"
     },
     {
@@ -23113,7 +23203,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_ordersnapshotrepository_ordersnapshotrepository",
-      "community": 175,
+      "community": 73,
       "norm_label": "ordersnapshotrepository"
     },
     {
@@ -23123,7 +23213,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_ordersnapshotrepository_ordersnapshotrepository_sealedforservice",
-      "community": 175,
+      "community": 73,
       "norm_label": ".sealedforservice()"
     },
     {
@@ -23303,7 +23393,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_schemaguard",
-      "community": 175,
+      "community": 73,
       "norm_label": "schemaguard.php"
     },
     {
@@ -23313,7 +23403,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard",
-      "community": 175,
+      "community": 73,
       "norm_label": "schemaguard"
     },
     {
@@ -23323,7 +23413,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard_assertready",
-      "community": 175,
+      "community": 73,
       "norm_label": ".assertready()"
     },
     {
@@ -23333,7 +23423,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard_assertproviderwriteenabled",
-      "community": 175,
+      "community": 73,
       "norm_label": ".assertproviderwriteenabled()"
     },
     {
@@ -23343,7 +23433,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard_installationid",
-      "community": 175,
+      "community": 73,
       "norm_label": ".installationid()"
     },
     {
@@ -23353,7 +23443,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "lib_schemaguard_schemaguard_setting",
-      "community": 175,
+      "community": 73,
       "norm_label": ".setting()"
     },
     {
@@ -24373,7 +24463,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest",
-      "community": 208,
+      "community": 17,
       "norm_label": "directmutationbypasstest.php"
     },
     {
@@ -24383,7 +24473,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest",
-      "community": 208,
+      "community": 17,
       "norm_label": "directmutationbypasstest"
     },
     {
@@ -24393,7 +24483,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest_setup",
-      "community": 208,
+      "community": 17,
       "norm_label": ".setup()"
     },
     {
@@ -24403,7 +24493,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest_teardown",
-      "community": 208,
+      "community": 17,
       "norm_label": ".teardown()"
     },
     {
@@ -24413,7 +24503,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_directmutationbypasstest_directmutationbypasstest_testlegacymutationmethodscannotreachtheprovider",
-      "community": 208,
+      "community": 17,
       "norm_label": ".testlegacymutationmethodscannotreachtheprovider()"
     },
     {
@@ -25233,7 +25323,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "tests_logredactiontest_logredactiontest_testdurablecredentialmetadataneverlogssecretvalues",
-      "community": 91,
+      "community": 228,
       "norm_label": ".testdurablecredentialmetadataneverlogssecretvalues()"
     },
     {
@@ -25243,7 +25333,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "tests_logredactiontest_logredactiontest_testloggermaskssecretbearingrequests",
-      "community": 228,
+      "community": 91,
       "norm_label": ".testloggermaskssecretbearingrequests()"
     },
     {
@@ -25263,7 +25353,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_nativefoundationtest",
-      "community": 44,
+      "community": 122,
       "norm_label": "nativefoundationtest.php"
     },
     {
@@ -25293,7 +25383,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "tests_nativefoundationtest_nativefoundationtest_testschemaguardfailsclosedwhensuitetablesareabsent",
-      "community": 175,
+      "community": 73,
       "norm_label": ".testschemaguardfailsclosedwhensuitetablesareabsent()"
     },
     {
@@ -30819,7 +30909,7 @@
       "file_type": "code",
       "source_file": "src/main.rs",
       "source_location": "L87",
-      "community": 139,
+      "community": 4,
       "norm_label": ".to_json()",
       "id": "main_gapentry_to_json"
     },
@@ -30828,7 +30918,7 @@
       "file_type": "code",
       "source_file": "src/main.rs",
       "source_location": "L144",
-      "community": 109,
+      "community": 4,
       "norm_label": ".to_json()",
       "id": "main_optionitem_to_json"
     },
@@ -30846,7 +30936,7 @@
       "file_type": "code",
       "source_file": "src/main.rs",
       "source_location": "L212",
-      "community": 41,
+      "community": 4,
       "norm_label": "scrapeargs",
       "id": "main_scrapeargs"
     },
@@ -32343,7 +32433,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 213,
+      "community": 225,
       "norm_label": "configpurgeservice (config-object-aware purge)",
       "id": "config_purge_service"
     },
@@ -32863,7 +32953,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 213,
+      "community": 225,
       "norm_label": "profilepurgeservice (per-profile guarded purge)",
       "id": "profile_purge_service"
     },
@@ -32876,7 +32966,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 213,
+      "community": 225,
       "norm_label": "soft-delete / trash / undo (deleted_at)",
       "id": "soft_delete_trash_undo"
     },
@@ -32889,7 +32979,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 213,
       "norm_label": "schema v8 (migrateto8, additive idempotent)",
       "id": "schema_v8"
     },
@@ -32967,7 +33057,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 213,
       "norm_label": "live-schema smoke (whmcs 8.13/9.0, information_schema)",
       "id": "live_schema_smoke"
     },
@@ -33253,7 +33343,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 213,
+      "community": 225,
       "norm_label": "addon-owned config link tables (mod_contabo_config_*_link)",
       "id": "config_link_tables"
     },
@@ -33554,6 +33644,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "package_scripts",
+      "target": "package_scripts_test_taxonomy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
       "source_location": "L23",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -33596,9 +33696,9 @@
       "source_file": "scripts/bump-version.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_bump_version",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_bump_version_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_bump_version_sh__entry"
     },
     {
       "relation": "contains",
@@ -33759,6 +33859,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L325",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper",
+      "target": "scripts_contabo_scraper_baseurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
       "source_location": "L706",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -33844,6 +33954,16 @@
       "confidence_score": 1.0,
       "source": "scripts_contabo_scraper",
       "target": "scripts_contabo_scraper_familyfromproduct"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L342",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper",
+      "target": "scripts_contabo_scraper_familyinfofromproduct",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -34049,6 +34169,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L357",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper",
+      "target": "scripts_contabo_scraper_requiresexactproductslug",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
       "source_location": "L263",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -34079,6 +34209,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L361",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper",
+      "target": "scripts_contabo_scraper_storagepolicyallows",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
       "source_location": "L321",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -34094,6 +34234,17 @@
       "confidence_score": 1.0,
       "source": "scripts_contabo_scraper",
       "target": "scripts_contabo_scraper_vm"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/scraper_taxonomy.test.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "tests_scraper_taxonomy_test",
+      "target": "scripts_contabo_scraper",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34184,11 +34335,66 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L631",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper_processplan",
+      "target": "scripts_contabo_scraper_baseurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L330",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper_slugfromurl",
+      "target": "scripts_contabo_scraper_baseurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
       "source_location": "L540",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "scripts_contabo_scraper_processplan",
       "target": "scripts_contabo_scraper_slugfromurl"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L598",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper_processplan",
+      "target": "scripts_contabo_scraper_titlefromslug",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L354",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper_familyfromproduct",
+      "target": "scripts_contabo_scraper_familyinfofromproduct",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L606",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper_processplan",
+      "target": "scripts_contabo_scraper_familyinfofromproduct",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34199,6 +34405,28 @@
       "confidence_score": 1.0,
       "source": "scripts_contabo_scraper_familyfromproduct",
       "target": "scripts_contabo_scraper_processplan"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L590",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper_processplan",
+      "target": "scripts_contabo_scraper_requiresexactproductslug",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/contabo_scraper.js",
+      "source_location": "L457",
+      "weight": 1.0,
+      "source": "scripts_contabo_scraper_classifyaddon",
+      "target": "scripts_contabo_scraper_storagepolicyallows",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -34330,9 +34558,9 @@
       "source_file": "scripts/deploy.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_deploy",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_deploy_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_deploy_sh__entry"
     },
     {
       "relation": "contains",
@@ -34340,9 +34568,9 @@
       "source_file": "scripts/extract-changelog-section.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_extract_changelog_section",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_extract_changelog_section_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_extract_changelog_section_sh__entry"
     },
     {
       "relation": "contains",
@@ -34494,9 +34722,9 @@
       "source_file": "scripts/inspect-github-release.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_inspect_github_release",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_inspect_github_release_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_inspect_github_release_sh__entry"
     },
     {
       "relation": "calls",
@@ -34505,9 +34733,9 @@
       "source_location": "L63",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_inspect_github_release_sh__entry",
-      "target": "scripts_inspect_github_release_resolve_tag_commit",
-      "confidence_score": 1.0
+      "target": "scripts_inspect_github_release_resolve_tag_commit"
     },
     {
       "relation": "contains",
@@ -34515,9 +34743,9 @@
       "source_file": "scripts/live-schema-smoke.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_live_schema_smoke_sh_scripts_live_schema_smoke",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_live_schema_smoke_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_live_schema_smoke_sh__entry"
     },
     {
       "relation": "contains",
@@ -34525,9 +34753,9 @@
       "source_file": "scripts/local-whmcs.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_local_whmcs",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_local_whmcs_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_local_whmcs_sh__entry"
     },
     {
       "relation": "defines",
@@ -34595,9 +34823,9 @@
       "source_file": "scripts/package-whmcs-suite.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_package_whmcs_suite",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_package_whmcs_suite_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_package_whmcs_suite_sh__entry"
     },
     {
       "relation": "calls",
@@ -34606,9 +34834,9 @@
       "source_location": "L96",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_package_whmcs_suite_sh__entry",
-      "target": "scripts_package_whmcs_suite_checksum",
-      "confidence_score": 1.0
+      "target": "scripts_package_whmcs_suite_checksum"
     },
     {
       "relation": "calls",
@@ -34617,9 +34845,9 @@
       "source_location": "L91",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_package_whmcs_suite_sh__entry",
-      "target": "scripts_package_whmcs_suite_copy_runtime_tree",
-      "confidence_score": 1.0
+      "target": "scripts_package_whmcs_suite_copy_runtime_tree"
     },
     {
       "relation": "calls",
@@ -34628,9 +34856,9 @@
       "source_location": "L88",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_package_whmcs_suite_sh__entry",
-      "target": "scripts_package_whmcs_suite_validate_version",
-      "confidence_score": 1.0
+      "target": "scripts_package_whmcs_suite_validate_version"
     },
     {
       "relation": "defines",
@@ -34658,9 +34886,9 @@
       "source_file": "scripts/predeploy-check.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_predeploy_check",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_predeploy_check_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_predeploy_check_sh__entry"
     },
     {
       "relation": "calls",
@@ -34669,9 +34897,9 @@
       "source_location": "L37",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_predeploy_check_sh__entry",
-      "target": "scripts_predeploy_check_record",
-      "confidence_score": 1.0
+      "target": "scripts_predeploy_check_record"
     },
     {
       "relation": "calls",
@@ -34680,9 +34908,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_predeploy_check_sh__entry",
-      "target": "scripts_predeploy_check_stage",
-      "confidence_score": 1.0
+      "target": "scripts_predeploy_check_stage"
     },
     {
       "relation": "defines",
@@ -34740,9 +34968,9 @@
       "source_file": "scripts/resolve-scraper-release.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_resolve_scraper_release",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_resolve_scraper_release_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_resolve_scraper_release_sh__entry"
     },
     {
       "relation": "calls",
@@ -34751,9 +34979,9 @@
       "source_location": "L41",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_resolve_scraper_release_sh__entry",
-      "target": "scripts_resolve_scraper_release_has_required_assets",
-      "confidence_score": 1.0
+      "target": "scripts_resolve_scraper_release_has_required_assets"
     },
     {
       "relation": "defines",
@@ -34771,9 +34999,9 @@
       "source_file": "scripts/setup-memory-tools.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_setup_memory_tools",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_setup_memory_tools_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_setup_memory_tools_sh__entry"
     },
     {
       "relation": "calls",
@@ -34782,9 +35010,9 @@
       "source_location": "L30",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_setup_memory_tools_sh__entry",
-      "target": "scripts_setup_memory_tools_say",
-      "confidence_score": 1.0
+      "target": "scripts_setup_memory_tools_say"
     },
     {
       "relation": "defines",
@@ -34812,9 +35040,9 @@
       "source_file": "scripts/test-resolve-scraper-release.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_resolve_scraper_release",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_resolve_scraper_release_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_resolve_scraper_release_sh__entry"
     },
     {
       "relation": "calls",
@@ -34823,9 +35051,9 @@
       "source_location": "L62",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_resolve_scraper_release_sh__entry",
-      "target": "scripts_test_resolve_scraper_release_run_resolver",
-      "confidence_score": 1.0
+      "target": "scripts_test_resolve_scraper_release_run_resolver"
     },
     {
       "relation": "defines",
@@ -34853,9 +35081,9 @@
       "source_file": "scripts/test-whmcs-release-contract.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_whmcs_release_contract",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_whmcs_release_contract_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_whmcs_release_contract_sh__entry"
     },
     {
       "relation": "calls",
@@ -34864,9 +35092,9 @@
       "source_location": "L42",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_whmcs_release_contract_sh__entry",
-      "target": "scripts_test_whmcs_release_contract_fail",
-      "confidence_score": 1.0
+      "target": "scripts_test_whmcs_release_contract_fail"
     },
     {
       "relation": "defines",
@@ -34914,9 +35142,9 @@
       "source_file": "scripts/test-workflow-trust-contract.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_test_workflow_trust_contract",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_workflow_trust_contract_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_workflow_trust_contract_sh__entry"
     },
     {
       "relation": "calls",
@@ -34925,9 +35153,9 @@
       "source_location": "L66",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_workflow_trust_contract_sh__entry",
-      "target": "scripts_test_workflow_trust_contract_expect_fail",
-      "confidence_score": 1.0
+      "target": "scripts_test_workflow_trust_contract_expect_fail"
     },
     {
       "relation": "calls",
@@ -34936,9 +35164,9 @@
       "source_location": "L41",
       "weight": 1.0,
       "context": "call",
+      "confidence_score": 1.0,
       "source": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_test_workflow_trust_contract_sh__entry",
-      "target": "scripts_test_workflow_trust_contract_expect_pass",
-      "confidence_score": 1.0
+      "target": "scripts_test_workflow_trust_contract_expect_pass"
     },
     {
       "relation": "contains",
@@ -34946,9 +35174,9 @@
       "source_file": "scripts/whmcs-integration-smoke.sh",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_whmcs_integration_smoke",
-      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_whmcs_integration_smoke_sh__entry",
-      "confidence_score": 1.0
+      "target": "users_kritananda_projects_contabo_pricing_scraper_cli_canonical_scripts_whmcs_integration_smoke_sh__entry"
     },
     {
       "relation": "contains",
@@ -37698,9 +37926,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2677",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_active_catalog_has_canonical_22_plan_taxonomy",
-      "confidence_score": 1.0
+      "target": "src_main_active_catalog_has_canonical_22_plan_taxonomy"
     },
     {
       "relation": "contains",
@@ -37718,9 +37946,9 @@
       "source_file": "src/main.rs",
       "source_location": "L189",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_base_url",
-      "confidence_score": 1.0
+      "target": "src_main_base_url"
     },
     {
       "relation": "contains",
@@ -37748,9 +37976,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2713",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_canonical_families_keep_legacy_aliases_and_storage_policy",
-      "confidence_score": 1.0
+      "target": "src_main_canonical_families_keep_legacy_aliases_and_storage_policy"
     },
     {
       "relation": "contains",
@@ -37758,9 +37986,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2799",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_canonical_url_rejects_same_title_legacy_product_when_exact_slug_is_missing",
-      "confidence_score": 1.0
+      "target": "src_main_canonical_url_rejects_same_title_legacy_product_when_exact_slug_is_missing"
     },
     {
       "relation": "contains",
@@ -37828,9 +38056,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2832",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_core_vps_4_hydrated_state_beats_legacy_payload_and_stale_query",
-      "confidence_score": 1.0
+      "target": "src_main_core_vps_4_hydrated_state_beats_legacy_payload_and_stale_query"
     },
     {
       "relation": "contains",
@@ -37898,9 +38126,9 @@
       "source_file": "src/main.rs",
       "source_location": "L628",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_family_for_product",
-      "confidence_score": 1.0
+      "target": "src_main_family_for_product"
     },
     {
       "relation": "contains",
@@ -37908,9 +38136,9 @@
       "source_file": "src/main.rs",
       "source_location": "L623",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_familyinfo",
-      "confidence_score": 1.0
+      "target": "src_main_familyinfo"
     },
     {
       "relation": "contains",
@@ -38028,9 +38256,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2777",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_localized_us_central_is_a_canonical_region_value",
-      "confidence_score": 1.0
+      "target": "src_main_localized_us_central_is_a_canonical_region_value"
     },
     {
       "relation": "contains",
@@ -38058,9 +38286,9 @@
       "source_file": "src/main.rs",
       "source_location": "L802",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_normalize_region_title",
-      "confidence_score": 1.0
+      "target": "src_main_normalize_region_title"
     },
     {
       "relation": "contains",
@@ -38198,9 +38426,9 @@
       "source_file": "src/main.rs",
       "source_location": "L201",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_requires_exact_product_slug",
-      "confidence_score": 1.0
+      "target": "src_main_requires_exact_product_slug"
     },
     {
       "relation": "contains",
@@ -38208,9 +38436,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2591",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_resolved_scrape",
-      "confidence_score": 1.0
+      "target": "src_main_resolved_scrape"
     },
     {
       "relation": "contains",
@@ -38218,9 +38446,9 @@
       "source_file": "src/main.rs",
       "source_location": "L432",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_resolvedcommand",
-      "confidence_score": 1.0
+      "target": "src_main_resolvedcommand"
     },
     {
       "relation": "contains",
@@ -38280,9 +38508,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2600",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_scrape_flags_are_equivalent_before_and_after_subcommand",
-      "confidence_score": 1.0
+      "target": "src_main_scrape_flags_are_equivalent_before_and_after_subcommand"
     },
     {
       "relation": "contains",
@@ -38290,9 +38518,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2665",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_scrape_flags_before_serve_fail_loudly",
-      "confidence_score": 1.0
+      "target": "src_main_scrape_flags_before_serve_fail_loudly"
     },
     {
       "relation": "contains",
@@ -38300,9 +38528,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2645",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_scrape_subcommand_values_override_top_level_values",
-      "confidence_score": 1.0
+      "target": "src_main_scrape_subcommand_values_override_top_level_values"
     },
     {
       "relation": "contains",
@@ -38340,9 +38568,9 @@
       "source_file": "src/main.rs",
       "source_location": "L676",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_storage_policy_allows",
-      "confidence_score": 1.0
+      "target": "src_main_storage_policy_allows"
     },
     {
       "relation": "contains",
@@ -38350,9 +38578,9 @@
       "source_file": "src/main.rs",
       "source_location": "L665",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_storage_type_from_label",
-      "confidence_score": 1.0
+      "target": "src_main_storage_type_from_label"
     },
     {
       "relation": "contains",
@@ -38370,9 +38598,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2755",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main",
-      "target": "src_main_wrapped_australia_location_is_a_canonical_region_value",
-      "confidence_score": 1.0
+      "target": "src_main_wrapped_australia_location_is_a_canonical_region_value"
     },
     {
       "relation": "contains",
@@ -38457,9 +38685,9 @@
       "source_location": "L2591",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_main_resolved_scrape",
-      "target": "src_main_opts",
-      "confidence_score": 1.0
+      "target": "src_main_opts"
     },
     {
       "relation": "references",
@@ -38655,9 +38883,9 @@
       "source_location": "L344",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_env_value",
-      "target": "src_main_rs_option",
-      "confidence_score": 1.0
+      "target": "src_main_rs_option"
     },
     {
       "relation": "references",
@@ -38666,9 +38894,9 @@
       "source_location": "L665",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_main_storage_type_from_label",
-      "target": "src_main_rs_option",
-      "confidence_score": 1.0
+      "target": "src_main_rs_option"
     },
     {
       "relation": "references",
@@ -38754,9 +38982,9 @@
       "source_location": "L306",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_explicit_option_names",
-      "target": "src_main_rs_vec",
-      "confidence_score": 1.0
+      "target": "src_main_rs_vec"
     },
     {
       "relation": "references",
@@ -38809,9 +39037,9 @@
       "source_location": "L438",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_main_cli_resolve",
-      "target": "src_main_rs_string",
-      "confidence_score": 1.0
+      "target": "src_main_rs_string"
     },
     {
       "relation": "references",
@@ -38919,9 +39147,9 @@
       "source_location": "L802",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_main_normalize_region_title",
-      "target": "src_main_rs_string",
-      "confidence_score": 1.0
+      "target": "src_main_rs_string"
     },
     {
       "relation": "references",
@@ -39018,9 +39246,9 @@
       "source_location": "L344",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_env_value",
-      "target": "src_main_rs_string",
-      "confidence_score": 1.0
+      "target": "src_main_rs_string"
     },
     {
       "relation": "references",
@@ -39029,9 +39257,9 @@
       "source_location": "L354",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_into_opts",
-      "target": "src_main_rs_string",
-      "confidence_score": 1.0
+      "target": "src_main_rs_string"
     },
     {
       "relation": "references",
@@ -39374,9 +39602,9 @@
       "source_location": "L438",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_main_cli_resolve",
-      "target": "src_main_rs_result",
-      "confidence_score": 1.0
+      "target": "src_main_rs_result"
     },
     {
       "relation": "references",
@@ -39440,9 +39668,9 @@
       "source_location": "L344",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_env_value",
-      "target": "src_main_rs_result",
-      "confidence_score": 1.0
+      "target": "src_main_rs_result"
     },
     {
       "relation": "references",
@@ -39451,9 +39679,9 @@
       "source_location": "L354",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_into_opts",
-      "target": "src_main_rs_result",
-      "confidence_score": 1.0
+      "target": "src_main_rs_result"
     },
     {
       "relation": "calls",
@@ -39462,9 +39690,9 @@
       "source_file": "src/main.rs",
       "source_location": "L448",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_cli_resolve",
-      "target": "ok",
-      "confidence_score": 1.0
+      "target": "ok"
     },
     {
       "relation": "calls",
@@ -39495,9 +39723,9 @@
       "source_file": "src/main.rs",
       "source_location": "L346",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_env_value",
-      "target": "ok",
-      "confidence_score": 1.0
+      "target": "ok"
     },
     {
       "relation": "calls",
@@ -39506,9 +39734,9 @@
       "source_file": "src/main.rs",
       "source_location": "L407",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_into_opts",
-      "target": "ok",
-      "confidence_score": 1.0
+      "target": "ok"
     },
     {
       "relation": "calls",
@@ -39581,9 +39809,9 @@
       "source_file": "src/main.rs",
       "source_location": "L1615",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_process_plan",
-      "target": "src_main_base_url",
-      "confidence_score": 1.0
+      "target": "src_main_base_url"
     },
     {
       "relation": "calls",
@@ -39592,9 +39820,9 @@
       "source_file": "src/main.rs",
       "source_location": "L194",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_slug_from_url",
-      "target": "src_main_base_url",
-      "confidence_score": 1.0
+      "target": "src_main_base_url"
     },
     {
       "relation": "calls",
@@ -39636,9 +39864,9 @@
       "source_file": "src/main.rs",
       "source_location": "L1257",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_process_plan",
-      "target": "src_main_requires_exact_product_slug",
-      "confidence_score": 1.0
+      "target": "src_main_requires_exact_product_slug"
     },
     {
       "relation": "references",
@@ -39668,9 +39896,9 @@
       "source_file": "src/main.rs",
       "source_location": "L438",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_cli",
-      "target": "src_main_cli_resolve",
-      "confidence_score": 1.0
+      "target": "src_main_cli_resolve"
     },
     {
       "relation": "imports_from",
@@ -39679,9 +39907,9 @@
       "source_location": "L5",
       "weight": 1.0,
       "context": "import",
+      "confidence_score": 1.0,
       "source": "tests_cli_contract",
-      "target": "command",
-      "confidence_score": 1.0
+      "target": "command"
     },
     {
       "relation": "method",
@@ -39689,9 +39917,9 @@
       "source_file": "src/main.rs",
       "source_location": "L344",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs",
-      "target": "src_main_scrapeargs_env_value",
-      "confidence_score": 1.0
+      "target": "src_main_scrapeargs_env_value"
     },
     {
       "relation": "method",
@@ -39699,9 +39927,9 @@
       "source_file": "src/main.rs",
       "source_location": "L306",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs",
-      "target": "src_main_scrapeargs_explicit_option_names",
-      "confidence_score": 1.0
+      "target": "src_main_scrapeargs_explicit_option_names"
     },
     {
       "relation": "method",
@@ -39719,9 +39947,9 @@
       "source_file": "src/main.rs",
       "source_location": "L290",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs",
-      "target": "src_main_scrapeargs_merge",
-      "confidence_score": 1.0
+      "target": "src_main_scrapeargs_merge"
     },
     {
       "relation": "calls",
@@ -39730,9 +39958,9 @@
       "source_file": "src/main.rs",
       "source_location": "L440",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_cli_resolve",
-      "target": "src_main_scrapeargs_merge",
-      "confidence_score": 1.0
+      "target": "src_main_scrapeargs_merge"
     },
     {
       "relation": "references",
@@ -39741,9 +39969,9 @@
       "source_location": "L290",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_merge",
-      "target": "src_main_rs_self",
-      "confidence_score": 1.0
+      "target": "src_main_rs_self"
     },
     {
       "relation": "calls",
@@ -39752,9 +39980,9 @@
       "source_file": "src/main.rs",
       "source_location": "L446",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_cli_resolve",
-      "target": "src_main_scrapeargs_explicit_option_names",
-      "confidence_score": 1.0
+      "target": "src_main_scrapeargs_explicit_option_names"
     },
     {
       "relation": "calls",
@@ -39763,9 +39991,9 @@
       "source_file": "src/main.rs",
       "source_location": "L360",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_scrapeargs_into_opts",
-      "target": "src_main_scrapeargs_env_value",
-      "confidence_score": 1.0
+      "target": "src_main_scrapeargs_env_value"
     },
     {
       "relation": "method",
@@ -39784,9 +40012,9 @@
       "source_file": "src/main.rs",
       "source_location": "L440",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_cli_resolve",
-      "target": "src_main_scrapeargs_into_opts",
-      "confidence_score": 1.0
+      "target": "src_main_scrapeargs_into_opts"
     },
     {
       "relation": "calls",
@@ -39806,9 +40034,9 @@
       "source_location": "L438",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "src_main_cli_resolve",
-      "target": "src_main_resolvedcommand",
-      "confidence_score": 1.0
+      "target": "src_main_resolvedcommand"
     },
     {
       "relation": "calls",
@@ -39817,9 +40045,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2553",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_main",
-      "target": "src_main_cli_resolve",
-      "confidence_score": 1.0
+      "target": "src_main_cli_resolve"
     },
     {
       "relation": "calls",
@@ -39828,9 +40056,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2593",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_resolved_scrape",
-      "target": "src_main_cli_resolve",
-      "confidence_score": 1.0
+      "target": "src_main_cli_resolve"
     },
     {
       "relation": "calls",
@@ -39839,9 +40067,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2668",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_scrape_flags_before_serve_fail_loudly",
-      "target": "src_main_cli_resolve",
-      "confidence_score": 1.0
+      "target": "src_main_cli_resolve"
     },
     {
       "relation": "calls",
@@ -39954,9 +40182,9 @@
       "source_location": "L628",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "src_main_family_for_product",
-      "target": "src_main_familyinfo",
-      "confidence_score": 1.0
+      "target": "src_main_familyinfo"
     },
     {
       "relation": "calls",
@@ -39965,9 +40193,9 @@
       "source_file": "src/main.rs",
       "source_location": "L1276",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_process_plan",
-      "target": "src_main_family_for_product",
-      "confidence_score": 1.0
+      "target": "src_main_family_for_product"
     },
     {
       "relation": "calls",
@@ -39976,9 +40204,9 @@
       "source_file": "src/main.rs",
       "source_location": "L677",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_storage_policy_allows",
-      "target": "src_main_storage_type_from_label",
-      "confidence_score": 1.0
+      "target": "src_main_storage_type_from_label"
     },
     {
       "relation": "calls",
@@ -39987,9 +40215,9 @@
       "source_file": "src/main.rs",
       "source_location": "L1413",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_process_plan",
-      "target": "src_main_storage_policy_allows",
-      "confidence_score": 1.0
+      "target": "src_main_storage_policy_allows"
     },
     {
       "relation": "calls",
@@ -40123,9 +40351,9 @@
       "source_file": "src/main.rs",
       "source_location": "L829",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_classify_region",
-      "target": "src_main_normalize_region_title",
-      "confidence_score": 1.0
+      "target": "src_main_normalize_region_title"
     },
     {
       "relation": "calls",
@@ -40177,9 +40405,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2778",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_localized_us_central_is_a_canonical_region_value",
-      "target": "src_main_classify_addon",
-      "confidence_score": 1.0
+      "target": "src_main_classify_addon"
     },
     {
       "relation": "calls",
@@ -40188,9 +40416,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2756",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_wrapped_australia_location_is_a_canonical_region_value",
-      "target": "src_main_classify_addon",
-      "confidence_score": 1.0
+      "target": "src_main_classify_addon"
     },
     {
       "relation": "calls",
@@ -40219,9 +40447,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2818",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_canonical_url_rejects_same_title_legacy_product_when_exact_slug_is_missing",
-      "target": "src_main_process_plan",
-      "confidence_score": 1.0
+      "target": "src_main_process_plan"
     },
     {
       "relation": "calls",
@@ -40241,9 +40469,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2874",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_core_vps_4_hydrated_state_beats_legacy_payload_and_stale_query",
-      "target": "src_main_process_plan",
-      "confidence_score": 1.0
+      "target": "src_main_process_plan"
     },
     {
       "relation": "calls",
@@ -40409,9 +40637,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2628",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_scrape_flags_are_equivalent_before_and_after_subcommand",
-      "target": "src_main_resolved_scrape",
-      "confidence_score": 1.0
+      "target": "src_main_resolved_scrape"
     },
     {
       "relation": "calls",
@@ -40420,9 +40648,9 @@
       "source_file": "src/main.rs",
       "source_location": "L2646",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_scrape_subcommand_values_override_top_level_values",
-      "target": "src_main_resolved_scrape",
-      "confidence_score": 1.0
+      "target": "src_main_resolved_scrape"
     },
     {
       "relation": "contains",
@@ -40460,9 +40688,9 @@
       "source_file": "tests/api_smoke.rs",
       "source_location": "L61",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_api_smoke",
-      "target": "tests_api_smoke_fixture_effective_monthly",
-      "confidence_score": 1.0
+      "target": "tests_api_smoke_fixture_effective_monthly"
     },
     {
       "relation": "contains",
@@ -40899,9 +41127,9 @@
       "source_file": "tests/api_smoke.rs",
       "source_location": "L338",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_api_smoke_quote_endpoint_with_gst_and_inr_fx",
-      "target": "tests_api_smoke_fixture_effective_monthly",
-      "confidence_score": 1.0
+      "target": "tests_api_smoke_fixture_effective_monthly"
     },
     {
       "relation": "calls",
@@ -40910,9 +41138,9 @@
       "source_file": "tests/api_smoke.rs",
       "source_location": "L390",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_api_smoke_quote_endpoint_without_gst",
-      "target": "tests_api_smoke_fixture_effective_monthly",
-      "confidence_score": 1.0
+      "target": "tests_api_smoke_fixture_effective_monthly"
     },
     {
       "relation": "contains",
@@ -40920,9 +41148,9 @@
       "source_file": "tests/cli_contract.rs",
       "source_location": "L88",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_cli_contract",
-      "target": "tests_cli_contract_dry_run_mixed_flag_positions_writes_nothing_and_prints_json_summary",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_dry_run_mixed_flag_positions_writes_nothing_and_prints_json_summary"
     },
     {
       "relation": "contains",
@@ -40930,9 +41158,9 @@
       "source_file": "tests/cli_contract.rs",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_cli_contract",
-      "target": "tests_cli_contract_fixture_html",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_fixture_html"
     },
     {
       "relation": "imports_from",
@@ -40941,9 +41169,9 @@
       "source_location": "L4",
       "weight": 1.0,
       "context": "import",
+      "confidence_score": 1.0,
       "source": "tests_cli_contract",
-      "target": "tests_cli_contract_rs_path",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_rs_path"
     },
     {
       "relation": "contains",
@@ -40951,9 +41179,9 @@
       "source_file": "tests/cli_contract.rs",
       "source_location": "L48",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_cli_contract",
-      "target": "tests_cli_contract_spawn_fixture_server",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_spawn_fixture_server"
     },
     {
       "relation": "contains",
@@ -40961,9 +41189,9 @@
       "source_file": "tests/cli_contract.rs",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_cli_contract",
-      "target": "tests_cli_contract_temp_workspace",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_temp_workspace"
     },
     {
       "relation": "contains",
@@ -40971,9 +41199,9 @@
       "source_file": "tests/cli_contract.rs",
       "source_location": "L70",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_cli_contract",
-      "target": "tests_cli_contract_write_plan_catalog",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_write_plan_catalog"
     },
     {
       "relation": "calls",
@@ -40982,9 +41210,9 @@
       "source_file": "tests/cli_contract.rs",
       "source_location": "L89",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_cli_contract_dry_run_mixed_flag_positions_writes_nothing_and_prints_json_summary",
-      "target": "tests_cli_contract_temp_workspace",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_temp_workspace"
     },
     {
       "relation": "references",
@@ -40993,9 +41221,9 @@
       "source_location": "L11",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "tests_cli_contract_temp_workspace",
-      "target": "tests_cli_contract_rs_pathbuf",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_rs_pathbuf"
     },
     {
       "relation": "calls",
@@ -41004,9 +41232,9 @@
       "source_file": "tests/cli_contract.rs",
       "source_location": "L92",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_cli_contract_dry_run_mixed_flag_positions_writes_nothing_and_prints_json_summary",
-      "target": "tests_cli_contract_fixture_html",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_fixture_html"
     },
     {
       "relation": "references",
@@ -41015,9 +41243,9 @@
       "source_location": "L17",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "tests_cli_contract_fixture_html",
-      "target": "tests_cli_contract_rs_string",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_rs_string"
     },
     {
       "relation": "references",
@@ -41026,9 +41254,9 @@
       "source_location": "L48",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "tests_cli_contract_spawn_fixture_server",
-      "target": "tests_cli_contract_rs_string",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_rs_string"
     },
     {
       "relation": "calls",
@@ -41037,9 +41265,9 @@
       "source_file": "tests/cli_contract.rs",
       "source_location": "L92",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_cli_contract_dry_run_mixed_flag_positions_writes_nothing_and_prints_json_summary",
-      "target": "tests_cli_contract_spawn_fixture_server",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_spawn_fixture_server"
     },
     {
       "relation": "references",
@@ -41048,9 +41276,9 @@
       "source_location": "L48",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "tests_cli_contract_spawn_fixture_server",
-      "target": "tests_cli_contract_rs_joinhandle",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_rs_joinhandle"
     },
     {
       "relation": "calls",
@@ -41059,9 +41287,9 @@
       "source_file": "tests/cli_contract.rs",
       "source_location": "L93",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_cli_contract_dry_run_mixed_flag_positions_writes_nothing_and_prints_json_summary",
-      "target": "tests_cli_contract_write_plan_catalog",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_write_plan_catalog"
     },
     {
       "relation": "references",
@@ -41070,9 +41298,9 @@
       "source_location": "L70",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "tests_cli_contract_write_plan_catalog",
-      "target": "tests_cli_contract_rs_path",
-      "confidence_score": 1.0
+      "target": "tests_cli_contract_rs_path"
     },
     {
       "relation": "contains",
@@ -41132,9 +41360,9 @@
       "source_location": "L14",
       "weight": 1.0,
       "context": "import",
+      "confidence_score": 1.0,
       "source": "common_mod",
-      "target": "tests_common_mod_rs_joinhandle",
-      "confidence_score": 1.0
+      "target": "tests_common_mod_rs_joinhandle"
     },
     {
       "relation": "imports_from",
@@ -41207,9 +41435,9 @@
       "source_location": "L23",
       "weight": 1.0,
       "context": "generic_arg",
+      "confidence_score": 1.0,
       "source": "common_mod_testserver",
-      "target": "tests_common_mod_rs_joinhandle",
-      "confidence_score": 1.0
+      "target": "tests_common_mod_rs_joinhandle"
     },
     {
       "relation": "references",
@@ -41354,9 +41582,9 @@
       "source_file": "tests/schema_contract.rs",
       "source_location": "L66",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_schema_contract",
-      "target": "tests_schema_contract_expected_fixture",
-      "confidence_score": 1.0
+      "target": "tests_schema_contract_expected_fixture"
     },
     {
       "relation": "contains",
@@ -41544,9 +41772,9 @@
       "source_file": "tests/schema_contract.rs",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_schema_contract_expected_fixture",
-      "target": "tests_schema_contract_fixture_dir",
-      "confidence_score": 1.0
+      "target": "tests_schema_contract_fixture_dir"
     },
     {
       "relation": "calls",
@@ -41577,9 +41805,9 @@
       "source_file": "tests/schema_contract.rs",
       "source_location": "L70",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_schema_contract_expected_fixture",
-      "target": "tests_schema_contract_load_fixture",
-      "confidence_score": 1.0
+      "target": "tests_schema_contract_load_fixture"
     },
     {
       "relation": "references",
@@ -41621,9 +41849,9 @@
       "source_location": "L66",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "tests_schema_contract_expected_fixture",
-      "target": "tests_schema_contract_rs_value",
-      "confidence_score": 1.0
+      "target": "tests_schema_contract_rs_value"
     },
     {
       "relation": "references",
@@ -41654,9 +41882,9 @@
       "source_file": "tests/schema_contract.rs",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_schema_contract_expected_fixture",
-      "target": "tests_schema_contract_write_json",
-      "confidence_score": 1.0
+      "target": "tests_schema_contract_write_json"
     },
     {
       "relation": "references",
@@ -41676,9 +41904,9 @@
       "source_file": "tests/schema_contract.rs",
       "source_location": "L183",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_schema_contract_runtime_responses_match_complete_golden_contract",
-      "target": "tests_schema_contract_expected_fixture",
-      "confidence_score": 1.0
+      "target": "tests_schema_contract_expected_fixture"
     },
     {
       "relation": "calls",
@@ -41701,6 +41929,36 @@
       "confidence_score": 1.0,
       "source": "tests_schema_contract_runtime_responses_match_complete_golden_contract",
       "target": "tests_schema_contract_assert_same_shape"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/scraper_taxonomy.test.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "tests_scraper_taxonomy_test",
+      "target": "tests_scraper_taxonomy_test_assert",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/scraper_taxonomy.test.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "tests_scraper_taxonomy_test",
+      "target": "tests_scraper_taxonomy_test_taxonomy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/scraper_taxonomy.test.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "tests_scraper_taxonomy_test",
+      "target": "tests_scraper_taxonomy_test_test",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -90894,9 +91152,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_schema_versions",
-      "target": "schema_version_api_1_1_previous",
-      "confidence_score": 1.0
+      "target": "schema_version_api_1_1_previous"
     },
     {
       "relation": "contains",
@@ -90904,9 +91162,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_schema_versions",
-      "target": "schema_version_api_1_2_current",
-      "confidence_score": 1.0
+      "target": "schema_version_api_1_2_current"
     },
     {
       "relation": "contains",
@@ -90954,9 +91212,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_api_1_2_current",
-      "target": "schema_version_added",
-      "confidence_score": 1.0
+      "target": "schema_version_added"
     },
     {
       "relation": "contains",
@@ -90964,9 +91222,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L32",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_api_1_2_current",
-      "target": "schema_version_changed",
-      "confidence_score": 1.0
+      "target": "schema_version_changed"
     },
     {
       "relation": "contains",
@@ -90974,9 +91232,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_api_1_2_current",
-      "target": "schema_version_migration",
-      "confidence_score": 1.0
+      "target": "schema_version_migration"
     },
     {
       "relation": "contains",
@@ -90984,9 +91242,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L48",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_api_1_1_previous",
-      "target": "schema_version_added_48",
-      "confidence_score": 1.0
+      "target": "schema_version_added_48"
     },
     {
       "relation": "contains",
@@ -90994,9 +91252,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L54",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_api_1_1_previous",
-      "target": "schema_version_contract_fixtures",
-      "confidence_score": 1.0
+      "target": "schema_version_contract_fixtures"
     },
     {
       "relation": "contains",
@@ -91004,9 +91262,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L66",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_api_1_1_previous",
-      "target": "schema_version_migration_66",
-      "confidence_score": 1.0
+      "target": "schema_version_migration_66"
     },
     {
       "relation": "contains",
@@ -91014,9 +91272,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_api_1_1_previous",
-      "target": "schema_version_renamed_removed",
-      "confidence_score": 1.0
+      "target": "schema_version_renamed_removed"
     },
     {
       "relation": "contains",
@@ -91024,9 +91282,9 @@
       "source_file": "SCHEMA_VERSION.md",
       "source_location": "L129",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "schema_version_whmcs_db_14_current",
-      "target": "schema_version_migration_129",
-      "confidence_score": 1.0
+      "target": "schema_version_migration_129"
     },
     {
       "relation": "contains",
@@ -96724,5 +96982,5 @@
       "source_file": "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_CONFIGURABLE_OPTIONS.md"
     }
   ],
-  "built_at_commit": "53d3616d74ce7d1bdce5768ace6a0bea538481be"
+  "built_at_commit": "7591f7f06847f475c308380c565d2c3fc97f0029"
 }
