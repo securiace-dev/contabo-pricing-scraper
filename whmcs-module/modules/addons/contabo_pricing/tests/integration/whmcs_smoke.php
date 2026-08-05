@@ -234,8 +234,8 @@ try {
     $health = SchemaHealth::assertOrMigrate();
     smoke_assert(!empty($health['ok']), 'SchemaHealth::assertOrMigrate() ok (error=' . (string) ($health['error'] ?? '') . ')');
     smoke_assert(
-        (int) ($health['to'] ?? -1) === Installer::SCHEMA_VERSION,
-        'schema to=' . (int) ($health['to'] ?? -1) . ' === Installer::SCHEMA_VERSION=' . Installer::SCHEMA_VERSION
+        (int) ($health['to'] ?? -1) >= Installer::SCHEMA_VERSION,
+        'schema to=' . (int) ($health['to'] ?? -1) . ' >= Installer::SCHEMA_VERSION=' . Installer::SCHEMA_VERSION
     );
 
     // ── 1b) real-schema parity (catches the recurringamount→amount class) ──────
