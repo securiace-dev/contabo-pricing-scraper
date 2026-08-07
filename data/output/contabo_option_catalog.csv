@@ -676,7 +676,6 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EU
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Webmin,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited and Unmetered Traffic,86.29,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
@@ -689,6 +688,7 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (East),13.3,0,Ame
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (West),11.15,0,America,United States (West),US,West,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,India,20.6,0,Asia,India,IN,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Japan,22.3,0,Asia,Japan,JP,,,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Singapore,21.9,0,Asia,Singapore,SG,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Australia,Australia,18.45,0,Australia,Australia,AU,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,United Kingdom,9,0,Europe,United Kingdom,UK,,,EUR

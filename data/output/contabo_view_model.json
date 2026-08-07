@@ -2,7 +2,7 @@
   "dimension_schema": {
     "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
     "schema_version": "1.1",
-    "generated_at": "2026-08-07T07:29:31.733Z",
+    "generated_at": "2026-08-07T18:39:25.449Z",
     "dimensions": {
       "Data Protection": {
         "required": false,
@@ -45,7 +45,7 @@
     }
   },
   "meta": {
-    "generated_at": "2026-08-07T07:29:31.733Z",
+    "generated_at": "2026-08-07T18:39:25.449Z",
     "plan_count": 16,
     "row_count": 74,
     "schema_version": "1.1",
@@ -3033,15 +3033,15 @@
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 86.29,
           "min_delta": 0,
-          "option_count": 8,
+          "option_count": 7,
           "paid_count": 3
         },
         "Region": {
           "default_label": "European Union",
           "max_delta": 22.3,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "180 GB NVMe",
@@ -3093,15 +3093,15 @@
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 86.29,
           "min_delta": 0,
-          "option_count": 8,
+          "option_count": 7,
           "paid_count": 3
         },
         "Region": {
           "default_label": "European Union",
           "max_delta": 22.3,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "180 GB NVMe",
@@ -3153,15 +3153,15 @@
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 86.29,
           "min_delta": 0,
-          "option_count": 8,
+          "option_count": 7,
           "paid_count": 3
         },
         "Region": {
           "default_label": "European Union",
           "max_delta": 22.3,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "180 GB NVMe",
@@ -3213,15 +3213,15 @@
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 86.29,
           "min_delta": 0,
-          "option_count": 8,
+          "option_count": 7,
           "paid_count": 3
         },
         "Region": {
           "default_label": "European Union",
           "max_delta": 22.3,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "180 GB NVMe",
@@ -3273,15 +3273,15 @@
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
           "max_delta": 86.29,
           "min_delta": 0,
-          "option_count": 8,
+          "option_count": 7,
           "paid_count": 3
         },
         "Region": {
           "default_label": "European Union",
           "max_delta": 22.3,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "180 GB NVMe",
