@@ -10,7 +10,7 @@ use axum::Json;
 use serde_json::{json, Value};
 
 pub const VERSION: &str = "test-2.3.0";
-pub const SCHEMA_VERSION: &str = "1.1";
+pub const SCHEMA_VERSION: &str = "1.2";
 
 #[derive(Clone, Debug, clap::ValueEnum)]
 pub enum FetchMode {
@@ -63,6 +63,13 @@ fn write_json(path: &Path, value: &Value) {
         .unwrap_or_else(|error| panic!("write deterministic snapshot {}: {error}", path.display()));
 }
 
+fn expected_fixture(name: &str, actual: &Value) -> Value {
+    if std::env::var("UPDATE_SCHEMA_FIXTURES").as_deref() == Ok("1") {
+        write_json(&fixture_dir().join(name), actual);
+    }
+    load_fixture(name)
+}
+
 fn create_snapshot_dir() -> PathBuf {
     let dir =
         std::env::temp_dir().join(format!("contabo-schema-contract-{}", uuid::Uuid::new_v4()));
@@ -80,9 +87,9 @@ fn create_snapshot_dir() -> PathBuf {
                 "row_count": 1,
             },
             "rows": [{
-                "plan_slug": "cloud-vps-10",
+                "plan_slug": "cloud-vps-core-4",
                 "period_months": 12,
-                "effective_monthly": 3.6,
+                "effective_monthly": 5.5,
                 "setup_fee": 0.0,
             }],
         }),
@@ -173,7 +180,7 @@ async fn runtime_responses_match_complete_golden_contract() {
     let mut meta = api::handlers::meta(State(state.clone())).await.0;
     meta["scraper_version"] = json!("<runtime-version>");
     meta["data_dir"] = json!("<data-dir>");
-    let expected_meta = load_fixture("meta.json");
+    let expected_meta = expected_fixture("meta.json", &meta);
     assert_same_shape(&expected_meta, &meta, "$.meta");
     assert_eq!(expected_meta, meta);
 
@@ -183,12 +190,12 @@ async fn runtime_responses_match_complete_golden_contract() {
     )
     .await
     .0;
-    let expected_plans = load_fixture("plans.json");
+    let expected_plans = expected_fixture("plans.json", &plans);
     assert_same_shape(&expected_plans, &plans, "$.plans");
     assert_eq!(expected_plans, plans);
 
     let catalog = api::handlers::catalog(State(state.clone())).await.0;
-    let expected_catalog = load_fixture("catalog.json");
+    let expected_catalog = expected_fixture("catalog.json", &catalog);
     assert_same_shape(&expected_catalog, &catalog, "$.catalog");
     assert_eq!(
         catalog["schema_version"],
@@ -215,7 +222,7 @@ async fn runtime_responses_match_complete_golden_contract() {
         api::handlers::quote(
             State(state),
             Json(api::handlers::QuoteRequest {
-                plan_slug: "cloud-vps-10".into(),
+                plan_slug: "cloud-vps-core-4".into(),
                 period_months: 12,
                 selections: serde_json::Map::new(),
                 currency: "INR".into(),
@@ -229,13 +236,13 @@ async fn runtime_responses_match_complete_golden_contract() {
         .0,
     )
     .expect("quote response serializes");
-    let expected_quote = load_fixture("quote.json");
+    let expected_quote = expected_fixture("quote.json", &quote);
     assert_same_shape(&expected_quote, &quote, "$.quote");
     assert_eq!(expected_quote, quote);
 
     let mut openapi = api::handlers::openapi().await.0;
     openapi["info"]["version"] = json!("<runtime-version>");
-    let expected_openapi = load_fixture("openapi.json");
+    let expected_openapi = expected_fixture("openapi.json", &openapi);
     assert_same_shape(&expected_openapi, &openapi, "$.openapi");
     assert_eq!(expected_openapi, openapi);
 
@@ -255,10 +262,10 @@ fn schema_constants_and_documentation_are_aligned() {
     let docs =
         std::fs::read_to_string(root.join("SCHEMA_VERSION.md")).expect("read SCHEMA_VERSION.md");
 
-    assert!(main.contains("pub const SCHEMA_VERSION: &str = \"1.1\";"));
+    assert!(main.contains("pub const SCHEMA_VERSION: &str = \"1.2\";"));
     assert!(catalog.contains("pub const CATALOG_SCHEMA_VERSION: &str = \"1.0\";"));
     assert!(installer.contains("public const SCHEMA_VERSION = 14;"));
-    assert!(docs.contains("## API 1.1 — current"));
+    assert!(docs.contains("## API 1.2 — current"));
     assert!(docs.contains("## Catalog exchange 1.0 — current"));
     assert!(docs.contains("## WHMCS DB 14 — current"));
 }

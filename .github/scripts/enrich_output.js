@@ -240,6 +240,7 @@ function buildViewModel() {
     for (const per of (plan.periods || [])) {
       rows.push({
         family: plan.family,
+        family_aliases: plan.family_aliases || [],
         plan_rank: plan.plan_rank,
         plan_family_rank: plan.plan_family_rank,
         product_name: plan.product_name,
