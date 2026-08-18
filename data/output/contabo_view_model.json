@@ -2,7 +2,7 @@
   "dimension_schema": {
     "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
     "schema_version": "1.1",
-    "generated_at": "2026-08-17T07:07:45.317Z",
+    "generated_at": "2026-08-18T06:54:27.024Z",
     "dimensions": {
       "Data Protection": {
         "required": false,
@@ -45,7 +45,7 @@
     }
   },
   "meta": {
-    "generated_at": "2026-08-17T07:07:45.318Z",
+    "generated_at": "2026-08-18T06:54:27.024Z",
     "plan_count": 16,
     "row_count": 74,
     "schema_version": "1.1",
