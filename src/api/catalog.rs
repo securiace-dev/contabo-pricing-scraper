@@ -50,6 +50,7 @@ pub fn build(snapshot: &Snapshot) -> Value {
             plan.clone(),
             json!({
                 "family": plan.get("family").cloned().unwrap_or(Value::Null),
+                "family_aliases": plan.get("family_aliases").cloned().unwrap_or_else(|| json!([])),
             }),
         ));
 

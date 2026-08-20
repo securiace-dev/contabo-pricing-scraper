@@ -1,0 +1,21 @@
+[
+  {
+    "product_slug": "cloud-vps-core-4",
+    "provider_sku_id": "V45",
+    "family": "Core VPS",
+    "family_aliases": [
+      "Cloud VPS"
+    ],
+    "product_name": "Cloud VPS 4",
+    "base_monthly_price": 5.5,
+    "fetched_at": "2026-07-30T10:20:30Z",
+    "periods": [
+      {
+        "months": 12,
+        "effective_monthly": 5.5,
+        "setup_fee": 0.0,
+        "total_period_cost": 66.0
+      }
+    ]
+  }
+]

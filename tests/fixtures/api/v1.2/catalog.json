@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0",
+  "source_version": "fixture-1.0.0",
+  "source_observed_at": "2026-07-30T10:20:30Z",
+  "effective_at": "2026-07-30T10:20:30Z",
+  "plans": [
+    {
+      "product_slug": "cloud-vps-core-4",
+      "provider_sku_id": "V45",
+      "family": "Core VPS",
+      "family_aliases": [
+        "Cloud VPS"
+      ],
+      "product_name": "Cloud VPS 4",
+      "base_monthly_price": 5.5,
+      "fetched_at": "2026-07-30T10:20:30Z",
+      "periods": [
+        {
+          "months": 12,
+          "effective_monthly": 5.5,
+          "setup_fee": 0.0,
+          "total_period_cost": 66.0
+        }
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "machine_id": "profile:cloud-vps-core-4:default",
+      "plan_machine_id": "plan:cloud-vps-core-4",
+      "label": "Cloud VPS 4",
+      "source_observed_at": "2026-07-30T10:20:30Z",
+      "availability_state": "observed",
+      "deprecated": false
+    }
+  ],
+  "items": [
+    {
+      "machine_id": "plan:cloud-vps-core-4",
+      "provider_id": "V45",
+      "item_type": "plan",
+      "label": "Cloud VPS 4",
+      "catalog_version": "catalog-20260730102030-16b4edbc3362ab13",
+      "effective_at": "2026-07-30T10:20:30Z",
+      "availability_state": "observed",
+      "deprecated": false,
+      "compatibility": {
+        "family": "Core VPS",
+        "family_aliases": [
+          "Cloud VPS"
+        ]
+      },
+      "source_observed_at": "2026-07-30T10:20:30Z",
+      "payload_hash": "85a6ac5f74f12a4ef25f0c7e28484567e89c151356e58333c2cd468373a5acf8",
+      "payload": {
+        "product_slug": "cloud-vps-core-4",
+        "provider_sku_id": "V45",
+        "family": "Core VPS",
+        "family_aliases": [
+          "Cloud VPS"
+        ],
+        "product_name": "Cloud VPS 4",
+        "base_monthly_price": 5.5,
+        "fetched_at": "2026-07-30T10:20:30Z",
+        "periods": [
+          {
+            "months": 12,
+            "effective_monthly": 5.5,
+            "setup_fee": 0.0,
+            "total_period_cost": 66.0
+          }
+        ]
+      }
+    }
+  ],
+  "compatibility": {
+    "option_catalog": []
+  },
+  "configurations": {
+    "plans": {}
+  },
+  "catalog_version": "catalog-20260730102030-16b4edbc3362ab13",
+  "payload_hash": "dbadc7362c2a4e5c147d4ff398e70166821e4e14a6343f6b8bbd1a67972cd78d"
+}
