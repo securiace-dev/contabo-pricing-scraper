@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
   "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
-  "generated_at": "2026-08-24T18:23:31.123Z",
+  "generated_at": "2026-08-25T06:58:08.795Z",
   "dimensions": {
     "Region": {
       "selection_type": "single",
