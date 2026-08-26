@@ -2,7 +2,7 @@
   "dimension_schema": {
     "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
     "schema_version": "1.1",
-    "generated_at": "2026-08-26T06:59:26.992Z",
+    "generated_at": "2026-08-26T19:30:00.164Z",
     "dimensions": {
       "Data Protection": {
         "required": false,
@@ -45,7 +45,7 @@
     }
   },
   "meta": {
-    "generated_at": "2026-08-26T06:59:26.992Z",
+    "generated_at": "2026-08-26T19:30:00.164Z",
     "plan_count": 16,
     "row_count": 74,
     "schema_version": "1.1",
@@ -1046,7 +1046,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 64.15,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 8
         },
         "Networking": {
@@ -1106,7 +1106,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 64.15,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 8
         },
         "Networking": {
@@ -1166,7 +1166,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 64.15,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 8
         },
         "Networking": {
@@ -1226,7 +1226,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 64.15,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 8
         },
         "Networking": {
@@ -1286,7 +1286,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 77,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 8
         },
         "Networking": {
@@ -1346,7 +1346,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 77,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 8
         },
         "Networking": {
@@ -1406,7 +1406,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 77,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 8
         },
         "Networking": {
@@ -1466,7 +1466,7 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 77,
           "min_delta": 0,
-          "option_count": 37,
+          "option_count": 36,
           "paid_count": 8
         },
         "Networking": {
@@ -4226,8 +4226,8 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 38,
-          "paid_count": 9
+          "option_count": 37,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
@@ -4240,8 +4240,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "720 GB NVMe",
@@ -4286,8 +4286,8 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 38,
-          "paid_count": 9
+          "option_count": 37,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
@@ -4300,8 +4300,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "720 GB NVMe",
@@ -4346,8 +4346,8 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 38,
-          "paid_count": 9
+          "option_count": 37,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
@@ -4360,8 +4360,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "720 GB NVMe",
@@ -4406,8 +4406,8 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 38,
-          "paid_count": 9
+          "option_count": 37,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
@@ -4420,8 +4420,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "720 GB NVMe",
@@ -4466,8 +4466,8 @@
           "default_label": "Ubuntu 24.04",
           "max_delta": 50,
           "min_delta": 0,
-          "option_count": 38,
-          "paid_count": 9
+          "option_count": 37,
+          "paid_count": 8
         },
         "Networking": {
           "default_label": "Unlimited Traffic, 1 IP Address, No Private Networking",
@@ -4480,8 +4480,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 8,
-          "paid_count": 7
+          "option_count": 9,
+          "paid_count": 8
         },
         "Storage": {
           "default_label": "720 GB NVMe",
