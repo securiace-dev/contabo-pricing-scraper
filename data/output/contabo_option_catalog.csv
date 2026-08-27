@@ -7,6 +7,7 @@ cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Dokploy Server,0,0,,
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,GitLab Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,LAMP,0,0,,,,,,EUR
+cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,Apps,Paperclip Server,0,0,,,,,,EUR
@@ -19,7 +20,6 @@ cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,AlmaLinux 10,0,0,,,,,,
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Arch Linux,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 12,0,0,,,,,,EUR
-cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-10,cloud-vps-10,Cloud VPS,Cloud VPS 10,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
@@ -65,6 +65,7 @@ cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Dokploy Server,0,0,,
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,GitLab Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,LAMP,0,0,,,,,,EUR
+cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,Apps,Paperclip Server,0,0,,,,,,EUR
@@ -77,7 +78,6 @@ cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,AlmaLinux 10,0,0,,,,,,
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Arch Linux,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Debian 12,0,0,,,,,,EUR
-cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-20,cloud-vps-20,Cloud VPS,Cloud VPS 20,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
@@ -123,6 +123,7 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Dokploy Server,0,0,,
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,GitLab Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,LAMP,0,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,Ollama Server,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
@@ -136,7 +137,6 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,AlmaLinux 10,0,0,,,,,,
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Arch Linux,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Debian 12,0,0,,,,,,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
@@ -182,6 +182,7 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Dokploy Server,0,0,,
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,GitLab Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,LAMP,0,0,,,,,,EUR
+cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,Ollama Server,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
@@ -195,7 +196,6 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,AlmaLinux 10,0,0,,,,,,
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Arch Linux,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Debian 12,0,0,,,,,,EUR
-cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Debian 13,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
@@ -241,6 +241,7 @@ cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Dokploy Server,0,0,,
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,GitLab Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,LAMP,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Ollama Server,0,0,,,,,,EUR
 cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
@@ -299,6 +300,7 @@ cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Dokploy Server,0,0,,
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,GitLab Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,LAMP,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,n8n Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Ollama Server,0,0,,,,,,EUR
 cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
@@ -525,6 +527,7 @@ storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Dokploy Serv
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,GitLab Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,LAMP,0,0,,,,,,EUR
+storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,n8n Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,Ollama Server,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
@@ -542,7 +545,6 @@ storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Arch Linux,0,0
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Debian 12,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Debian 13,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 storage-vps-40,storage-vps-40,Storage VPS,Storage VPS 40,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
@@ -583,6 +585,7 @@ storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Dokploy Serv
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,GitLab Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,LAMP,0,0,,,,,,EUR
+storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,n8n Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,Ollama Server,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
@@ -600,7 +603,6 @@ storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Arch Linux,0,0
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Debian 12,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Debian 13,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
-storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Rocky Linux 10,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 storage-vps-50,storage-vps-50,Storage VPS,Storage VPS 50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
