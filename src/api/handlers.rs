@@ -48,9 +48,14 @@ pub async fn list_plans(State(s): State<AppState>, Query(q): Query<PlansQuery>) 
     let filtered: Vec<Value> = arr
         .into_iter()
         .filter(|p| {
-            q.family
-                .as_ref()
-                .is_none_or(|f| p.get("family").and_then(|v| v.as_str()) == Some(f.as_str()))
+            q.family.as_ref().is_none_or(|f| {
+                p.get("family").and_then(|v| v.as_str()) == Some(f.as_str())
+                    || p.get("family_aliases")
+                        .and_then(Value::as_array)
+                        .is_some_and(|aliases| {
+                            aliases.iter().any(|alias| alias.as_str() == Some(f))
+                        })
+            })
         })
         .collect();
     Json(json!(filtered))

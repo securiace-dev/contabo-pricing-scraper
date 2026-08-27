@@ -1,0 +1,12 @@
+{
+  "scraper_version": "<runtime-version>",
+  "schema_version": "1.2",
+  "snapshot_meta": {
+    "scraper_version": "fixture-1.0.0",
+    "schema_version": "1.2",
+    "generated_at": "2026-07-30T10:20:30Z",
+    "plan_count": 1,
+    "row_count": 1
+  },
+  "data_dir": "<data-dir>"
+}

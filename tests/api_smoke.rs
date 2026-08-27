@@ -58,6 +58,29 @@ fn client() -> reqwest::Client {
         .unwrap()
 }
 
+fn fixture_effective_monthly(plan_slug: &str, period_months: u64) -> f64 {
+    let path = common::data_dir().join("contabo_base_plans.json");
+    let raw = std::fs::read_to_string(&path)
+        .unwrap_or_else(|error| panic!("read pricing fixture {}: {error}", path.display()));
+    let fixture: serde_json::Value = serde_json::from_str(&raw)
+        .unwrap_or_else(|error| panic!("parse pricing fixture {}: {error}", path.display()));
+    fixture["plans"]
+        .as_array()
+        .and_then(|plans| {
+            plans
+                .iter()
+                .find(|plan| plan["product_slug"].as_str() == Some(plan_slug))
+        })
+        .and_then(|plan| plan["periods"].as_array())
+        .and_then(|periods| {
+            periods
+                .iter()
+                .find(|period| period["months"].as_u64() == Some(period_months))
+        })
+        .and_then(|period| period["effective_monthly"].as_f64())
+        .unwrap_or_else(|| panic!("missing {period_months}-month price for {plan_slug} in fixture"))
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 //  Open endpoints
 // ────────────────────────────────────────────────────────────────────────────
@@ -312,7 +335,7 @@ async fn quote_endpoint_with_gst_and_inr_fx() {
     assert_eq!(res.status(), 200);
     let json: serde_json::Value = res.json().await.unwrap();
 
-    let expected = 3.60_f64 * 1.18 * 112.317 * 1.035;
+    let expected = fixture_effective_monthly("cloud-vps-10", 12) * 1.18 * 112.317 * 1.035;
     let got = json["final_monthly"]
         .as_f64()
         .expect("final_monthly missing");
@@ -364,7 +387,7 @@ async fn quote_endpoint_without_gst() {
     assert_eq!(res.status(), 200);
     let json: serde_json::Value = res.json().await.unwrap();
 
-    let expected = 3.60_f64 * 112.317 * 1.035; // no GST
+    let expected = fixture_effective_monthly("cloud-vps-10", 12) * 112.317 * 1.035; // no GST
     let got = json["final_monthly"]
         .as_f64()
         .expect("final_monthly missing");
