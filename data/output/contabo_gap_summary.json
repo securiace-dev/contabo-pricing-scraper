@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "gap": "cloak_fetch_failed",
+    "title": "",
+    "count": 2,
+    "plans": []
+  },
+  {
+    "gap": "fetch_failed",
+    "title": "",
+    "count": 2,
+    "plans": []
+  }
+]
