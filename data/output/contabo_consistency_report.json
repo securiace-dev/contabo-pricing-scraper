@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-02T20:17:27.529Z",
-  "view_model_generated_at": "2026-09-02T20:17:27.388Z",
+  "generated_at": "2026-09-03T11:01:14.911Z",
+  "view_model_generated_at": "2026-09-03T11:01:14.756Z",
   "source": "contabo_view_model.json vs contabo_pricing_dataset.json + contabo_configs.json default-config arithmetic",
-  "checked": 66,
-  "default_config_checks": 132,
+  "checked": 74,
+  "default_config_checks": 148,
   "mismatch_count": 0,
   "mismatches": []
 }

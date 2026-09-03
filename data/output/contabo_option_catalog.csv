@@ -233,6 +233,124 @@ cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,NVMe,250 GB NVMe,0
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,NVMe,500 GB NVMe,4.8,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,SSD,1 TB SSD,6.2,0,,,,,,EUR
 cloud-vps-40,cloud-vps-40,Cloud VPS,Cloud VPS 40,Storage Type,SSD,500 GB SSD,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Data Protection,Auto Backup,Auto Backup,7.5,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Coolify Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Docker,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Dokploy Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,GitLab Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,LAMP,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,n8n Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Ollama Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Paperclip Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Blockchain,Flux Node,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Arch Linux,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Debian 12,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2016 Datacenter,61.1,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2019 Datacenter,64.15,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2022 Datacenter,64.15,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,OS,Windows Server 2025 Datacenter,64.15,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Webmin,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (Central),8.55,0,America,United States (Central),US,Central,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (East),12.6,0,America,United States (East),US,East,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,America,United States (West),10.6,0,America,United States (West),US,West,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,India,19.55,0,Asia,India,IN,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Japan,20.75,0,Asia,Japan,JP,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Asia,Singapore,20.75,0,Asia,Singapore,SG,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Australia,Australia,17.5,0,Australia,Australia,AU,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Region,Europe,United Kingdom,8.55,0,Europe,United Kingdom,UK,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,NVMe,300 GB NVMe,0,0,,,,,true,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,NVMe,600 GB NVMe,5.95,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,SSD,1.2 TB SSD,7.7,0,,,,,,EUR
+cloud-vps-50,cloud-vps-50,Cloud VPS,Cloud VPS 50,Storage Type,SSD,600 GB SSD,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Data Protection,Auto Backup,Auto Backup,9.5,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Coolify Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Docker,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Dokploy Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,GitLab Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,LAMP,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,n8n Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Ollama Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Paperclip Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,WireGuard Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Blockchain,Flux Node,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Blockchain,Horizen Node,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Blockchain,IPFS Node,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,AlmaLinux 10,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Arch Linux,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Debian 12,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2016 Datacenter,71.3,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2019 Datacenter,77,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2022 Datacenter,77,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,OS,Windows Server 2025 Datacenter,77,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Webmin,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,IPv4,1 IP Address,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,IPv4,Additional IP Address,3.5,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (Central),11.3,0,America,United States (Central),US,Central,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (East),16.7,0,America,United States (East),US,East,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,America,United States (West),14,0,America,United States (West),US,West,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,India,25.85,0,Asia,India,IN,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Japan,27.5,0,Asia,Japan,JP,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Asia,Singapore,27.5,0,Asia,Singapore,SG,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Australia,Australia,23.2,0,Australia,Australia,AU,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Region,Europe,United Kingdom,11.3,0,Europe,United Kingdom,UK,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,NVMe,350 GB NVMe,0,0,,,,,true,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,NVMe,700 GB NVMe,7.2,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,SSD,1.4 TB SSD,8.7,0,,,,,,EUR
+cloud-vps-60,cloud-vps-60,Cloud VPS,Cloud VPS 60,Storage Type,SSD,700 GB SSD,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Data Protection,None,No Data Protection,0,0,,,,,true,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Coolify Server,0,0,,,,,,EUR
 storage-vps-10,storage-vps-10,Storage VPS,Storage VPS 10,Image,Apps,Docker,0,0,,,,,,EUR

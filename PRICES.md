@@ -1,6 +1,6 @@
 # Contabo Pricing
 
-> **Last updated:** 2026-09-02T20:17:27.294Z  
+> **Last updated:** 2026-09-03T11:01:14.642Z  
 > Auto-refreshed twice daily · data from [contabo.com](https://contabo.com)  
 > 📊 **[Interactive view → report.html](report.html)** — sort, filter & compare plans
 
@@ -12,6 +12,8 @@
 | [Cloud VPS 20](https://contabo.com/en/vps/cloud-vps-20/) | 6 | 12 GB | 100 GB NVMe | 300 Mbps | €7.50 | €6.75 | €6.00 |
 | [Cloud VPS 30](https://contabo.com/en/vps/cloud-vps-30/) | 8 | 24 GB | 200 GB NVMe | 600 Mbps | €14.00 | €12.60 | €11.20 |
 | [Cloud VPS 40](https://contabo.com/en/vps/cloud-vps-40/) | 12 | 48 GB | 250 GB NVMe | 800 Mbps | €25.00 | €22.50 | €20.00 |
+| [Cloud VPS 50](https://contabo.com/en/vps/cloud-vps-50/) | 16 | 64 GB | 300 GB NVMe | 1000 Mbps | €37.00 | €33.30 | €29.60 |
+| [Cloud VPS 60](https://contabo.com/en/vps/cloud-vps-60/) | 18 | 96 GB | 350 GB NVMe | 1000 Mbps | €49.00 | €44.10 | €39.20 |
 
 ### [Cloud VPS 10](https://contabo.com/en/vps/cloud-vps-10/)
 > **4 vCPU · 8 GB RAM · 75 GB NVMe · 200 Mbps**
@@ -98,6 +100,50 @@
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
 **Backup** — Auto Backup `+€6.00`
+
+---
+
+### [Cloud VPS 50](https://contabo.com/en/vps/cloud-vps-50/)
+> **16 vCPU · 64 GB RAM · 300 GB NVMe · 1000 Mbps**
+
+| | 1 Month | 6 Months | 12 Months |
+|---|---------|----------|-----------|
+| **Monthly** | €37.00 | €33.30 | **€29.60** |
+| Billed total | €37.00 | €199.80 | €355.20 |
+
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, FreeBSD 12.2, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€61.10` · Windows Server 2019 Datacenter `+€64.15` · Windows Server 2022 Datacenter `+€64.15` · Windows Server 2025 Datacenter `+€64.15`
+**Apps** — Coolify Server, Docker, Dokploy Server, GitLab Server, Hermes Agent Server, LAMP, n8n Server, Nextcloud Server, Ollama Server, OpenClaw Server, Paperclip Server, WireGuard Server, Zeroclaw Server
+**Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
+**Blockchain** — Flux Node, Horizen Node, IPFS Node
+
+| EU *(def.)* | UK | US-Central | US-West | US-East | India | Japan | Singapore | Australia |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| free | +€8.55 | +€8.55 | +€10.60 | +€12.60 | +€19.55 | +€20.75 | +€20.75 | +€17.50 |
+
+**Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
+**Backup** — Auto Backup `+€7.50`
+
+---
+
+### [Cloud VPS 60](https://contabo.com/en/vps/cloud-vps-60/)
+> **18 vCPU · 96 GB RAM · 350 GB NVMe · 1000 Mbps**
+
+| | 1 Month | 6 Months | 12 Months |
+|---|---------|----------|-----------|
+| **Monthly** | €49.00 | €44.10 | **€39.20** |
+| Billed total | €49.00 | €264.60 | €470.40 |
+
+**OS** — Ubuntu 24.04 *(default)*, AlmaLinux 10, AlmaLinux 9, Arch Linux, Debian 12, FreeBSD 12.2, Rocky Linux 8, Rocky Linux 9, Ubuntu 19.10 (64 Bit), Ubuntu 22.04, Ubuntu 26.04  ·  Paid: Windows Server 2016 Datacenter `+€71.30` · Windows Server 2019 Datacenter `+€77.00` · Windows Server 2022 Datacenter `+€77.00` · Windows Server 2025 Datacenter `+€77.00`
+**Apps** — Coolify Server, Docker, Dokploy Server, GitLab Server, Hermes Agent Server, LAMP, n8n Server, Nextcloud Server, Ollama Server, OpenClaw Server, Paperclip Server, WireGuard Server, Zeroclaw Server
+**Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
+**Blockchain** — Flux Node, Horizen Node, IPFS Node
+
+| EU *(def.)* | UK | US-Central | US-West | US-East | India | Japan | Singapore | Australia |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| free | +€11.30 | +€11.30 | +€14.00 | +€16.70 | +€25.85 | +€27.50 | +€27.50 | +€23.20 |
+
+**Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€2.29`
+**Backup** — Auto Backup `+€9.50`
 
 ---
 

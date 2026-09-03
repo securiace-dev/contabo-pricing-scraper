@@ -1,18 +1,1 @@
-[
-  {
-    "gap": "fetch_failed",
-    "error": "error decoding response body"
-  },
-  {
-    "gap": "fetch_failed",
-    "error": "error decoding response body"
-  },
-  {
-    "gap": "cloak_fetch_failed",
-    "error": "No such file or directory (os error 2)"
-  },
-  {
-    "gap": "cloak_fetch_failed",
-    "error": "No such file or directory (os error 2)"
-  }
-]
+[]
