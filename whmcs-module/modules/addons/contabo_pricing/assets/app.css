@@ -191,6 +191,29 @@ body:has(.cb-wrap) { overflow-x: clip; }
 .cb-modal.open { display: flex; }
 .cb-modal .sheet { background: var(--panel); border-radius: var(--radius); width: 100%; max-width: 600px; padding: 24px; box-shadow: var(--shadow-lg); }
 .cb-modal .sheet h3 { font-family: var(--font-display); font-size: 22px; margin: 0 0 16px; color: var(--fg-strong); }
+.cb-profile-sheet { max-width: 760px !important; }
+.cb-modal-sub { margin-top: -8px; margin-bottom: 0; }
+.cb-profile-intro { display: grid; gap: 12px; margin: 0 0 16px; }
+.cb-profile-steps { display: flex; flex-wrap: wrap; gap: 8px; }
+.cb-profile-summary { margin: 0; background: var(--bg-elev); }
+.cb-profile-summary-status { font-weight: 600; color: var(--fg-strong); }
+.cb-profile-section { margin: 12px 0; }
+.cb-profile-mode-note { margin: 0 0 12px; background: var(--surface-warning); border-color: var(--warn-border); }
+.cb-profile-footer { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: flex-end; }
+.cb-profile-footer .cb-card-sub { margin: 0 auto 0 0; max-width: 34rem; }
+.cb-disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+.cb-disclosure > summary::-webkit-details-marker { display: none; }
+.cb-disclosure > summary::after { content: "+"; font-size: 20px; color: var(--accent); line-height: 1; }
+.cb-disclosure[open] > summary::after { content: "−"; }
+.cb-disclosure > summary + * { margin-top: 16px; }
+.cb-error ul { margin: 8px 0 0 18px; }
 
 /* keyboard shortcut display */
 .kbd { display: inline-block; padding: 4px 8px; background: var(--chip); border: 1px solid var(--border); border-radius: 4px; font-size: 10.5px; font-family: var(--font-data); color: var(--muted); }
@@ -319,6 +342,8 @@ body:has(.cb-wrap) { overflow-x: clip; }
   .cb-page-header, .cb-section-header { flex-direction: column; }
   .cb-inline-form { min-width: 0; width: 100%; flex-wrap: wrap; }
   .cb-inline-form input[type=text] { min-width: 0; flex: 1 1 12rem; }
+  .cb-profile-footer { align-items: stretch; }
+  .cb-profile-footer .cb-card-sub { max-width: none; margin-right: 0; }
   .cb-wrap [data-cb-u~="u-0292bc7fc0"],
   .cb-wrap [data-cb-u~="u-16b426dd7f"],
   .cb-wrap [data-cb-u~="u-a2b5b9b303"],

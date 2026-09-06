@@ -335,8 +335,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php": {
-    "mtime": 1788667731.308778,
-    "ast_hash": "ac956a7c721952e9247d4b5dc8d13966",
+    "mtime": 1788671673.1709535,
+    "ast_hash": "98c7992c17ff53a851ac9ca9bcb48774",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ServicePriceWriter.php": {
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/assets/app.js": {
-    "mtime": 1785911972.9049006,
-    "ast_hash": "14d3eb8541716915d63888f22d5a5053",
+    "mtime": 1788671716.3939185,
+    "ast_hash": "d658b1de12fb8f99347b50da9e6ab9b5",
     "semantic_hash": ""
   },
   "whmcs-module/modules/servers/contabo_vps/contabo_vps.php": {
@@ -1432,6 +1432,11 @@
   "whmcs-module/modules/addons/contabo_pricing/tests/AdminPostOnlyContractTest.php": {
     "mtime": 1788667610.4449875,
     "ast_hash": "c85f50f517906b6a2e0ea0e60eb21fe1",
+    "semantic_hash": ""
+  },
+  "whmcs-module/modules/addons/contabo_pricing/tests/ProfileCreateTemplateTest.php": {
+    "mtime": 1788671756.590786,
+    "ast_hash": "3fddca9e5d2dec722285a532b330cac7",
     "semantic_hash": ""
   }
 }
