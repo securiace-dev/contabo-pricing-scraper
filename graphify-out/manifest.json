@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/contabo_pricing.php": {
-    "mtime": 1788657843.10936,
-    "ast_hash": "73dde7897261f274cf746d56678e8918",
+    "mtime": 1788667542.5477276,
+    "ast_hash": "278f09825ff5dc35d5aea86fd614a0a1",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/ajax.php": {
@@ -335,8 +335,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/AdminController.php": {
-    "mtime": 1785911972.9096885,
-    "ast_hash": "d9aadd1fad7c1b29ba36c7b5abd98f6b",
+    "mtime": 1788667536.5277193,
+    "ast_hash": "b9e5d9f42b7b7b8f8932edfd077ee59a",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/lib/ServicePriceWriter.php": {
@@ -645,13 +645,13 @@
     "semantic_hash": ""
   },
   "PRICES.md": {
-    "mtime": 1785932741.9992642,
-    "ast_hash": "af835fc5d5a579bf0266b4f75b08c4a8",
+    "mtime": 1788662087.4727747,
+    "ast_hash": "fd88519224e3f6293bbdbbadcc831b42",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785911972.8631308,
-    "ast_hash": "bee91dda0e32903738355c900af70319",
+    "mtime": 1788667605.295314,
+    "ast_hash": "c1b019ed2407e9263bf8360ce3f13a3b",
     "semantic_hash": ""
   },
   "SCHEMA_VERSION.md": {
@@ -665,8 +665,8 @@
     "semantic_hash": ""
   },
   "deploy/README.md": {
-    "mtime": 1788658021.2211509,
-    "ast_hash": "e35f016c76c6396327b1d0ddc40a3816",
+    "mtime": 1788667602.369468,
+    "ast_hash": "54d7f1cfd2d375aa4f62853c357c0578",
     "semantic_hash": ""
   },
   "whmcs-module/README.md": {
@@ -680,8 +680,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/UI_ARCHITECTURE.md": {
-    "mtime": 1785911972.9080381,
-    "ast_hash": "4a5eebb28145525cd850a5015ae492d8",
+    "mtime": 1788667585.1187208,
+    "ast_hash": "c663ed4b31e365220eed2acb227615e6",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_D_PRICING_SPEC.md": {
@@ -690,8 +690,8 @@
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md": {
-    "mtime": 1785911972.906209,
-    "ast_hash": "2ed459bc61f64c13ef7c2ad75accc17f",
+    "mtime": 1788662087.598186,
+    "ast_hash": "ac11698bcef853bffea7b8087343ac41",
     "semantic_hash": ""
   },
   "whmcs-module/modules/addons/contabo_pricing/docs/PHASE_A6_PREFLIGHT_CONFIGOPTIONS.md": {
@@ -1422,6 +1422,16 @@
   "reports/four-business-decisions/SOURCE-NOTES.md": {
     "mtime": 1785917658.7277043,
     "ast_hash": "7fc8e70dd7a7aab18687d8245a6f7b39",
+    "semantic_hash": ""
+  },
+  "deploy/docker-compose.dokploy-sidecar.yml": {
+    "mtime": 1788667588.4087873,
+    "ast_hash": "eafc20ea16d9691dab40f8e777eb8eee",
+    "semantic_hash": ""
+  },
+  "whmcs-module/modules/addons/contabo_pricing/tests/AdminPostOnlyContractTest.php": {
+    "mtime": 1788667610.4449875,
+    "ast_hash": "c85f50f517906b6a2e0ea0e60eb21fe1",
     "semantic_hash": ""
   }
 }

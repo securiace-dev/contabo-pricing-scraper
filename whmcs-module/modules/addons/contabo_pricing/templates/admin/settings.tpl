@@ -2,7 +2,7 @@
 
 <?php
 /**
- * Read-only settings view — sectioned cards.
+ * Runtime/config reference view — sectioned cards.
  *
  * @var \Closure $esc
  * @var string   $module_link
@@ -22,10 +22,19 @@ $cb_token_set   = $cb_api_token !== '';
 
 <!-- ───────────────────── Header ───────────────────── -->
 <div class="cb-card">
-  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Settings</h2>
+  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Runtime &amp; configuration</h2>
   <p class="cb-card-sub" data-cb-u="u-5074b45d61">
-    Edit these values from <strong>Setup → Addon Modules → Contabo Pricing Sync → Configure</strong>.
-    Values shown here are read-only.
+    This page is a read-only runtime reference. Change saved values in
+    <strong>Setup → Addon Modules → Contabo Pricing Sync → Configure</strong>, then return here to verify what the addon is using.
+  </p>
+</div>
+
+<div class="cb-card">
+  <h3>Operator note</h3>
+  <p class="cb-card-sub">
+    For Dokploy or other containerized WHMCS installs, the addon should usually target
+    <code class="mono">http://contabo-pricing:8080/api/v1</code> from inside the app container, not
+    <code class="mono">localhost</code> or <code class="mono">127.0.0.1</code>.
   </p>
 </div>
 

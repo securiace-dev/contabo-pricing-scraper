@@ -83,8 +83,8 @@ Full-page views and form posts dispatched by `AdminController::dispatch()` (thes
 | `config-exposure-save` | POST | CSRF | Persist the `expose_to_customer` / `hidden` flags (effective on next Apply) |
 | `mappings` / `mapping-save` | GET / POST | — / CSRF | Profile↔product mapping list + save |
 | `sync-history` / `sync-run` / `refresh-api` | GET / POST / POST | — / CSRF / CSRF | Sync log, run a manual sync, queue an upstream refresh |
-| `repricing`, `price-decisions`, `skipped-report` | GET | — | Renewal Pricing Policy Engine read-mostly views (Phase A) |
-| `approval-queue` | GET | — | Pending repricing decisions awaiting admin/force approval |
+| `repricing`, `price-decisions`, `skipped-report` | GET | — | Dormant repricing diagnostics retained for historical visibility; current cron does not create fresh decision rows here |
+| `approval-queue` | GET | — | Historical repricing approvals; current cron does not feed new queue entries |
 | `approval-approve` / `approval-reject` | POST | CSRF | Approve / reject a queued decision |
 | `currency-report` / `currency-report-csv` | GET | — | Multi-currency exposure diagnostic + CSV export |
 | `tax-settings` / `tax-settings-save`, `maintenance*` | GET / POST | — / CSRF | Tax config + schema maintenance |

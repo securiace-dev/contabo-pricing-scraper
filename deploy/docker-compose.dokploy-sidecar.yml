@@ -1,0 +1,37 @@
+services:
+  contabo-pricing:
+    image: ${CONTABO_PRICING_IMAGE:?set CONTABO_PRICING_IMAGE to an immutable release image reference}
+    container_name: contabo-pricing
+    restart: unless-stopped
+    env_file:
+      - path: ./proxy.env
+        required: false
+    environment:
+      CONTABO_BIND: 0.0.0.0:8080
+      CONTABO_DATA_DIR: /app/data/output
+      CONTABO_AUTH_TOKEN_FILE: /run/secrets/contabo_auth_token
+      CONTABO_CORS_ORIGIN: ${CONTABO_CORS_ORIGIN:-}
+      RUST_LOG: ${RUST_LOG:-info}
+      FETCH_MODE: ${FETCH_MODE:-reqwest}
+      CLOAK_SCRIPT: /app/scripts/cloak-fetch.mjs
+    volumes:
+      - type: bind
+        source: ${CONTABO_DATA_HOST_DIR:-/var/lib/contabo-pricing/output}
+        target: /app/data/output
+      - type: bind
+        source: ${CONTABO_AUTH_TOKEN_HOST_FILE:-/etc/contabo-pricing/auth_token}
+        target: /run/secrets/contabo_auth_token
+        read_only: true
+    networks:
+      - whmcs
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+networks:
+  whmcs:
+    name: ${WHMCS_DOCKER_NETWORK:?set WHMCS_DOCKER_NETWORK}
+    external: true
