@@ -64,6 +64,9 @@ curl -s http://127.0.0.1:8080/api/v1/meta | jq '.scraper_version, .snapshot_meta
   have made the GHCR package public or are logged in with a `read:packages` PAT.
 - Keep the bind at `127.0.0.1:8080` and the data dir at `/var/lib/contabo-pricing/output`
   (the WHMCS module calls the loopback API).
+- If WHMCS runs in Docker or Dokploy, do **not** leave the addon at `localhost`.
+  Set `CONTABO_PRICING_API_BASE_URL` or the saved addon `api_base_url` to a
+  network-reachable service name such as `http://contabo-pricing:8080/api/v1`.
 - `SCRAPER_PROXY` may be schemeless on ≥ the normalize fix, but **always supply the
   `http://` scheme** for compatibility with older binaries (e.g. ≤ v2.3.2).
 

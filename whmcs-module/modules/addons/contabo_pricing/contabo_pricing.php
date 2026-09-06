@@ -59,8 +59,8 @@ function contabo_pricing_config(): array
                 'FriendlyName' => 'API base URL',
                 'Type'         => 'text',
                 'Size'         => '60',
-                'Default'      => 'http://localhost:8080/api/v1',
-                'Description'  => 'URL of the contabo-pricing API server (no trailing slash).',
+                'Default'      => Settings::defaultApiBaseUrl(),
+                'Description'  => 'URL of the contabo-pricing API server (no trailing slash). Containerised WHMCS should override localhost via CONTABO_PRICING_API_BASE_URL or an explicit saved value.',
             ],
             'api_token' => [
                 'FriendlyName' => 'Bearer token',
