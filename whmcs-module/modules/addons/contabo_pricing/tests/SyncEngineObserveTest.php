@@ -90,6 +90,7 @@ final class SyncEngineObserveTest extends TestCase
 
         $this->assertSame('preview', $result['status']);
         $this->assertTrue($result['observe_only']);
+        $this->assertSame('http://localhost:8080/api/v1', $result['api_base_url']);
         $this->assertSame(1, $result['profiles_changed']);
         $this->assertSame(1, $result['products_planned']);
         $this->assertSame(1, $result['cycles_planned']);
@@ -99,6 +100,32 @@ final class SyncEngineObserveTest extends TestCase
         $this->assertSame([], Capsule::$calls);
         $this->assertSame([], Capsule::$inserts);
         $this->assertSame([], $audit->rows);
+    }
+
+    public function testPersistedSyncSummaryRecordsApiBaseUrlUsedForRun(): void
+    {
+        $profile = [
+            'id' => 1,
+            'slug' => 'vps-test',
+            'plan_slug' => 'vps-test',
+            'period_months' => 1,
+            'sync_strategy' => 'auto-apply',
+            'published_cycles_mask' => CycleSet::fromCycles(['Monthly'])->toMask(),
+        ];
+        $profiles = new ObserveProfileManager($this->settings(), [$profile]);
+        $audit = new ObserveCatalogAuditSpy();
+        $engine = $this->makeEngine($audit, $profiles);
+        $this->seedCatalog();
+
+        $result = $engine->run('manual', false);
+
+        $this->assertSame('succeeded', $result['status']);
+        $this->assertArrayHasKey('mod_contabo_sync_log', Capsule::$tables);
+        $this->assertCount(1, Capsule::$tables['mod_contabo_sync_log']);
+        $row = Capsule::$tables['mod_contabo_sync_log'][0];
+        $summary = json_decode((string) ($row['summary'] ?? ''), true);
+        $this->assertIsArray($summary);
+        $this->assertSame('http://localhost:8080/api/v1', $summary['api_base_url'] ?? null);
     }
 
     public function testExplicitZeroSetupFeePreviewsAndClearsStalePositiveFee(): void

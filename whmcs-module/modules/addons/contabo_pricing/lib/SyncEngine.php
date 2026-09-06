@@ -101,6 +101,7 @@ class SyncEngine
             'trigger'           => $trigger,
             'sync_batch_id'     => $syncBatchId,
             'started_at'        => $startedAt,
+            'api_base_url'      => (string) $this->settings->apiBaseUrl,
             'profiles_checked'  => 0,
             'profiles_changed'  => 0,
             'products_updated'  => 0,

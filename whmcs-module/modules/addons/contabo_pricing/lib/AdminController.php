@@ -2143,7 +2143,10 @@ class AdminController
         $rows = Capsule::table('mod_contabo_sync_log')
             ->orderByDesc('id')->limit(200)
             ->get()->map(static fn ($r) => (array) $r)->all();
-        $this->render('sync_history.tpl', ['logs' => $rows]);
+        $this->render('sync_history.tpl', [
+            'logs' => $rows,
+            'settings' => $this->settings,
+        ]);
     }
 
     private function syncRun(array $req): void
