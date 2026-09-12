@@ -536,6 +536,31 @@ class AdminController
     }
 
     /**
+     * Re-render the profiles page with the create-profile modal re-opened and
+     * the submitted values preserved, so operators can correct issues in place.
+     *
+     * @param array<string,mixed> $state
+     * @param list<string> $errors
+     */
+    private function renderProfileCreateForm(array $state, array $errors): void
+    {
+        $pm = new ProfileManager($this->settings);
+        $api = new ApiClient($this->settings);
+        $plans = [];
+        try { $plans = $api->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
+
+        $this->render('profiles.tpl', [
+            'profiles' => $this->annotateDrift($pm->listProfiles(false), $plans),
+            'available_plans' => $plans,
+            'flash' => '',
+            'undo_id' => 0,
+            'trash_count' => count($pm->listTrashed()),
+            'cb_profile_form_state' => $state,
+            'cb_profile_form_errors' => $errors,
+        ]);
+    }
+
+    /**
      * Trash view — soft-deleted profiles with Restore (Undo) + guarded permanent
      * Purge. Reuses profiles.tpl in trash mode.
      *
@@ -573,6 +598,7 @@ class AdminController
      */
     private function profileDelete(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
@@ -598,6 +624,7 @@ class AdminController
      */
     private function profileRestore(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
@@ -624,6 +651,7 @@ class AdminController
      */
     private function profilePurge(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
@@ -751,6 +779,7 @@ class AdminController
 
     private function profileCreate(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -772,17 +801,6 @@ class AdminController
         $periodMonths  = $this->longestPublishedMonths($publishedMask);
 
         $mode = $this->normalizeProfileMode($req['profile_mode'] ?? null);
-
-        // Fixed mode is a pre-packaged SKU: every configurator dimension must be
-        // pinned to a concrete value. Reject an incomplete fixed profile.
-        if ($mode === ProfileIdentityResolver::MODE_FIXED) {
-            $err = $this->fixedCompletenessError((string) ($req['plan_slug'] ?? ''), $optionsPayload);
-            if ($err !== null) {
-                $this->redirect('profiles', ['flash' => 'Cannot create fixed profile — ' . $err]);
-                return;
-            }
-        }
-
         $create = [
             'slug'          => (string) ($req['slug'] ?? ''),
             'name'          => trim((string) ($req['name'] ?? '')),
@@ -793,15 +811,36 @@ class AdminController
             'os'            => $os,
             'tags'          => (string) ($req['tags'] ?? ''),
             'sync_strategy' => (string) ($req['sync_strategy'] ?? $this->settings->defaultSyncStrategy),
-            // Mode + exposure gate. profile_mode feeds the identity fingerprint
-            // (fixed vs configurable hash differently — see ProfileIdentityResolver);
-            // expose_configurable_options is the master switch ConfigurableOptionsSyncer
-            // honours on Apply. Both default to the backward-compatible values.
             'profile_mode'  => $mode,
             'expose_configurable_options' => $this->normalizeExposeFlag($req['expose_configurable_options'] ?? null),
+            'advanced_open' => !empty($req['published_cycles_mask'])
+                || !empty($req['tags'])
+                || (string) ($req['sync_strategy'] ?? $this->settings->defaultSyncStrategy) !== 'notify'
+                || ((int) $this->normalizeExposeFlag($req['expose_configurable_options'] ?? null)) === 0,
         ];
         if ($optionsPayload !== null) {
             $create['options'] = $optionsPayload;
+        }
+
+        $errors = [];
+        if ($create['plan_slug'] === '') {
+            $errors[] = 'Choose a Contabo plan first.';
+        }
+        if ($create['name'] === '') {
+            $errors[] = 'Enter a display name for operators.';
+        }
+
+        // Fixed mode is a pre-packaged SKU: every configurator dimension must be
+        // pinned to a concrete value. Reject an incomplete fixed profile.
+        if ($mode === ProfileIdentityResolver::MODE_FIXED) {
+            $err = $this->fixedCompletenessError((string) ($req['plan_slug'] ?? ''), $optionsPayload);
+            if ($err !== null) {
+                $errors[] = 'Fixed profile: ' . ucfirst($err);
+            }
+        }
+        if ($errors !== []) {
+            $this->renderProfileCreateForm($create, $errors);
+            return;
         }
 
         try {
@@ -843,6 +882,7 @@ class AdminController
 
     private function profileSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
         $pm = new ProfileManager($this->settings);
@@ -1308,6 +1348,7 @@ class AdminController
      */
     private function configApply(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -1458,6 +1499,7 @@ class AdminController
      */
     private function configExposureSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -1614,6 +1656,7 @@ class AdminController
      */
     private function capabilityEditorSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
         $id      = (int) ($req['id'] ?? 0);
@@ -1690,6 +1733,7 @@ class AdminController
      */
     private function compatibilityEditorSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
         $id      = (int) ($req['id'] ?? 0);
@@ -1830,6 +1874,7 @@ class AdminController
      */
     private function mappingSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -2133,7 +2178,10 @@ class AdminController
         $rows = Capsule::table('mod_contabo_sync_log')
             ->orderByDesc('id')->limit(200)
             ->get()->map(static fn ($r) => (array) $r)->all();
-        $this->render('sync_history.tpl', ['logs' => $rows]);
+        $this->render('sync_history.tpl', [
+            'logs' => $rows,
+            'settings' => $this->settings,
+        ]);
     }
 
     private function syncRun(array $req): void
@@ -2148,6 +2196,7 @@ class AdminController
 
     private function refreshApi(): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $api = new ApiClient($this->settings);
         try {
@@ -2640,6 +2689,7 @@ class AdminController
 
     private function approvalApprove(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -2723,6 +2773,7 @@ class AdminController
 
     private function approvalReject(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -2896,6 +2947,7 @@ class AdminController
 
     private function maintenanceMigrate(): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $r = SchemaHealth::assertOrMigrate();
         $flash = !empty($r['ok'])
@@ -2906,6 +2958,7 @@ class AdminController
 
     private function maintenancePurge(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
 
         // DRY-RUN (preview only): report the exact blast radius — what the purge
@@ -3390,6 +3443,7 @@ class AdminController
      */
     private function taxSettingsSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
 
         $mode = (string) ($req['tax_registration_mode'] ?? '');

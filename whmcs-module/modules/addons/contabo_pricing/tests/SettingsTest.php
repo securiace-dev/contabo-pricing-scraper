@@ -12,6 +12,7 @@ final class SettingsTest extends TestCase
     protected function setUp(): void
     {
         Capsule::reset();
+        putenv('CONTABO_PRICING_API_BASE_URL');
     }
 
     public function testFromVarsAppliesDefaultsWhenNoVarsGiven(): void
@@ -26,6 +27,15 @@ final class SettingsTest extends TestCase
         $this->assertSame(3.5, $s->fxMarkupPct);
         $this->assertSame(365, $s->logRetentionDays);
         $this->assertSame('addonmodules.php?module=contabo_pricing', $s->moduleLink);
+    }
+
+    public function testDefaultApiBaseUrlUsesEnvironmentOverrideWhenPresent(): void
+    {
+        putenv('CONTABO_PRICING_API_BASE_URL=http://contabo-pricing:8080/api/v1/');
+
+        $s = Settings::fromVars([]);
+
+        $this->assertSame('http://contabo-pricing:8080/api/v1', $s->apiBaseUrl);
     }
 
     public function testFromVarsTrimsTrailingSlashFromUrl(): void

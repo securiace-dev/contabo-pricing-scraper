@@ -60,7 +60,7 @@ final class Settings
         $apiToken = self::resolveToken($rawToken);
 
         return new self(
-            self::trimUrl((string) ($vars['api_base_url'] ?? 'http://localhost:8080/api/v1')),
+            self::trimUrl((string) ($vars['api_base_url'] ?? self::defaultApiBaseUrl())),
             $apiToken,
             (string) ($vars['default_sync_strategy'] ?? 'notify'),
             strtoupper((string) ($vars['currency_iso'] ?? 'INR')),
@@ -116,5 +116,15 @@ final class Settings
     private static function trimUrl(string $url): string
     {
         return rtrim($url, '/');
+    }
+
+    public static function defaultApiBaseUrl(): string
+    {
+        $env = getenv('CONTABO_PRICING_API_BASE_URL');
+        if (is_string($env) && trim($env) !== '') {
+            return trim($env);
+        }
+
+        return 'http://localhost:8080/api/v1';
     }
 }

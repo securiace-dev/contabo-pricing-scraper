@@ -388,6 +388,76 @@
     return modal.querySelector('[data-cb-cfg-reset]');
   }
 
+  function getSelectedPlanLabel(modal) {
+    var planEl = modal.querySelector('[data-cb-cfg-plan]');
+    if (!planEl || !planEl.options || planEl.selectedIndex < 0) return '';
+    var opt = planEl.options[planEl.selectedIndex];
+    return opt ? String(opt.text || '').trim() : '';
+  }
+
+  function setProfileFormErrors(modal, errors) {
+    var box = modal.querySelector('[data-cb-form-errors]');
+    if (!box) return;
+    if (!Array.isArray(errors) || errors.length === 0) {
+      box.hidden = true;
+      box.innerHTML = '';
+      return;
+    }
+    box.hidden = false;
+    box.innerHTML = '<strong>Review this profile before saving.</strong><ul>'
+      + errors.map(function (msg) {
+        return '<li>' + escapeHtml(String(msg)) + '</li>';
+      }).join('')
+      + '</ul>';
+  }
+
+  function updateProfileSummary(modal) {
+    var planLabel = getSelectedPlanLabel(modal);
+    var modeSel = modal.querySelector('[data-cb-profile-mode]');
+    var syncSel = modal.querySelector('select[name="sync_strategy"]');
+    var statePill = modal.querySelector('[data-cb-configurator-state]');
+    var summaryStatus = modal.querySelector('[data-cb-profile-summary-status]');
+    var summaryPlan = modal.querySelector('[data-cb-summary-plan]');
+    var summaryMode = modal.querySelector('[data-cb-summary-mode]');
+    var summaryCycles = modal.querySelector('[data-cb-summary-cycles]');
+    var summarySync = modal.querySelector('[data-cb-summary-sync]');
+    var checked = modal.querySelectorAll('[data-cb-publish-cycle]:checked').length;
+    var total = modal.querySelectorAll('[data-cb-publish-cycle]').length;
+    var mode = modeSel ? modeSel.value : 'fixed_admin_profile';
+    var isFixed = (mode !== 'customer_configurable_product');
+
+    if (summaryPlan) summaryPlan.textContent = planLabel || 'Not selected';
+    if (summaryMode) {
+      summaryMode.textContent = isFixed
+        ? 'Fixed admin profile'
+        : 'Customer-configurable product';
+    }
+    if (summaryCycles) {
+      summaryCycles.textContent = checked === total
+        ? 'All six source cycles'
+        : (checked + ' of ' + total + ' source cycles');
+    }
+    if (summarySync) {
+      var syncValue = syncSel ? syncSel.value : 'notify';
+      summarySync.textContent = syncValue === 'auto-apply'
+        ? 'Auto-apply drift'
+        : (syncValue === 'manual' ? 'Manual review only' : 'Notify on drift');
+    }
+    if (statePill) {
+      statePill.textContent = planLabel ? 'Plan loaded' : 'Choose a plan';
+      statePill.className = 'cb-pill ' + (planLabel ? 'good' : 'grey');
+    }
+    if (summaryStatus) {
+      if (!planLabel) {
+        summaryStatus.textContent = 'Choose a plan to begin.';
+      } else if (isFixed) {
+        summaryStatus.textContent = 'Fixed mode: every required option below must be pinned before save.';
+      } else {
+        summaryStatus.textContent = 'Configurable mode: save the source profile, then curate customer-visible options in Exposure.';
+      }
+    }
+  }
+
   function renderConfigurator(modal, cfg) {
     var root = getCfgRoot(modal);
     if (!root) return;
@@ -491,6 +561,7 @@
     if (jsonEl) jsonEl.value = JSON.stringify(serialised);
     // OS + Region are derived server-side from the options JSON above
     // (single source of truth) — no hidden region/os inputs to mirror.
+    updateProfileSummary(modal);
   }
 
   function loadConfiguratorForModal(modal, opts) {
@@ -557,6 +628,7 @@
       if (cb.checked) mask |= parseInt(cb.getAttribute('data-cb-bit'), 10) || 0;
     });
     hidden.value = String(mask === 0 ? 63 : mask);
+    updateProfileSummary(modal);
   }
 
   // Source (cost) price per cycle, EUR/mo, from the configurator's periods map.
@@ -583,6 +655,7 @@
       if (best === null) best = avail[0];
       span.textContent = '€' + scraped[best].toFixed(2) + '/mo';
     });
+    updateProfileSummary(modal);
   }
 
   // Reshape the form to the selected mode. Fixed = pre-packaged SKU: the admin
@@ -594,16 +667,21 @@
     var isFixed = (mode !== 'customer_configurable_product');
     var exposeField = modal.querySelector('[data-cb-expose-field]');
     if (exposeField) exposeField.hidden = isFixed;
+    var fixedNote = modal.querySelector('[data-cb-fixed-note]');
+    if (fixedNote) fixedNote.hidden = !isFixed;
     var hint = modal.querySelector('[data-cb-mode-hint]');
     if (hint) {
       hint.textContent = isFixed
         ? 'Pre-packaged plan: pick a value for every option below — that locked set becomes the SKU. Customers cannot change it.'
         : 'Configurable product: customers choose the options you expose. Curate exposure via the Exposure editor after saving.';
     }
+    updateProfileSummary(modal);
   }
 
-  function primeProfileCreateMode(modal) {
+  function primeProfileCreateMode(modal, prefill) {
+    prefill = prefill || {};
     var titleEl = modal.querySelector('[data-cb-modal-title]');
+    var subtitleEl = modal.querySelector('[data-cb-modal-subtitle]');
     var actionEl = modal.querySelector('[data-cb-form-action]');
     var idEl = modal.querySelector('[data-cb-form-id]');
     var submitEl = modal.querySelector('[data-cb-submit-label]');
@@ -612,33 +690,50 @@
     var stratEl = modal.querySelector('select[name="sync_strategy"]');
     var modeEl = modal.querySelector('[data-cb-profile-mode]');
     var exposeEl = modal.querySelector('[data-cb-expose-config]');
+    var planEl = modal.querySelector('[data-cb-cfg-plan]');
+    var advancedEl = modal.querySelector('[data-cb-advanced-fields]');
     if (titleEl) titleEl.textContent = 'Create profile';
+    if (subtitleEl) subtitleEl.textContent = 'Start with the source plan and locked configuration. Customer-facing pricing and checkout options are decided later on the Mappings page.';
     if (submitEl) submitEl.textContent = 'Create profile';
     if (actionEl) actionEl.value = 'profile-create';
     if (idEl) { idEl.disabled = true; idEl.value = ''; }
-    if (nameEl) nameEl.value = '';
-    if (tagsEl) tagsEl.value = '';
-    if (stratEl) stratEl.value = 'notify';
-    if (modeEl) modeEl.value = 'fixed_admin_profile';
-    if (exposeEl) exposeEl.checked = true;
+    if (nameEl) nameEl.value = prefill.name || '';
+    if (tagsEl) tagsEl.value = prefill.tags || '';
+    if (stratEl) stratEl.value = prefill.sync_strategy || 'notify';
+    if (modeEl) modeEl.value = prefill.mode || 'fixed_admin_profile';
+    if (exposeEl) exposeEl.checked = String(prefill.expose_configurable_options == null ? 1 : prefill.expose_configurable_options) !== '0';
     // Default: source all six cycles (the mapping narrows to customer-facing).
-    modal.querySelectorAll('[data-cb-publish-cycle]').forEach(function (cb) { cb.checked = true; });
+    var savedMask = prefill.published_cycles_mask == null
+      ? 63 : (parseInt(prefill.published_cycles_mask, 10) || 63);
+    modal.querySelectorAll('[data-cb-publish-cycle]').forEach(function (cb) {
+      var bit = parseInt(cb.getAttribute('data-cb-bit'), 10) || 0;
+      cb.checked = (savedMask & bit) !== 0;
+    });
     syncPublishedMask(modal);
     applyModeUi(modal);
-    var planEl = modal.querySelector('[data-cb-cfg-plan]');
-    if (planEl) planEl.value = '';
-    loadConfiguratorForModal(modal);
+    if (planEl) planEl.value = prefill.plan_slug || '';
+    if (advancedEl) advancedEl.open = !!prefill.advanced_open;
+    setProfileFormErrors(modal, Array.isArray(prefill.errors) ? prefill.errors : []);
+    updateProfileSummary(modal);
+    if (planEl && planEl.value) {
+      loadConfiguratorForModal(modal, { prefill: prefill.options || {} });
+    } else {
+      loadConfiguratorForModal(modal);
+    }
   }
 
   function primeProfileEditMode(modal, profileId) {
     var titleEl = modal.querySelector('[data-cb-modal-title]');
+    var subtitleEl = modal.querySelector('[data-cb-modal-subtitle]');
     var actionEl = modal.querySelector('[data-cb-form-action]');
     var idEl = modal.querySelector('[data-cb-form-id]');
     var submitEl = modal.querySelector('[data-cb-submit-label]');
     if (titleEl) titleEl.textContent = 'Edit profile #' + profileId;
+    if (subtitleEl) subtitleEl.textContent = 'Update the source profile definition. Existing customer pricing still follows the mapping and repricing rules.';
     if (submitEl) submitEl.textContent = 'Save profile';
     if (actionEl) actionEl.value = 'profile-save';
     if (idEl) { idEl.disabled = false; idEl.value = String(profileId); }
+    setProfileFormErrors(modal, []);
 
     ajax('GET', 'ajax-profile-edit-form', { id: profileId }).then(function (j) {
       if (j.error) { cbToast('Edit load failed: ' + j.error, 'bad'); return; }
@@ -672,6 +767,42 @@
     });
   }
 
+  function validateProfileForm(modal) {
+    var errors = [];
+    var nameEl = modal.querySelector('input[name="name"]');
+    var planEl = modal.querySelector('[data-cb-cfg-plan]');
+    var modeSel = modal.querySelector('[data-cb-profile-mode]');
+    var mode = modeSel ? modeSel.value : 'fixed_admin_profile';
+    var isFixed = (mode !== 'customer_configurable_product');
+    var state = cbCfgState.get(modal);
+
+    if (!nameEl || !String(nameEl.value || '').trim()) {
+      errors.push('Enter a display name for operators.');
+    }
+    if (!planEl || !String(planEl.value || '').trim()) {
+      errors.push('Choose a Contabo plan first.');
+    }
+    if (isFixed && state && state.cfg && Array.isArray(state.cfg.controls)) {
+      var missing = [];
+      state.cfg.controls.forEach(function (c, ci) {
+        if (c.optional) return;
+        var selectEl = modal.querySelector('select[data-cb-cfg-control-idx="' + ci + '"]');
+        if (!selectEl) {
+          missing.push(c.label);
+          return;
+        }
+        var opt = selectEl.options[selectEl.selectedIndex];
+        var label = opt ? String(opt.getAttribute('data-cb-opt-label') || '') : '';
+        if (!label || label === 'None') missing.push(c.label);
+      });
+      if (missing.length) {
+        errors.push('Fixed profile: select a value for every required option: ' + missing.join(', ') + '.');
+      }
+    }
+    setProfileFormErrors(modal, errors);
+    return errors;
+  }
+
   function wireConfiguratorForms() {
     $$('[data-cb-configurator-form]').forEach(function (form) {
       var modal = form.closest('.cb-modal');
@@ -682,6 +813,10 @@
 
       var debouncedLoad = debounce(function () { loadConfiguratorForModal(modal); }, 200);
       if (planEl) planEl.addEventListener('change', debouncedLoad);
+      if (planEl) planEl.addEventListener('change', function () {
+        setProfileFormErrors(modal, []);
+        updateProfileSummary(modal);
+      });
       if (periodEl) periodEl.addEventListener('change', function () {
         // Period change doesn't require a re-fetch — anchors are in the cfg
         // we already loaded. Just recompute.
@@ -695,7 +830,12 @@
       });
       // Mode toggle reshapes the form (fixed = pre-packaged, no exposure).
       var modeSel = modal.querySelector('[data-cb-profile-mode]');
-      if (modeSel) modeSel.addEventListener('change', function () { applyModeUi(modal); });
+      if (modeSel) modeSel.addEventListener('change', function () {
+        setProfileFormErrors(modal, []);
+        applyModeUi(modal);
+      });
+      var syncSel = modal.querySelector('select[name="sync_strategy"]');
+      if (syncSel) syncSel.addEventListener('change', function () { updateProfileSummary(modal); });
       if (resetBtn) {
         resetBtn.addEventListener('click', function (e) {
           e.preventDefault();
@@ -710,10 +850,26 @@
       }
       // On submit, force a final recalc so the JSON payload reflects the
       // current selections even if a change event was missed.
-      form.addEventListener('submit', function () {
+      form.addEventListener('submit', function (event) {
         if (cbCfgState.get(modal)) recalcCfg(modal);
+        if (validateProfileForm(modal).length) {
+          event.preventDefault();
+        }
       });
     });
+  }
+
+  function wireProfileFormState() {
+    var script = document.querySelector('[data-cb-profile-form-state]');
+    if (!script) return;
+    var modal = document.getElementById('cb-modal-profile-create');
+    if (!modal) return;
+    try {
+      primeProfileCreateMode(modal, JSON.parse(script.textContent || '{}'));
+      openModal('profile-create');
+    } catch (_e) {
+      primeProfileCreateMode(modal);
+    }
   }
 
   function escapeHtml(s) {
@@ -1174,6 +1330,7 @@
     wireModals();
     wireQuotePreview();
     wireConfiguratorForms();
+    wireProfileFormState();
     wireFxPreview();
     wireTestApi();
     wireSparklines();
