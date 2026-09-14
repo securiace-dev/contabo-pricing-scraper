@@ -1,14 +1,14 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.2",
-  "generated_at": "2026-09-14T12:28:38.161Z",
+  "generated_at": "2026-09-14T21:11:51.046Z",
   "plan_count": 16,
   "plans": {
     "https://contabo.com/en/vps/cloud-vps-10/": {
       "slug": "cloud-vps-10",
       "family": "Cloud VPS",
       "title": "Cloud VPS 10",
-      "fetched_at": "2026-09-14T12:28:32.660Z",
+      "fetched_at": "2026-09-14T21:11:44.348Z",
       "base_monthly_price": 5.5,
       "contract_periods": [
         {
@@ -643,7 +643,7 @@
       "slug": "cloud-vps-20",
       "family": "Cloud VPS",
       "title": "Cloud VPS 20",
-      "fetched_at": "2026-09-14T12:28:32.953Z",
+      "fetched_at": "2026-09-14T21:11:45.163Z",
       "base_monthly_price": 7.5,
       "contract_periods": [
         {
@@ -1278,7 +1278,7 @@
       "slug": "cloud-vps-30",
       "family": "Cloud VPS",
       "title": "Cloud VPS 30",
-      "fetched_at": "2026-09-14T12:28:32.265Z",
+      "fetched_at": "2026-09-14T21:11:44.732Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -1922,7 +1922,7 @@
       "slug": "cloud-vps-40",
       "family": "Cloud VPS",
       "title": "Cloud VPS 40",
-      "fetched_at": "2026-09-14T12:28:36.707Z",
+      "fetched_at": "2026-09-14T21:11:44.782Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -2566,7 +2566,7 @@
       "slug": "cloud-vps-50",
       "family": "Cloud VPS",
       "title": "Cloud VPS 50",
-      "fetched_at": "2026-09-14T12:28:34.055Z",
+      "fetched_at": "2026-09-14T21:11:45.373Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -3210,7 +3210,7 @@
       "slug": "cloud-vps-60",
       "family": "Cloud VPS",
       "title": "Cloud VPS 60",
-      "fetched_at": "2026-09-14T12:28:34.760Z",
+      "fetched_at": "2026-09-14T21:11:46.051Z",
       "base_monthly_price": 49,
       "contract_periods": [
         {
@@ -3854,7 +3854,7 @@
       "slug": "storage-vps-10",
       "family": "Storage VPS",
       "title": "Storage VPS 10",
-      "fetched_at": "2026-09-14T12:28:31.618Z",
+      "fetched_at": "2026-09-14T21:11:45.605Z",
       "base_monthly_price": 5.5,
       "contract_periods": [
         {
@@ -4472,7 +4472,7 @@
       "slug": "storage-vps-20",
       "family": "Storage VPS",
       "title": "Storage VPS 20",
-      "fetched_at": "2026-09-14T12:28:30.781Z",
+      "fetched_at": "2026-09-14T21:11:48.062Z",
       "base_monthly_price": 7.5,
       "contract_periods": [
         {
@@ -5099,7 +5099,7 @@
       "slug": "storage-vps-30",
       "family": "Storage VPS",
       "title": "Storage VPS 30",
-      "fetched_at": "2026-09-14T12:28:30.793Z",
+      "fetched_at": "2026-09-14T21:11:47.844Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -5744,7 +5744,7 @@
       "slug": "storage-vps-40",
       "family": "Storage VPS",
       "title": "Storage VPS 40",
-      "fetched_at": "2026-09-14T12:28:38.147Z",
+      "fetched_at": "2026-09-14T21:11:47.875Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -6389,7 +6389,7 @@
       "slug": "storage-vps-50",
       "family": "Storage VPS",
       "title": "Storage VPS 50",
-      "fetched_at": "2026-09-14T12:28:37.254Z",
+      "fetched_at": "2026-09-14T21:11:45.567Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -7034,7 +7034,7 @@
       "slug": "vds-s",
       "family": "Cloud VDS",
       "title": "Cloud VDS S",
-      "fetched_at": "2026-09-14T12:28:32.721Z",
+      "fetched_at": "2026-09-14T21:11:48.726Z",
       "base_monthly_price": 39,
       "contract_periods": [
         {
@@ -7697,7 +7697,7 @@
       "slug": "vds-m",
       "family": "Cloud VDS",
       "title": "Cloud VDS M",
-      "fetched_at": "2026-09-14T12:28:35.864Z",
+      "fetched_at": "2026-09-14T21:11:49.584Z",
       "base_monthly_price": 49,
       "contract_periods": [
         {
@@ -8378,7 +8378,7 @@
       "slug": "vds-l",
       "family": "Cloud VDS",
       "title": "Cloud VDS L",
-      "fetched_at": "2026-09-14T12:28:34.597Z",
+      "fetched_at": "2026-09-14T21:11:51.030Z",
       "base_monthly_price": 69,
       "contract_periods": [
         {
@@ -9042,7 +9042,7 @@
       "slug": "vds-xl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XL",
-      "fetched_at": "2026-09-14T12:28:36.513Z",
+      "fetched_at": "2026-09-14T21:11:49.269Z",
       "base_monthly_price": 94,
       "contract_periods": [
         {
@@ -9711,7 +9711,7 @@
       "slug": "vds-xxl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XXL",
-      "fetched_at": "2026-09-14T12:28:36.429Z",
+      "fetched_at": "2026-09-14T21:11:50.701Z",
       "base_monthly_price": 139,
       "contract_periods": [
         {
