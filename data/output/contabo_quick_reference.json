@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.2",
-  "generated_at": "2026-09-15T20:37:47.165Z",
+  "generated_at": "2026-09-16T11:18:18.460Z",
   "plan_count": 16,
   "plans": [
     {
@@ -38,7 +38,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-10/",
-      "fetched_at": "2026-09-15T20:37:35.019Z",
+      "fetched_at": "2026-09-16T11:18:12.009Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 4.4,
@@ -78,7 +78,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-20/",
-      "fetched_at": "2026-09-15T20:37:36.263Z",
+      "fetched_at": "2026-09-16T11:18:10.967Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 6,
@@ -118,7 +118,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-30/",
-      "fetched_at": "2026-09-15T20:37:36.312Z",
+      "fetched_at": "2026-09-16T11:18:10.515Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 11.2,
@@ -158,7 +158,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-40/",
-      "fetched_at": "2026-09-15T20:37:36.616Z",
+      "fetched_at": "2026-09-16T11:18:12.678Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 20,
@@ -198,7 +198,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-50/",
-      "fetched_at": "2026-09-15T20:37:36.818Z",
+      "fetched_at": "2026-09-16T11:18:13.227Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 29.6,
@@ -238,7 +238,7 @@
         }
       },
       "url": "https://contabo.com/en/vps/cloud-vps-60/",
-      "fetched_at": "2026-09-15T20:37:35.801Z",
+      "fetched_at": "2026-09-16T11:18:12.550Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 20,
       "best_price_eur": 39.2,
@@ -284,7 +284,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-10/",
-      "fetched_at": "2026-09-15T20:37:35.298Z",
+      "fetched_at": "2026-09-16T11:18:15.157Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 4.68,
@@ -330,7 +330,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-20/",
-      "fetched_at": "2026-09-15T20:37:36.506Z",
+      "fetched_at": "2026-09-16T11:18:17.793Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 6.38,
@@ -376,7 +376,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-30/",
-      "fetched_at": "2026-09-15T20:37:47.151Z",
+      "fetched_at": "2026-09-16T11:18:12.520Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 11.9,
@@ -422,7 +422,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-40/",
-      "fetched_at": "2026-09-15T20:37:40.216Z",
+      "fetched_at": "2026-09-16T11:18:15.542Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 21.25,
@@ -468,7 +468,7 @@
         }
       },
       "url": "https://contabo.com/en/storage-vps/storage-vps-50/",
-      "fetched_at": "2026-09-15T20:37:38.185Z",
+      "fetched_at": "2026-09-16T11:18:15.470Z",
       "savings_6m_pct": 10,
       "savings_12m_pct": 15,
       "best_price_eur": 31.45,
@@ -514,7 +514,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-s/",
-      "fetched_at": "2026-09-15T20:37:40.158Z",
+      "fetched_at": "2026-09-16T11:18:09.993Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 41.65,
@@ -560,7 +560,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-m/",
-      "fetched_at": "2026-09-15T20:37:39.592Z",
+      "fetched_at": "2026-09-16T11:18:12.361Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 52.7,
@@ -606,7 +606,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-l/",
-      "fetched_at": "2026-09-15T20:37:39.858Z",
+      "fetched_at": "2026-09-16T11:18:18.445Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 73.95,
@@ -652,7 +652,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-xl/",
-      "fetched_at": "2026-09-15T20:37:41.210Z",
+      "fetched_at": "2026-09-16T11:18:18.058Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 100.3,
@@ -698,7 +698,7 @@
         }
       },
       "url": "https://contabo.com/en/vds/vds-xxl/",
-      "fetched_at": "2026-09-15T20:37:47.034Z",
+      "fetched_at": "2026-09-16T11:18:15.962Z",
       "savings_6m_pct": 0,
       "savings_12m_pct": 15,
       "best_price_eur": 147.9,
