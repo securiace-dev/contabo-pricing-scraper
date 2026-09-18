@@ -2,7 +2,7 @@
   "dimension_schema": {
     "description": "Selection rules for Contabo plan configurator dimensions. selection_type \"single\" = pick exactly one option; \"grouped_single\" = dimension contains independent categories, each single-select.",
     "schema_version": "1.1",
-    "generated_at": "2026-09-17T20:43:30.468Z",
+    "generated_at": "2026-09-18T11:01:04.457Z",
     "dimensions": {
       "Data Protection": {
         "required": false,
@@ -45,7 +45,7 @@
     }
   },
   "meta": {
-    "generated_at": "2026-09-17T20:43:30.469Z",
+    "generated_at": "2026-09-18T11:01:04.457Z",
     "plan_count": 16,
     "row_count": 74,
     "schema_version": "1.1",
@@ -4240,8 +4240,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 9,
-          "paid_count": 8
+          "option_count": 8,
+          "paid_count": 7
         },
         "Storage": {
           "default_label": "720 GB NVMe",
@@ -4300,8 +4300,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 9,
-          "paid_count": 8
+          "option_count": 8,
+          "paid_count": 7
         },
         "Storage": {
           "default_label": "720 GB NVMe",
@@ -4360,8 +4360,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 9,
-          "paid_count": 8
+          "option_count": 8,
+          "paid_count": 7
         },
         "Storage": {
           "default_label": "720 GB NVMe",
@@ -4420,8 +4420,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 9,
-          "paid_count": 8
+          "option_count": 8,
+          "paid_count": 7
         },
         "Storage": {
           "default_label": "720 GB NVMe",
@@ -4480,8 +4480,8 @@
           "default_label": "European Union",
           "max_delta": 79,
           "min_delta": 0,
-          "option_count": 9,
-          "paid_count": 8
+          "option_count": 8,
+          "paid_count": 7
         },
         "Storage": {
           "default_label": "720 GB NVMe",

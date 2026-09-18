@@ -1,6 +1,6 @@
 # Contabo Pricing
 
-> **Last updated:** 2026-09-17T20:43:30.365Z  
+> **Last updated:** 2026-09-18T11:01:04.348Z  
 > Auto-refreshed twice daily · data from [contabo.com](https://contabo.com)  
 > 📊 **[Interactive view → report.html](report.html)** — sort, filter & compare plans
 
@@ -373,9 +373,9 @@
 **Control Panels** — Webmin, Webmin + LAMP  ·  Paid: Plesk Admin Edition `+€12.00` · Plesk Pro Edition `+€19.00` · cPanel/WHM (5 accounts) `+€21.75` · Plesk Host Edition `+€36.50`
 **Blockchain** — Bitcoin Node, Ethereum Staking Node, Horizen Node
 
-| EU *(def.)* | UK | US-Central | US-West | US-East | India | Singapore | Japan | Australia |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| free | +€32.00 | +€32.00 | +€39.00 | +€47.00 | +€73.00 | +€78.00 | +€79.00 | +€65.00 |
+| EU *(def.)* | UK | US-Central | US-West | US-East | India | Japan | Australia |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| free | +€32.00 | +€32.00 | +€39.00 | +€47.00 | +€73.00 | +€79.00 | +€65.00 |
 
 **Networking** — Bandwidth: Unlimited Traffic *(default)* / 10 TB Out + Unlimited In / 32 TB Out + Unlimited In · 80 TB Out + Unlimited In `+€86.29` · 160 TB Out + Unlimited In `+€172.49` · 243 TB Out + Unlimited In `+€258.79` · Unlimited and Unmetered Traffic `+€344.99` · Extra IPv4: Additional IP Address `+€3.50` · Private Network: Private Networking Enabled `+€5.79`
 **Storage** — 720 GB NVMe *(included)* · Upgrades: 1 TB SSD `+€24.99` · 2 TB SSD `+€39.09` · 4 TB SSD `+€103.49`

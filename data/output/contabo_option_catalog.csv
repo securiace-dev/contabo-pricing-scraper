@@ -942,7 +942,6 @@ vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (East),47,0
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,America,United States (West),39,0,America,United States (West),US,West,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,India,73,0,Asia,India,IN,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Japan,79,0,Asia,Japan,JP,,,EUR
-vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Asia,Singapore,78,0,Asia,Singapore,SG,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Australia,Australia,65,0,Australia,Australia,AU,,,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
 vds-xxl,vds-xxl,Cloud VDS,Cloud VDS XXL,Region,Europe,United Kingdom,32,0,Europe,United Kingdom,UK,,,EUR
