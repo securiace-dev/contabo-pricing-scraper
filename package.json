@@ -11,7 +11,9 @@
   },
   "scripts": {
     "scrape": "node scripts/contabo_scraper.js",
-    "cloak-fetch": "node scripts/cloak-fetch.mjs"
+    "cloak-fetch": "node scripts/cloak-fetch.mjs",
+    "report": "node .github/scripts/generate_html.js",
+    "test:node": "node --test tests/*.test.js"
   },
   "keywords": [
     "contabo",

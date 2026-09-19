@@ -1,0 +1,179 @@
+{
+  "schema_version": 2,
+  "catalog_id": "founder-managed-track",
+  "version": "2026-08-05.1",
+  "status": "draft",
+  "effective_from": "2026-08-05",
+  "currency": "INR",
+  "billing_term_months": 12,
+  "output_tax_eligible": true,
+  "nominal_output_tax_rate": 0.18,
+  "output_tax_activation": {
+    "default_enabled": false,
+    "requires_registration_verified": true,
+    "authority": "whmcs_commercial_settings_snapshot",
+    "source_conflict_status": "release_blocking_owner_confirmation_required"
+  },
+  "eligible_families": [
+    "Core VPS",
+    "Performance VPS",
+    "Max Performance VPS",
+    "Cloud VPS",
+    "Cloud VDS",
+    "Storage VPS",
+    "Dedicated Server"
+  ],
+  "scope_unit": "server",
+  "purchase_path": "review",
+  "source_label": "Founder Managed Track pricing brief and managed-services runbook",
+  "commercial_terms": {
+    "version": "2026-08-05.1",
+    "founder_overage": {
+      "rate_minor_per_hour": 250000,
+      "currency": "INR",
+      "tax_basis": "exclusive",
+      "approval_required_before_work": true,
+      "estimate_required_before_work": true
+    },
+    "monthly_entitlement": {
+      "expires_at_month_end": true,
+      "automatic_rollover": false,
+      "discretionary_credit": {
+        "admin_only": true,
+        "requires_reason": true,
+        "requires_issued_at": true,
+        "requires_expires_at": true,
+        "non_contractual": true
+      }
+    },
+    "emergency_stabilization": {
+      "definition": [
+        "Active outage",
+        "Active or credible compromise or abuse",
+        "Imminent material data loss",
+        "Failed recovery",
+        "Critical administrative lockout"
+      ],
+      "excludes": [
+        "Routine tuning or maintenance",
+        "Migration work",
+        "Feature or application work"
+      ],
+      "minimum_stabilization_only": true,
+      "approval_guardrail_minutes": 60,
+      "guardrail_status": "operational_recommendation_pending_legal_signoff"
+    }
+  },
+  "internal_provenance": {
+    "source_sum": 9,
+    "meaning": "pricing_numerology",
+    "visibility": "internal_only",
+    "affects_billing": false,
+    "affects_quantity": false,
+    "affects_tax": false,
+    "affects_term": false
+  },
+  "review_flags": [
+    "Separate GST is disabled by default. Enable it only after owner confirmation, verified registration evidence, and matching WHMCS tax configuration.",
+    "Founder overage is INR 2,500 per hour plus GST and requires an estimate and approval before non-emergency work starts.",
+    "Monthly Founder hours expire; any admin carry-forward credit is dated, expiring, discretionary, and explicitly non-contractual.",
+    "The one-hour emergency guardrail is an operational recommendation pending legal sign-off, not a contractual entitlement.",
+    "SLA and third-party inclusions must not be presented as guarantees until operational evidence and scope are approved.",
+    "The internal Sum 9 numerology field is provenance only and is hidden from client output by default."
+  ],
+  "common_exclusions": [
+    "Application feature development or content production",
+    "Emergency work beyond minimum stabilization without approval",
+    "Third-party license, usage, provider, and Cloudflare charges unless explicitly marked included",
+    "Independent disaster-recovery infrastructure or a second provider environment"
+  ],
+  "plans": [
+    {
+      "id": "solo-managed",
+      "name": "Solo Managed",
+      "annual_price_minor": 1440000,
+      "founder_time": {
+        "minutes_per_month": 60,
+        "label": "1 hour/month of Founder work",
+        "scope": "server",
+        "expiry_policy": "expires_monthly",
+        "automatic_rollover": false,
+        "overage_policy": "catalog_commercial_terms",
+        "proration_policy": "manual_review"
+      },
+      "includes": [
+        "1 hour/month of Founder work",
+        "Monthly performance report",
+        "Priority email support",
+        "99.95% SLA target (approval required before publication)"
+      ],
+      "excludes": [
+        "Application feature development",
+        "Emergency work beyond minimum stabilization without approval",
+        "Migration work outside an approved change scope"
+      ],
+      "support_channels": ["Priority email"],
+      "sla": {
+        "label": "99.95% SLA",
+        "status": "approval_required",
+        "requires_evidence": true
+      }
+    },
+    {
+      "id": "growth-managed",
+      "name": "Growth Managed",
+      "annual_price_minor": 2430000,
+      "founder_time": {
+        "minutes_per_month": 180,
+        "label": "3 hours/month of Founder work",
+        "scope": "server",
+        "expiry_policy": "expires_monthly",
+        "automatic_rollover": false,
+        "overage_policy": "catalog_commercial_terms",
+        "proration_policy": "manual_review"
+      },
+      "includes": [
+        "3 hours/month of Founder work",
+        "Monthly site-speed audit",
+        "Monthly security audit",
+        "Cloudflare Pro (scope requires approval)",
+        "Priority WhatsApp support"
+      ],
+      "excludes": [
+        "Application feature development",
+        "Emergency work beyond minimum stabilization without approval",
+        "Cloudflare usage or add-on charges outside the approved scope"
+      ],
+      "support_channels": ["Priority WhatsApp"],
+      "sla": null
+    },
+    {
+      "id": "business-managed",
+      "name": "Business Managed",
+      "annual_price_minor": 4230000,
+      "founder_time": {
+        "minutes_per_month": 360,
+        "label": "6 hours/month of Founder work",
+        "scope": "server",
+        "expiry_policy": "expires_monthly",
+        "automatic_rollover": false,
+        "overage_policy": "catalog_commercial_terms",
+        "proration_policy": "manual_review"
+      },
+      "includes": [
+        "6 hours/month of Founder work",
+        "Weekly uptime and performance reports",
+        "Dedicated migration assistance (bounded scope)",
+        "Included staging environment (scope requires approval)",
+        "Quarterly Founder check-in calls"
+      ],
+      "excludes": [
+        "Application feature development",
+        "Emergency work beyond minimum stabilization without approval",
+        "Migration or disaster-recovery infrastructure outside the approved scope"
+      ],
+      "support_channels": ["Founder check-in calls"],
+      "sla": null
+    }
+  ]
+}

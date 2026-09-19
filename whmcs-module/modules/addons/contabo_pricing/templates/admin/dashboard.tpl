@@ -23,10 +23,10 @@ $cb_has_error  = !empty($connect_error);
 // Health tone for hero pill.
 if ($cb_has_error) {
     $cb_health_tone  = 'bad';
-    $cb_health_label = 'API unreachable';
+    $cb_health_label = 'API check failed';
 } elseif ($cb_plan_count > 0) {
     $cb_health_tone  = 'good';
-    $cb_health_label = 'API healthy';
+    $cb_health_label = 'API reachable';
 } else {
     $cb_health_tone  = 'warn';
     $cb_health_label = 'API reachable · empty snapshot';
@@ -40,9 +40,9 @@ $cb_last_relative = $cb_last_started !== '' ? substr($cb_last_started, 0, 16) : 
 // Status strip — 4 KPIs shown above every page (driven by _layout_open.tpl).
 $cb_strip_data = array(
     array(
-        'lbl'  => 'API health',
+        'lbl'  => 'API status',
         'v'    => $cb_has_error ? 'down' : 'ok',
-        'sub'  => $cb_api_base !== '' ? $cb_api_base : 'no URL configured',
+        'sub'  => $cb_api_base !== '' ? ('configured endpoint: ' . $cb_api_base) : 'no URL configured',
         'tone' => $cb_has_error ? 'bad' : 'good',
     ),
     array(
@@ -81,7 +81,7 @@ require __DIR__ . '/_layout_open.tpl';
       <div class="cb-card-sub" data-cb-u="u-0cbe035c55">Contabo Pricing</div>
       <h2 class="cb-card-title" data-cb-u="u-f83807b020">
         <?php if ($cb_api_base !== ''): ?>
-          Connected to <span class="mono" data-cb-u="u-169bb84a59"><?= $esc($cb_api_base) ?></span>
+          API endpoint <span class="mono" data-cb-u="u-169bb84a59"><?= $esc($cb_api_base) ?></span>
         <?php else: ?>
           Contabo Pricing
         <?php endif; ?>
@@ -106,9 +106,10 @@ require __DIR__ . '/_layout_open.tpl';
 
   <?php if ($cb_has_error): ?>
     <div class="cb-error" data-cb-u="u-8d84299030">
-      Can't reach the API: <code class="mono"><?= $esc((string) $connect_error) ?></code><br>
-      Check the URL and bearer token under
-      <a href="<?= $esc($module_link) ?>&amp;action=settings">Settings</a>.
+      The last API check failed for <code class="mono"><?= $esc($cb_api_base !== '' ? $cb_api_base : 'the configured endpoint') ?></code>:<br>
+      <code class="mono"><?= $esc((string) $connect_error) ?></code><br>
+      Review the saved addon configuration under <strong>Setup → Addon Modules → Contabo Pricing Sync → Configure</strong>.
+      This in-app page is reference-only: <a href="<?= $esc($module_link) ?>&amp;action=settings">Runtime &amp; config</a>.
     </div>
   <?php endif; ?>
 </div>
@@ -164,7 +165,7 @@ require __DIR__ . '/_layout_open.tpl';
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles">Manage profiles</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=mappings">Edit mappings</a>
     <span data-cb-u="u-6253876a64"></span>
-    <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=settings">Settings</a>
+    <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=settings">Runtime &amp; config</a>
   </div>
 </div>
 

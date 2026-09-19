@@ -40,13 +40,13 @@ require __DIR__ . '/_layout_open.tpl';
 
 <header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" data-cb-u="u-0cbe035c55">Price decisions</h2>
+    <h2 class="display" data-cb-u="u-0cbe035c55">Decision log</h2>
     <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
-      Immutable audit log. Every decision the engine considered is recorded here, applied or not.
+      Immutable log of repricing decisions already recorded. The current cron path does not add fresh entries, so use this as historical evidence rather than a live workflow monitor.
     </p>
   </div>
   <div data-cb-u="u-b887bfd543">
-    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=repricing">&larr; Dashboard</a>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=repricing">&larr; Repricing diagnostics</a>
   </div>
 </header>
 

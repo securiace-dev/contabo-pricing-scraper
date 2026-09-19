@@ -7,9 +7,13 @@
  * @var \Closure $esc
  * @var string   $module_link
  * @var array<int,array<string,mixed>> $logs  Newest-first.
+ * @var \ContaboPricing\Settings $settings
  */
 
 $cb_log_count = is_array($logs) ? count($logs) : 0;
+$cb_current_api_base = isset($settings) && is_object($settings) && isset($settings->apiBaseUrl)
+    ? (string) $settings->apiBaseUrl
+    : '';
 
 // Counts per status for filter pill badges.
 $cb_counts = array('all' => $cb_log_count, 'succeeded' => 0, 'no-change' => 0, 'failed' => 0);
@@ -37,6 +41,25 @@ $cb_duration = static function ($a, $b) {
     if ($d < 60)   { return $d . 's'; }
     if ($d < 3600) { return floor($d / 60) . 'm ' . ($d % 60) . 's'; }
     return floor($d / 3600) . 'h ' . floor(($d % 3600) / 60) . 'm';
+};
+
+/** Recover the endpoint used by older rows that predate explicit summary logging. */
+$cb_infer_api_base = static function ($summary, $error) {
+    if (is_array($summary) && !empty($summary['api_base_url'])) {
+        return (string) $summary['api_base_url'];
+    }
+
+    $error = (string) $error;
+    if ($error !== '') {
+        if (preg_match('~https?://[^\s"\']+~', $error, $m)) {
+            return rtrim((string) $m[0], '/');
+        }
+        if (preg_match('~([A-Za-z0-9.-]+)\s+port\s+([0-9]{2,5})~', $error, $m)) {
+            return 'http://' . $m[1] . ':' . $m[2];
+        }
+    }
+
+    return '';
 };
 ?>
 
@@ -124,6 +147,8 @@ $cb_duration = static function ($a, $b) {
         if (is_array($cb_summary_decoded) && isset($cb_summary_decoded['snapshot_generated_at'])) {
             $cb_snap_at = (string) $cb_summary_decoded['snapshot_generated_at'];
         }
+        $cb_api_used = $cb_infer_api_base($cb_summary_decoded, $cb_error_msg);
+        $cb_api_differs = $cb_api_used !== '' && $cb_current_api_base !== '' && $cb_api_used !== $cb_current_api_base;
         $cb_dur = $cb_duration($cb_started, $cb_finished);
       ?>
         <tr data-cb-log-row
@@ -177,8 +202,19 @@ $cb_duration = static function ($a, $b) {
             <?php if ($cb_error_msg !== ''): ?>
               <code class="mono" data-cb-u="u-21e471ac42"
                     title="<?= $esc($cb_error_msg) ?>"><?= $esc($cb_trunc($cb_error_msg, 60)) ?></code>
+              <?php if ($cb_api_used !== ''): ?>
+                <div class="cb-card-sub" data-cb-u="u-9f803cd406">
+                  endpoint used <code class="mono"><?= $esc($cb_api_used) ?></code><?= $cb_api_differs ? ' · differs from current runtime' : '' ?>
+                </div>
+              <?php endif; ?>
             <?php else: ?>
-              <span data-cb-u="u-eac7694072">—</span>
+              <?php if ($cb_api_used !== ''): ?>
+                <div class="cb-card-sub" data-cb-u="u-9f803cd406">
+                  endpoint used <code class="mono"><?= $esc($cb_api_used) ?></code><?= $cb_api_differs ? ' · differs from current runtime' : '' ?>
+                </div>
+              <?php else: ?>
+                <span data-cb-u="u-eac7694072">—</span>
+              <?php endif; ?>
             <?php endif; ?>
           </td>
         </tr>
