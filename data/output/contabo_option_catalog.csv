@@ -676,7 +676,6 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EU
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Webmin,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
-vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited and Unmetered Traffic,86.29,0,,,,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
@@ -689,6 +688,7 @@ vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (East),13.3,0,Ame
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,America,United States (West),11.15,0,America,United States (West),US,West,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,India,20.6,0,Asia,India,IN,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Japan,22.3,0,Asia,Japan,JP,,,EUR
+vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Asia,Singapore,21.9,0,Asia,Singapore,SG,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Australia,Australia,18.45,0,Australia,Australia,AU,,,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
 vds-s,vds-s,Cloud VDS,Cloud VDS S,Region,Europe,United Kingdom,9,0,Europe,United Kingdom,UK,,,EUR
@@ -852,6 +852,7 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2022 Standard,50,50
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2025 Standard,50,50,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,cPanel/WHM (5 accounts),21.75,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Admin Edition,12,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Webmin,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
@@ -869,7 +870,6 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (Central),21,0
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (East),32,0,America,United States (East),US,East,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (West),26,0,America,United States (West),US,West,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,India,49,0,Asia,India,IN,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,Japan,53,0,Asia,Japan,JP,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,Singapore,52,0,Asia,Singapore,SG,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Australia,Australia,44,0,Australia,Australia,AU,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Europe,European Union,0,0,Europe,European Union,EU,,true,EUR
