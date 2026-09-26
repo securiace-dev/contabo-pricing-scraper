@@ -18,6 +18,10 @@ Before migration:
 
 - identify the exact deployed Rust binary, addon tree, server-module tree,
   hooks, order-form templates, cron entrypoints, and database schema version;
+- record how the live WHMCS runtime reaches the Rust API from inside its own
+  execution context; for Dokploy/containerized installs this means the exact
+  Docker network, sidecar service name, and operator-owned bind mounts used by
+  `contabo-pricing`;
 - hash deployed and candidate files without reading secret values;
 - diff tracked source against the deployment;
 - record every product and service assigned to `contabo_vps` or

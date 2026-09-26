@@ -76,7 +76,7 @@ Auth model: read endpoints are open and cacheable; `POST /refresh` requires `Aut
 
 ## Production Architecture & Operational Reality (Dev + Ops Deep Dive)
 
-> _Updated 2026-05 from a live production investigation. This section is the
+> _Updated 2026-09 from a live production investigation and recovery. This section is the
 > source of truth for **what is actually deployed** and the constraints that
 > govern it. Where earlier docs imply Docker/“built-in cron”, trust this section._
 
@@ -84,9 +84,9 @@ Auth model: read endpoints are open and cacheable; `POST /refresh` requires `Aut
 
 | Question | Answer (as-deployed) |
 |---|---|
-| How does prod run the API? | **Native `systemd` unit** `contabo-pricing.service` → `/usr/local/bin/contabo-scraper serve`. **Not Docker.** |
+| How does prod run the API? | **Private Docker sidecar** `contabo-pricing` on the Dokploy WHMCS network. No public ingress. |
 | Where is the data? | `CONTABO_DATA_DIR=/var/lib/contabo-pricing/output` (on the prod host's disk) |
-| How does WHMCS reach it? | Same host, `http://127.0.0.1:8080/api/v1` (loopback only; `CONTABO_BIND=127.0.0.1:8080`) |
+| How does WHMCS reach it? | Docker DNS inside the app container: `http://contabo-pricing:8080/api/v1` |
 | How is data refreshed? | **Manually** today — `POST /api/v1/refresh` (bearer). **No cron/timer is installed**, and `CONTABO_REFRESH_CRON` is **not wired** in code. |
 | Why does data go stale / refresh fail? | **Contabo is behind Cloudflare**, which returns `403 (cf-mitigated: challenge)` to **datacenter IPs** (the prod VPS *and* CI runner). Only residential IPs pass. |
 | Version streams? | Rust/API `v*`, addon `contabo_pricing-v*`, and provisioning suite `securiacevps-v*` are independent immutable releases. |
@@ -102,13 +102,15 @@ flowchart LR
     CF --> CB
   end
 
-  subgraph PROD["Production host (Contabo VPS, EU) — native, no Docker"]
-    SVC["systemd: contabo-pricing.service\n/usr/local/bin/contabo-scraper serve\nbind 127.0.0.1:8080"]
+  subgraph PROD["Production host (Contabo VPS, EU) — Dokploy WHMCS + private sidecar"]
+    SVC["Docker sidecar: contabo-pricing\nprivate network only\nbind 0.0.0.0:8080 inside container"]
     DATA[("/var/lib/contabo-pricing/output\nJSON/CSV snapshot")]
-    TOK[/"/etc/contabo-pricing/auth_token\n(0640 root:contabo)"/]
-    WH["WHMCS contabo_pricing addon\n(same host, web root)"]
+    TOK[/"/etc/contabo-pricing/auth_token\n(bind-mounted read-only)"/]
+    PROXY[/"/etc/contabo-pricing/proxy.env\n(optional bind-mounted env file)"/]
+    WH["Dokploy WHMCS app container\nmy.securiace.com"]
     SVC --- DATA
     SVC --- TOK
+    SVC --- PROXY
     WH -->|"GET /api/v1/* (read)"| SVC
     WH -->|"POST /api/v1/refresh (bearer)"| SVC
   end
@@ -131,38 +133,44 @@ IP is not challenged**. The git-committed `data/output` (from `scrape.yml`) and 
 prod host's `/var/lib/contabo-pricing/output` are **separate stores** — the scrape
 workflow does not feed prod.
 
-### 1) As-deployed production runtime (native systemd)
+### 1) As-deployed production runtime (Dokploy sidecar)
 
-```ini
-# /etc/systemd/system/contabo-pricing.service  (as observed on prod)
-[Service]
-User=contabo
-Environment=RUST_LOG=info
-Environment=CONTABO_BIND=127.0.0.1:8080
-Environment=CONTABO_DATA_DIR=/var/lib/contabo-pricing/output
-Environment=CONTABO_AUTH_TOKEN_FILE=/etc/contabo-pricing/auth_token
-ExecStart=/usr/local/bin/contabo-scraper serve
-Restart=on-failure
-RestartSec=5
+```yaml
+services:
+  contabo-pricing:
+    image: ghcr.io/securiace-dev/contabo-pricing-scraper@sha256:<release-digest>
+    container_name: contabo-pricing
+    networks: [whmcs-production-jvjwfo_default]
+    environment:
+      CONTABO_BIND: 0.0.0.0:8080
+      CONTABO_DATA_DIR: /app/data/output
+      CONTABO_AUTH_TOKEN_FILE: /run/secrets/contabo_auth_token
+    volumes:
+      - /var/lib/contabo-pricing/output:/app/data/output
+      - /etc/contabo-pricing/auth_token:/run/secrets/contabo_auth_token:ro
 ```
 
-- Binary `2.3.0-dev`, **built on the prod host** from `/opt/contabo-pricing-src` and
-  installed to `/usr/local/bin/contabo-scraper`. The git repo's `Dockerfile`/`deploy/`
-  are **not** the live deploy path.
-- Bind is **loopback-only** — the API is reachable only by same-host WHMCS; there is
-  no public ingress, so the bearer gate on `/refresh` is defence-in-depth, not the
-  only control.
+The tracked Dokploy sidecar path should be pinned to an immutable release ref
+like the digest above; do not use `:latest` for this production shape.
+
+- The sidecar is attached to the same Docker network as the Dokploy WHMCS app,
+  so the addon resolves it over Docker DNS as `http://contabo-pricing:8080/api/v1`.
+- The runtime keeps **operator-owned host state**: snapshot data under
+  `/var/lib/contabo-pricing/output`, bearer token under `/etc/contabo-pricing/auth_token`,
+  and optional proxy config under `/etc/contabo-pricing/proxy.env`.
+- The API remains **internal-only**. There is no host-port publish or separate
+  public ingress; the WHMCS app is the intended consumer.
 - Read endpoints serve an **in-memory snapshot** (see §3); a failed refresh never
   takes the API down.
 
 Read-only health/identity checks an operator can run on the prod host:
 
 ```bash
-systemctl status contabo-pricing.service
-ss -ltnp | grep ':8080'                       # → users:(("contabo-scraper",...))
-curl -s http://127.0.0.1:8080/api/v1/health   # {"status":"ok",...}
-curl -s http://127.0.0.1:8080/api/v1/meta | jq '.snapshot_meta.generated_at'
-ls -la /var/lib/contabo-pricing/output/       # data files + mtimes
+docker ps --filter name=contabo-pricing
+docker inspect contabo-pricing --format '{{json .NetworkSettings.Networks}}'
+docker exec whmcs-production-jvjwfo-app-1 curl -s http://contabo-pricing:8080/api/v1/health
+docker exec whmcs-production-jvjwfo-app-1 curl -s http://contabo-pricing:8080/api/v1/meta | jq '.snapshot_meta.generated_at'
+ls -la /var/lib/contabo-pricing/output/
 ```
 
 ### 2) Upstream access constraint — Cloudflare bot-challenge (the #1 ops issue)
@@ -192,9 +200,9 @@ flowchart TD
 - **✅ Resolved via option 3 — `SCRAPER_PROXY` (residential/gateway proxy).** Routing
   fetches through the proxy lets plain `reqwest` mode return `200` and `POST /refresh`
   pull fresh data. Wired in three places, credential never committed:
-  - **prod**: `chmod 600` systemd drop-in `/etc/systemd/system/contabo-pricing.service.d/proxy.conf`
-    → `EnvironmentFile=/etc/contabo-pricing/proxy.env` (`SCRAPER_PROXY=…`). See
-    [deploy/README → Production scraper deploy](deploy/README.md#production-scraper-deploy-native--release-binary--proxy).
+  - **prod**: `chmod 600` host-owned `/etc/contabo-pricing/proxy.env`,
+    bind-mounted into the sidecar. See
+    [deploy/README → Production scraper deploy](deploy/README.md#production-scraper-deploy-dokploy-whmcs-sidecar).
   - **CI**: `SCRAPER_PROXY` secret in the **`Build`** environment, consumed by `scrape.yml`
     (scheduled data pipeline) and `parity.yml` (Rust↔Node equivalence).
   - the scraper reads `SCRAPER_PROXY` natively (clap `env=`); a schemeless value is
@@ -204,7 +212,8 @@ flowchart TD
   unprotected upstream feed.
 
 > With the proxy in place, a refresh timer is now viable — periodic `POST /api/v1/refresh`
-> (cron / `systemd` timer) pulls fresh data twice a day instead of 403-ing.
+> from the same Docker network (cron, Dokploy job, or host automation) pulls
+> fresh data twice a day instead of 403-ing.
 
 ### 3) Data freshness & the refresh lifecycle
 
@@ -235,9 +244,9 @@ sequenceDiagram
 - **Atomic + safe:** snapshot held behind `RwLock`; swapped only after a successful
   scrape; previous snapshot preserved on any failure. WHMCS reads stay consistent
   throughout (it reads the API, never partial files).
-- **Freshness automation does not exist on prod** (no cron, no `systemd` timer,
+- **Freshness automation does not exist on prod** (no cron or Dokploy job,
   `CONTABO_REFRESH_CRON` unwired). **Recommended durable fix** (install only after the
-  Cloudflare path works): a `systemd` timer that POSTs `/refresh` twice daily —
+  Cloudflare path works): external automation that POSTs `/refresh` twice daily —
 
 ```ini
 # contabo-pricing-refresh.timer  (DRAFT — install after upstream fetch is fixed)
@@ -363,8 +372,8 @@ bash .github/scripts/parity_check.sh
 
 ### 9) Recent learnings (2026-05)
 
-- Prod is **native systemd**, not Docker — earlier Docker-centric framing was a
-  documentation drift, not the live system.
+- Prod is **Dokploy-hosted WHMCS plus a private `contabo-pricing` sidecar**,
+  not the earlier native `systemd` contract.
 - The dominant freshness blocker is **Cloudflare bot-mitigation on datacenter IPs**,
   not scheduling or config. Residential IPs are unaffected.
 - The refresh design's **preserve-on-failure** behaviour is doing its job — a blocked
@@ -562,7 +571,7 @@ Response:
 
 ### Known gaps, tradeoffs, and recent learnings
 
-> See [Production Architecture & Operational Reality](#production-architecture--operational-reality-dev--ops-deep-dive) for the load-bearing 2026-05 findings: native-systemd prod runtime (not Docker), the Cloudflare datacenter-IP block on `contabo.com`, the missing refresh automation, the dual version streams, and the uncommitted API/deploy stack.
+> See [Production Architecture & Operational Reality](#production-architecture--operational-reality-dev--ops-deep-dive) for the load-bearing production findings: Dokploy-hosted WHMCS plus a private sidecar runtime, the Cloudflare datacenter-IP block on `contabo.com`, the missing refresh automation, the dual version streams, and the requirement to reconcile tracked deploy definitions with live state.
 
 - Rust is the operational primary path; Node is intentionally retained for fallback/parity workflows.
 - Mutating API operations are intentionally fail-closed; absence of token should be treated as configuration hard-stop, not degraded-open behavior.

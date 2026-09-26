@@ -1,7 +1,6 @@
 <?php
 /**
- * Phase C — Approval Queue (admin sign-off for price changes that breached a
- * threshold during a renewal cron pass).
+ * Legacy approval queue for repricing decisions recorded by older/manual flows.
  *
  * RenewalEngine emits two skip reasons that need a human decision before the
  * price write proceeds:
@@ -58,9 +57,9 @@ require __DIR__ . '/_layout_open.tpl';
 <div data-cb-u="u-7a6e688133">
   <div>
     <h2 class="cb-card-title">Approval queue</h2>
-    <p class="cb-card-sub">Price changes that breached a threshold during a renewal pass and are awaiting your sign-off. Approving applies the new price through the single write path and records an append-only audit row.</p>
+    <p class="cb-card-sub">Historical repricing approvals. The live cron path does not currently add new rows here, so treat this as a cleanup/audit surface for previously recorded decisions.</p>
   </div>
-  <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=repricing">← Repricing</a>
+  <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=repricing">← Repricing diagnostics</a>
 </div>
 
 <?php if (!empty($flash)): ?>
@@ -72,7 +71,7 @@ require __DIR__ . '/_layout_open.tpl';
     <p data-cb-u="u-171a169012">
       <strong>Phase is “observe”.</strong> Approving records the decision but the price write is suppressed
       (the writer is disabled outside <code class="mono">opt_in</code> / <code class="mono">enforce</code>).
-      Switch the repricing phase before approving if you want the change to take effect.
+      Because the repricing workflow is currently dormant, switching the phase does not reactivate cron-driven decision creation by itself.
     </p>
   </div>
 <?php endif; ?>

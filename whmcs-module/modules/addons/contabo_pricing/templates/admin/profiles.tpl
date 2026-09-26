@@ -32,6 +32,10 @@ $trashed     = isset($trashed) && is_array($trashed) ? $trashed : [];
 $trash_count = isset($trash_count) ? (int) $trash_count : 0;
 $undo_id     = isset($undo_id) ? (int) $undo_id : 0;
 $cb_purge_phrase = isset($cb_purge_phrase) ? (string) $cb_purge_phrase : '';
+$cb_profile_form_state = isset($cb_profile_form_state) && is_array($cb_profile_form_state)
+  ? $cb_profile_form_state : [];
+$cb_profile_form_errors = isset($cb_profile_form_errors) && is_array($cb_profile_form_errors)
+  ? $cb_profile_form_errors : [];
 ?>
 
 <header data-cb-u="u-f266e2da93">
@@ -391,10 +395,15 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
   (monthly + setup deltas) inline so JS can recompute totals without
   re-fetching the configurator.
 -->
-<div class="cb-modal" id="cb-modal-profile-create" hidden>
-  <div class="sheet" role="dialog" aria-labelledby="cb-modal-profile-create-title" aria-modal="true" data-cb-u="u-7fd6f74ba3">
+<div class="cb-modal<?= $cb_profile_form_state !== [] ? ' open' : '' ?>" id="cb-modal-profile-create" hidden>
+  <div class="sheet cb-profile-sheet" role="dialog" aria-labelledby="cb-modal-profile-create-title" aria-modal="true" data-cb-u="u-7fd6f74ba3">
     <header data-cb-u="u-7a9696f8e6">
-      <h3 id="cb-modal-profile-create-title" class="display" data-cb-u="u-ab79ea2b85" data-cb-modal-title>Create profile</h3>
+      <div>
+        <h3 id="cb-modal-profile-create-title" class="display" data-cb-u="u-ab79ea2b85" data-cb-modal-title>Create source profile</h3>
+        <p class="cb-card-sub cb-modal-sub" data-cb-modal-subtitle>
+          Start with the source plan and locked configuration. Customer-facing pricing and checkout options are decided later on the Mappings page.
+        </p>
+      </div>
       <button type="button" class="cb-btn ghost" data-cb-close-modal aria-label="Close">×</button>
     </header>
 
@@ -403,90 +412,172 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
       <input type="hidden" name="id" value="" data-cb-form-id disabled>
       <?= generate_token() ?>
 
-      <div class="cb-field">
-        <label for="cb-pc-name">Display name</label>
-        <input id="cb-pc-name" type="text" name="name" required placeholder="e.g. Cloud VPS 10 — EU — Ubuntu 24 — 12 mo">
-      </div>
-
-      <div class="cb-field">
-        <label for="cb-pc-mode">Profile mode</label>
-        <select id="cb-pc-mode" name="profile_mode" data-cb-profile-mode>
-          <option value="fixed_admin_profile" selected>Fixed admin profile — admin locks every build option; customer cannot choose</option>
-          <option value="customer_configurable_product">Customer-configurable product — admin exposes options; customer picks at order time</option>
-        </select>
-        <div class="muted" data-cb-u="u-64aa79933f" data-cb-mode-hint>
-          Pre-packaged plan: pick a value for every option below — that locked set becomes the SKU. Customers cannot change it.
+      <div class="cb-profile-intro">
+        <div class="cb-profile-steps" aria-label="Create profile steps">
+          <span class="cb-pill grey">1. Choose plan</span>
+          <span class="cb-pill grey">2. Configure source</span>
+          <span class="cb-pill grey">3. Save, then map</span>
         </div>
-      </div>
-
-      <div class="cb-field">
-        <label for="cb-pc-plan">Plan</label>
-        <select id="cb-pc-plan" name="plan_slug" required data-cb-quote-plan data-cb-cfg-plan>
-          <option value="">— pick a plan —</option>
-          <?php foreach ($available_plans as $ap): ?>
-            <option value="<?= $esc($ap['product_slug']) ?>"><?= $esc($ap['product_name']) ?> (<?= $esc($ap['family']) ?>)</option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-
-      <?php
-        // Publish cycles — which billing cycles this profile SOURCES a price for.
-        // The PROFILE is the source authority (all six can be derived: 1/3/6/12
-        // scraped, 24/36 projected from the 12-mo rate). The MAPPING later narrows
-        // these to what the customer actually sees at checkout. JS maintains the
-        // hidden published_cycles_mask + a per-cycle source-price preview.
-        $cb_publish_cycles = [
-            ['cycle' => 'Monthly',       'months' => 1,  'bit' => 1],
-            ['cycle' => 'Quarterly',     'months' => 3,  'bit' => 2],
-            ['cycle' => 'Semi-Annually', 'months' => 6,  'bit' => 4],
-            ['cycle' => 'Annually',      'months' => 12, 'bit' => 8],
-            ['cycle' => 'Biennially',    'months' => 24, 'bit' => 16],
-            ['cycle' => 'Triennially',   'months' => 36, 'bit' => 32],
-        ];
-      ?>
-      <div class="cb-field">
-        <label>Publish cycles <span class="muted" data-cb-u="u-76b999ddce">— which terms this profile sources</span></label>
-        <!-- The single period dropdown is gone: the profile now sources a price
-             per published cycle. period_months is derived server-side from the
-             longest published cycle (kept for slug + identity). -->
-        <input type="hidden" name="published_cycles_mask" value="63" data-cb-published-mask>
-        <div data-cb-publish-cycles data-cb-u="u-ee4b4558b5">
-          <?php foreach ($cb_publish_cycles as $pc): ?>
-            <label data-cb-u="u-d8887aa5ee">
-              <input type="checkbox" data-cb-publish-cycle data-cb-bit="<?= (int) $pc['bit'] ?>" data-cb-months="<?= (int) $pc['months'] ?>" checked>
-              <span>
-                <?= $esc($pc['cycle']) ?>
-                <?php if ((int) $pc['months'] >= 24): ?><span class="cb-pill grey" title="Not sold publicly by Contabo — projected from the 12-month rate" data-cb-u="u-c50da33819">projected</span><?php endif; ?>
-                <span class="muted mono" data-cb-cycle-source="<?= (int) $pc['months'] ?>" data-cb-u="u-f6ffcfe1dc">—</span>
-              </span>
-            </label>
-          <?php endforeach; ?>
-        </div>
-        <div class="muted" data-cb-u="u-8693fd01b7">
-          Source (cost) price per cycle, in EUR/mo, shown once a plan loads. The
-          <strong>mapping</strong> decides which of these the customer sees and at what markup.
-        </div>
-      </div>
-
-      <!-- Hidden period kept ONLY to drive the configurator's dimension-delta
-           preview (app.js reads data-cb-cfg-period). The real period is derived
-           server-side from the published cycles. -->
-      <input type="hidden" value="12" data-cb-cfg-period data-cb-quote-period>
-
-      <!-- Configurator: hydrated by assets/app.js once plan_slug + period are set. -->
-      <div class="cb-card" data-cb-u="u-ca659fbc54">
-        <div data-cb-u="u-5ffb91a26b">
+        <div class="cb-card cb-profile-summary" data-cb-profile-summary>
           <div>
-            <div class="cb-card-sub" data-cb-u="u-38965f9b18">Configure &amp; price</div>
-            <div class="muted" data-cb-u="u-33ee298127">Per-dimension dropdowns mirror the upstream Contabo order page.</div>
+            <div class="cb-card-sub">Operator checklist</div>
+            <div class="cb-profile-summary-status" data-cb-profile-summary-status>Choose a plan to begin.</div>
           </div>
-          <button type="button" class="cb-btn ghost" data-cb-cfg-reset data-cb-u="u-a8d41863df" hidden>Reset defaults</button>
+          <dl class="cb-key-values compact">
+            <div><dt>Plan</dt><dd data-cb-summary-plan>Not selected</dd></div>
+            <div><dt>Mode</dt><dd data-cb-summary-mode>Fixed admin profile</dd></div>
+            <div><dt>Cycles</dt><dd data-cb-summary-cycles>All six source cycles</dd></div>
+            <div><dt>Sync</dt><dd data-cb-summary-sync>Notify on drift</dd></div>
+          </dl>
         </div>
-        <div data-cb-configurator>
-          <div class="cb-cfg-empty">Pick a plan to load configuration options…</div>
-        </div>
-        <div data-cb-summary class="cb-osum" hidden></div>
       </div>
+
+      <div class="cb-error" data-cb-form-errors <?= $cb_profile_form_errors === [] ? 'hidden' : '' ?>>
+        <strong>Review this profile before saving.</strong>
+        <ul>
+          <?php foreach ($cb_profile_form_errors as $cb_form_error): ?>
+            <li><?= $esc((string) $cb_form_error) ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+
+      <section class="cb-card cb-profile-section">
+        <div class="cb-section-header">
+          <div>
+            <h4 class="cb-card-title">1. Basics</h4>
+            <p class="cb-card-sub">Pick the upstream plan first, then decide whether this profile is a fixed SKU or a customer-configurable product.</p>
+          </div>
+        </div>
+
+        <div class="cb-field">
+          <label for="cb-pc-plan">Plan</label>
+          <select id="cb-pc-plan" name="plan_slug" required data-cb-quote-plan data-cb-cfg-plan>
+            <option value="">— pick a plan —</option>
+            <?php foreach ($available_plans as $ap): ?>
+              <option value="<?= $esc($ap['product_slug']) ?>"><?= $esc($ap['product_name']) ?> (<?= $esc($ap['family']) ?>)</option>
+            <?php endforeach; ?>
+          </select>
+          <div class="muted">This is the Contabo source plan the profile will track and sync from.</div>
+        </div>
+
+        <div class="cb-field">
+          <label for="cb-pc-mode">Profile mode</label>
+          <select id="cb-pc-mode" name="profile_mode" data-cb-profile-mode>
+            <option value="fixed_admin_profile" selected>Fixed admin profile — admin locks every build option; customer cannot choose</option>
+            <option value="customer_configurable_product">Customer-configurable product — admin exposes options; customer picks at order time</option>
+          </select>
+          <div class="muted" data-cb-u="u-64aa79933f" data-cb-mode-hint>
+            Pre-packaged plan: pick a value for every option below — that locked set becomes the SKU. Customers cannot change it.
+          </div>
+        </div>
+
+        <div class="cb-field">
+          <label for="cb-pc-name">Display name</label>
+          <input id="cb-pc-name" type="text" name="name" required placeholder="e.g. Cloud VPS 10 — EU — Ubuntu 24 — 12 mo">
+          <div class="muted">Use a business-readable name. Region and OS can stay in the title so operators can spot the right SKU quickly later.</div>
+        </div>
+      </section>
+
+      <section class="cb-card cb-profile-section">
+        <div class="cb-section-header">
+          <div>
+            <h4 class="cb-card-title">2. Source configuration</h4>
+            <p class="cb-card-sub">Lock the Contabo options this profile should represent. In fixed mode, every required option must be set before save.</p>
+          </div>
+          <span class="cb-pill grey" data-cb-configurator-state>Choose a plan</span>
+        </div>
+
+        <div class="cb-card cb-profile-mode-note" data-cb-fixed-note>
+          <strong>Fixed profile check:</strong> before saving, confirm each required selector below has a concrete value. Optional items such as apps or data protection can remain at <code>None</code>.
+        </div>
+
+        <?php
+          // Publish cycles — which billing cycles this profile SOURCES a price for.
+          // The PROFILE is the source authority (all six can be derived: 1/3/6/12
+          // scraped, 24/36 projected from the 12-mo rate). The MAPPING later narrows
+          // these to what the customer actually sees at checkout. JS maintains the
+          // hidden published_cycles_mask + a per-cycle source-price preview.
+          $cb_publish_cycles = [
+              ['cycle' => 'Monthly',       'months' => 1,  'bit' => 1],
+              ['cycle' => 'Quarterly',     'months' => 3,  'bit' => 2],
+              ['cycle' => 'Semi-Annually', 'months' => 6,  'bit' => 4],
+              ['cycle' => 'Annually',      'months' => 12, 'bit' => 8],
+              ['cycle' => 'Biennially',    'months' => 24, 'bit' => 16],
+              ['cycle' => 'Triennially',   'months' => 36, 'bit' => 32],
+          ];
+        ?>
+        <input type="hidden" value="12" data-cb-cfg-period data-cb-quote-period>
+
+        <div class="cb-card" data-cb-u="u-ca659fbc54">
+          <div data-cb-u="u-5ffb91a26b">
+            <div>
+              <div class="cb-card-sub" data-cb-u="u-38965f9b18">Configure &amp; price</div>
+              <div class="muted" data-cb-u="u-33ee298127">Per-dimension dropdowns mirror the upstream Contabo order page.</div>
+            </div>
+            <button type="button" class="cb-btn ghost" data-cb-cfg-reset data-cb-u="u-a8d41863df" hidden>Reset defaults</button>
+          </div>
+          <div data-cb-configurator>
+            <div class="cb-cfg-empty">Pick a plan to load configuration options…</div>
+          </div>
+          <div data-cb-summary class="cb-osum" hidden></div>
+        </div>
+      </section>
+
+      <details class="cb-card cb-profile-section cb-disclosure" data-cb-advanced-fields>
+        <summary>
+          <span>
+            <strong>3. Advanced controls</strong>
+            <span class="muted">Publish-cycle scope, sync policy, customer exposure, and internal tags.</span>
+          </span>
+        </summary>
+
+        <div class="cb-field">
+          <label>Publish cycles <span class="muted" data-cb-u="u-76b999ddce">— which terms this profile sources</span></label>
+          <input type="hidden" name="published_cycles_mask" value="63" data-cb-published-mask>
+          <div data-cb-publish-cycles data-cb-u="u-ee4b4558b5">
+            <?php foreach ($cb_publish_cycles as $pc): ?>
+              <label data-cb-u="u-d8887aa5ee">
+                <input type="checkbox" data-cb-publish-cycle data-cb-bit="<?= (int) $pc['bit'] ?>" data-cb-months="<?= (int) $pc['months'] ?>" checked>
+                <span>
+                  <?= $esc($pc['cycle']) ?>
+                  <?php if ((int) $pc['months'] >= 24): ?><span class="cb-pill grey" title="Not sold publicly by Contabo — projected from the 12-month rate" data-cb-u="u-c50da33819">projected</span><?php endif; ?>
+                  <span class="muted mono" data-cb-cycle-source="<?= (int) $pc['months'] ?>" data-cb-u="u-f6ffcfe1dc">—</span>
+                </span>
+              </label>
+            <?php endforeach; ?>
+          </div>
+          <div class="muted" data-cb-u="u-8693fd01b7">
+            Leave all six on for the usual setup. Restrict this only when a profile should intentionally source fewer billing terms.
+          </div>
+        </div>
+
+        <div class="cb-field">
+          <label for="cb-pc-strategy">Sync strategy</label>
+          <select id="cb-pc-strategy" name="sync_strategy">
+            <option value="manual">manual — admin reviews diffs in UI</option>
+            <option value="notify" selected>notify — email admin on drift</option>
+            <option value="auto-apply">auto-apply — push price updates immediately</option>
+          </select>
+          <div class="muted">`notify` is the safest default for production operators because it preserves review before any catalog price change is applied.</div>
+        </div>
+
+        <div class="cb-field" data-cb-expose-field>
+          <label data-cb-u="u-f8d305aab0">
+            <input type="hidden" name="expose_configurable_options" value="0">
+            <input id="cb-pc-expose" type="checkbox" name="expose_configurable_options" value="1" checked data-cb-expose-config>
+            Expose configurable options to customers
+          </label>
+          <div class="muted" data-cb-u="u-64aa79933f">
+            When on, “Config preview → Apply” creates the WHMCS configurable-option groups for this profile. Turn off to keep this profile’s options admin-only (Apply is skipped). Curate exactly which options show via the exposure editor.
+          </div>
+        </div>
+
+        <div class="cb-field">
+          <label for="cb-pc-tags">Tags <span class="muted">(comma-separated)</span></label>
+          <input id="cb-pc-tags" type="text" name="tags" placeholder="production, billing-team">
+          <div class="muted">Optional internal labels for filtering or ownership notes.</div>
+        </div>
+      </details>
 
       <!-- Configurator selections (JSON) — populated by JS on every change.
            OS + Region are derived server-side from these selections
@@ -494,38 +585,31 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
            truth, so no separate hidden region/os inputs are needed. -->
       <input type="hidden" name="options" value="" data-cb-options-json>
 
-      <div class="cb-field">
-        <label for="cb-pc-strategy">Sync strategy</label>
-        <select id="cb-pc-strategy" name="sync_strategy">
-          <option value="manual">manual — admin reviews diffs in UI</option>
-          <option value="notify" selected>notify — email admin on drift</option>
-          <option value="auto-apply">auto-apply — push price updates immediately</option>
-        </select>
-      </div>
-
-      <div class="cb-field" data-cb-expose-field>
-        <label data-cb-u="u-f8d305aab0">
-          <!-- unchecked checkboxes don't POST; the hidden 0 is the fallback the checkbox overrides -->
-          <input type="hidden" name="expose_configurable_options" value="0">
-          <input id="cb-pc-expose" type="checkbox" name="expose_configurable_options" value="1" checked data-cb-expose-config>
-          Expose configurable options to customers
-        </label>
-        <div class="muted" data-cb-u="u-64aa79933f">
-          When on, “Config preview → Apply” creates the WHMCS configurable-option groups for this profile. Turn off to keep this profile’s options admin-only (Apply is skipped). Curate exactly which options show via the exposure editor.
-        </div>
-      </div>
-
-      <div class="cb-field">
-        <label for="cb-pc-tags">Tags <span class="muted">(comma-separated)</span></label>
-        <input id="cb-pc-tags" type="text" name="tags" placeholder="production, billing-team">
-      </div>
-
-      <div data-cb-u="u-ca21caa3b0">
+      <div class="cb-profile-footer" data-cb-u="u-ca21caa3b0">
+        <p class="cb-card-sub">Saving this creates the source profile only. To make it sellable in WHMCS, map it to a product afterwards.</p>
         <button type="button" class="cb-btn subtle" data-cb-close-modal>Cancel</button>
         <button type="submit" class="cb-btn" data-cb-submit-label>Create profile</button>
       </div>
     </form>
   </div>
 </div>
+
+<?php if ($cb_profile_form_state !== []): ?>
+  <script type="application/json" data-cb-profile-form-state><?= $esc((string) json_encode([
+      'mode' => (string) ($cb_profile_form_state['profile_mode'] ?? 'fixed_admin_profile'),
+      'plan_slug' => (string) ($cb_profile_form_state['plan_slug'] ?? ''),
+      'name' => (string) ($cb_profile_form_state['name'] ?? ''),
+      'tags' => (string) ($cb_profile_form_state['tags'] ?? ''),
+      'sync_strategy' => (string) ($cb_profile_form_state['sync_strategy'] ?? 'notify'),
+      'expose_configurable_options' => isset($cb_profile_form_state['expose_configurable_options'])
+        ? (int) $cb_profile_form_state['expose_configurable_options'] : 1,
+      'published_cycles_mask' => isset($cb_profile_form_state['published_cycles_mask'])
+        ? (int) $cb_profile_form_state['published_cycles_mask'] : 63,
+      'options' => isset($cb_profile_form_state['options']) && is_array($cb_profile_form_state['options'])
+        ? $cb_profile_form_state['options'] : [],
+      'errors' => array_values(array_map('strval', $cb_profile_form_errors)),
+      'advanced_open' => !empty($cb_profile_form_state['advanced_open']),
+  ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ?></script>
+<?php endif; ?>
 
 </div>
