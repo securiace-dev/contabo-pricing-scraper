@@ -1,14 +1,14 @@
 {
   "schema_version": "1.1",
   "scraper_version": "2.3.2",
-  "generated_at": "2026-09-27T20:44:16.550Z",
+  "generated_at": "2026-09-28T13:34:48.145Z",
   "plan_count": 16,
   "plans": {
     "https://contabo.com/en/vps/cloud-vps-10/": {
       "slug": "cloud-vps-10",
       "family": "Cloud VPS",
       "title": "Cloud VPS 10",
-      "fetched_at": "2026-09-27T20:44:09.805Z",
+      "fetched_at": "2026-09-28T13:34:33.942Z",
       "base_monthly_price": 5.5,
       "contract_periods": [
         {
@@ -235,15 +235,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "Debian 12",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-10",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Debian 13",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -652,7 +643,7 @@
       "slug": "cloud-vps-20",
       "family": "Cloud VPS",
       "title": "Cloud VPS 20",
-      "fetched_at": "2026-09-27T20:44:09.369Z",
+      "fetched_at": "2026-09-28T13:34:35.385Z",
       "base_monthly_price": 7.5,
       "contract_periods": [
         {
@@ -879,15 +870,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "Debian 12",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-20",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Debian 13",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -1296,7 +1278,7 @@
       "slug": "cloud-vps-30",
       "family": "Cloud VPS",
       "title": "Cloud VPS 30",
-      "fetched_at": "2026-09-27T20:44:13.355Z",
+      "fetched_at": "2026-09-28T13:34:32.308Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -1532,15 +1514,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "Debian 12",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-30",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Debian 13",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -1949,7 +1922,7 @@
       "slug": "cloud-vps-40",
       "family": "Cloud VPS",
       "title": "Cloud VPS 40",
-      "fetched_at": "2026-09-27T20:44:16.535Z",
+      "fetched_at": "2026-09-28T13:34:33.552Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -2185,15 +2158,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "Debian 12",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "cloud-vps-40",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Debian 13",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -2602,7 +2566,7 @@
       "slug": "cloud-vps-50",
       "family": "Cloud VPS",
       "title": "Cloud VPS 50",
-      "fetched_at": "2026-09-27T20:44:16.198Z",
+      "fetched_at": "2026-09-28T13:34:35.119Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -3246,7 +3210,7 @@
       "slug": "cloud-vps-60",
       "family": "Cloud VPS",
       "title": "Cloud VPS 60",
-      "fetched_at": "2026-09-27T20:44:12.545Z",
+      "fetched_at": "2026-09-28T13:34:37.893Z",
       "base_monthly_price": 49,
       "contract_periods": [
         {
@@ -3890,7 +3854,7 @@
       "slug": "storage-vps-10",
       "family": "Storage VPS",
       "title": "Storage VPS 10",
-      "fetched_at": "2026-09-27T20:44:09.608Z",
+      "fetched_at": "2026-09-28T13:34:32.779Z",
       "base_monthly_price": 5.5,
       "contract_periods": [
         {
@@ -4470,8 +4434,8 @@
             "plan_sku": "storage-vps-10",
             "currency": "EUR",
             "dimension": "Storage Type",
-            "category": "SSD",
-            "option_label": "300 GB SSD",
+            "category": "NVMe",
+            "option_label": "300GB SSD / 150GB NVMe",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0,
             "is_default": true
@@ -4508,7 +4472,7 @@
       "slug": "storage-vps-20",
       "family": "Storage VPS",
       "title": "Storage VPS 20",
-      "fetched_at": "2026-09-27T20:44:09.159Z",
+      "fetched_at": "2026-09-28T13:34:34.763Z",
       "base_monthly_price": 7.5,
       "contract_periods": [
         {
@@ -5135,7 +5099,7 @@
       "slug": "storage-vps-30",
       "family": "Storage VPS",
       "title": "Storage VPS 30",
-      "fetched_at": "2026-09-27T20:44:09.458Z",
+      "fetched_at": "2026-09-28T13:34:38.679Z",
       "base_monthly_price": 14,
       "contract_periods": [
         {
@@ -5780,7 +5744,7 @@
       "slug": "storage-vps-40",
       "family": "Storage VPS",
       "title": "Storage VPS 40",
-      "fetched_at": "2026-09-27T20:44:09.489Z",
+      "fetched_at": "2026-09-28T13:34:48.132Z",
       "base_monthly_price": 25,
       "contract_periods": [
         {
@@ -6051,15 +6015,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "storage-vps-40",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -6434,7 +6389,7 @@
       "slug": "storage-vps-50",
       "family": "Storage VPS",
       "title": "Storage VPS 50",
-      "fetched_at": "2026-09-27T20:44:12.168Z",
+      "fetched_at": "2026-09-28T13:34:37.261Z",
       "base_monthly_price": 37,
       "contract_periods": [
         {
@@ -6705,15 +6660,6 @@
             "dimension": "Image",
             "category": "OS",
             "option_label": "FreeBSD 12.2",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "storage-vps-50",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "OS",
-            "option_label": "Rocky Linux 10",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -7088,7 +7034,7 @@
       "slug": "vds-s",
       "family": "Cloud VDS",
       "title": "Cloud VDS S",
-      "fetched_at": "2026-09-27T20:44:08.400Z",
+      "fetched_at": "2026-09-28T13:34:39.770Z",
       "base_monthly_price": 49,
       "contract_periods": [
         {
@@ -7505,15 +7451,6 @@
             "currency": "EUR",
             "dimension": "Networking",
             "category": "Bandwidth",
-            "option_label": "10 TB Out + Unlimited In",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-s",
-            "currency": "EUR",
-            "dimension": "Networking",
-            "category": "Bandwidth",
             "option_label": "32 TB Out + Unlimited In",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
@@ -7760,7 +7697,7 @@
       "slug": "vds-m",
       "family": "Cloud VDS",
       "title": "Cloud VDS M",
-      "fetched_at": "2026-09-27T20:44:15.382Z",
+      "fetched_at": "2026-09-28T13:34:42.586Z",
       "base_monthly_price": 62,
       "contract_periods": [
         {
@@ -8432,7 +8369,7 @@
       "slug": "vds-l",
       "family": "Cloud VDS",
       "title": "Cloud VDS L",
-      "fetched_at": "2026-09-27T20:44:12.895Z",
+      "fetched_at": "2026-09-28T13:34:42.440Z",
       "base_monthly_price": 87,
       "contract_periods": [
         {
@@ -8640,15 +8577,6 @@
             "dimension": "Image",
             "category": "Blockchain",
             "option_label": "Horizen Node",
-            "monthly_price_delta": 0,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-l",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Blockchain",
-            "option_label": "IPFS Node",
             "monthly_price_delta": 0,
             "setup_fee_delta": 0
           },
@@ -9096,7 +9024,7 @@
       "slug": "vds-xl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XL",
-      "fetched_at": "2026-09-27T20:44:12.688Z",
+      "fetched_at": "2026-09-28T13:34:38.503Z",
       "base_monthly_price": 118,
       "contract_periods": [
         {
@@ -9650,18 +9578,6 @@
             "currency": "EUR",
             "dimension": "Region",
             "category": "Asia",
-            "option_label": "Japan",
-            "region_group": "Asia",
-            "country": "Japan",
-            "country_code": "JP",
-            "monthly_price_delta": 53,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xl",
-            "currency": "EUR",
-            "dimension": "Region",
-            "category": "Asia",
             "option_label": "Singapore",
             "region_group": "Asia",
             "country": "Singapore",
@@ -9777,7 +9693,7 @@
       "slug": "vds-xxl",
       "family": "Cloud VDS",
       "title": "Cloud VDS XXL",
-      "fetched_at": "2026-09-27T20:44:12.805Z",
+      "fetched_at": "2026-09-28T13:34:42.498Z",
       "base_monthly_price": 174,
       "contract_periods": [
         {
@@ -10140,15 +10056,6 @@
             "category": "Panels",
             "option_label": "Plesk Admin Edition",
             "monthly_price_delta": 12,
-            "setup_fee_delta": 0
-          },
-          {
-            "plan_sku": "vds-xxl",
-            "currency": "EUR",
-            "dimension": "Image",
-            "category": "Panels",
-            "option_label": "Plesk Host Edition",
-            "monthly_price_delta": 36.5,
             "setup_fee_delta": 0
           },
           {
