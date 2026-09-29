@@ -147,7 +147,6 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Rocky Linux 9,0,0,,,,,
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2016 Datacenter,25.35,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2019 Datacenter,28,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,OS,Windows Server 2022 Datacenter,28,0,,,,,,EUR
@@ -157,6 +156,7 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Plesk Admin Editio
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Webmin,0,0,,,,,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Bandwidth,Unlimited Traffic,0,0,,,,,true,EUR
@@ -166,6 +166,7 @@ cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Private Networking,N
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Networking,Private Networking,Private Networking Enabled,2.29,0,,,,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (Central),3.25,0,America,United States (Central),US,Central,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (East),4.75,0,America,United States (East),US,East,,EUR
+cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,America,United States (West),4,0,America,United States (West),US,West,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,India,7.4,0,Asia,India,IN,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Japan,8,0,Asia,Japan,JP,,,EUR
 cloud-vps-30,cloud-vps-30,Cloud VPS,Cloud VPS 30,Region,Asia,Singapore,7.85,0,Asia,Singapore,SG,,,EUR
@@ -826,18 +827,16 @@ vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,2 TB SSD,39.09,0,,,,,,EUR
 vds-l,vds-l,Cloud VDS,Cloud VDS L,Storage,SSD,4 TB SSD,103.49,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Data Protection,None,No Backup Space,0,0,,,,,true,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Coolify Server,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,DeepSeek,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Docker,0,0,,,,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Dokploy Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,GitLab Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Hermes Agent Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,LAMP,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,n8n Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Nextcloud Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Ollama Server,0,0,,,,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,OpenClaw Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Paperclip Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,WireGuard Server,0,0,,,,,,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Apps,Zeroclaw Server,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Bitcoin Node,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Ethereum Staking Node,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Blockchain,Flux Node,0,0,,,,,,EUR
@@ -848,11 +847,11 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,AlmaLinux 9,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Arch Linux,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Debian 12,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,FreeBSD 12.2,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Rocky Linux 8,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Rocky Linux 9,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 19.10 (64 Bit),0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 22.04,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 24.04,0,0,,,,,true,EUR
-vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Ubuntu 26.04,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2012R2 Standard,50,50,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2016 Standard,50,50,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,OS,Windows Server 2019 Standard,50,50,,,,,,EUR
@@ -863,7 +862,9 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Admin Edition,12,0,,,,,,
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Host Edition,36.5,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Plesk Pro Edition,19,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Webmin,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Image,Panels,Webmin + LAMP,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,10 TB Out + Unlimited In,0,0,,,,,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,160 TB Out + Unlimited In,172.49,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,243 TB Out + Unlimited In,258.79,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,32 TB Out + Unlimited In,0,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Bandwidth,80 TB Out + Unlimited In,86.29,0,,,,,,EUR
@@ -874,6 +875,7 @@ vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,IPv4,Additional IP Address,3.5,0
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Private Networking,No Private Networking,0,0,,,,,true,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Networking,Private Networking,Private Networking Enabled,5.79,0,,,,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (Central),21,0,America,United States (Central),US,Central,,EUR
+vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (East),32,0,America,United States (East),US,East,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,America,United States (West),26,0,America,United States (West),US,West,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,India,49,0,Asia,India,IN,,,EUR
 vds-xl,vds-xl,Cloud VDS,Cloud VDS XL,Region,Asia,Japan,53,0,Asia,Japan,JP,,,EUR
