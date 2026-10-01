@@ -95,6 +95,48 @@ final class CatalogEnvelopeBuilder
     }
 
     /**
+     * Per-plan options (PlanNormalizer's `options`) in the `configurations`
+     * document shape: {plans:{slug:{slug,family,options:{dimension:[choice]}}}}.
+     * A choice carries option_label, category (= its dimension), monthly_price,
+     * setup_price and, for object storage, size_gb.
+     *
+     * @param list<array<string,mixed>> $plans
+     * @return array{plans:array<string,array<string,mixed>>}
+     */
+    public static function configurationsFromPlans(array $plans): array
+    {
+        $out = [];
+        foreach ($plans as $plan) {
+            if (!is_array($plan) || !isset($plan['options']) || !is_array($plan['options']) || !isset($plan['product_slug'])) {
+                continue;
+            }
+            $dims = [];
+            foreach ($plan['options'] as $dimension => $choices) {
+                if ($choices === null) {
+                    continue;
+                }
+                $list = is_array($choices) && self::isList($choices) ? $choices : [$choices];
+                foreach ($list as $c) {
+                    if (!is_array($c) || !isset($c['name'])) {
+                        continue;
+                    }
+                    $choice = $c;
+                    unset($choice['name']);
+                    $dims[(string) $dimension][] = ['option_label' => (string) $c['name'], 'category' => (string) $dimension] + $choice;
+                }
+            }
+            if ($dims !== []) {
+                $out[(string) $plan['product_slug']] = [
+                    'slug' => (string) $plan['product_slug'],
+                    'family' => (string) ($plan['family'] ?? ''),
+                    'options' => $dims,
+                ];
+            }
+        }
+        return ['plans' => $out];
+    }
+
+    /**
      * @param array<string,mixed> $configurations
      * @param list<array<string,mixed>> $items
      */
@@ -103,6 +145,10 @@ final class CatalogEnvelopeBuilder
         $plans = $configurations['plans'] ?? null;
         if (!self::isObject($plans)) {
             return;
+        }
+        $seenIds = [];
+        foreach ($items as $it) {
+            $seenIds[(string) $it['machine_id']] = true;
         }
         foreach ($plans as $plan) {
             if (!is_array($plan)) {
@@ -125,6 +171,14 @@ final class CatalogEnvelopeBuilder
                         . ':' . self::machinePart((string) $dimension)
                         . ':' . self::machinePart($category)
                         . ':' . self::machinePart($label);
+                    if (strlen($machineId) > 191) {
+                        // the importer bounds machine ids at 191 chars: keep them unique, never truncate blindly
+                        $machineId = substr($machineId, 0, 170) . '-' . substr(hash('sha256', $machineId), 0, 20);
+                    }
+                    if (isset($seenIds[$machineId])) {
+                        continue; // two labels that differ only by punctuation collapse to one id
+                    }
+                    $seenIds[$machineId] = true;
                     $items[] = self::catalogItem(
                         $machineId,
                         self::observedProviderId($choice),

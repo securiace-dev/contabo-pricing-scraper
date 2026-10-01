@@ -9,31 +9,36 @@ namespace ContaboPricing\Scrape;
  *
  *   {families[], legacy[], addon_groups[]}
  *
- * Stable mapping rule (see docs/round2-2026-10-01/catalog-structure.md):
- *  - a FAMILY is a category, keyed by its category SLUG (stable), displayed
- *    with the nav title (fallback: category title), ordered by nav position;
+ * NOTHING about the family lineup is hard-coded. Each run DISCOVERS it:
+ *  - a FAMILY is a category the site's own navigation links to. A nav entry is
+ *    matched to a category by (a) the link's last path segment equalling the
+ *    category slug, (b) the normalised nav title equalling the category title,
+ *    or (c) the same set of dash-separated tokens (`/vps-performance/` =
+ *    `performance-vps`). A tie or no match leaves the nav entry unlinked;
+ *  - the family label is the nav title (fallback: category title);
  *  - membership comes from the category's own `products` map, NOT from
- *    product.categoryId (the Performance plans carry categoryId=VPS);
- *  - only allow-listed categories become families; everything else (HP/MP
- *    price-tier mirrors, 2026 re-launch, SP/SC sales, outlet, object storage
- *    categories and the uncategorised legacy records) goes to `legacy`.
+ *    product.categoryId (the Performance plans carry categoryId=VPS). A
+ *    product that is a member of several linked families is owned by the
+ *    most specific one (fewest members, then nav order);
+ *  - only plan-shaped products count (EUR price > 0 and a cpu or ram spec), so
+ *    object-storage unit-price products never become plans;
+ *  - categories the nav does not link to (HP/MP price-tier mirrors, 2026
+ *    re-launch, SP/SC sales, outlet ...) and uncategorised records go to
+ *    `legacy`.
+ * FamilyRegistry persists what discover() reports and tracks its history.
  *
  * PHP 7.4 compatible.
  */
 final class CatalogStructure
 {
-    /**
-     * slug => [nav link, label fallback, slug regex excluded from the family].
-     * Order here is the fallback order when navItems is absent.
-     */
-    public const FAMILY_ALLOWLIST = [
-        'vps' => ['nav' => '/vps/', 'label' => 'Core VPS', 'exclude' => '/-plus-\d+$/'],
-        'performance-vps' => ['nav' => '/vps-performance/', 'label' => 'Performance VPS', 'exclude' => ''],
-        'vds' => ['nav' => '/vps-dedicated/', 'label' => 'Max Performance VPS', 'exclude' => ''],
-        'storage-vps' => ['nav' => '/storage-vps/', 'label' => 'Storage VPS', 'exclude' => ''],
-        'dedicated-servers' => ['nav' => '/dedicated-servers/', 'label' => 'Dedicated Servers', 'exclude' => ''],
-        'gpu-vps' => ['nav' => '/gpu-vps/', 'label' => 'GPU VPS', 'exclude' => ''],
-    ];
+    /** @var array<string,mixed>|null decoded preloaded[0] this instance describes */
+    private $pre;
+
+    /** @param array<string,mixed>|null $pre */
+    public function __construct(?array $pre = null)
+    {
+        $this->pre = $pre;
+    }
 
     public const OBJECT_STORAGE_STEP_GB = 250;
 
@@ -50,69 +55,158 @@ final class CatalogStructure
     ];
 
     /**
+     * Discovered categories and nav, keyed by category id.
+     *
+     * Category keys: category_id, slug, title, nav_title, nav_href (path),
+     * nav_position, in_nav, plan_family (linked AND has plan products),
+     * members (raw product slugs), plans (owned plan slugs, plan_family only),
+     * plan_ids, sample_product_url, lowest_price.
+     * Nav keys: title, link, position, category_id (null = unlinked).
+     *
+     * @param array<string,mixed>|null $pre
+     * @return array{categories:array<string,array<string,mixed>>,nav:list<array<string,mixed>>}
+     */
+    public function discover(?array $pre = null): array
+    {
+        $pre = $pre ?? $this->pre ?? [];
+        $products = isset($pre['products']) && is_array($pre['products']) ? $pre['products'] : [];
+        $rawCats = isset($pre['categories']) && is_array($pre['categories']) ? $pre['categories'] : [];
+
+        $cats = [];
+        foreach ($rawCats as $key => $c) {
+            if (!is_array($c) || !isset($c['slug']) || !is_string($c['slug']) || $c['slug'] === '') {
+                continue;
+            }
+            $id = (string) (isset($c['id']) && is_scalar($c['id']) && (string) $c['id'] !== '' ? $c['id'] : $key);
+            $memberIds = isset($c['products']) && is_array($c['products']) ? array_keys($c['products']) : [];
+            $members = [];
+            foreach ($memberIds as $pid) {
+                if (isset($products[$pid]) && is_array($products[$pid]) && isset($products[$pid]['slug']) && is_string($products[$pid]['slug'])) {
+                    $members[] = $products[$pid]['slug'];
+                }
+            }
+            $cats[$id] = [
+                'category_id' => $id,
+                'slug' => (string) $c['slug'],
+                'title' => self::clean(isset($c['title']) ? (string) $c['title'] : (string) $c['slug']),
+                'nav_title' => null,
+                'nav_href' => null,
+                'nav_position' => null,
+                'in_nav' => false,
+                'plan_family' => false,
+                'members' => $members,
+                'member_ids' => array_map('strval', $memberIds),
+                'plans' => [],
+                'plan_ids' => [],
+                'sample_product_url' => null,
+                'lowest_price' => isset($c['lowestPrice']) && is_array($c['lowestPrice']) ? $c['lowestPrice'] : null,
+            ];
+        }
+
+        // ── nav -> category linking ─────────────────────────────────────────
+        $nav = $this->navEntries($pre);
+        foreach ($nav as $i => $entry) {
+            $best = null;
+            $bestScore = 0;
+            $tie = false;
+            foreach ($cats as $id => $cat) {
+                $score = self::matchScore($entry, $cat);
+                if ($score > $bestScore) {
+                    $best = $id;
+                    $bestScore = $score;
+                    $tie = false;
+                } elseif ($score === $bestScore && $score > 0) {
+                    $tie = true;
+                }
+            }
+            $nav[$i]['category_id'] = ($best !== null && !$tie && $bestScore >= 2) ? $best : null;
+        }
+        foreach ($nav as $entry) {
+            $id = $entry['category_id'];
+            if ($id === null || $cats[$id]['in_nav']) {
+                continue; // first (earliest) nav entry wins
+            }
+            $cats[$id]['in_nav'] = true;
+            $cats[$id]['nav_title'] = $entry['title'];
+            $cats[$id]['nav_href'] = $entry['link'];
+            $cats[$id]['nav_position'] = $entry['position'];
+        }
+
+        // ── plan-shaped members of nav-linked categories; most specific owner ──
+        $linked = [];
+        foreach ($cats as $id => $cat) {
+            if ($cat['in_nav']) {
+                $linked[] = $id;
+            }
+        }
+        usort($linked, static function ($a, $b) use ($cats): int {
+            return $cats[$a]['nav_position'] <=> $cats[$b]['nav_position'];
+        });
+        $owner = [];
+        foreach ($linked as $id) {
+            foreach ($cats[$id]['member_ids'] as $pid) {
+                if (!isset($products[$pid]) || !is_array($products[$pid]) || !self::isPlanShaped($products[$pid])) {
+                    continue;
+                }
+                if (!isset($owner[$pid]) || count($cats[$id]['member_ids']) < count($cats[$owner[$pid]]['member_ids'])) {
+                    $owner[$pid] = $id;
+                }
+            }
+        }
+        foreach ($linked as $id) {
+            foreach ($cats[$id]['member_ids'] as $pid) {
+                if (($owner[$pid] ?? null) !== $id) {
+                    continue;
+                }
+                $cats[$id]['plans'][] = (string) $products[$pid]['slug'];
+                $cats[$id]['plan_ids'][] = $pid;
+                if ($cats[$id]['sample_product_url'] === null) {
+                    $cats[$id]['sample_product_url'] = PlanNormalizer::productUrl(
+                        isset($products[$pid]['type']) && is_string($products[$pid]['type']) ? $products[$pid]['type'] : '',
+                        (string) $products[$pid]['slug']
+                    );
+                }
+            }
+            $cats[$id]['plan_family'] = $cats[$id]['plans'] !== [];
+        }
+
+        return ['categories' => $cats, 'nav' => $nav];
+    }
+
+    /**
      * @param array<string,mixed> $pre decoded preloaded[0]
      * @return array{families:list<array<string,mixed>>,legacy:list<array<string,mixed>>,addon_groups:list<array<string,mixed>>}
      */
     public function build(array $pre): array
     {
         $products = isset($pre['products']) && is_array($pre['products']) ? $pre['products'] : [];
-        $categories = isset($pre['categories']) && is_array($pre['categories']) ? $pre['categories'] : [];
-
         $objectUnits = $this->objectStorageUnits($products);
-
-        // slug => category (id kept)
-        $bySlug = [];
-        foreach ($categories as $cid => $cat) {
-            if (is_array($cat) && isset($cat['slug'])) {
-                $cat['id'] = isset($cat['id']) ? $cat['id'] : $cid;
-                $bySlug[(string) $cat['slug']] = $cat;
-            }
-        }
-
-        $navTitles = $this->navTitlesByLink($pre);
-        $order = $this->familyOrder($navTitles);
+        $d = $this->discover($pre);
 
         $families = [];
         $claimed = [];
-        foreach ($order as $slug) {
-            if (!isset($bySlug[$slug])) {
-                continue;
-            }
-            $cat = $bySlug[$slug];
-            $rule = self::FAMILY_ALLOWLIST[$slug];
-            $label = isset($navTitles[$rule['nav']]) ? $navTitles[$rule['nav']] : (isset($cat['title']) ? (string) $cat['title'] : $rule['label']);
+        foreach (self::familyCategories($d) as $cat) {
             $plans = [];
-            $members = isset($cat['products']) && is_array($cat['products']) ? array_keys($cat['products']) : [];
-            foreach ($members as $pid) {
-                if (!isset($products[$pid]) || !is_array($products[$pid])) {
-                    continue;
-                }
-                $p = $products[$pid];
-                $pslug = isset($p['slug']) ? (string) $p['slug'] : '';
-                if ($rule['exclude'] !== '' && preg_match($rule['exclude'], $pslug) === 1) {
-                    continue;
-                }
-                $claimed[$pid] = $slug;
-                $plans[] = $this->plan($p, $objectUnits, $slug);
+            foreach ($cat['plan_ids'] as $pid) {
+                $claimed[$pid] = $cat['slug'];
+                $plans[] = $this->plan($products[$pid], $objectUnits, $cat['slug']);
             }
             $families[] = [
-                'key' => $slug,
-                'label' => trim($label),
-                'category_id' => (string) $cat['id'],
-                'category_slug' => $slug,
-                'nav_link' => $rule['nav'],
-                'lowest_price' => isset($cat['lowestPrice']) && is_array($cat['lowestPrice']) ? $cat['lowestPrice'] : null,
+                'key' => $cat['slug'],
+                'label' => $cat['nav_title'] !== null && $cat['nav_title'] !== '' ? $cat['nav_title'] : $cat['title'],
+                'category_id' => $cat['category_id'],
+                'category_slug' => $cat['slug'],
+                'nav_link' => $cat['nav_href'],
+                'lowest_price' => $cat['lowest_price'],
                 'plans' => $plans,
             ];
         }
 
         $categoryOf = [];
-        foreach ($bySlug as $slug => $cat) {
-            if (isset($cat['products']) && is_array($cat['products'])) {
-                foreach (array_keys($cat['products']) as $pid) {
-                    if (!isset($categoryOf[$pid])) {
-                        $categoryOf[$pid] = $slug;
-                    }
+        foreach ($d['categories'] as $cat) {
+            foreach ($cat['member_ids'] as $pid) {
+                if (!isset($categoryOf[$pid])) {
+                    $categoryOf[$pid] = $cat['slug'];
                 }
             }
         }
@@ -137,6 +231,120 @@ final class CatalogStructure
             'legacy' => $legacy,
             'addon_groups' => $this->addonGroups($products),
         ];
+    }
+
+    /**
+     * Plan-family categories of a discover() result, in nav order.
+     * @param array{categories:array<string,array<string,mixed>>,nav:list<array<string,mixed>>} $d
+     * @return list<array<string,mixed>>
+     */
+    public static function familyCategories(array $d): array
+    {
+        $out = [];
+        foreach ($d['categories'] as $cat) {
+            if (!empty($cat['plan_family'])) {
+                $out[] = $cat;
+            }
+        }
+        usort($out, static function (array $a, array $b): int {
+            return $a['nav_position'] <=> $b['nav_position'];
+        });
+        return $out;
+    }
+
+    /** A product that can be sold as a plan: EUR price > 0 and a cpu or ram spec. @param array<string,mixed> $p */
+    public static function isPlanShaped(array $p): bool
+    {
+        if (!isset($p['slug']) || !is_string($p['slug']) || $p['slug'] === '') {
+            return false;
+        }
+        if (!isset($p['price']['EUR']) || !is_numeric($p['price']['EUR']) || $p['price']['EUR'] <= 0) {
+            return false;
+        }
+        foreach ((isset($p['specs']) && is_array($p['specs']) ? $p['specs'] : []) as $s) {
+            if (is_array($s) && isset($s['type']) && ($s['type'] === 'cpu' || $s['type'] === 'ram')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static function clean(string $s): string
+    {
+        return trim((string) preg_replace('/\s+/u', ' ', $s));
+    }
+
+    private static function norm(string $s): string
+    {
+        return strtolower((string) preg_replace('/[^a-z0-9]+/i', '', $s));
+    }
+
+    /** @return list<string> sorted dash tokens */
+    private static function tokens(string $slug): array
+    {
+        $t = array_values(array_filter(explode('-', strtolower($slug)), static function ($x): bool {
+            return $x !== '';
+        }));
+        sort($t);
+        return $t;
+    }
+
+    /**
+     * @param array<string,mixed> $entry nav entry
+     * @param array<string,mixed> $cat category
+     */
+    private static function matchScore(array $entry, array $cat): int
+    {
+        $score = 0;
+        $seg = trim((string) $entry['link'], '/');
+        $seg = strpos($seg, '/') !== false ? substr($seg, (int) strrpos($seg, '/') + 1) : $seg;
+        if ($seg !== '' && strtolower($seg) === strtolower((string) $cat['slug'])) {
+            $score += 3;
+        } elseif ($seg !== '' && self::tokens($seg) === self::tokens((string) $cat['slug'])) {
+            $score += 2;
+        }
+        if (self::norm((string) $entry['title']) !== '' && self::norm((string) $entry['title']) === self::norm((string) $cat['title'])) {
+            $score += 3;
+        }
+        return $score;
+    }
+
+    /**
+     * Every nav entry that links to a path, in document order (children of
+     * groups included), one entry per distinct link.
+     *
+     * @param array<string,mixed> $pre
+     * @return list<array{title:string,link:string,position:int,category_id:?string}>
+     */
+    private function navEntries(array $pre): array
+    {
+        $out = [];
+        $seen = [];
+        $walk = function ($nodes, int $depth) use (&$walk, &$out, &$seen): void {
+            if (!is_array($nodes) || $depth > 4) {
+                return;
+            }
+            foreach ($nodes as $n) {
+                if (!is_array($n)) {
+                    continue;
+                }
+                $f = isset($n['fields']) && is_array($n['fields']) ? $n['fields'] : [];
+                if ($depth > 0 && isset($f['link'], $f['title']) && is_string($f['link']) && is_string($f['title'])) {
+                    $path = (string) preg_replace('#^https?://[^/]+#i', '', $f['link']);
+                    $path = (string) preg_replace('#^/en(?=/)#', '', $path);
+                    $path = '/' . trim($path, '/') . '/';
+                    if ($path !== '//' && !isset($seen[$path])) {
+                        $seen[$path] = true;
+                        $out[] = ['title' => self::clean($f['title']), 'link' => $path, 'position' => count($out), 'category_id' => null];
+                    }
+                }
+                if (isset($n['children'])) {
+                    $walk($n['children'], $depth + 1);
+                }
+            }
+        };
+        $walk(isset($pre['navItems']) && is_array($pre['navItems']) ? $pre['navItems'] : [], 0);
+        return $out;
     }
 
     /** @param array<string,mixed> $product */
@@ -266,14 +474,26 @@ final class CatalogStructure
     {
         $u = [];
         foreach ($products as $p) {
-            if (is_array($p) && isset($p['slug'], $p['price']['EUR']) && isset(self::OBJECT_REGIONS[$p['slug']]) && is_numeric($p['price']['EUR'])) {
-                $u[self::OBJECT_REGIONS[$p['slug']]] = (float) $p['price']['EUR'];
+            if (!is_array($p) || !isset($p['slug'], $p['price']['EUR']) || !is_string($p['slug']) || !is_numeric($p['price']['EUR'])) {
+                continue;
             }
+            $isObject = (isset($p['type']) && $p['type'] === 'object-storage') || isset(self::OBJECT_REGIONS[$p['slug']]);
+            if (!$isObject) {
+                continue;
+            }
+            // known slugs keep the customer-facing region name; an unknown region slug
+            // (a new object-storage location) is title-cased instead of being dropped
+            $label = self::OBJECT_REGIONS[$p['slug']] ?? ucwords(str_replace('-', ' ', $p['slug']));
+            $u[$label] = (float) $p['price']['EUR'];
         }
         return $u;
     }
 
     /**
+     * Per-plan add-ons by class, each with monthly and setup price (EUR).
+     * Object storage has no price on the add-on: it is derived as
+     * (region object-storage product price) x size / 250 GB.
+     *
      * @param array<string,mixed> $addons
      * @param array<string,float> $objectUnits
      * @return array<string,mixed>
@@ -282,7 +502,7 @@ final class CatalogStructure
     {
         $o = [
             'regions' => [], 'storage_upgrades' => [], 'backup' => null, 'object_storage' => [],
-            'os_images' => [], 'apps' => [], 'panels' => [],
+            'os_images' => [], 'apps' => [], 'panels' => [], 'monitoring' => [], 'other' => [],
         ];
         $seen = [];
         foreach ($addons as $a) {
@@ -292,31 +512,43 @@ final class CatalogStructure
             $title = trim($a['title']);
             $class = $this->classifyAddon($a);
             $eur = isset($a['price']['EUR']) && is_numeric($a['price']['EUR']) ? $a['price']['EUR'] + 0 : null;
+            $setup = isset($a['setupPrice']['EUR']) && is_numeric($a['setupPrice']['EUR']) ? $a['setupPrice']['EUR'] + 0 : 0;
             $key = $class . '|' . $title;
             if (isset($seen[$key])) {
                 continue;
             }
             $seen[$key] = true;
+            $choice = ['name' => $title, 'monthly_price' => $eur === null ? 0 : $eur, 'setup_price' => $setup];
             switch ($class) {
                 case 'region':
-                    $o['regions'][] = ['name' => $title, 'monthly_price' => $eur === null ? 0 : $eur];
+                    $o['regions'][] = $choice;
                     break;
                 case 'storage_upgrade':
                     if ($eur !== null) {
-                        $o['storage_upgrades'][] = ['name' => $title, 'monthly_price' => $eur];
+                        $o['storage_upgrades'][] = $choice;
                     }
                     break;
                 case 'backup':
-                    $o['backup'] = ['name' => $title, 'monthly_price' => $eur === null ? 0 : $eur];
+                    $o['backup'] = $choice;
                     break;
                 case 'os_image':
-                    $o['os_images'][] = ['name' => $title, 'monthly_price' => $eur === null ? 0 : $eur];
+                    $o['os_images'][] = $choice;
                     break;
                 case 'app':
-                    $o['apps'][] = ['name' => $title, 'monthly_price' => $eur === null ? 0 : $eur];
+                    $o['apps'][] = $choice;
                     break;
                 case 'panel':
-                    $o['panels'][] = ['name' => $title, 'monthly_price' => $eur === null ? 0 : $eur];
+                    $o['panels'][] = $choice;
+                    break;
+                case 'monitoring':
+                    $o['monitoring'][] = $choice;
+                    break;
+                case 'ftp_storage':
+                case 'other':
+                    // UI marker add-ons ("None", included-size labels) carry no price: noise
+                    if ($eur !== null) {
+                        $o['other'][] = $choice;
+                    }
                     break;
                 case 'object_storage':
                     if (preg_match('/^(\d+(?:\.\d+)?)\s*(GB|TB)\s+Object Storage/i', $title, $m) === 1) {
@@ -326,6 +558,7 @@ final class CatalogStructure
                                 'name' => $m[1] . ' ' . strtoupper($m[2]) . ' Object Storage in ' . $region,
                                 'size_gb' => self::num($gb),
                                 'monthly_price' => round($unit * $gb / self::OBJECT_STORAGE_STEP_GB, 2),
+                                'setup_price' => 0,
                             ];
                         }
                     }
@@ -459,47 +692,5 @@ final class CatalogStructure
             return 'legacy cloud-vps-N';
         }
         return 'other';
-    }
-
-    /** @return array<string,string> nav link => title */
-    private function navTitlesByLink(array $pre): array
-    {
-        $out = [];
-        $nav = isset($pre['navItems']) && is_array($pre['navItems']) ? $pre['navItems'] : [];
-        foreach ($nav as $top) {
-            if (!is_array($top) || !isset($top['children']) || !is_array($top['children'])) {
-                continue;
-            }
-            foreach ($top['children'] as $child) {
-                if (is_array($child) && isset($child['fields']['link'], $child['fields']['title']) && is_string($child['fields']['link'])) {
-                    if (!isset($out[$child['fields']['link']])) {
-                        $out[$child['fields']['link']] = (string) $child['fields']['title'];
-                    }
-                }
-            }
-        }
-        return $out;
-    }
-
-    /**
-     * Allow-listed slugs ordered by nav position (nav links not present sort
-     * after, in allow-list order).
-     * @param array<string,string> $navTitles
-     * @return list<string>
-     */
-    private function familyOrder(array $navTitles): array
-    {
-        $links = array_keys($navTitles);
-        $rank = [];
-        $i = 0;
-        foreach (self::FAMILY_ALLOWLIST as $slug => $rule) {
-            $pos = array_search($rule['nav'], $links, true);
-            $rank[$slug] = [$pos === false ? 1000 : $pos, $i++];
-        }
-        $slugs = array_keys(self::FAMILY_ALLOWLIST);
-        usort($slugs, function ($a, $b) use ($rank) {
-            return $rank[$a] <=> $rank[$b];
-        });
-        return $slugs;
     }
 }

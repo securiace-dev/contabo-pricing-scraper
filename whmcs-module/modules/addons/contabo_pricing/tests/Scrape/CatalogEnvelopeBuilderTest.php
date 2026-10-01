@@ -103,7 +103,7 @@ final class CatalogEnvelopeBuilderTest extends TestCase
     {
         $html = (string) file_get_contents(__DIR__ . '/../fixtures/scrape/cloud_vps_10.html');
         $plans = (new PlanExtractor())->extract($html, null, '2026-07-30T10:20:30.000Z')->plans;
-        $this->assertCount(16, $plans);
+        $this->assertCount(20, $plans);
 
         $envelope = (new CatalogEnvelopeBuilder())->build(
             $plans,
@@ -116,16 +116,50 @@ final class CatalogEnvelopeBuilderTest extends TestCase
         $result = (new CatalogImportService())->import($envelope, 7);
 
         $this->assertTrue($result['created']);
-        $this->assertSame(16, $result['item_count']);
+        $this->assertSame(20, $result["item_count"]);
         $this->assertSame($envelope['catalog_version'], $result['catalog_version']);
         $this->assertSame($envelope['payload_hash'], $result['payload_hash']);
         $this->assertCount(1, Capsule::$tables['mod_contabo_catalog_versions']);
-        $this->assertCount(16, Capsule::$tables['mod_contabo_catalog_items']);
+        $this->assertCount(20, Capsule::$tables["mod_contabo_catalog_items"]);
 
         // Re-importing the identical envelope is idempotent.
         $again = (new CatalogImportService())->import($envelope, 7);
         $this->assertFalse($again['created']);
-        $this->assertCount(16, Capsule::$tables['mod_contabo_catalog_items']);
+        $this->assertCount(20, Capsule::$tables["mod_contabo_catalog_items"]);
+    }
+
+    public function testPlanOptionsBecomeConfigurationItemsThatImport(): void
+    {
+        $html = (string) file_get_contents(__DIR__ . '/../fixtures/scrape/round1_treg_anyapi.html');
+        $plans = (new PlanExtractor())->extract($html, null, '2026-10-01T10:00:00.000Z')->plans;
+        $this->assertCount(27, $plans);
+        $configs = CatalogEnvelopeBuilder::configurationsFromPlans($plans);
+        $this->assertCount(27, $configs['plans']);
+        $c4 = $configs['plans']['cloud-vps-core-4'];
+        $this->assertSame('Core VPS', $c4['family']);
+        $labels = array_column($c4['options']['regions'], 'monthly_price', 'option_label');
+        $this->assertEquals(2.4, $labels['Asia (India)']);
+        $this->assertSame('regions', $c4['options']['regions'][0]['category']);
+        $this->assertContains('Auto Backup', array_column($c4['options']['backup'], 'option_label'));
+
+        $envelope = (new CatalogEnvelopeBuilder())->build($plans, $configs, ['option_catalog' => []], '2026-10-01T10:00:00Z', 'whmcs-native-scrape');
+        $ids = array_column($envelope['items'], 'machine_id');
+        $this->assertSame($ids, array_values(array_unique($ids)), 'machine ids are unique');
+        $this->assertLessThanOrEqual(191, max(array_map('strlen', $ids)));
+        $this->assertGreaterThan(27 * 20, count($envelope['items']));
+
+        $r = (new CatalogImportService())->import($envelope, 1);
+        $this->assertTrue($r['created']);
+        $this->assertSame(count($envelope['items']), $r['item_count']);
+        // payload.options rides along on the plan item itself
+        $planItem = null;
+        foreach ($envelope['items'] as $it) {
+            if ($it['machine_id'] === 'plan:cloud-vps-core-4') {
+                $planItem = $it;
+            }
+        }
+        $this->assertArrayHasKey('options', $planItem['payload']);
+        $this->assertSame(['EUR' => 5.5, 'USD' => 6.6, 'GBP' => 5.4], $planItem['payload']['prices']);
     }
 
     public function testConfigurationOptionsImportToo(): void

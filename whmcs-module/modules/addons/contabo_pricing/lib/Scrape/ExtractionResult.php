@@ -21,14 +21,22 @@ final class ExtractionResult
     public $warnings;
     /** @var array{title:?string, monthly_eur:?float}|null */
     public $probe;
+    /** @var array{categories:array<string,array<string,mixed>>,nav:list<array<string,mixed>>}|null discovered structure (sapper only) */
+    public $structure;
+    /** @var list<string> category titles the page's nav rendered (only nav entries that link to a category) */
+    public $navTitles;
 
     /**
      * @param list<array<string,mixed>> $plans
      * @param list<string> $warnings
      * @param array{title:?string, monthly_eur:?float}|null $probe
+     * @param array<string,mixed>|null $structure
+     * @param list<string> $navTitles
      */
-    public function __construct(array $plans, string $strategy, bool $sapperPresent, array $warnings, ?array $probe = null)
+    public function __construct(array $plans, string $strategy, bool $sapperPresent, array $warnings, ?array $probe = null, ?array $structure = null, array $navTitles = [])
     {
+        $this->structure = $structure;
+        $this->navTitles = $navTitles;
         $this->plans = $plans;
         $this->strategy = $strategy;
         $this->sapperPresent = $sapperPresent;

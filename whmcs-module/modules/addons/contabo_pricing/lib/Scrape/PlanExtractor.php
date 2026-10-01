@@ -14,13 +14,16 @@ namespace ContaboPricing\Scrape;
  *                 -- every derived number is recomputed here
  *   S3 dom_probe  visible title/price only; cross-check, NEVER importable
  *
- * One Contabo page embeds the whole product catalogue, so a single page yields
- * every wanted plan; the extractor picks the wanted slugs out of it.
+ * One Contabo product page embeds the whole catalogue (categories, products,
+ * navItems), so a single page yields every plan. Which plans belong to which
+ * family is DISCOVERED from that blob by CatalogStructure (nav-linked
+ * categories, membership from category.products); products outside every
+ * family are excluded unless their slug is in the legacy allow-list.
  */
 final class PlanExtractor
 {
-    /** @var PlanUrlList */
-    private $urls;
+    /** @var list<string> product slugs allowed through although they belong to no family */
+    private $legacyAllowlist;
     /** @var PlanNormalizer */
     private $normalizer;
     /** @var DomPlanProbe */
@@ -28,13 +31,14 @@ final class PlanExtractor
     /** @var SapperLiteralDecoder */
     private $decoder;
 
+    /** @param list<string> $legacyAllowlist */
     public function __construct(
-        ?PlanUrlList $urls = null,
+        array $legacyAllowlist = [],
         ?DomPlanProbe $probe = null,
         ?SapperLiteralDecoder $decoder = null
     ) {
-        $this->urls = $urls ?? new PlanUrlList();
-        $this->normalizer = new PlanNormalizer($this->urls);
+        $this->legacyAllowlist = array_values(array_filter($legacyAllowlist, 'is_string'));
+        $this->normalizer = new PlanNormalizer();
         $this->probe = $probe ?? new DomPlanProbe();
         $this->decoder = $decoder ?? new SapperLiteralDecoder();
     }
@@ -49,24 +53,30 @@ final class PlanExtractor
         $warnings = [];
         $html = $html ?? '';
         $sapperPresent = $html !== '' && SapperLiteralDecoder::present($html);
-        $wanted = $this->wantedSlugs();
 
         // ── S1: sapper decoder ──────────────────────────────────────────────
         if ($sapperPresent) {
             try {
                 $payload = $this->decoder->decodeFromHtml($html);
-                $products = $payload['preloaded'][0]['products'] ?? null;
-                if (!is_array($products)) {
+                $pre = $payload['preloaded'][0] ?? null;
+                if (!is_array($pre) || !isset($pre['products']) || !is_array($pre['products'])) {
                     $warnings[] = 'sapper: preloaded[0].products missing';
                 } else {
                     $rules = PlanNormalizer::extractPasswordRules($html);
-                    $plans = $this->collect($products, $wanted, $fetchedAt, $rules, $warnings);
+                    $structure = (new CatalogStructure($pre))->discover();
+                    $plans = $this->collectDiscovered($pre, $structure, $fetchedAt, $rules, $warnings);
+                    $navTitles = [];
+                    foreach ($structure['nav'] as $n) {
+                        if ($n['category_id'] !== null) {
+                            $navTitles[] = (string) $n['title'];
+                        }
+                    }
                     if ($plans !== []) {
                         $probe = $this->probe->probe($html);
                         $this->crossCheck($plans, $probe, $warnings);
-                        return new ExtractionResult($plans, ExtractionResult::STRATEGY_SAPPER, true, $warnings, $probe);
+                        return new ExtractionResult($plans, ExtractionResult::STRATEGY_SAPPER, true, $warnings, $probe, $structure, $navTitles);
                     }
-                    $warnings[] = 'sapper: no wanted plan found in products';
+                    $warnings[] = 'sapper: no plan products found under any nav-linked category';
                 }
             } catch (DecoderException $e) {
                 $warnings[] = 'sapper: ' . $e->getMessage();
@@ -79,7 +89,7 @@ final class PlanExtractor
         if ($providerJson !== null) {
             $products = $this->productsFromProviderJson($providerJson, $warnings);
             if ($products !== []) {
-                $plans = $this->collect($products, $wanted, $fetchedAt, null, $warnings);
+                $plans = $this->collectProviderJson($products, $fetchedAt, $warnings);
                 if ($plans !== []) {
                     return new ExtractionResult($plans, ExtractionResult::STRATEGY_PROVIDER_JSON, $sapperPresent, $warnings);
                 }
@@ -101,39 +111,83 @@ final class PlanExtractor
         return new ExtractionResult([], ExtractionResult::STRATEGY_NONE, $sapperPresent, $warnings);
     }
 
-    /** @return list<string> slugs in PlanUrlList order */
-    private function wantedSlugs(): array
-    {
-        $out = [];
-        foreach ($this->urls->urls() as $u) {
-            $out[] = PlanUrlList::slugFromUrl($u);
-        }
-        return $out;
-    }
-
     /**
-     * @param array<mixed> $products map or list of product records
-     * @param list<string> $wanted
+     * Plans of every discovered family (nav order, then category member order),
+     * plus allow-listed legacy products.
+     *
+     * @param array<string,mixed> $pre
+     * @param array{categories:array<string,array<string,mixed>>,nav:list<array<string,mixed>>} $structure
      * @param array{min_length:int,max_length:int,alphanumeric_only:bool,no_special_chars:bool}|null $rules
      * @param list<string> $warnings
      * @return list<array<string,mixed>>
      */
-    private function collect(array $products, array $wanted, string $fetchedAt, ?array $rules, array &$warnings): array
+    private function collectDiscovered(array $pre, array $structure, string $fetchedAt, ?array $rules, array &$warnings): array
     {
-        $bySlug = [];
-        foreach ($products as $p) {
-            if (is_array($p) && isset($p['slug']) && is_string($p['slug']) && !isset($bySlug[$p['slug']])) {
-                $bySlug[$p['slug']] = $p;
+        $products = $pre['products'];
+        $units = (new CatalogStructure())->objectStorageUnits($products);
+        $plans = [];
+        $rank = 0;
+        $claimed = [];
+        foreach (CatalogStructure::familyCategories($structure) as $cat) {
+            $label = $cat['nav_title'] !== null && $cat['nav_title'] !== '' ? (string) $cat['nav_title'] : (string) $cat['title'];
+            $famRank = 0;
+            foreach ($cat['plan_ids'] as $pid) {
+                $claimed[$pid] = true;
+                try {
+                    $plans[] = $this->normalizer->normalize($products[$pid], $fetchedAt, $rules, [
+                        'family' => $label, 'family_key' => $cat['slug'], 'category_id' => $cat['category_id'],
+                        'plan_rank' => ++$rank, 'plan_family_rank' => ++$famRank, 'object_units' => $units,
+                    ]);
+                } catch (\InvalidArgumentException $e) {
+                    $rank--;
+                    $famRank--;
+                    $warnings[] = 'rejected plan: ' . $e->getMessage();
+                }
             }
         }
+        if ($this->legacyAllowlist !== []) {
+            $famRank = 0;
+            foreach ($products as $pid => $p) {
+                if (!is_array($p) || isset($claimed[$pid]) || !isset($p['slug']) || !in_array($p['slug'], $this->legacyAllowlist, true)) {
+                    continue;
+                }
+                try {
+                    $plans[] = $this->normalizer->normalize($p, $fetchedAt, $rules, [
+                        'family' => 'Legacy', 'family_key' => 'legacy', 'category_id' => '',
+                        'plan_rank' => ++$rank, 'plan_family_rank' => ++$famRank, 'object_units' => $units,
+                    ]);
+                } catch (\InvalidArgumentException $e) {
+                    $rank--;
+                    $famRank--;
+                    $warnings[] = 'rejected plan: ' . $e->getMessage();
+                }
+            }
+        }
+        return $plans;
+    }
+
+    /**
+     * @param array<mixed> $products list of product records (provider-JSON shape converted to Contabo shape)
+     * @param list<string> $warnings
+     * @return list<array<string,mixed>>
+     */
+    private function collectProviderJson(array $products, string $fetchedAt, array &$warnings): array
+    {
         $plans = [];
-        foreach ($wanted as $slug) {
-            if (!isset($bySlug[$slug])) {
-                $warnings[] = 'missing plan: ' . $slug;
+        $seen = [];
+        $rank = 0;
+        foreach ($products as $p) {
+            if (!is_array($p) || !isset($p['slug']) || !is_string($p['slug']) || isset($seen[$p['slug']])) {
                 continue;
             }
+            $seen[$p['slug']] = true;
             try {
-                $plans[] = $this->normalizer->normalize($bySlug[$slug], $fetchedAt, $rules);
+                $ctx = ['plan_rank' => $rank + 1];
+                if (isset($p['family']) && is_string($p['family']) && $p['family'] !== '') {
+                    $ctx['family'] = $p['family'];
+                }
+                $plans[] = $this->normalizer->normalize($p, $fetchedAt, null, $ctx);
+                $rank++;
             } catch (\InvalidArgumentException $e) {
                 $warnings[] = 'rejected plan: ' . $e->getMessage();
             }
@@ -189,6 +243,7 @@ final class PlanExtractor
                 }
             }
             $out[] = [
+                'family' => isset($p['family']) && is_string($p['family']) ? $p['family'] : null,
                 'slug' => $p['slug'],
                 'title' => isset($p['title']) && is_string($p['title']) ? $p['title'] : $p['slug'],
                 'type' => $p['type'],

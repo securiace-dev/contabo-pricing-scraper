@@ -48,7 +48,7 @@ final class CatalogStructureTest extends TestCase
         ];
         // Performance plan: member of performance-vps via category.products but categoryId points at VPS.
         $plus = ['id' => 'p4', 'title' => 'Cloud VPS Plus 4', 'slug' => 'cloud-vps-plus-4', 'categoryId' => 'CAT_VPS',
-            'price' => ['EUR' => 13.5], 'periods' => [], 'specs' => [], 'addons' => []];
+            'price' => ['EUR' => 13.5], 'periods' => [], 'specs' => [['title' => '4 vCPU Cores', 'type' => 'cpu']], 'addons' => []];
         $legacy = ['id' => 'l1', 'title' => 'Cloud VPS 10', 'slug' => 'cloud-vps-10', 'categoryId' => null, 'price' => ['EUR' => 5.5], 'periods' => [], 'specs' => []];
         $objAsia = ['id' => 'o1', 'title' => 'Singapore', 'slug' => 'singapore', 'type' => 'object-storage', 'price' => ['EUR' => 2.99]];
         return [
@@ -99,14 +99,75 @@ final class CatalogStructureTest extends TestCase
         $this->assertSame(4.68, $p12['effective_monthly']);
 
         $o = $plan['options'];
-        $this->assertSame([['name' => 'Asia (India)', 'monthly_price' => 2.4]], $o['regions']);
-        $this->assertSame([['name' => '200 GB SSD', 'monthly_price' => 1.5]], $o['storage_upgrades']);
-        $this->assertSame(['name' => 'Auto Backup', 'monthly_price' => 1.65], $o['backup']);
+        $this->assertSame([['name' => 'Asia (India)', 'monthly_price' => 2.4, 'setup_price' => 0]], $o['regions']);
+        $this->assertSame([['name' => '200 GB SSD', 'monthly_price' => 1.5, 'setup_price' => 0]], $o['storage_upgrades']);
+        $this->assertSame(['name' => 'Auto Backup', 'monthly_price' => 1.65, 'setup_price' => 0], $o['backup']);
+        $this->assertSame([], $o['monitoring']);
+        $this->assertSame([], $o['other'], 'price-less UI markers ("None") are noise');
         $this->assertSame('Ubuntu 24.04', $o['os_images'][0]['name']);
         $this->assertSame('cPanel/WHM (5 accounts)', $o['panels'][0]['name']);
         $this->assertSame('Dokploy Server', $o['apps'][0]['name']);
         // 1 TB in the Asia region = 4 x the 250 GB Singapore unit price, matching the checkout screenshot (14.11 gross).
-        $this->assertSame([['name' => '1 TB Object Storage in Asia', 'size_gb' => 1000, 'monthly_price' => 11.96]], $o['object_storage']);
+        $this->assertSame([['name' => '1 TB Object Storage in Asia', 'size_gb' => 1000, 'monthly_price' => 11.96, 'setup_price' => 0]], $o['object_storage']);
+    }
+
+    public function testNavLinkMatchingRulesAndOwnership(): void
+    {
+        $mk = static function (string $id, string $slug, string $title, array $members): array {
+            $c = ['id' => $id, 'slug' => $slug, 'title' => $title, 'products' => []];
+            foreach ($members as $m) {
+                $c['products'][$m] = ['slug' => $m];
+            }
+            return $c;
+        };
+        $prod = static function (string $slug, array $over = []): array {
+            return array_replace([
+                'slug' => $slug, 'title' => $slug, 'type' => 'vps', 'price' => ['EUR' => 5],
+                'specs' => [['title' => '2 vCPU Cores', 'type' => 'cpu']],
+            ], $over);
+        };
+        $pre = [
+            'products' => ['a' => $prod('a'), 'b' => $prod('b'), 'c' => $prod('c'), 'o' => $prod('o', ['specs' => []])],
+            'categories' => [
+                'K1' => $mk('K1', 'big-vps', 'Big', ['a', 'b', 'c']),
+                'K2' => $mk('K2', 'speedy-vps', 'Fast Lane', ['c']),
+                'K3' => $mk('K3', 'misc', 'Misc', ['o']),
+                'K4' => $mk('K4', 'tie-one', 'Tie', ['a']),
+                'K5' => $mk('K5', 'tie-two', 'Tie', ['b']),
+            ],
+            'navItems' => [['title' => 'Menu', 'children' => [
+                ['fields' => ['title' => 'Everything', 'link' => '/big-vps/']],        // slug equals the last path segment
+                ['fields' => ['title' => 'Fast Lane', 'link' => '/lane/']],            // normalised title equals the category title
+                ['fields' => ['title' => 'Misc', 'link' => 'https://contabo.com/en/misc/']], // absolute link, /en prefix stripped
+                ['fields' => ['title' => 'Tie', 'link' => '/tie/']],                    // ambiguous: two categories share the title
+                ['fields' => ['title' => 'Blog', 'link' => '/blog/']],                  // no category at all
+            ]]],
+        ];
+        $d = (new CatalogStructure($pre))->discover();
+        $this->assertSame(['/big-vps/', '/lane/', '/misc/', '/tie/', '/blog/'], array_column($d['nav'], 'link'));
+        $this->assertSame(['K1', 'K2', 'K3', null, null], array_column($d['nav'], 'category_id'));
+        $this->assertSame(['Everything', 'Fast Lane'], [$d['categories']['K1']['nav_title'], $d['categories']['K2']['nav_title']]);
+        $this->assertTrue($d['categories']['K1']['in_nav']);
+        $this->assertFalse($d['categories']['K4']['in_nav'], 'a tied nav entry links to nothing rather than guessing');
+        // c is a member of both linked categories: the more specific (fewer members) one owns it
+        $this->assertSame(['a', 'b'], $d['categories']['K1']['plans']);
+        $this->assertSame(['c'], $d['categories']['K2']['plans']);
+        // K3 is linked but holds no plan-shaped product: not a plan family
+        $this->assertTrue($d['categories']['K3']['in_nav']);
+        $this->assertFalse($d['categories']['K3']['plan_family']);
+        $this->assertSame('https://contabo.com/en/vps/a/', $d['categories']['K1']['sample_product_url']);
+        $this->assertSame(['K1', 'K2'], array_column(CatalogStructure::familyCategories($d), 'category_id'));
+    }
+
+    public function testTokenSetMatchesReorderedSlug(): void
+    {
+        $pre = [
+            'products' => ['p' => ['slug' => 'p', 'type' => 'vps', 'price' => ['EUR' => 1], 'specs' => [['title' => '1 vCPU Cores', 'type' => 'cpu']]]],
+            'categories' => ['P' => ['id' => 'P', 'slug' => 'performance-vps', 'title' => 'Fast', 'products' => ['p' => ['slug' => 'p']]]],
+            'navItems' => [['title' => 'x', 'children' => [['fields' => ['title' => 'Speed', 'link' => '/vps-performance/']]]]],
+        ];
+        $d = (new CatalogStructure($pre))->discover();
+        $this->assertSame('P', $d['nav'][0]['category_id'], '/vps-performance/ and performance-vps share the same dash tokens');
     }
 
     public function testClassifyAddon(): void

@@ -44,8 +44,12 @@ final class SapperLiteralDecoderTest extends TestCase
                 $slugs[$p['slug']] = true;
             }
         }
-        foreach (PlanUrlList::DEFAULT_URLS as $url) {
-            $this->assertArrayHasKey(PlanUrlList::slugFromUrl($url), $slugs);
+        foreach ([
+            'cloud-vps-10', 'cloud-vps-20', 'cloud-vps-30', 'cloud-vps-40', 'cloud-vps-50', 'cloud-vps-60',
+            'storage-vps-10', 'storage-vps-20', 'storage-vps-30', 'storage-vps-40', 'storage-vps-50',
+            'vds-s', 'vds-m', 'vds-l', 'vds-xl', 'vds-xxl',
+        ] as $slug) {
+            $this->assertArrayHasKey($slug, $slugs);
         }
         $this->assertNull($payload['preloaded'][1]);
         $this->assertSame('EUR', $payload['session']['currency']);

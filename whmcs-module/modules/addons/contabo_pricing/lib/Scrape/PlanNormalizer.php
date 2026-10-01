@@ -4,37 +4,32 @@ declare(strict_types=1);
 namespace ContaboPricing\Scrape;
 
 /**
- * Port of process_plan() in src/main.rs, minus add-on classification: turns
- * one Contabo `products[*]` record into the base_plan shape the Rust service
- * emits (family, ranks, specs, base_storage, periods, specs_parsed,
- * password_rules, source). All derived numbers are recomputed here from the
+ * Port of process_plan() in src/main.rs: turns one Contabo `products[*]`
+ * record into the base_plan shape the Rust service emitted (family, ranks,
+ * specs, base_storage, periods, specs_parsed, password_rules, source) plus the
+ * round-2 additions: per-currency prices, previous price, GPU/snapshot/traffic
+ * specs and per-plan options. All derived numbers are recomputed here from the
  * raw price / discount / setup values — nothing a provider computed is trusted.
+ *
+ * The family is NOT derived from the product: the caller (PlanExtractor, from
+ * the discovered CatalogStructure) passes it in $ctx. Without it (provider-JSON
+ * fallback) the product type is humanised, never mapped through a fixed table.
  *
  * PHP 7.4 compatible.
  */
 final class PlanNormalizer
 {
-    /** @var PlanUrlList */
-    private $urls;
-
-    public function __construct(?PlanUrlList $urls = null)
+    /** Product page URL exactly as the site builds it from the product type. */
+    public static function productUrl(string $type, string $slug): string
     {
-        $this->urls = $urls ?? new PlanUrlList();
+        return 'https://contabo.com/en/' . ($type !== '' ? $type : 'vps') . '/' . $slug . '/';
     }
 
-    /** Rust family_from_type(). */
-    public static function familyFromType(string $type): string
+    /** `storage-vps` -> `Storage Vps`: only used when no discovered family label exists. */
+    public static function humanizeType(string $type): string
     {
-        switch ($type) {
-            case 'vps':
-                return PlanUrlList::FAMILY_VPS;
-            case 'storage-vps':
-                return PlanUrlList::FAMILY_STORAGE;
-            case 'vds':
-                return PlanUrlList::FAMILY_VDS;
-            default:
-                return 'Unknown';
-        }
+        $s = trim(ucwords(str_replace(['-', '_'], ' ', $type)));
+        return $s === '' ? 'Unclassified' : $s;
     }
 
     /**
@@ -66,10 +61,14 @@ final class PlanNormalizer
 
     public static function parseCpuCount(string $s): ?int
     {
-        if (preg_match('/^(\d+)\s+(?:vCPU\s+|Physical\s+)?Cores?/i', $s, $m) !== 1) {
-            return null;
+        if (preg_match('/^(\d+)\s+(?:(?:vCPU|Physical|Virtual)\s+)?Cores?/i', $s, $m) === 1) {
+            return (int) $m[1];
         }
-        return (int) $m[1];
+        // dedicated servers: "32 x 3.55 GHz (4.20 max)"
+        if (preg_match('/^(\d+)\s*x\s*[\d.]+\s*GHz/i', $s, $m) === 1) {
+            return (int) $m[1];
+        }
+        return null;
     }
 
     /** @return int|float|null */
@@ -92,13 +91,33 @@ final class PlanNormalizer
         return null;
     }
 
+    /**
+     * Primary storage in GB. "2 x 1 TB NVMe" sums the drives (2000); a dual
+     * label such as "300GB SSD / 150GB NVMe" yields its FIRST (primary) half.
+     */
     public static function parseStorageGb(string $s): ?int
     {
-        if (preg_match('/^(\d+(?:\.\d+)?)\s*(GB|TB)/i', $s, $m) !== 1) {
+        if (preg_match('/^(?:(\d+)\s*x\s*)?(\d+(?:\.\d+)?)\s*(GB|TB)/i', trim($s), $m) !== 1) {
             return null;
         }
-        $n = (float) $m[1];
-        return strtoupper($m[2]) === 'TB' ? (int) round($n * 1000.0) : (int) $n;
+        $drives = $m[1] !== '' ? (int) $m[1] : 1;
+        $n = (float) $m[2];
+        $gb = strtoupper($m[3]) === 'TB' ? (int) round($n * 1000.0) : (int) $n;
+        return $gb * max(1, $drives);
+    }
+
+    /** NVMe|SSD|HDD of the primary (first) segment of a storage label; SSD when unstated. */
+    public static function parseStorageType(string $s): string
+    {
+        $primary = (string) preg_split('#\s+/\s+|\s+or\s+#i', trim($s), 2)[0];
+        $l = strtolower($primary);
+        if (strpos($l, 'nvme') !== false) {
+            return 'NVMe';
+        }
+        if (strpos($l, 'hdd') !== false) {
+            return 'HDD';
+        }
+        return 'SSD';
     }
 
     /** @return array{min_length:int,max_length:int,alphanumeric_only:bool,no_special_chars:bool}|null */
@@ -125,20 +144,20 @@ final class PlanNormalizer
     /**
      * @param array<string,mixed> $product one `products[*]` record
      * @param array{min_length:int,max_length:int,alphanumeric_only:bool,no_special_chars:bool}|null $passwordRules
+     * @param array<string,mixed> $ctx family (label), family_key (category slug), category_id,
+     *        plan_rank, plan_family_rank, object_units (region => EUR per 250 GB)
      * @return array<string,mixed> base_plan
      * @throws \InvalidArgumentException when the record cannot yield a trustworthy plan
      */
-    public function normalize(array $product, string $fetchedAt, ?array $passwordRules): array
+    public function normalize(array $product, string $fetchedAt, ?array $passwordRules, array $ctx = []): array
     {
         $slug = isset($product['slug']) && is_string($product['slug']) ? $product['slug'] : '';
         $type = isset($product['type']) && is_string($product['type']) ? $product['type'] : '';
         if ($slug === '' || preg_match('/^[a-z0-9-]{1,60}$/', $slug) !== 1) {
             throw new \InvalidArgumentException('product has no usable slug');
         }
-        $family = self::familyFromType($type);
-        if ($family === 'Unknown') {
-            throw new \InvalidArgumentException($slug . ': unknown product type');
-        }
+        $family = isset($ctx['family']) && is_string($ctx['family']) && $ctx['family'] !== ''
+            ? $ctx['family'] : self::humanizeType($type);
         $title = isset($product['title']) && is_string($product['title']) ? $product['title'] : $slug;
 
         $base = self::eur($product['price'] ?? null);
@@ -177,7 +196,7 @@ final class PlanNormalizer
         }
         $baseStorage = implode(' or ', $parts);
 
-        $productUrl = 'https://contabo.com/en/' . $type . '/' . $slug . '/';
+        $productUrl = self::productUrl($type, $slug);
 
         $periods = [];
         $rawPeriods = isset($product['periods']) && is_array($product['periods']) ? $product['periods'] : [];
@@ -207,10 +226,40 @@ final class PlanNormalizer
             ];
         }
 
-        return [
+        $gpu = null;
+        $traffic = null;
+        foreach ($specs as $sp) {
+            if (!is_array($sp) || !isset($sp['title']) || !is_string($sp['title'])) {
+                continue;
+            }
+            $st = $sp['type'] ?? null;
+            if ($st === null && $gpu === null && preg_match('/^GPU\s*[-:]\s*(.+)$/i', trim($sp['title']), $gm) === 1) {
+                $gpu = trim($gm[1]);
+            } elseif ($st === 'traffic' && $traffic === null) {
+                $traffic = stripos($sp['title'], 'unlimited') !== false ? 'unlimited' : trim($sp['title']);
+            }
+        }
+        $snapCount = preg_match('/(\d+)\s*Snapshot/i', $snapStr, $sm) === 1 ? (int) $sm[1] : null;
+
+        $parsed = [
+            'cpu_count' => self::parseCpuCount($cpuStr),
+            'ram_gb' => self::parseRamGb($ramStr),
+            'port_speed_mbps' => self::parsePortSpeedMbps($portStr),
+            'storage_primary_gb' => self::parseStorageGb($storageTitle ?? ''),
+            'storage_primary_type' => self::parseStorageType($storageTitle ?? ''),
+            'snapshot_count' => $snapCount,
+            'traffic' => $traffic,
+        ];
+        if ($gpu !== null) {
+            $parsed['gpu'] = $gpu;
+        }
+
+        $plan = [
             'family' => $family,
-            'plan_rank' => $this->urls->rankOf($productUrl),
-            'plan_family_rank' => $this->urls->familyRankOf($productUrl),
+            'family_key' => isset($ctx['family_key']) ? (string) $ctx['family_key'] : '',
+            'category_id' => isset($ctx['category_id']) ? (string) $ctx['category_id'] : '',
+            'plan_rank' => isset($ctx['plan_rank']) ? (int) $ctx['plan_rank'] : 0,
+            'plan_family_rank' => isset($ctx['plan_family_rank']) ? (int) $ctx['plan_family_rank'] : 0,
             'product_name' => $title,
             'product_slug' => $slug,
             'product_url' => $productUrl,
@@ -221,18 +270,32 @@ final class PlanNormalizer
             'snapshots' => $snapStr,
             'port' => $portStr,
             'base_monthly_price' => self::jsonNum($base),
+            'prices' => self::currencies($product['price'] ?? null),
+            'previous_price' => self::currencies($product['previousPrice'] ?? null) ?: null,
             'periods' => $periods,
-            'specs_parsed' => [
-                'cpu_count' => self::parseCpuCount($cpuStr),
-                'ram_gb' => self::parseRamGb($ramStr),
-                'port_speed_mbps' => self::parsePortSpeedMbps($portStr),
-                'storage_primary_gb' => self::parseStorageGb($storageTitle ?? ''),
-                'storage_primary_type' => ($storageTitle !== null && strpos(strtolower($storageTitle), 'nvme') !== false)
-                    ? 'NVMe' : 'SSD',
-            ],
+            'specs_parsed' => $parsed,
             'password_rules' => $passwordRules,
             'source' => 'sapper',
         ];
+        if (isset($product['addons']) && is_array($product['addons'])) {
+            $units = isset($ctx['object_units']) && is_array($ctx['object_units']) ? $ctx['object_units'] : [];
+            $plan['options'] = (new CatalogStructure())->options($product['addons'], $units);
+        }
+        return $plan;
+    }
+
+    /** `{EUR,USD,GBP,...}` -> map of the numeric currencies; anything else -> []. @return array<string,int|float> */
+    private static function currencies($v): array
+    {
+        $out = [];
+        if (is_array($v)) {
+            foreach ($v as $cur => $amount) {
+                if (is_string($cur) && preg_match('/^[A-Z]{3}$/', $cur) === 1 && (is_int($amount) || is_float($amount))) {
+                    $out[$cur] = self::jsonNum((float) $amount);
+                }
+            }
+        }
+        return $out;
     }
 
     /** `{EUR: n}` -> float; null/absent/non-numeric -> null (callers treat as 0 like Rust's unwrap_or). */
