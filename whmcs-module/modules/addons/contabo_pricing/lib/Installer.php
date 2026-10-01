@@ -2094,9 +2094,18 @@ class Installer
                 $t->char('html_sha256', 64)->nullable();
                 $t->integer('html_bytes')->default(0);
                 $t->string('error', 500)->nullable();
+                $t->string('final_url', 255)->nullable();
                 $t->timestamp('created_at')->nullable();
                 $t->index('run_id', 'contabo_scrape_attempt_run_ix');
                 $t->index(['source_id', 'created_at'], 'contabo_scrape_attempt_src_ix');
+            });
+        }
+
+        if ($schema->hasTable('mod_contabo_scrape_run_attempts')
+            && !$schema->hasColumn('mod_contabo_scrape_run_attempts', 'final_url')
+        ) {
+            $schema->table('mod_contabo_scrape_run_attempts', static function (Blueprint $t): void {
+                $t->string('final_url', 255)->nullable();
             });
         }
 
