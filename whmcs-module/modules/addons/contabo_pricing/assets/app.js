@@ -784,38 +784,51 @@
   // ── test API connection ───────────────────────────────────────────────────
 
   function wireTestApi() {
-    $$('[data-cb-action="test-api-connection"]').forEach(function (btn) {
+    // One wiring for every "test connection" button:
+    //   data-cb-action="test-api-connection"            -> catalog API probe (meta)
+    //   data-cb-action="test-source" data-source-id=ID -> scrape provider probe
+    function setResult(el, tone, text) {
+      if (!el) return;
+      el.className = 'cb-inline-result cb-tone-' + tone;
+      el.textContent = text;
+    }
+    function describeSource(j) {
+      if (!j.ok) {
+        return 'Failed: ' + (j.error || j.note || 'no usable page') +
+          (j.connection ? ' (' + j.connection + ')' : '');
+      }
+      var cost = '$' + ((j.cost_micro || 0) / 1e6).toFixed(4);
+      return (j.sapper_present ? 'sapper blob found' : 'no sapper blob') +
+        ' · ' + (j.plan_count || 0) + ' plans · ' + (j.latency_ms || 0) + ' ms · ' + cost +
+        (j.served_by ? ' · served by ' + j.served_by : '') +
+        (j.note ? ' · ' + j.note : '');
+    }
+    $$('[data-cb-action="test-api-connection"], [data-cb-action="test-source"]').forEach(function (btn) {
+      var isSource = btn.getAttribute('data-cb-action') === 'test-source';
       var result = btn.parentNode ? btn.parentNode.querySelector('[data-cb-result]') : null;
       btn.addEventListener('click', function (e) {
         e.preventDefault();
         btn.disabled = true;
         var origLabel = btn.textContent;
         btn.textContent = 'Testing…';
-        if (result) {
-          result.className = 'cb-inline-result cb-tone-muted';
-          result.textContent = 'Checking provider catalog API…';
-        }
-        ajax('POST', 'ajax-meta-probe', {}).then(function (j) {
+        setResult(result, 'muted', isSource ? 'Fetching one page through the provider…' : 'Checking provider catalog API…');
+        var req = isSource
+          ? ajax('POST', 'ajax-source-test', { source_id: btn.getAttribute('data-source-id') || '' })
+          : ajax('POST', 'ajax-meta-probe', {});
+        req.then(function (j) {
           btn.disabled = false;
           btn.textContent = origLabel;
-          if (j.ok) {
-            if (result) {
-              result.className = 'cb-inline-result cb-tone-good';
-              result.textContent = 'API reachable · scraper ' + (j.scraper_version || '?') + ' · ' + (j.snapshot_at || '');
-            }
+          if (isSource) {
+            setResult(result, j.ok ? 'good' : 'bad', describeSource(j));
+          } else if (j.ok) {
+            setResult(result, 'good', 'API reachable · scraper ' + (j.scraper_version || '?') + ' · ' + (j.snapshot_at || ''));
           } else {
-            if (result) {
-              result.className = 'cb-inline-result cb-tone-bad';
-              result.textContent = 'API error: ' + (j.error || 'unknown');
-            }
+            setResult(result, 'bad', 'API error: ' + (j.error || 'unknown'));
           }
         }).catch(function (err) {
           btn.disabled = false;
           btn.textContent = origLabel;
-          if (result) {
-            result.className = 'cb-inline-result cb-tone-bad';
-            result.textContent = 'API unreachable: ' + String(err);
-          }
+          setResult(result, 'bad', (isSource ? 'Source unreachable: ' : 'API unreachable: ') + String(err));
         });
       });
     });

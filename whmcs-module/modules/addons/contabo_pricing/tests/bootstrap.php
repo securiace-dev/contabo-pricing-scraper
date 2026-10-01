@@ -54,6 +54,11 @@ if (!function_exists('generate_token')) {
 if (!function_exists('check_token')) {
     function check_token(string $_mode = 'POST'): bool
     {
+        // Tests flip this global to simulate WHMCS rejecting a CSRF token
+        // (the real helper throws a ProgrammerException).
+        if (!empty($GLOBALS['__cb_token_fail'])) {
+            throw new \RuntimeException('Invalid CSRF token');
+        }
         return true;
     }
 }

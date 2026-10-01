@@ -95,6 +95,15 @@ class AdminController
             case 'approval-approve':     $this->approvalApprove($req); return;
             case 'approval-reject':      $this->approvalReject($req); return;
             case 'ajax-approval-count':  $this->ajaxApprovalCount(); return;
+            // ── Native catalog scraping (data sources + runs) ────────────────
+            case 'data-sources':         $this->dataSources($req); return;
+            case 'data-sources-save':    $this->dataSourcesSave($req); return;
+            case 'ajax-source-test':     $this->ajaxSourceTest($req); return;
+            case 'scrape-run':           $this->scrapeRun($req); return;
+            case 'scrape-runs':          $this->scrapeRuns($req); return;
+            case 'scrape-run-detail':    $this->scrapeRunDetail($req); return;
+            case 'scrape-run-import':    $this->scrapeRunImport($req); return;
+            case 'scrape-agent-run':     $this->scrapeAgentRun($req); return;
             case 'dashboard':
             default:                 $this->dashboard(); return;
         }
@@ -2453,7 +2462,9 @@ class AdminController
         }
 
         http_response_code(405);
-        header('Allow: POST');
+        if (!headers_sent()) {
+            header('Allow: POST');
+        }
         echo '<div class="errorbox">This action requires a POST request.</div>';
         return false;
     }
@@ -3665,5 +3676,336 @@ class AdminController
             ];
         }
         return $out;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // Native catalog scraping: data sources, runs, manual agent run
+    // ═════════════════════════════════════════════════════════════════════════
+
+    /** HTTP transport for provider calls. Overridable so tests never touch the network. */
+    protected function scrapeExecutor(): \ContaboPricing\Scrape\HeaderAwareExecutor
+    {
+        return new CurlRequestExecutor();
+    }
+
+    /** Redirect seam (the base redirect() exits). Overridable in tests. @param array<string,mixed> $extra */
+    protected function go(string $action, array $extra = []): void
+    {
+        $this->redirect($action, $extra);
+    }
+
+    private function adminId(): int
+    {
+        return isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+    }
+
+    /** @param array<string,mixed> $req */
+    private function dataSources(array $req): void
+    {
+        if (!$this->guardSchema()) { return; }
+        $s = new \ContaboPricing\Scrape\ScrapeSettings();
+        $repo = new \ContaboPricing\Scrape\SourceConfigRepository();
+        $ledger = new \ContaboPricing\Scrape\CostLedger();
+        $spend = $ledger->perSourceMonthSpend();
+
+        $sources = [];
+        foreach ($repo->all() as $row) {
+            $id = (string) $row['source_id'];
+            $key = SecretStore::open((string) ($row['api_key_enc'] ?? ''));
+            $opts = json_decode((string) ($row['options_json'] ?? ''), true);
+            $prior = \ContaboPricing\Scrape\SourceRanker::prior($id);
+            $maxSteps = is_array($opts) && isset($opts['max_steps']) ? max(1, (int) $opts['max_steps']) : 40;
+            unset($row['api_key_enc']); // sealed blob is never handed to a template either
+            $sources[] = [
+                'row' => $row,
+                'key_set' => $key !== '',
+                // the plaintext never leaves this method: only a pill flag and a masked tail
+                'key_mask' => SecretStore::mask($key),
+                'month_spend_micro' => $spend[$id] ?? 0,
+                'manual_only' => !empty($prior['manual']),
+                'supports_sapper' => !isset($prior['sapper']) || $prior['sapper'] !== false,
+                'prior' => $prior,
+                'max_steps' => $maxSteps,
+                'max_cost_micro' => $maxSteps * 16000,
+            ];
+            unset($key);
+        }
+        $jevKey = $s->jevApiKey();
+        $data = [
+            'sources' => $sources,
+            'scrape' => $s->all(),
+            'jev_key_set' => $s->hasJevApiKey(),
+            'jev_key_mask' => SecretStore::mask($jevKey),
+            'month_spend_micro' => $ledger->monthSpendMicro(),
+            'flash' => (string) ($req['flash'] ?? ''),
+        ];
+        unset($jevKey);
+        $this->render('data_sources.tpl', $data);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function dataSourcesSave(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        try {
+            $res = (new \ContaboPricing\Scrape\DataSourcesForm())->apply($req);
+            if (function_exists('logActivity')) {
+                // key VALUES are never logged; only which providers had a key replaced
+                logActivity('Contabo Pricing data sources saved by admin ' . $this->adminId()
+                    . ($res['keys_replaced'] !== [] ? ' (keys replaced: ' . implode(',', $res['keys_replaced']) . ')' : ''));
+            }
+            $this->go('data-sources', ['flash' => $res['message']]);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing data-sources save error: ' . $e->getMessage());
+            }
+            $this->go('data-sources', ['flash' => 'Save failed; see the activity log for detail.']);
+        }
+    }
+
+    /**
+     * POST: exercise one provider end to end (one real fetch of the cloud-vps
+     * page; the cheap connection probe only runs when that fetch fails, to
+     * tell a credentials problem from a target problem without paying twice).
+     *
+     * @param array<string,mixed> $req
+     */
+    private function ajaxSourceTest(array $req): void
+    {
+        try {
+            if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'POST')) !== 'POST') {
+                $this->jsonFail('POST required', 405);
+                return;
+            }
+            if (function_exists('check_token')) {
+                check_token();
+            }
+            $sourceId = (string) ($req['source_id'] ?? '');
+            $repo = new \ContaboPricing\Scrape\SourceConfigRepository();
+            $row = $repo->find($sourceId);
+            if ($row === null) {
+                $this->jsonFail('Unknown data source', 404);
+                return;
+            }
+            if (SecretStore::open((string) ($row['api_key_enc'] ?? '')) === '') {
+                $this->jsonOk(['ok' => false, 'error' => 'No API key configured for this source.']);
+                return;
+            }
+            $source = (new \ContaboPricing\Scrape\SourceFactory($this->scrapeExecutor(), $repo))->build($row);
+
+            if ($source->manualOnly()) {
+                $c = $source->testConnection();
+                $this->jsonOk([
+                    'ok' => (bool) $c['ok'], 'sapper_present' => false, 'plan_count' => 0,
+                    'latency_ms' => (int) $c['latency_ms'], 'cost_micro' => 0, 'served_by' => null,
+                    'note' => 'Manual-only source: no live page fetch is made from a test.',
+                ]);
+                return;
+            }
+
+            $s = new \ContaboPricing\Scrape\ScrapeSettings();
+            $urls = new \ContaboPricing\Scrape\PlanUrlList($s->planUrls());
+            $first = $urls->firstUrlPerFamily();
+            $url = $first[\ContaboPricing\Scrape\PlanUrlList::FAMILY_VPS] ?? (string) ($urls->urls()[0] ?? '');
+
+            $price = $source->priceMicroPerPage();
+            $ledger = new \ContaboPricing\Scrape\CostLedger();
+            if ($price > 0 && $ledger->sourceMonthSpend($sourceId) + $price > (int) ($row['monthly_budget_micro'] ?? PHP_INT_MAX)) {
+                $this->jsonOk(['ok' => false, 'error' => 'Monthly budget for this source would be exceeded.']);
+                return;
+            }
+
+            $out = ['ok' => false, 'sapper_present' => false, 'plan_count' => 0, 'latency_ms' => 0, 'cost_micro' => 0, 'served_by' => null];
+            $runs = new \ContaboPricing\Scrape\RunRepository();
+            try {
+                $f = $source->fetchFamilyPage($url);
+                $x = (new \ContaboPricing\Scrape\PlanExtractor($urls))->extract($f->html, $f->json);
+                $out['sapper_present'] = $x->sapperPresent;
+                $out['plan_count'] = count($x->plans);
+                $out['latency_ms'] = $f->latencyMs;
+                $out['cost_micro'] = $f->costMicro;
+                $out['served_by'] = $f->servedBy;
+                $out['final_url'] = $f->finalUrl;
+                $out['ok'] = $source->supportsSapper() ? $x->importable() : ($f->html !== null && $f->html !== '');
+                if (!$source->supportsSapper()) {
+                    $out['note'] = 'Cross-check only: rendered text, no sapper blob (never used for plan extraction).';
+                }
+                // test spend counts against the budgets (run_id 0 = not part of a run)
+                $runs->addAttempt(0, [
+                    'family' => 'test', 'url' => $url, 'source_id' => $sourceId, 'served_by' => $f->servedBy,
+                    'http_status' => $f->httpStatus, 'ok' => $out['ok'], 'sapper_present' => $x->sapperPresent,
+                    'strategy' => $x->strategy, 'plan_count' => count($x->plans), 'cost_micro' => $f->costMicro,
+                    'latency_ms' => $f->latencyMs, 'final_url' => $f->finalUrl,
+                ]);
+            } catch (\ContaboPricing\Scrape\SourceException $e) {
+                $c = $source->testConnection();
+                $out['error'] = $e->getMessage();
+                $out['connection'] = $c['message'];
+                $out['latency_ms'] = (int) $c['latency_ms'];
+            }
+            $this->jsonOk($out);
+        } catch (\Throwable $e) {
+            $this->jsonFail($e->getMessage());
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function scrapeRun(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $dry = (string) ($req['mode'] ?? 'dry') !== 'live';
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(300);
+        }
+        try {
+            $svc = new \ContaboPricing\Scrape\ScrapeRunService(null, $this->scrapeExecutor());
+            $summary = $svc->run('manual', $this->adminId(), ['dry_run' => $dry]);
+            $this->renderScrapeRunDetail((int) $summary['run_id'], (string) ($req['flash'] ?? ''), $summary);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing scrape run failed: ' . $e->getMessage());
+            }
+            echo '<div class="errorbox">The scrape run failed; see the activity log for detail.</div>';
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function scrapeRuns(array $req): void
+    {
+        if (!$this->guardSchema()) { return; }
+        $this->renderScrapeRuns((string) ($req['flash'] ?? ''), null);
+    }
+
+    /** @param array<string,mixed>|null $agentConfirm */
+    private function renderScrapeRuns(string $flash, ?array $agentConfirm): void
+    {
+        $s = new \ContaboPricing\Scrape\ScrapeSettings();
+        $ledger = new \ContaboPricing\Scrape\CostLedger();
+        $this->render('scrape_runs.tpl', [
+            'runs' => (new \ContaboPricing\Scrape\RunRepository())->listRuns(50),
+            'scrape' => $s->all(),
+            'month_spend_micro' => $ledger->monthSpendMicro(),
+            'flash' => $flash,
+            'agent_confirm' => $agentConfirm,
+        ]);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function scrapeRunDetail(array $req): void
+    {
+        if (!$this->guardSchema()) { return; }
+        $id = (int) ($req['id'] ?? 0);
+        if ($id <= 0 || (new \ContaboPricing\Scrape\RunRepository())->find($id) === null) {
+            echo '<div class="errorbox">Scrape run not found.</div>';
+            return;
+        }
+        $this->renderScrapeRunDetail($id, (string) ($req['flash'] ?? ''), null);
+    }
+
+    /** @param array<string,mixed>|null $summary */
+    private function renderScrapeRunDetail(int $id, string $flash, ?array $summary): void
+    {
+        $runs = new \ContaboPricing\Scrape\RunRepository();
+        $d = $runs->detail($id);
+        if ($d === null) {
+            echo '<div class="errorbox">Scrape run not found.</div>';
+            return;
+        }
+        // diff vs the last good (succeeded) run that predates this one
+        $diffs = [];
+        $baseline = $runs->latestSucceeded($id);
+        $env = $d['run']['envelope_json'] ?? null;
+        if (is_array($env) && isset($env['plans']) && is_array($env['plans'])) {
+            $prev = \ContaboPricing\Scrape\RunValidator::bySlug($baseline === null ? [] : $baseline['plans']);
+            $next = \ContaboPricing\Scrape\RunValidator::bySlug($env['plans']);
+            foreach (\ContaboPricing\Scrape\PlanDiffer::diff($prev, $next) as $df) {
+                $df['bucket'] = \ContaboPricing\Scrape\ChangeClassifier::classify($df);
+                $diffs[] = $df;
+            }
+        }
+        unset($d['run']['envelope_json']); // heavy; the template never needs the raw envelope
+        $this->render('scrape_run_detail.tpl', [
+            'run' => $d['run'],
+            'attempts' => $d['attempts'],
+            'decision' => $d['decision'],
+            'diffs' => $diffs,
+            'baseline_run_id' => $baseline === null ? null : (int) $baseline['run']['id'],
+            'summary' => $summary,
+            'flash' => $flash,
+        ]);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function scrapeRunImport(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $id = (int) ($req['id'] ?? 0);
+        try {
+            $res = (new \ContaboPricing\Scrape\ScrapeRunService(null, $this->scrapeExecutor()))
+                ->importStored($id, $this->adminId());
+            $this->go('scrape-run-detail', ['id' => $id, 'flash' => sprintf(
+                '%s catalog %s (%d items).',
+                $res['created'] ? 'Imported' : 'Verified existing',
+                $res['catalog_version'],
+                $res['item_count']
+            )]);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing scrape-run import failed: ' . $e->getMessage());
+            }
+            $this->go('scrape-run-detail', ['id' => $id, 'flash' => 'Import refused: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Manual-only TinyFish Agent run. The first POST shows the worst-case cost
+     * (max_steps x $0.016) for confirmation; only a POST carrying confirm=1 runs.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function scrapeAgentRun(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $repo = new \ContaboPricing\Scrape\SourceConfigRepository();
+        $row = $repo->find('tinyfish_agent');
+        $opts = $row === null ? [] : json_decode((string) ($row['options_json'] ?? ''), true);
+        $maxSteps = is_array($opts) && isset($opts['max_steps']) ? max(1, (int) $opts['max_steps']) : 40;
+        $maxCost = $maxSteps * 16000;
+        $mode = (string) ($req['mode'] ?? 'dry') === 'live' ? 'live' : 'dry';
+
+        if (empty($req['confirm'])) {
+            $this->renderScrapeRuns('', [
+                'max_steps' => $maxSteps,
+                'max_cost_micro' => $maxCost,
+                'mode' => $mode,
+                'enabled' => $row !== null && (int) ($row['enabled'] ?? 0) === 1,
+            ]);
+            return;
+        }
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(600);
+        }
+        try {
+            $svc = new \ContaboPricing\Scrape\ScrapeRunService(null, $this->scrapeExecutor());
+            $summary = $svc->run('manual', $this->adminId(), [
+                'dry_run' => $mode !== 'live',
+                'only_source' => 'tinyfish_agent',
+                'per_run_cap_micro' => $maxCost,
+            ]);
+            $this->renderScrapeRunDetail((int) $summary['run_id'], '', $summary);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing agent run failed: ' . $e->getMessage());
+            }
+            echo '<div class="errorbox">The agent run failed; see the activity log for detail.</div>';
+        }
     }
 }

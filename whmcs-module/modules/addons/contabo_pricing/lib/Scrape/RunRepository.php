@@ -98,12 +98,17 @@ final class RunRepository
     /**
      * Newest run that actually shipped a catalog (state succeeded) and the
      * plans in its stored envelope: the baseline the validator diffs against.
+     * With $beforeId, only runs older than that run (for the detail view's diff).
      *
      * @return array{run:array<string,mixed>, plans:list<array<string,mixed>>}|null
      */
-    public function latestSucceeded(): ?array
+    public function latestSucceeded(?int $beforeId = null): ?array
     {
-        $r = Capsule::table(self::RUNS)->where('state', self::STATE_SUCCEEDED)->orderByDesc('id')->limit(1)->first();
+        $q = Capsule::table(self::RUNS)->where('state', self::STATE_SUCCEEDED);
+        if ($beforeId !== null) {
+            $q->where('id', '<', $beforeId);
+        }
+        $r = $q->orderByDesc('id')->limit(1)->first();
         if ($r === null) {
             return null;
         }

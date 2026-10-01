@@ -48,6 +48,27 @@ function contabo_pricing_loadModuleVars(): array
 }
 
 /**
+ * Native catalog scrape. Runs BEFORE the price sync (priority 5 < 10) so a
+ * freshly imported catalog is what the sync sees. Does nothing unless
+ * scrape.enabled=1; ScrapeRunService enforces the lock, budgets and gates,
+ * and cron never runs manual-only sources.
+ */
+add_hook('DailyCronJob', 5, static function (): void {
+    try {
+        if (!class_exists('\\ContaboPricing\\Scrape\\ScrapeRunService')) {
+            return;
+        }
+        $scrapeSettings = new \ContaboPricing\Scrape\ScrapeSettings();
+        if (!$scrapeSettings->enabled()) {
+            return;
+        }
+        (new \ContaboPricing\Scrape\ScrapeRunService($scrapeSettings))->run('cron');
+    } catch (\Throwable $e) {
+        logActivity('Contabo Pricing scrape cron failed: ' . $e->getMessage());
+    }
+});
+
+/**
  * Runs once per WHMCS daily cron pass. Triggers a sync if the addon has been
  * active long enough since the last run. Idempotent — SyncEngine short-circuits
  * when /meta reports the same snapshot as the previous successful run.

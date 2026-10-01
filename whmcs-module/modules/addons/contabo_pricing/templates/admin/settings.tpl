@@ -26,6 +26,8 @@ $cb_token_set   = $cb_api_token !== '';
   <p class="cb-card-sub" data-cb-u="u-5074b45d61">
     Edit these values from <strong>Setup → Addon Modules → Contabo Pricing Sync → Configure</strong>.
     Values shown here are read-only.
+    Scraper providers, budgets and review rules live under
+    <a href="<?= $esc($module_link) ?>&amp;action=data-sources"><strong>Data sources</strong></a>.
   </p>
 </div>
 
