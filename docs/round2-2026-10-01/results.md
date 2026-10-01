@@ -165,6 +165,6 @@ now on results. `treg_litescrape` stays disabled (capacity 503 on the shared key
 - Multi-currency prices and per-plan addon groups (97 on Cloud VPS 4) are now carried into the envelope.
 
 ### Open items (round 3)
-- The landing page renders a **"Windows VPS" tab** that has no blob category; the registry must reconcile rendered tabs (DOM) against blob categories, and flag tabs with no category (and categories with no tab).
+- ~~"Windows VPS" tab with no blob category~~ — closed 2026-10-01 by the operator: Windows VPS is a derived variant of the existing VPS products (OS image add-on), not a separate family; the registry does not need to track rendered tabs for it.
 - `scrape.plan_urls_json` legacy 16 slugs are superseded by the registry; the first dry run still used them (16 legacy plans) — confirm after redeploy that runs use the registry.
 - AlterLab intelligent extraction is a beta flag on the account; enable it only if a Mode B cross-check is wanted.
