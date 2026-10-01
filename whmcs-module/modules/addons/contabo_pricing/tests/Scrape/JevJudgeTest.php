@@ -118,4 +118,14 @@ final class JevJudgeTest extends TestCase
         $this->assertLessThanOrEqual(90000, strlen($body['state']));
         $this->assertStringNotContainsString('KEY123456', json_encode($r));
     }
+
+    public function testVisibleTextOfRealMegabytePageSurvivesScriptStripping(): void
+    {
+        $html = (string) file_get_contents(__DIR__ . '/../fixtures/scrape/cloud_vps_10.html');
+        $text = JevJudge::visibleText($html);
+        $this->assertGreaterThan(500, strlen($text));
+        $this->assertStringNotContainsString('__SAPPER__', $text);
+        $this->assertStringContainsString('Cloud VPS', $text);
+        $this->assertSame('a b', JevJudge::visibleText('<p>a</p><SCRIPT type="x">var q="</p>"</SCRIPT><!-- c --><style>.x{}</style><b>b</b>'));
+    }
 }

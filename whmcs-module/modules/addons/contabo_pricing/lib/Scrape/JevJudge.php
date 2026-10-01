@@ -32,8 +32,13 @@ final class JevJudge
     /** Trimmed visible text of a page: scripts/styles dropped, tags stripped, whitespace collapsed, capped. */
     public static function visibleText(string $html, int $cap = self::STATE_CAP_BYTES): string
     {
-        $t = (string) preg_replace('#<(script|style|noscript|template)\b[^>]*>.*?</\1>#is', ' ', $html);
-        $t = (string) preg_replace('#<!--.*?-->#s', ' ', $t);
+        // Linear scan instead of a lazy regex: pages here are 1-2 MB and a
+        // backtracking pattern overflows PCRE limits (returns null silently).
+        $t = $html;
+        foreach (['script', 'style', 'noscript', 'template'] as $tag) {
+            $t = self::dropElements($t, $tag);
+        }
+        $t = self::dropElements($t, '!--', '-->');
         $t = strip_tags($t);
         $t = html_entity_decode($t, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $t = trim((string) preg_replace('/\s+/u', ' ', $t));
@@ -41,6 +46,39 @@ final class JevJudge
             $t = function_exists('mb_strcut') ? mb_strcut($t, 0, $cap, 'UTF-8') : substr($t, 0, $cap);
         }
         return $t;
+    }
+
+    /** Removes every <tag ...>...</tag> (or <!-- ... -->) region without regex backtracking. */
+    private static function dropElements(string $html, string $tag, ?string $close = null): string
+    {
+        $open = '<' . $tag;
+        $close = $close ?? '</' . $tag . '>';
+        $out = '';
+        $pos = 0;
+        $lower = strtolower($html);
+        $len = strlen($html);
+        while ($pos < $len) {
+            $start = strpos($lower, $open, $pos);
+            if ($start === false) {
+                $out .= substr($html, $pos);
+                break;
+            }
+            if ($tag !== '!--') {
+                $next = $lower[$start + strlen($open)] ?? '';
+                if ($next !== '>' && $next !== ' ' && $next !== "\t" && $next !== "\n" && $next !== "\r" && $next !== '/') {
+                    $out .= substr($html, $pos, $start - $pos + strlen($open));
+                    $pos = $start + strlen($open);
+                    continue;
+                }
+            }
+            $out .= substr($html, $pos, $start - $pos) . ' ';
+            $end = strpos($lower, $close, $start + strlen($open));
+            if ($end === false) {
+                break; // unterminated: drop the rest
+            }
+            $pos = $end + strlen($close);
+        }
+        return $out;
     }
 
     /**
