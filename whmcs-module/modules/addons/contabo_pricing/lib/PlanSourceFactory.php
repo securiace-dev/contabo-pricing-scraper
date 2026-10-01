@@ -8,8 +8,8 @@ use ContaboPricing\Fx\FxService;
 use ContaboPricing\Quote\QuoteService;
 
 /**
- * Single construction point for the PlanSource. Always local: the Rust API
- * wrapper is intentionally not offered (that service is being retired).
+ * Single construction point for the PlanSource. Always local: reads come from
+ * the addon's own catalog tables.
  */
 final class PlanSourceFactory
 {

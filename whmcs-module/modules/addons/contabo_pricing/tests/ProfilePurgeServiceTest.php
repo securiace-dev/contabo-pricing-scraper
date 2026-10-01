@@ -27,7 +27,7 @@ final class ProfilePurgeServiceTest extends TestCase
 
     private function settings(): Settings
     {
-        return new Settings('http://x', '', 'manual', 'INR', true, 0.0, 365, '');
+        return new Settings('manual', 'INR', true, 0.0, 365, '');
     }
 
     // ── soft-delete lifecycle ───────────────────────────────────────────────

@@ -3,8 +3,8 @@
  * Contabo Pricing — WHMCS Addon
  *
  * Syncs Contabo VPS/VDS pricing into WHMCS products through versioned profiles.
- * Talks to a contabo-pricing API server (Rust binary, /api/v1/*) and never
- * scrapes Contabo directly.
+ * Scrapes Contabo natively (see Data sources) and serves every read from the
+ * addon's own versioned catalog tables.
  *
  * Targets WHMCS 8.x. Requires PHP >= 8.1. Composer autoload is wired via the
  * accompanying composer.json (run `composer install --no-dev` once after
@@ -55,19 +55,6 @@ function contabo_pricing_config(): array
         'author'      => 'yashodhank',
         'language'    => 'english',
         'fields' => [
-            'api_base_url' => [
-                'FriendlyName' => 'API base URL',
-                'Type'         => 'text',
-                'Size'         => '60',
-                'Default'      => 'http://localhost:8080/api/v1',
-                'Description'  => 'URL of the contabo-pricing API server (no trailing slash).',
-            ],
-            'api_token' => [
-                'FriendlyName' => 'Bearer token',
-                'Type'         => 'password',
-                'Size'         => '50',
-                'Description'  => 'Required only for the Refresh button. Read endpoints are open.',
-            ],
             'default_sync_strategy' => [
                 'FriendlyName' => 'Default sync strategy',
                 'Type'         => 'dropdown',

@@ -9,7 +9,7 @@ use RuntimeException;
 use WHMCS\Database\Capsule;
 
 /**
- * Validates and imports the Rust service's immutable, versioned catalog.
+ * Validates and imports the immutable, versioned catalog envelope (exchange 1.0).
  *
  * Import is read-only with respect to WHMCS products and pricing. It writes
  * only addon-owned catalog tables; publication is a separate approval step.
@@ -39,13 +39,13 @@ final class CatalogImportService
         $items = $catalog['items'] ?? null;
 
         if ($catalogVersion === '' || !preg_match('/^[A-Za-z0-9._:-]{1,120}$/', $catalogVersion)) {
-            throw new InvalidArgumentException('The Rust catalog version is missing or invalid.');
+            throw new InvalidArgumentException('The catalog version is missing or invalid.');
         }
         if ($schemaVersion !== self::SUPPORTED_SCHEMA_VERSION) {
-            throw new RuntimeException('Unsupported Rust catalog schema version: ' . $schemaVersion);
+            throw new RuntimeException('Unsupported catalog schema version: ' . $schemaVersion);
         }
         if (!is_array($items) || count($items) > self::MAX_ITEMS) {
-            throw new RuntimeException('The Rust catalog item list is invalid or exceeds the safe import limit.');
+            throw new RuntimeException('The catalog item list is invalid or exceeds the safe import limit.');
         }
         if ($items === []) {
             return $this->rejection(
@@ -57,21 +57,21 @@ final class CatalogImportService
             );
         }
         if (!preg_match('/^[a-f0-9]{64}$/', $payloadHash)) {
-            throw new RuntimeException('The Rust catalog payload hash is invalid.');
+            throw new RuntimeException('The catalog payload hash is invalid.');
         }
 
         $hashable = $catalog;
         unset($hashable['payload_hash']);
         $computedHash = hash('sha256', self::canonicalJson($hashable));
         if (!hash_equals($payloadHash, $computedHash)) {
-            throw new RuntimeException('The Rust catalog payload hash does not match its content.');
+            throw new RuntimeException('The catalog payload hash does not match its content.');
         }
 
         $normalizedItems = [];
         $seenMachineIds = [];
         foreach ($items as $item) {
             if (!is_array($item)) {
-                throw new RuntimeException('The Rust catalog contains a non-object item.');
+                throw new RuntimeException('The catalog contains a non-object item.');
             }
             $machineId = trim((string) ($item['machine_id'] ?? ''));
             $itemType = trim((string) ($item['item_type'] ?? ''));

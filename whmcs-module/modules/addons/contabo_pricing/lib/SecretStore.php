@@ -7,7 +7,7 @@ namespace ContaboPricing;
  * Seal / open helper for secrets stored in addon tables (provider API keys).
  *
  * Wraps WHMCS's global encrypt()/decrypt() helpers and marks sealed values
- * with the same "ENC:" prefix Settings uses for the bearer token. Plaintext
+ * with the "ENC:" prefix. Plaintext
  * is never logged.
  *
  * PHP 7.4 compatible.

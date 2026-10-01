@@ -39,8 +39,7 @@ final class MappingFormTest extends TestCase
         Capsule::reset();
 
         $settings = new Settings(
-            'http://localhost:8080/api/v1',
-            '', 'notify', 'INR', false, 3.5, 365,
+            'notify', 'INR', false, 3.5, 365,
             'addonmodules.php?module=contabo_pricing'
         );
         $this->controller = new AdminController(

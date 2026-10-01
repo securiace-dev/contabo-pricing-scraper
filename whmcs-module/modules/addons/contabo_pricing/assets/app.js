@@ -6,7 +6,7 @@
  *   • modal + drawer open/close
  *   • live quote preview (AJAX → /ajax-quote)
  *   • FX rate preview (AJAX → /ajax-fx, polled hourly)
- *   • Test API connection button (AJAX → /ajax-meta-probe)
+ *   • Test source button (AJAX → /ajax-source-test)
  *   • Sparkline rendering (AJAX → /ajax-profile-versions)
  *   • Profile drawer hydration (AJAX → /ajax-profile)
  *   • Keyboard shortcuts: /, n, r, Esc
@@ -781,12 +781,10 @@
     setInterval(fetchFxOnce, 60 * 1000);
   }
 
-  // ── test API connection ───────────────────────────────────────────────────
+  // ── test data source ──────────────────────────────────────────────────────
 
   function wireTestApi() {
-    // One wiring for every "test connection" button:
-    //   data-cb-action="test-api-connection"            -> catalog API probe (meta)
-    //   data-cb-action="test-source" data-source-id=ID -> scrape provider probe
+    // data-cb-action="test-source" data-source-id=ID -> scrape provider probe
     function setResult(el, tone, text) {
       if (!el) return;
       el.className = 'cb-inline-result cb-tone-' + tone;
@@ -803,32 +801,22 @@
         (j.served_by ? ' · served by ' + j.served_by : '') +
         (j.note ? ' · ' + j.note : '');
     }
-    $$('[data-cb-action="test-api-connection"], [data-cb-action="test-source"]').forEach(function (btn) {
-      var isSource = btn.getAttribute('data-cb-action') === 'test-source';
+    $$('[data-cb-action="test-source"]').forEach(function (btn) {
       var result = btn.parentNode ? btn.parentNode.querySelector('[data-cb-result]') : null;
       btn.addEventListener('click', function (e) {
         e.preventDefault();
         btn.disabled = true;
         var origLabel = btn.textContent;
         btn.textContent = 'Testing…';
-        setResult(result, 'muted', isSource ? 'Fetching one page through the provider…' : 'Checking provider catalog API…');
-        var req = isSource
-          ? ajax('POST', 'ajax-source-test', { source_id: btn.getAttribute('data-source-id') || '' })
-          : ajax('POST', 'ajax-meta-probe', {});
-        req.then(function (j) {
+        setResult(result, 'muted', 'Fetching one page through the provider…');
+        ajax('POST', 'ajax-source-test', { source_id: btn.getAttribute('data-source-id') || '' }).then(function (j) {
           btn.disabled = false;
           btn.textContent = origLabel;
-          if (isSource) {
-            setResult(result, j.ok ? 'good' : 'bad', describeSource(j));
-          } else if (j.ok) {
-            setResult(result, 'good', 'API reachable · scraper ' + (j.scraper_version || '?') + ' · ' + (j.snapshot_at || ''));
-          } else {
-            setResult(result, 'bad', 'API error: ' + (j.error || 'unknown'));
-          }
+          setResult(result, j.ok ? 'good' : 'bad', describeSource(j));
         }).catch(function (err) {
           btn.disabled = false;
           btn.textContent = origLabel;
-          setResult(result, 'bad', (isSource ? 'Source unreachable: ' : 'API unreachable: ') + String(err));
+          setResult(result, 'bad', 'Source unreachable: ' + String(err));
         });
       });
     });
@@ -1169,9 +1157,6 @@
       } else if (e.key === 'n') {
         var n = $('[data-cb-open-modal="profile-create"]');
         if (n) { e.preventDefault(); n.click(); }
-      } else if (e.key === 'r') {
-        var r = $('[data-cb-action="test-api-connection"]');
-        if (r) { e.preventDefault(); r.click(); }
       }
     });
   }

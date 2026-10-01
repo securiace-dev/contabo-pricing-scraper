@@ -66,11 +66,9 @@ class AdminController
             case 'provider-write-control': $this->providerWriteControl($req); return;
             case 'sync-history':     $this->syncHistory(); return;
             case 'sync-run':         $this->syncRun($req); return;
-            case 'refresh-api':      $this->refreshApi(); return;
             case 'settings':         $this->settingsView(); return;
             case 'ajax-quote':           $this->ajaxQuote($req); return;
             case 'ajax-fx':              $this->ajaxFx(); return;
-            case 'ajax-meta-probe':      $this->ajaxMetaProbe(); return;
             case 'ajax-profile-versions': $this->ajaxProfileVersions($req); return;
             case 'ajax-profile':         $this->ajaxProfile($req); return;
             case 'ajax-configurator':    $this->ajaxConfigurator($req); return;
@@ -114,8 +112,7 @@ class AdminController
     // Each method emits JSON only and returns immediately. Read-only endpoints
     // (ajax-fx, ajax-profile-versions, ajax-profile) intentionally do NOT call
     // check_token() — they're side-effect-free and a stale token shouldn't
-    // break the drawer. Mutating endpoints (ajax-quote which hits a paid API,
-    // ajax-meta-probe which can leak server reachability) DO require a token.
+    // break the drawer. Mutating endpoints (ajax-quote which hits a paid API) DO require a token.
 
     /** Send JSON headers + body for an OK response. Always returns void. */
     private function jsonOk(array $payload): void
@@ -197,28 +194,6 @@ class AdminController
             $this->jsonOk($res);
         } catch (\Throwable $e) {
             $this->jsonFail($e->getMessage());
-        }
-    }
-
-    private function ajaxMetaProbe(): void
-    {
-        try {
-            if (function_exists('check_token')) {
-                check_token();
-            }
-            $api = PlanSourceFactory::fromSettings($this->settings);
-            $meta = $api->meta();
-            $this->jsonOk([
-                'ok'              => true,
-                'scraper_version' => isset($meta['scraper_version']) ? (string) $meta['scraper_version'] : (isset($meta['version']) ? (string) $meta['version'] : ''),
-                'snapshot_at'     => isset($meta['snapshot_meta']['generated_at']) ? (string) $meta['snapshot_meta']['generated_at'] : (isset($meta['snapshot_at']) ? (string) $meta['snapshot_at'] : (isset($meta['generated_at']) ? (string) $meta['generated_at'] : '')),
-            ]);
-        } catch (\Throwable $e) {
-            // Soft-fail with 200 + ok:false so the UI can render a bad pill.
-            if (!headers_sent()) {
-                header('Content-Type: application/json; charset=utf-8');
-            }
-            echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
         }
     }
 
@@ -2173,13 +2148,6 @@ class AdminController
         $engine = new SyncEngine($this->settings, PlanSourceFactory::fromSettings($this->settings), new ProfileManager($this->settings));
         $summary = $engine->run('manual', $observeOnly);
         $this->render('sync_run_result.tpl', ['summary' => $summary]);
-    }
-
-    private function refreshApi(): void
-    {
-        if (!$this->verifyToken()) { return; }
-        // The scrape now runs inside the addon; hand over to its admin action.
-        $this->redirect('scrape-run');
     }
 
     /**

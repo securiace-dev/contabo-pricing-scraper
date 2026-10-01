@@ -385,7 +385,7 @@ $cb_rounding_modes = [
     <div>
       <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Provisioning publication</h3>
       <p class="cb-card-sub" data-cb-u="u-8a5832c351">
-        Seal stable Rust catalog and Contabo Customer API identifiers for future orders.
+        Seal stable catalog and Contabo Customer API identifiers for future orders.
         Previewing does not change the active mapping. Approval requires the exact preview hash.
       </p>
     </div>
@@ -394,7 +394,7 @@ $cb_rounding_modes = [
 
   <?php if (empty($catalog_versions)): ?>
     <div class="cb-empty">
-      Import a versioned Rust catalog before publishing a provisioning mapping.
+      Import a versioned catalog before publishing a provisioning mapping.
     </div>
   <?php elseif (empty($mappings)): ?>
     <div class="cb-empty">Create a product mapping before publishing provider identifiers.</div>
@@ -422,7 +422,7 @@ $cb_rounding_modes = [
           </select>
         </div>
         <div class="cb-field">
-          <label for="cb-pub-catalog">Rust catalog version</label>
+          <label for="cb-pub-catalog">Catalog version</label>
           <select id="cb-pub-catalog" name="rust_catalog_version" required>
             <option value="">— pick an imported version —</option>
             <?php foreach ($catalog_versions as $version): ?>

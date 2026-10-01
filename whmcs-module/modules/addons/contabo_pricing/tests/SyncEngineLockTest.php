@@ -39,7 +39,7 @@ final class SyncEngineLockTest extends TestCase
 
     private function engine(object $lock, ?\Throwable $metaThrows = null): SyncEngine
     {
-        $settings = new Settings('http://x', '', 'manual', 'EUR', false, 0.0, 365, '');
+        $settings = new Settings('manual', 'EUR', false, 0.0, 365, '');
         $api = new class($metaThrows) extends StubPlanSource {
             private $ex;
             public function __construct(?\Throwable $e) { $this->ex = $e; }

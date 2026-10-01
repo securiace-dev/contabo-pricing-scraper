@@ -229,7 +229,7 @@ $cb_g = static function ($k, $d = '') use ($scrape) {
         <th>Plan source</th>
         <td>
           <select name="plan_source" aria-label="Plan source">
-            <option value="local"<?= $cb_g('scrape.plan_source', 'local') === 'local' ? ' selected' : '' ?>>local (existing catalog API)</option>
+            <option value="local"<?= $cb_g('scrape.plan_source', 'local') === 'local' ? ' selected' : '' ?>>local (imported catalog)</option>
             <option value="native"<?= $cb_g('scrape.plan_source') === 'native' ? ' selected' : '' ?>>native (this scraper)</option>
           </select>
         </td>

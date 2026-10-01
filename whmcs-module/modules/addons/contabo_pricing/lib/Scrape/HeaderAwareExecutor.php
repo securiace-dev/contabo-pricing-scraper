@@ -6,7 +6,7 @@ namespace ContaboPricing\Scrape;
 /**
  * HTTP transport that also returns response headers (needed for provider
  * cost headers such as X-Treg-Cost-Micro). Separate from RequestExecutor so
- * the existing 4-tuple contract used by ApiClient stays untouched.
+ * the existing 4-tuple contract of RequestExecutor stays untouched.
  */
 interface HeaderAwareExecutor
 {

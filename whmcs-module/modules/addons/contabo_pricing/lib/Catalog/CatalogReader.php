@@ -7,8 +7,8 @@ use ContaboPricing\AdminController;
 use WHMCS\Database\Capsule;
 
 /**
- * Read side of the addon-native catalog: serves the shapes the Rust API used
- * to serve (meta / plans / plan / configurator) from the imported, versioned
+ * Read side of the addon-native catalog: serves the plan-source shapes
+ * (meta / plans / plan / configurator) from the imported, versioned
  * catalog tables. Pure reads; never writes.
  *
  * PHP 7.4 polyglot: no promotion, no match, no readonly.

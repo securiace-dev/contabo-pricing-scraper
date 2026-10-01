@@ -90,7 +90,7 @@ final class WhiteLabelConfigGroupTest extends TestCase
     private function controllerLabel(string $slug): string
     {
         $c = new AdminController(
-            new Settings('http://x', '', 'manual', 'INR', true, 0.0, 365, ''),
+            new Settings('manual', 'INR', true, 0.0, 365, ''),
             __DIR__ . '/../templates/admin'
         );
         $m = new \ReflectionMethod($c, 'planGroupLabel');

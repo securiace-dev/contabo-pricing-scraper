@@ -7,7 +7,7 @@ use ContaboPricing\Scrape\HeaderAwareExecutor;
 
 /**
  * Production RequestExecutor — issues calls through ext-curl. Kept thin: it
- * does not interpret status codes or decode JSON; ApiClient owns that mapping.
+ * does not interpret status codes or decode JSON; callers own that mapping.
  */
 final class CurlRequestExecutor implements RequestExecutor, HeaderAwareExecutor
 {

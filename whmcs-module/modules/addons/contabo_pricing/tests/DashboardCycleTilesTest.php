@@ -63,7 +63,7 @@ final class DashboardCycleTilesTest extends TestCase
 
         $controller = new AdminController(
             new Settings(
-                'http://localhost:8080/api/v1', '', 'notify', 'INR',
+                'notify', 'INR',
                 false, 3.5, 365, 'addonmodules.php?module=contabo_pricing'
             ),
             __DIR__ . '/../templates/admin'
@@ -109,7 +109,7 @@ final class DashboardCycleTilesTest extends TestCase
 
         $controller = new AdminController(
             new Settings(
-                'http://localhost:8080/api/v1', '', 'notify', 'INR',
+                'notify', 'INR',
                 false, 3.5, 365, 'addonmodules.php?module=contabo_pricing'
             ),
             __DIR__ . '/../templates/admin'

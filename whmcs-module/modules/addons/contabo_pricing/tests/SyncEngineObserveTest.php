@@ -162,8 +162,6 @@ final class SyncEngineObserveTest extends TestCase
     private function settings(): Settings
     {
         return new Settings(
-            'http://localhost:8080/api/v1',
-            '',
             'manual',
             'EUR',
             false,

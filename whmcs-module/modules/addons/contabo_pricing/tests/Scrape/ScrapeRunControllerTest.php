@@ -54,7 +54,7 @@ final class ScrapeRunControllerTest extends TestCase
         ]);
         $this->http = new FakeHeaderExecutor();
         $this->c = new SeamedAdminController(
-            new Settings('http://localhost:8080/api/v1', '', 'notify', 'INR', false, 3.5, 365, 'addonmodules.php?module=contabo_pricing'),
+            new Settings('notify', 'INR', false, 3.5, 365, 'addonmodules.php?module=contabo_pricing'),
             __DIR__ . '/../../templates/admin'
         );
         $this->c->http = $this->http;

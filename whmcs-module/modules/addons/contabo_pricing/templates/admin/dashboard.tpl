@@ -12,9 +12,6 @@
  */
 
 // Derived display values used by the hero + strip.
-$cb_api_base   = isset($settings) && is_object($settings) && !empty($settings->apiBaseUrl)
-    ? (string) $settings->apiBaseUrl
-    : '';
 $cb_scraper_v  = isset($meta['scraper_version']) ? (string) $meta['scraper_version'] : '';
 $cb_plan_count = isset($meta['snapshot_meta']['plan_count']) ? (int) $meta['snapshot_meta']['plan_count'] : 0;
 $cb_generated  = isset($meta['snapshot_meta']['generated_at']) ? (string) $meta['snapshot_meta']['generated_at'] : '';
@@ -23,13 +20,13 @@ $cb_has_error  = !empty($connect_error);
 // Health tone for hero pill.
 if ($cb_has_error) {
     $cb_health_tone  = 'bad';
-    $cb_health_label = 'API unreachable';
+    $cb_health_label = 'Catalog source unavailable';
 } elseif ($cb_plan_count > 0) {
     $cb_health_tone  = 'good';
-    $cb_health_label = 'API healthy';
+    $cb_health_label = 'Catalog healthy';
 } else {
     $cb_health_tone  = 'warn';
-    $cb_health_label = 'API reachable · empty snapshot';
+    $cb_health_label = 'Catalog empty';
 }
 
 // Last sync derived display.
@@ -40,9 +37,9 @@ $cb_last_relative = $cb_last_started !== '' ? substr($cb_last_started, 0, 16) : 
 // Status strip — 4 KPIs shown above every page (driven by _layout_open.tpl).
 $cb_strip_data = array(
     array(
-        'lbl'  => 'API health',
+        'lbl'  => 'Catalog health',
         'v'    => $cb_has_error ? 'down' : 'ok',
-        'sub'  => $cb_api_base !== '' ? $cb_api_base : 'no URL configured',
+        'sub'  => 'local catalog',
         'tone' => $cb_has_error ? 'bad' : 'good',
     ),
     array(
@@ -68,7 +65,7 @@ $cb_strip_data = array(
 require __DIR__ . '/_layout_open.tpl';
 ?>
 
-<?php /* Flash (e.g. from Run sync / Trigger API refresh redirects) -------- */ ?>
+<?php /* Flash (e.g. from Run sync redirects) -------- */ ?>
 <?php if (!empty($flash)): ?>
   <?php $cb_flash_bad = (stripos((string) $flash, 'fail') !== false || stripos((string) $flash, 'error') !== false); ?>
   <div class="<?= $cb_flash_bad ? 'cb-error' : 'cb-flash' ?>"><?= $esc($flash) ?></div>
@@ -80,11 +77,7 @@ require __DIR__ . '/_layout_open.tpl';
     <div data-cb-u="u-5f62ac8378">
       <div class="cb-card-sub" data-cb-u="u-0cbe035c55">Contabo Pricing</div>
       <h2 class="cb-card-title" data-cb-u="u-f83807b020">
-        <?php if ($cb_api_base !== ''): ?>
-          Connected to <span class="mono" data-cb-u="u-169bb84a59"><?= $esc($cb_api_base) ?></span>
-        <?php else: ?>
-          Contabo Pricing
-        <?php endif; ?>
+        Contabo Pricing
       </h2>
       <div class="cb-card-sub" data-cb-u="u-38965f9b18">
         <?php if ($cb_scraper_v !== ''): ?>
@@ -106,9 +99,9 @@ require __DIR__ . '/_layout_open.tpl';
 
   <?php if ($cb_has_error): ?>
     <div class="cb-error" data-cb-u="u-8d84299030">
-      Can't reach the API: <code class="mono"><?= $esc((string) $connect_error) ?></code><br>
-      Check the URL and bearer token under
-      <a href="<?= $esc($module_link) ?>&amp;action=settings">Settings</a>.
+      Can't load the catalog: <code class="mono"><?= $esc((string) $connect_error) ?></code><br>
+      Check the
+      <a href="<?= $esc($module_link) ?>&amp;action=data-sources">Data sources</a>.
     </div>
   <?php endif; ?>
 </div>
@@ -156,11 +149,7 @@ require __DIR__ . '/_layout_open.tpl';
       <?= generate_token() ?>
       <button class="cb-btn subtle" type="submit" data-cb-action="sync-run">Apply sync</button>
     </form>
-    <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-3cb81f8dc9">
-      <input type="hidden" name="action" value="refresh-api">
-      <?= generate_token() ?>
-      <button class="cb-btn subtle" type="submit" data-cb-action="refresh-api">Trigger API refresh</button>
-    </form>
+    <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=scrape-runs">Scrape runs</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles">Manage profiles</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=mappings">Edit mappings</a>
     <span data-cb-u="u-6253876a64"></span>

@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace ContaboPricing;
 
 /**
- * Abstraction over the actual HTTP transport used by ApiClient. Allows tests to
+ * Abstraction over the actual HTTP transport used by callers. Allows tests to
  * stub out curl-driven I/O while production code keeps the same calling shape.
  *
  * Implementations MUST NOT throw on non-2xx status codes — those are reported
- * via the returned tuple so ApiClient can map them into RuntimeException(s)
- * with the path/method context it has.
+ * via the returned tuple so callers can map them into RuntimeException(s)
+ * with the path/method context they have.
  */
 interface RequestExecutor
 {

@@ -6,18 +6,15 @@
  *
  * @var \Closure $esc
  * @var string   $module_link
- * @var object   $settings  Settings object (apiBaseUrl, apiToken, defaultSyncStrategy,
+ * @var object   $settings  Settings object (defaultSyncStrategy,
  *                          currencyIso, applyGst18, fxMarkupPct, logRetentionDays, moduleLink).
  */
 
-$cb_api_url     = isset($settings->apiBaseUrl) ? (string) $settings->apiBaseUrl : '';
-$cb_api_token   = isset($settings->apiToken) ? (string) $settings->apiToken : '';
 $cb_sync_strat  = isset($settings->defaultSyncStrategy) ? (string) $settings->defaultSyncStrategy : '';
 $cb_currency    = isset($settings->currencyIso) ? (string) $settings->currencyIso : '';
 $cb_apply_gst   = !empty($settings->applyGst18);
 $cb_fx_markup   = isset($settings->fxMarkupPct) ? (float) $settings->fxMarkupPct : 0.0;
 $cb_log_ret     = isset($settings->logRetentionDays) ? (int) $settings->logRetentionDays : 0;
-$cb_token_set   = $cb_api_token !== '';
 ?>
 
 <!-- ───────────────────── Header ───────────────────── -->
@@ -29,48 +26,6 @@ $cb_token_set   = $cb_api_token !== '';
     Scraper providers, budgets and review rules live under
     <a href="<?= $esc($module_link) ?>&amp;action=data-sources"><strong>Data sources</strong></a>.
   </p>
-</div>
-
-<!-- ───────────────────── API connection ───────────────────── -->
-<div class="cb-card">
-  <h3>API connection</h3>
-  <table class="cb-table" data-cb-u="u-eb2cdaa55e">
-    <tr>
-      <th data-cb-u="u-e104eb5fa2">API base URL</th>
-      <td>
-        <?php if ($cb_api_url !== ''): ?>
-          <code class="mono" data-cb-u="u-7e6609e5f6"><?= $esc($cb_api_url) ?></code>
-        <?php else: ?>
-          <span class="cb-pill bad"><span class="dot"></span>not set</span>
-        <?php endif; ?>
-      </td>
-    </tr>
-    <tr>
-      <th>API token</th>
-      <td>
-        <?php if ($cb_token_set): ?>
-          <span class="cb-pill good"><span class="dot"></span>ENC · encrypted at rest</span>
-          <span class="kbd" data-cb-u="u-9d5367afed">stored</span>
-        <?php else: ?>
-          <span class="cb-pill bad"><span class="dot"></span>not set</span>
-        <?php endif; ?>
-      </td>
-    </tr>
-    <tr>
-      <th>Connectivity</th>
-      <td>
-        <button type="button"
-                class="cb-btn subtle<?= $cb_token_set && $cb_api_url !== '' ? '' : ' disabled' ?>"
-                <?= $cb_token_set && $cb_api_url !== '' ? '' : 'disabled' ?>
-                data-cb-action="test-api-connection"
-                data-cb-target="cb-api-test-result">
-          Test connection
-        </button>
-        <span data-cb-result="cb-api-test-result" role="status" aria-live="polite"
-              data-cb-u="u-a40f776248"></span>
-      </td>
-    </tr>
-  </table>
 </div>
 
 <!-- ───────────────────── Sync behaviour ───────────────────── -->
@@ -162,7 +117,7 @@ $cb_token_set   = $cb_api_token !== '';
     </div>
   </div>
   <p data-cb-u="u-9e4546b1ac">
-    Source: <span class="mono">/api/v1/fx</span> · markup of <span class="mono"><?= $esc(number_format($cb_fx_markup, 2)) ?>%</span> applied separately during sync.
+    Source: Frankfurter (cached) · markup of <span class="mono"><?= $esc(number_format($cb_fx_markup, 2)) ?>%</span> applied separately during sync.
   </p>
 </div>
 

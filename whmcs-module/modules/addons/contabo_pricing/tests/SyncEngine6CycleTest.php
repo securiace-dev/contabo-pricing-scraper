@@ -611,8 +611,6 @@ final class SyncEngine6CycleTest extends TestCase
     private function makeEngine(?CatalogAuditLog $audit = null): SyncEngine
     {
         $settings = new Settings(
-            'http://localhost:8080/api/v1', // apiBaseUrl
-            '',                              // apiToken
             'manual',                        // defaultSyncStrategy
             'INR',                           // currencyIso
             true,                            // applyGst18
