@@ -41,9 +41,11 @@ final class MigrationV15Test extends TestCase
         $rows = Capsule::table('mod_contabo_scrape_sources')->get();
         $ids = array_map(static function ($r): string { return (string) ((array) $r)['source_id']; }, $rows);
         sort($ids);
-        $this->assertSame(['alterlab', 'tinyfish_agent', 'tinyfish_fetch', 'treg'], $ids);
+        $this->assertSame(['alterlab', 'tinyfish_agent', 'tinyfish_fetch', 'treg_anyapi', 'treg_litescrape'], $ids);
         foreach ($rows as $r) {
-            $this->assertSame(0, (int) ((array) $r)['enabled']);
+            $row = (array) $r;
+            // only the Spike-0 primary (treg_anyapi, order 1) is enabled by default
+            $this->assertSame($row['source_id'] === 'treg_anyapi' ? 1 : 0, (int) $row['enabled'], (string) $row['source_id']);
         }
     }
 
@@ -58,7 +60,7 @@ final class MigrationV15Test extends TestCase
         $installer->migrateTo15();
 
         $this->assertSame($columns, Capsule::$columns);
-        $this->assertSame(4, Capsule::table('mod_contabo_scrape_sources')->count());
+        $this->assertSame(5, Capsule::table('mod_contabo_scrape_sources')->count());
     }
 
     public function testSchemaVersionIs15(): void

@@ -4,26 +4,32 @@ declare(strict_types=1);
 namespace ContaboPricing\Scrape;
 
 /**
- * AlterLab scraping API. POST {base}/api/v1/scrape {url, mode:'auto'}; a 202
- * means an async job that is polled at GET {base}/api/v1/jobs/{id} every 5 s
- * for at most 85 s.
+ * AlterLab scraping API. POST {base}/api/v1/scrape {url, mode} with
+ * mode 'js' by default (Spike-0 2026-10-01: tier 4, ~$0.004, full page incl.
+ * the __SAPPER__ blob; mode 'auto' lands on tier 1 with a truncated page and
+ * is not viable). Override with the `mode` option.
  *
- * Response field names beyond the documented request shape are read
- * tolerantly (see HTML_PATHS / COST_*); confirm against a recorded spike.
+ * Synchronous response: {job_id, url, final_url, redirected, status_code,
+ * content{html,markdown,json,...}, billing{final_cost_microcents, tier_used},
+ * ...}. HTML comes from content.html; cost from billing.final_cost_microcents
+ * (numerically equal to micro-USD at list price). A 202 (async job) was never
+ * observed but is still polled at GET {base}/api/v1/jobs/{id} every 5 s for
+ * at most 85 s.
  */
 final class AlterLabSource extends AbstractSource
 {
     private const DEFAULT_BASE = 'https://api.alterlab.io';
     private const POLL_INTERVAL_SEC = 5;
     private const POLL_MAX_SEC = 85;
-    private const PRIOR_COST_MICRO = 200;
+    private const PRIOR_COST_MICRO = 4000;
+    private const DEFAULT_MODE = 'js';
 
     /** @var list<string> */
-    private const HTML_PATHS = ['html', 'content', 'result.html', 'result.content', 'data.html', 'data.content'];
+    private const HTML_PATHS = ['content.html', 'html', 'content', 'result.html', 'result.content', 'data.html', 'data.content'];
 
     public function priorSuccessRate(): float
     {
-        return 0.90;
+        return 0.95;
     }
 
     public function priceMicroPerPage(): int
@@ -39,7 +45,9 @@ final class AlterLabSource extends AbstractSource
             'Content-Type: application/json',
             'Accept: application/json',
         ];
-        $payload = ['url' => $url, 'mode' => 'auto'];
+        $mode = isset($this->config->options['mode']) && is_string($this->config->options['mode']) && $this->config->options['mode'] !== ''
+            ? $this->config->options['mode'] : self::DEFAULT_MODE;
+        $payload = ['url' => $url, 'mode' => $mode];
         $schema = $this->config->options['extraction_schema'] ?? null;
         if (is_array($schema) && $schema !== []) {
             $payload['extraction_schema'] = $schema;
@@ -108,14 +116,15 @@ final class AlterLabSource extends AbstractSource
             $this->costMicro($data),
             $latency,
             $status,
-            $html === null ? 'provider-json' : null
+            $html === null ? 'provider-json' : null,
+            $this->firstString($data, ['final_url'])
         );
     }
 
     /** @param array<string,mixed> $data */
     private function costMicro(array $data): int
     {
-        foreach (['cost_micro', 'cost_micros', 'usage.cost_micro'] as $path) {
+        foreach (['billing.final_cost_microcents', 'cost_micro', 'cost_micros', 'usage.cost_micro'] as $path) {
             $cur = $data;
             foreach (explode('.', $path) as $seg) {
                 $cur = is_array($cur) && array_key_exists($seg, $cur) ? $cur[$seg] : null;

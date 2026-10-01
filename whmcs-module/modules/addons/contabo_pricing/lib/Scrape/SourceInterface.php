@@ -24,4 +24,7 @@ interface SourceInterface
 
     /** True when the source must never run unattended (excluded from scheduled runs). */
     public function manualOnly(): bool;
+
+    /** True when the fetched HTML keeps the page's <script> blob (needed by the S1 sapper decoder). */
+    public function supportsSapper(): bool;
 }

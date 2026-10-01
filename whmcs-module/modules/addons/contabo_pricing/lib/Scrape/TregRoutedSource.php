@@ -4,24 +4,31 @@ declare(strict_types=1);
 namespace ContaboPricing\Scrape;
 
 /**
- * treg.to routed web-fetch. Auth header X-Treg-Token. Routing hints from
- * options map to X-Treg-Route-Prefer / -Exclude / X-Treg-Max-Cost.
+ * treg.to web fetch. POST https://treg.to/call/<endpoint_id> with header
+ * X-Treg-Token (Spike-0 2026-10-01).
  *
- * OPEN QUESTION: the exact REST path for catalog endpoint ids is not
- * confirmed. The request path is the `path` option, defaulting to
- * "/call/<endpoint_id>"; endpoint_id defaults to "web.fetch". A second config
- * row can target litescrape.web.fetch by setting endpoint_id and
- * body_params {"respond_with":"html","engine":"browser"} (or `query`).
+ * Default endpoint `anyapi.web.scrape`, body
+ * {url, formats:["html"], onlyMainContent:false, waitFor:3000}; the page is in
+ * `output.data.html` (2.1 MB incl. <script>, the __SAPPER__ blob present) at
+ * ~700 micro-USD (X-Treg-Cost-Micro). Routed ids (treg.web.extract,
+ * tinyfish.web.fetch) strip scripts and are NOT usable for S1. A second row
+ * (`treg_litescrape`) targets litescrape.web.fetch.post via the options
+ * endpoint_id / query {timeout:90} / body_params {respond_with:"html",
+ * engine:"browser", page_timeout:60}; it timed out (503) once and is seeded
+ * disabled.
  *
- * Response: JSON with the page in `output` (string, or object holding
- * html/content) or `raw`; `_treg.served_by` names the upstream; cost comes
- * from the X-Treg-Cost-Micro response header.
+ * Content fallbacks for other ids: output.pages.0.html, output, output.html,
+ * output.content, output.body, raw. X-Treg-Served-By (routed ids only) or
+ * _treg.served_by names the upstream.
+ *
+ * Options: endpoint_id, path, query, body_params, route_prefer, route_exclude,
+ * max_cost, prior_cost_micro.
  */
 final class TregRoutedSource extends AbstractSource
 {
     private const DEFAULT_BASE = 'https://treg.to';
-    private const DEFAULT_ENDPOINT = 'web.fetch';
-    private const PRIOR_COST_MICRO = 1000;
+    public const DEFAULT_ENDPOINT = 'anyapi.web.scrape';
+    private const PRIOR_COST_MICRO = 700;
 
     public function priorSuccessRate(): float
     {
@@ -30,7 +37,8 @@ final class TregRoutedSource extends AbstractSource
 
     public function priceMicroPerPage(): int
     {
-        return self::PRIOR_COST_MICRO;
+        $c = $this->config->options['prior_cost_micro'] ?? null;
+        return is_int($c) || (is_string($c) && ctype_digit($c)) ? (int) $c : self::PRIOR_COST_MICRO;
     }
 
     public function fetchFamilyPage(string $url, array $opts = []): FetchResult
@@ -65,18 +73,25 @@ final class TregRoutedSource extends AbstractSource
         $payload = ['url' => $url];
         if (isset($o['body_params']) && is_array($o['body_params'])) {
             $payload = array_merge($o['body_params'], $payload);
+        } elseif ($endpoint === self::DEFAULT_ENDPOINT) {
+            $payload = ['url' => $url, 'formats' => ['html'], 'onlyMainContent' => false, 'waitFor' => 3000];
         }
 
         $r = $this->call('POST', $this->base(self::DEFAULT_BASE) . $path . $query, $headers, $this->encodeJson($payload));
         $data = $this->decodeJson($r['body']);
 
-        $html = $this->firstString($data, ['output', 'output.html', 'output.content', 'output.body', 'raw']);
+        $html = $this->firstString($data, [
+            'output.data.html', 'output.pages.0.html', 'output', 'output.html', 'output.content', 'output.body', 'raw',
+        ]);
         if ($html === null) {
             throw new SourceException('treg returned no page content');
         }
 
-        $served = $this->firstString($data, ['_treg.served_by']);
-        $cost = self::PRIOR_COST_MICRO;
+        $served = $r['headers']['x-treg-served-by'] ?? null;
+        if ($served === null || $served === '') {
+            $served = $this->firstString($data, ['_treg.served_by']);
+        }
+        $cost = $this->priceMicroPerPage();
         $hdr = $r['headers']['x-treg-cost-micro'] ?? null;
         if ($hdr !== null && ctype_digit(trim($hdr))) {
             $cost = (int) trim($hdr);

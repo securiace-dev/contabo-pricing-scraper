@@ -22,6 +22,8 @@ final class FetchResult
     public $httpStatus;
     /** @var string|null e.g. 'provider-json' when only json is meaningful */
     public $strategyHint;
+    /** @var string|null URL after provider-reported redirects (AlterLab final_url) */
+    public $finalUrl;
 
     /** @param array<string,mixed>|null $json */
     public function __construct(
@@ -32,7 +34,8 @@ final class FetchResult
         int $costMicro,
         int $latencyMs,
         int $httpStatus,
-        ?string $strategyHint = null
+        ?string $strategyHint = null,
+        ?string $finalUrl = null
     ) {
         $this->provider = $provider;
         $this->servedBy = $servedBy;
@@ -42,5 +45,6 @@ final class FetchResult
         $this->latencyMs = $latencyMs;
         $this->httpStatus = $httpStatus;
         $this->strategyHint = $strategyHint;
+        $this->finalUrl = $finalUrl;
     }
 }

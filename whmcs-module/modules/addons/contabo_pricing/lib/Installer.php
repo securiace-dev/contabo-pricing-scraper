@@ -2124,20 +2124,31 @@ class Installer
         }
 
         $now = date('Y-m-d H:i:s');
+        // Spike-0 2026-10-01: treg_anyapi is the primary S1 source (order 1);
+        // treg_litescrape is a disabled extra; tinyfish_fetch cannot carry the
+        // __SAPPER__ blob (cross-check only); tinyfish_agent is manual-only.
         $seeds = [
-            'tinyfish_fetch' => 'TinyFish Fetch',
-            'treg' => 'Treg (routed)',
-            'alterlab' => 'AlterLab',
-            'tinyfish_agent' => 'TinyFish Agent (manual)',
+            'treg_anyapi' => ['Treg anyapi.web.scrape', 1, 1, null],
+            'alterlab' => ['AlterLab (js)', 0, null, null],
+            'treg_litescrape' => ['Treg litescrape (extra)', 0, null, [
+                'endpoint_id' => 'litescrape.web.fetch.post',
+                'query' => ['timeout' => 90],
+                'body_params' => ['respond_with' => 'html', 'engine' => 'browser', 'page_timeout' => 60],
+                'prior_cost_micro' => 150,
+            ]],
+            'tinyfish_fetch' => ['TinyFish Fetch (cross-check)', 0, null, null],
+            'tinyfish_agent' => ['TinyFish Agent (manual)', 0, null, null],
         ];
-        foreach ($seeds as $sourceId => $displayName) {
+        foreach ($seeds as $sourceId => $def) {
             if (Capsule::table('mod_contabo_scrape_sources')->where('source_id', $sourceId)->exists()) {
                 continue;
             }
             Capsule::table('mod_contabo_scrape_sources')->insert([
                 'source_id' => $sourceId,
-                'display_name' => $displayName,
-                'enabled' => 0,
+                'display_name' => $def[0],
+                'enabled' => $def[1],
+                'priority' => $def[2],
+                'options_json' => $def[3] === null ? null : json_encode($def[3], JSON_UNESCAPED_SLASHES),
                 'monthly_budget_micro' => 500000,
                 'per_run_cap_micro' => 50000,
                 'consecutive_failures' => 0,

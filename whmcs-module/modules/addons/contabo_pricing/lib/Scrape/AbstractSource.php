@@ -44,6 +44,11 @@ abstract class AbstractSource implements SourceInterface
         return false;
     }
 
+    public function supportsSapper(): bool
+    {
+        return true;
+    }
+
     public function testConnection(): array
     {
         $t0 = microtime(true);

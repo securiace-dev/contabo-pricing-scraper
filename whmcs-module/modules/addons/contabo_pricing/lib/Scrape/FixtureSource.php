@@ -73,4 +73,9 @@ final class FixtureSource implements SourceInterface
     {
         return false;
     }
+
+    public function supportsSapper(): bool
+    {
+        return true;
+    }
 }

@@ -164,6 +164,17 @@ final class RunValidatorTest extends TestCase
         $this->assertSame(['contabo'], $r['gates']['label_guard']['detail']['hits']['cloud-vps-10']['display_name']);
     }
 
+    public function testUpstreamRedirectIsAWarningNotAFailure(): void
+    {
+        $r = $this->eval($this->good(), null, [[
+            'url' => 'https://contabo.com/en/vps/cloud-vps-10/',
+            'final_url' => 'https://contabo.com/en/vps/cloud-vps-core-4/',
+        ]]);
+        $this->assertTrue($r['passed']);
+        $this->assertSame(['upstream redirect: cloud-vps-10 -> cloud-vps-core-4'], $r['warnings']);
+        $this->assertSame([], $this->eval($this->good())['warnings']);
+    }
+
     public function testBucketsAndScrapeFailed(): void
     {
         $last = $this->good();

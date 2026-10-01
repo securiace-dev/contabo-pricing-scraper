@@ -7,9 +7,12 @@ namespace ContaboPricing\Scrape;
  * TinyFish Fetch API. POST https://api.fetch.tinyfish.ai {urls:[url],
  * format:'html', ttl:0}. Free tier here, so cost is reported as 0.
  *
- * Per-URL result is read from results[] (matching url, else the first) with
- * html in content/html/text; per-URL failures arrive in errors[].
- * 'format' in $opts may be 'html' (default), 'markdown' or 'json' (spike only).
+ * Spike-0 2026-10-01: results[0] = {url, final_url, title, description,
+ * language, text, author, published_date, latency_ms, format}. `text` is ~2 KB
+ * of rendered content with scripts stripped, so there is no __SAPPER__ blob:
+ * supportsSapper() is false and the source is only useful for the S3 visible
+ * price/title cross-check. The format:'json' variant returns no content and
+ * is not offered. Per-URL failures arrive in errors[].
  */
 final class TinyFishFetchSource extends AbstractSource
 {
@@ -17,7 +20,7 @@ final class TinyFishFetchSource extends AbstractSource
 
     public function priorSuccessRate(): float
     {
-        return 0.80;
+        return 0.999;
     }
 
     public function priceMicroPerPage(): int
@@ -25,10 +28,15 @@ final class TinyFishFetchSource extends AbstractSource
         return 0;
     }
 
+    public function supportsSapper(): bool
+    {
+        return false;
+    }
+
     public function fetchFamilyPage(string $url, array $opts = []): FetchResult
     {
         $format = (string) ($opts['format'] ?? 'html');
-        if (!in_array($format, ['html', 'markdown', 'json'], true)) {
+        if (!in_array($format, ['html', 'markdown'], true)) {
             throw new SourceException('tinyfish_fetch: unsupported format ' . $format);
         }
         $r = $this->call(
@@ -68,15 +76,8 @@ final class TinyFishFetchSource extends AbstractSource
             throw new SourceException('tinyfish_fetch returned a malformed result');
         }
 
-        $json = null;
-        $html = null;
-        if ($format === 'json') {
-            $c = $hit['content'] ?? ($hit['json'] ?? null);
-            $json = is_array($c) ? $c : null;
-        } else {
-            $html = $this->firstString($hit, ['html', 'content', 'text']);
-        }
-        if ($html === null && $json === null) {
+        $html = $this->firstString($hit, ['text', 'html', 'content']);
+        if ($html === null) {
             throw new SourceException('tinyfish_fetch result had no content');
         }
 
@@ -84,11 +85,12 @@ final class TinyFishFetchSource extends AbstractSource
             $this->id(),
             null,
             $html,
-            $json,
+            null,
             0,
             $r['latency_ms'],
             $r['status'],
-            $json !== null ? 'provider-json' : null
+            null,
+            $this->firstString($hit, ['final_url'])
         );
     }
 }

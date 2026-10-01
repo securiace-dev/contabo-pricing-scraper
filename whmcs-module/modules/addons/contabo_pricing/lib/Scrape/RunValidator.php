@@ -8,7 +8,7 @@ namespace ContaboPricing\Scrape;
  * is involved here; JevJudge can only veto afterwards.
  *
  * Attempt shape (RunValidator reads only these keys):
- *   ['family'=>string, 'url'=>string, 'plans'=>list<plan>, 'warnings'=>list<string>]
+ *   ['family'=>string, 'url'=>string, 'final_url'=>?string, 'plans'=>list<plan>, 'warnings'=>list<string>]
  *
  * Gates (each ['ok'=>bool,'detail'=>mixed]): min_plans_per_family,
  * count_drop_pct, schema_completeness, price_sanity, cross_page_consistency,
@@ -27,7 +27,7 @@ final class RunValidator
      * @param list<array<string,mixed>> $plans merged plans (one per slug)
      * @param list<array<string,mixed>> $attempts
      * @param array<mixed>|null $lastGoodPlans list of plans (or slug map) from the latest succeeded run
-     * @return array{gates:array<string,array{ok:bool,detail:mixed}>,anomalies:list<array<string,mixed>>,risky:list<array<string,mixed>>,safe:list<array<string,mixed>>,passed:bool}
+     * @return array{gates:array<string,array{ok:bool,detail:mixed}>,anomalies:list<array<string,mixed>>,risky:list<array<string,mixed>>,safe:list<array<string,mixed>>,passed:bool,warnings:list<string>}
      */
     public function evaluate(array $plans, array $attempts, ?array $lastGoodPlans, ScrapeSettings $s): array
     {
@@ -66,7 +66,29 @@ final class RunValidator
             'risky' => $buckets['risky'],
             'safe' => $buckets['safe'],
             'passed' => $passed,
+            'warnings' => $this->redirectWarnings($attempts),
         ];
+    }
+
+    /**
+     * Upstream relaunches redirect old plan URLs (Spike-0: cloud-vps-10 now
+     * lands on cloud-vps-core-4 while the blob still holds the legacy slugs).
+     * That is informational, never a gate failure.
+     *
+     * @param list<array<string,mixed>> $attempts
+     * @return list<string>
+     */
+    private function redirectWarnings(array $attempts): array
+    {
+        $out = [];
+        foreach ($attempts as $a) {
+            $url = (string) ($a['url'] ?? '');
+            $final = (string) ($a['final_url'] ?? '');
+            if ($url !== '' && $final !== '' && PlanUrlList::slugFromUrl($url) !== PlanUrlList::slugFromUrl($final)) {
+                $out[] = 'upstream redirect: ' . PlanUrlList::slugFromUrl($url) . ' -> ' . PlanUrlList::slugFromUrl($final);
+            }
+        }
+        return array_values(array_unique($out));
     }
 
     /**
