@@ -15,16 +15,11 @@ Python, PostgreSQL, Redis, Celery, or external queue dependency.
 
 ## Runtime responsibilities
 
-### Rust pricing/catalog API
-
-The Rust service scrapes and normalizes plans, provider SKU IDs,
-configuration dimensions, prices, FX, availability, and payload hashes. It
-publishes a versioned `/api/v1/catalog` contract. It does not receive WHMCS
-customer credentials or manage customer VPS resources.
-
 ### `contabo_pricing` addon
 
-The addon imports the Rust catalog and manages:
+The addon scrapes and normalizes Contabo plans natively (configure providers,
+budgets and review rules under **Data sources** in the addon UI), imports the
+versioned catalog, and manages:
 
 - versioned plan profiles and catalog items;
 - WHMCS product/configurable-option mappings;
@@ -35,8 +30,8 @@ The addon imports the Rust catalog and manages:
 - the provisioning operations/reconciliation workbench;
 - additive installation of the shared native schema.
 
-Rust/API unavailability may pause imports or new quotation. It does not block
-an existing service because the provisioning module never calls the Rust API.
+A failed scrape may pause imports or new quotation. It does not block an
+existing service because the provisioning module never calls the catalog source.
 
 ### `securiacevps` module
 
@@ -72,7 +67,7 @@ Then, in an authorized staging or operator-controlled rollout:
 1. Install/upgrade `contabo_pricing` and activate it.
 2. Confirm schema v12 health and run the migration twice to prove idempotency.
 3. Keep global and per-capability provider writes disabled.
-4. Import/validate a Rust catalog and publish a mapping version.
+4. Run a scrape under Data sources, import the catalog and publish a mapping version.
 5. Install `securiacevps` and the `contabo_vps` compatibility shim.
 6. Run read-only existing-service adoption and resolve conflicts.
 7. Certify the minimum lifecycle in an allowlisted staging cohort.
