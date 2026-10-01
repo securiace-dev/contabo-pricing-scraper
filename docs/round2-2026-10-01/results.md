@@ -118,3 +118,53 @@ duplicate paid runs), followed with `GET /v1/runs/{id}` every 10 s (budget 600 s
 Verification at this step: scorer on `round1_treg_anyapi.html` still 100 % (744/744 required values, 41/41 ground-truth
 checks); the discovered families on that blob are Core VPS 6, Performance VPS 6, Max Performance VPS 5, Storage VPS 5,
 Dedicated Servers 4, GPU VPS 1 (27 plans).
+
+## Runs through the addon deployed on whmcs-devbox (WHMCS 8.13, 2026-10-01)
+
+Deployment: addon copied into `whmcs-devbox-whmcs8-1`, upgraded to schema 15, keys stored sealed through
+`DataSourcesForm::apply` (the same path the Data sources page uses), per-source Test, then dry runs.
+
+### Mode A — raw product page → PHP decoder (`SapperLiteralDecoder` → `CatalogStructure`)
+
+| Provider | Test | Fetch | Blob | Completeness | Correctness | Cost / page | Latency | Notes |
+|---|---|---|---|---|---|---|---|---|
+| treg → `anyapi.web.scrape` | ok | 200, 2.04 MB | yes | **100 %** (744/744) | **100 %** (41/41) | $0.0007 | 9.9 s | dry run through `ScrapeRunService`: 16 legacy-slug plans decoded, gates evaluated |
+| AlterLab `mode: js` (tier 4) | ok | 200, 2.03 MB | yes | **100 %** | **100 %** | $0.004 | 21.7 s | identical values |
+| treg → `litescrape.web.fetch.post` | ok | 503 `provider_capacity_unavailable` (shared key) | — | — | — | $0.00015 | — | first measurement was served by anyapi (options lost on save) and is not independent |
+| TinyFish Fetch | ok | 200, 2 KB rendered text | **no** | 0 % | 0 % | $0 | 7.3 s | scripts stripped; cross-check only |
+| Landing page `/en/vps/` via anyapi | ok | 200, 1.24 MB | **no** | — | — | $0.0007 | 10.4 s | **category landing pages do not carry the blob; only product pages do** |
+
+### Mode B — provider-side structured extraction (scorecard JSON Schema)
+
+| Provider | Result | Completeness | Correctness | Cost | Notes |
+|---|---|---|---|---|---|
+| AlterLab `extraction_schema` on `/scrape` | HTML returned, schema ignored (`filtered_content` null), still billed tier 4 | — | — | $0.004 ×3 | first two attempts 422 (`NS_ERROR_ABORT`, `origin_unavailable`) |
+| AlterLab `/extract` | 403 `BETA_FEATURE_REQUIRED` (intelligent-extraction) | — | — | $0 | account-level beta flag; not available to this key |
+| treg → `scrapegraphai.web.extract` (LLM) | 1 family, 6 plans, EUR only, no periods/options | 10.5 % | 22 % (9/41) | $0.02 | visible page only |
+| TinyFish Agent, product page, `output_schema` (23 steps) | 1 plan; USD/GBP copied from EUR; discounts as %, not amounts; India region missing; panels/backup right | 4.6 % | 29 % (12/41) | $0.37 | hallucination risk is the governing issue |
+| TinyFish Agent, landing page (10 steps) | ignored schema; markdown table of 5 tabs (Core 6, Performance 6, Max Performance 5, Storage 5, Windows 4) at 24-month prices; invented "Cloud VDS 4" names | n/a (not scorecard-shaped) | — | $0.16 | no regions/backup/object storage |
+| TinyFish Agent, product page, no schema (4 steps) | 1 plan, EUR per period, periods correct (15 %/20 %) | ~3 % | partial | $0.06 | first attempt, before schema sanitising |
+
+Agent total 37 steps ≈ $0.59; the adapter's transport-retry launched a duplicate run (cancelled) — a non-idempotent retry bug, fixed in step 5.
+
+### Decision (round 2)
+
+Results and effort, not cost, decide it: **Mode A wins outright** — one product-page fetch yields every required value for all
+six nav families (prices in EUR/USD/GBP, periods, specs, per-plan regions/storage/backup/object storage/OS/app/panel
+addons) with 100 % completeness and 100 % correctness against the checkout screenshots, decoded deterministically in PHP.
+No provider-side extraction came close (best 10.5 %), and the LLM paths hallucinated values.
+
+Within Mode A: **primary treg → `anyapi.web.scrape`** ($0.0007, ~10 s), **fallback AlterLab `mode: js`** ($0.004, ~22 s).
+TinyFish Fetch stays free for the visible-price cross-check; TinyFish Agent stays manual-only. Round-1 ranking is confirmed,
+now on results. `treg_litescrape` stays disabled (capacity 503 on the shared key).
+
+### Findings that change the addon (implemented in step 5)
+- Families are discovered per run from the blob's `categories` + nav (six nav families; VPS HP/MP are hidden price mirrors), kept in a registry with history, and only reviewed when new/renamed/retired.
+- Fetch target must be a product page (first member of the first active family); landing pages are metadata only.
+- Live spec strings changed: "6 Virtual Cores", "32 x 3.55 GHz", "2 x 1 TB NVMe", "300GB SSD / 150GB NVMe" — parser widened; dry run on live data had rejected VDS plans for missing `cpu_count`.
+- Multi-currency prices and per-plan addon groups (97 on Cloud VPS 4) are now carried into the envelope.
+
+### Open items (round 3)
+- The landing page renders a **"Windows VPS" tab** that has no blob category; the registry must reconcile rendered tabs (DOM) against blob categories, and flag tabs with no category (and categories with no tab).
+- `scrape.plan_urls_json` legacy 16 slugs are superseded by the registry; the first dry run still used them (16 legacy plans) — confirm after redeploy that runs use the registry.
+- AlterLab intelligent extraction is a beta flag on the account; enable it only if a Mode B cross-check is wanted.
