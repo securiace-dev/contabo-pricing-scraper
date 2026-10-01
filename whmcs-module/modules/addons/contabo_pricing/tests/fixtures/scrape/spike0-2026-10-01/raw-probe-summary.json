@@ -1,0 +1,124 @@
+[
+ {
+  "probe": "tinyfish_fetch_html",
+  "bytes": 2727,
+  "sapper": false,
+  "cost_micro": null,
+  "html_sha256": null,
+  "html_bytes": 0,
+  "top_keys": [
+   "results",
+   "errors"
+  ]
+ },
+ {
+  "probe": "treg_web_extract",
+  "bytes": 12041,
+  "sapper": false,
+  "cost_micro": 0,
+  "html_sha256": null,
+  "html_bytes": 0,
+  "top_keys": [
+   "output",
+   "raw",
+   "_treg"
+  ]
+ },
+ {
+  "probe": "treg_tinyfish_fetch",
+  "bytes": 2727,
+  "sapper": false,
+  "cost_micro": 0,
+  "html_sha256": null,
+  "html_bytes": 0,
+  "top_keys": [
+   "results",
+   "errors"
+  ]
+ },
+ {
+  "probe": "treg_litescrape_post",
+  "bytes": 635,
+  "sapper": false,
+  "cost_micro": null,
+  "html_sha256": null,
+  "html_bytes": 0,
+  "top_keys": [
+   "detail"
+  ]
+ },
+ {
+  "probe": "treg_anyapi",
+  "bytes": 2114841,
+  "sapper": true,
+  "cost_micro": 700,
+  "html_sha256": "d4f42e4f3922db4363adc66c0734c6a9eb5d9d595d074386688f3a1c73d9bf34",
+  "html_bytes": 2035679,
+  "top_keys": [
+   "output",
+   "provider",
+   "costUsd",
+   "items",
+   "replayed",
+   "source",
+   "hint",
+   "resultId"
+  ]
+ },
+ {
+  "probe": "treg_firecrawl",
+  "bytes": 80914,
+  "sapper": false,
+  "cost_micro": 5000,
+  "html_sha256": null,
+  "html_bytes": 0,
+  "top_keys": [
+   "success",
+   "data"
+  ]
+ },
+ {
+  "probe": "alterlab_auto",
+  "bytes": 343418,
+  "sapper": true,
+  "cost_micro": 200,
+  "html_sha256": "d98c8b6309413fe1bbdaca853f14e9c6fc76b401e40ce23a922b3c90dbe80f36",
+  "html_bytes": 323716,
+  "top_keys": [
+   "job_id",
+   "url",
+   "final_url",
+   "redirected",
+   "redirect_chain",
+   "status_code",
+   "tier_status_codes",
+   "content",
+   "title",
+   "published_at",
+   "author",
+   "metadata"
+  ]
+ },
+ {
+  "probe": "alterlab_js",
+  "bytes": 2097835,
+  "sapper": true,
+  "cost_micro": 4000,
+  "html_sha256": "52e2e17a2c8d663ed6c1d7739d25b33a1eeeda71599b0c6cc11cce4e35eaf62a",
+  "html_bytes": 2037270,
+  "top_keys": [
+   "job_id",
+   "url",
+   "final_url",
+   "redirected",
+   "redirect_chain",
+   "status_code",
+   "tier_status_codes",
+   "content",
+   "title",
+   "published_at",
+   "author",
+   "metadata"
+  ]
+ }
+]

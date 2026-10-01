@@ -1,0 +1,18 @@
+{
+    "provider": "tinyfish_fetch:html",
+    "url": "https://contabo.com/en/vds/vds-s/",
+    "http_status": 200,
+    "ok": true,
+    "sapper_present": false,
+    "decoder_ok": false,
+    "plan_count": 0,
+    "family_plan_count": "",
+    "strategy": "dom_probe",
+    "latency_ms": 5085,
+    "served_by": null,
+    "cost_micro": 0,
+    "body_bytes": 1775,
+    "sha256": "384bb570d052b9fbdb879245ba8b42200b6f1df62cb70383a7d5cff875a31d43",
+    "error": null,
+    "recorded_at": "2026-10-01T05:46:21+00:00"
+}
