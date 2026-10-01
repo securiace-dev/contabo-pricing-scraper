@@ -3774,9 +3774,8 @@ class AdminController
             }
 
             $s = new \ContaboPricing\Scrape\ScrapeSettings();
-            $urls = new \ContaboPricing\Scrape\PlanUrlList($s->planUrls());
-            $first = $urls->firstUrlPerFamily();
-            $url = $first[\ContaboPricing\Scrape\PlanUrlList::FAMILY_VPS] ?? (string) ($urls->urls()[0] ?? '');
+            // the first learned family's product page (it carries the whole catalogue blob)
+            $url = (string) (new \ContaboPricing\Scrape\PlanUrlList($s->planUrls()))->fetchTargets()[0];
 
             $price = $source->priceMicroPerPage();
             $ledger = new \ContaboPricing\Scrape\CostLedger();
@@ -3789,7 +3788,7 @@ class AdminController
             $runs = new \ContaboPricing\Scrape\RunRepository();
             try {
                 $f = $source->fetchFamilyPage($url);
-                $x = (new \ContaboPricing\Scrape\PlanExtractor($urls))->extract($f->html, $f->json);
+                $x = (new \ContaboPricing\Scrape\PlanExtractor($s->legacyAllowlist()))->extract($f->html, $f->json);
                 $out['sapper_present'] = $x->sapperPresent;
                 $out['plan_count'] = count($x->plans);
                 $out['latency_ms'] = $f->latencyMs;

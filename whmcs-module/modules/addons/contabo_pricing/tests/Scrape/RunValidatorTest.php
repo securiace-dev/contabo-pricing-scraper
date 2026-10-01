@@ -200,4 +200,85 @@ final class RunValidatorTest extends TestCase
         $this->assertSame(['parser_error'], array_column($r['anomalies'], 'kind'));
         $this->assertFalse($r['gates']['schema_completeness']['ok']);
     }
+
+    // ── registry-backed mode ────────────────────────────────────────────────
+
+    /** @return array<string,mixed> */
+    private function diff(array $over = []): array
+    {
+        return array_replace([
+            'new' => [], 'renamed' => [], 'retired' => [], 'delisted' => [], 'reappeared' => [], 'count_changes' => [],
+            'plan_moves' => [], 'unapproved' => [],
+            'families' => [
+                ['category_id' => 'K1', 'slug' => 'core', 'label' => 'Core', 'name' => 'Core', 'typical_plan_count' => 10, 'status' => 'active', 'approved' => 1],
+                ['category_id' => 'K2', 'slug' => 'gpu', 'label' => 'GPU', 'name' => 'GPU', 'typical_plan_count' => 0, 'status' => 'new', 'approved' => 0],
+            ],
+        ], $over);
+    }
+
+    /** @return list<array<string,mixed>> */
+    private function famPlans(int $core, int $gpu): array
+    {
+        $out = [];
+        for ($i = 1; $i <= $core; $i++) {
+            $out[] = self::plan('core-' . $i, 'Core', 5.0 + $i, ['category_id' => 'K1']);
+        }
+        for ($i = 1; $i <= $gpu; $i++) {
+            $out[] = self::plan('gpu-' . $i, 'GPU', 999.0, ['category_id' => 'K2']);
+        }
+        return $out;
+    }
+
+    public function testRegistryMinPlansFloorsAtTypicalMinusMaxDropAndFallsBackToOne(): void
+    {
+        $this->s->set('scrape.max_drop_pct', '20');
+        // typical 10 -> floor(10 x 0.8) = 8; a family with no learned typical needs just 1
+        $r = (new RunValidator())->evaluate($this->famPlans(8, 1), [], null, $this->s, $this->diff());
+        $this->assertTrue($r['gates']['min_plans_per_family']['ok']);
+        $this->assertSame(['count' => 8, 'min' => 8, 'typical' => 10, 'ok' => true], $r['gates']['min_plans_per_family']['detail']['Core']);
+        $this->assertSame(['count' => 1, 'min' => 1, 'typical' => 0, 'ok' => true], $r['gates']['min_plans_per_family']['detail']['GPU']);
+
+        $r = (new RunValidator())->evaluate($this->famPlans(7, 1), [], null, $this->s, $this->diff());
+        $this->assertFalse($r['gates']['min_plans_per_family']['ok'], '7 < 8');
+        $r = (new RunValidator())->evaluate($this->famPlans(8, 0), [], null, $this->s, $this->diff());
+        $this->assertFalse($r['gates']['min_plans_per_family']['ok'], 'a family with no plans at all fails (min 1)');
+    }
+
+    public function testRegistryModeFallsBackToTheLegacySettingForANamedFamily(): void
+    {
+        $this->s->set('scrape.min_plans_cloud_vps', '3');
+        $d = $this->diff(['families' => [['category_id' => 'K1', 'slug' => 'v', 'label' => 'Cloud VPS', 'name' => 'Cloud VPS', 'typical_plan_count' => 0, 'status' => 'new']]]);
+        $plans = [self::plan('a', 'Cloud VPS', 5.0, ['category_id' => 'K1']), self::plan('b', 'Cloud VPS', 6.0, ['category_id' => 'K1'])];
+        $r = (new RunValidator())->evaluate($plans, [], null, $this->s, $d);
+        $this->assertFalse($r['gates']['min_plans_per_family']['ok']);
+        $this->assertSame(3, $r['gates']['min_plans_per_family']['detail']['Cloud VPS']['min']);
+    }
+
+    public function testNoDiscoveredFamilyAtAllNeverPasses(): void
+    {
+        $r = (new RunValidator())->evaluate([], [], null, $this->s, $this->diff(['families' => []]));
+        $this->assertFalse($r['gates']['min_plans_per_family']['ok']);
+    }
+
+    public function testFamilyGovernanceBecomesRiskyNeverAnAnomaly(): void
+    {
+        $d = $this->diff([
+            'new' => [
+                ['category_id' => 'K2', 'slug' => 'gpu', 'label' => 'GPU', 'status' => 'new', 'plans' => 1, 'reason' => 'first_seen'],
+                ['category_id' => 'H', 'slug' => 'mirror', 'label' => 'Mirror', 'status' => 'hidden', 'plans' => 3, 'reason' => 'first_seen'],
+            ],
+            'renamed' => [['category_id' => 'K1', 'slug' => 'core', 'label' => 'Core 2', 'kind' => 'title', 'from' => 'Core', 'to' => 'Core 2']],
+            'retired' => [['category_id' => 'K9', 'slug' => 'old', 'label' => 'Old', 'was' => 'active']],
+            'count_changes' => [['category_id' => 'K1', 'slug' => 'core', 'label' => 'Core', 'typical' => 10, 'current' => 8, 'pct' => 20.0, 'max_pct' => 20.0]],
+            'plan_moves' => [['slug' => 'core-1', 'from' => 'K1', 'from_label' => 'Core', 'to' => 'K2', 'to_label' => 'GPU']],
+            'unapproved' => [['category_id' => 'K2', 'slug' => 'gpu', 'label' => 'GPU']],
+        ]);
+        $r = (new RunValidator())->evaluate($this->famPlans(9, 1), [], null, $this->s, $d);
+        $this->assertSame([], $r['anomalies']);
+        $kinds = array_column($r['risky'], 'kind');
+        sort($kinds);
+        $this->assertSame(['family_count_deviation', 'family_new', 'family_plan_moved', 'family_renamed', 'family_retired'], $kinds, 'the hidden first-seen mirror is not flagged');
+        $this->assertStringContainsString('family not yet approved: GPU', implode(' ', $r['warnings']));
+        $this->assertTrue($r['passed'], 'governance flags never fail a gate: needs_review, not rejected');
+    }
 }

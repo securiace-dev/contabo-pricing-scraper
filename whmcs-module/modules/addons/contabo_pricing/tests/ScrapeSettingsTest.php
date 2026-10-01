@@ -33,8 +33,9 @@ final class ScrapeSettingsTest extends TestCase
         $this->assertSame('jev-1.13.0', $s->jevModel());
         $this->assertSame(0.80, $s->jevConfidenceMin());
         $this->assertSame('local', $s->planSource());
-        $this->assertSame(PlanUrlList::DEFAULT_URLS, $s->planUrls());
-        $this->assertCount(16, $s->planUrls());
+        $this->assertSame([], $s->planUrls(), 'no explicit override: targets come from the family registry');
+        $this->assertSame([], $s->legacyAllowlist());
+        $this->assertSame([PlanUrlList::DEFAULT_PRODUCT_URL], (new PlanUrlList($s->planUrls()))->fetchTargets());
     }
 
     public function testSetPersistsAndUpserts(): void
@@ -73,8 +74,32 @@ final class ScrapeSettingsTest extends TestCase
     {
         $s = new ScrapeSettings();
         $s->set('scrape.plan_urls_json', '{"not":"a list"}');
-        $this->assertSame(PlanUrlList::DEFAULT_URLS, $s->planUrls());
+        $this->assertSame([], $s->planUrls());
         $s->set('scrape.plan_urls_json', json_encode(['https://contabo.com/en/vps/cloud-vps-10/', 'http://evil.example/x']));
         $this->assertSame(['https://contabo.com/en/vps/cloud-vps-10/'], $s->planUrls());
+    }
+
+    public function testLegacyDefaultPlanUrlListIsTreatedAsNoOverride(): void
+    {
+        $s = new ScrapeSettings();
+        $legacy = [];
+        foreach (['10', '20', '30', '40', '50', '60'] as $n) {
+            $legacy[] = 'https://contabo.com/en/vps/cloud-vps-' . $n . '/';
+        }
+        foreach (['10', '20', '30', '40', '50'] as $n) {
+            $legacy[] = 'https://contabo.com/en/storage-vps/storage-vps-' . $n . '/';
+        }
+        foreach (['s', 'm', 'l', 'xl', 'xxl'] as $n) {
+            $legacy[] = 'https://contabo.com/en/vds/vds-' . $n . '/';
+        }
+        $s->set('scrape.plan_urls_json', json_encode($legacy));
+        $this->assertSame([], $s->planUrls());
+    }
+
+    public function testLegacyAllowlistFiltersToSlugs(): void
+    {
+        $s = new ScrapeSettings();
+        $s->set('scrape.legacy_allowlist_json', json_encode(['cloud-vps-10', '../x', 7, 'Bad Slug']));
+        $this->assertSame(['cloud-vps-10'], $s->legacyAllowlist());
     }
 }

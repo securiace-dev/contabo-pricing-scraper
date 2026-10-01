@@ -35,7 +35,10 @@ final class ScrapeSettings
             'scrape.jev_model' => 'jev-1.13.0',
             'scrape.jev_confidence_min' => '0.80',
             'scrape.plan_source' => 'local',
-            'scrape.plan_urls_json' => (string) json_encode(PlanUrlList::DEFAULT_URLS, JSON_UNESCAPED_SLASHES),
+            // explicit fetch-target override only; [] = discover from the family registry
+            'scrape.plan_urls_json' => '[]',
+            // product slugs outside every discovered family that may still be imported
+            'scrape.legacy_allowlist_json' => '[]',
             'scrape.last_run_at' => '',
         ];
     }
@@ -153,7 +156,13 @@ final class ScrapeSettings
         return $this->get(self::KEY_JEV_API_KEY) !== '';
     }
 
-    /** @return list<string> configured plan URLs; falls back to the built-in list when unusable. */
+    /**
+     * Explicit fetch-target override. Empty (the default) means the targets are
+     * discovered from the family registry. The pre-v16 built-in 16-URL list is
+     * ignored so a stale default can never pin the run to legacy slugs.
+     *
+     * @return list<string>
+     */
     public function planUrls(): array
     {
         $decoded = json_decode($this->get('scrape.plan_urls_json'), true);
@@ -165,7 +174,25 @@ final class ScrapeSettings
                 }
             }
         }
-        return $urls === [] ? PlanUrlList::DEFAULT_URLS : $urls;
+        if (count($urls) === 16 && strpos($urls[0], '/en/vps/cloud-vps-10/') !== false) {
+            return [];
+        }
+        return $urls;
+    }
+
+    /** @return list<string> product slugs allowed although they belong to no family */
+    public function legacyAllowlist(): array
+    {
+        $decoded = json_decode($this->get('scrape.legacy_allowlist_json'), true);
+        $out = [];
+        if (is_array($decoded)) {
+            foreach ($decoded as $s) {
+                if (is_string($s) && preg_match('/^[a-z0-9-]{1,60}$/', $s) === 1) {
+                    $out[] = $s;
+                }
+            }
+        }
+        return $out;
     }
 
     public function touchLastRun(): void

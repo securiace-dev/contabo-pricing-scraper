@@ -14,6 +14,12 @@ namespace ContaboPricing\Scrape;
  * count_drop_pct, schema_completeness, price_sanity, cross_page_consistency,
  * dom_cross_check, label_guard. Diff buckets come from PlanDiffer +
  * ChangeClassifier against the last good run's plans.
+ *
+ * Family governance (FamilyRegistry::reconcile() diff, optional 5th argument):
+ * a new, renamed, retired, delisted or reappeared family, a plan that moved
+ * between families, and a family whose plan count deviates more than
+ * scrape.max_drop_pct from its typical_plan_count are RISKY (-> needs_review,
+ * never a rejection). min_plans_per_family then works per registry family.
  */
 final class RunValidator
 {
@@ -27,15 +33,16 @@ final class RunValidator
      * @param list<array<string,mixed>> $plans merged plans (one per slug)
      * @param list<array<string,mixed>> $attempts
      * @param array<mixed>|null $lastGoodPlans list of plans (or slug map) from the latest succeeded run
+     * @param array<string,mixed>|null $familyDiff FamilyRegistry::reconcile() result for this run
      * @return array{gates:array<string,array{ok:bool,detail:mixed}>,anomalies:list<array<string,mixed>>,risky:list<array<string,mixed>>,safe:list<array<string,mixed>>,passed:bool,warnings:list<string>}
      */
-    public function evaluate(array $plans, array $attempts, ?array $lastGoodPlans, ScrapeSettings $s): array
+    public function evaluate(array $plans, array $attempts, ?array $lastGoodPlans, ScrapeSettings $s, ?array $familyDiff = null): array
     {
         $cur = self::bySlug($plans);
         $prev = self::bySlug($lastGoodPlans ?? []);
 
         $gates = [
-            'min_plans_per_family' => $this->minPlans($cur, $s),
+            'min_plans_per_family' => $familyDiff === null ? $this->minPlans($cur, $s) : $this->minPlansRegistry($cur, $s, $familyDiff),
             'count_drop_pct' => $this->countDrop($cur, $prev, $s),
             'schema_completeness' => $this->schema($cur),
             'price_sanity' => $this->priceSanity($cur, $prev, $s),
@@ -54,6 +61,16 @@ final class RunValidator
             $buckets[$map[ChangeClassifier::classify($d)]][] = $d;
         }
 
+        $warnings = $this->redirectWarnings($attempts);
+        if ($familyDiff !== null) {
+            foreach ($this->familyFlags($familyDiff) as $flag) {
+                $buckets['risky'][] = $flag;
+            }
+            foreach ((array) ($familyDiff['unapproved'] ?? []) as $u) {
+                $warnings[] = 'family not yet approved: ' . (string) ($u['label'] ?? '') . ' (imported, flagged)';
+            }
+        }
+
         $passed = true;
         foreach ($gates as $g) {
             if (!$g['ok']) {
@@ -66,7 +83,7 @@ final class RunValidator
             'risky' => $buckets['risky'],
             'safe' => $buckets['safe'],
             'passed' => $passed,
-            'warnings' => $this->redirectWarnings($attempts),
+            'warnings' => $warnings,
         ];
     }
 
@@ -129,6 +146,95 @@ final class RunValidator
             $detail[$family] = ['count' => $counts[$family], 'min' => $min, 'ok' => $good];
         }
         return ['ok' => $ok, 'detail' => $detail];
+    }
+
+    /**
+     * Per registry family: min = floor(typical x (1 - max_drop_pct)), at least 1.
+     * A moderate shrink is a needs_review flag (familyFlags); only a severe one
+     * rejects. A family with no learned typical yet falls back to the legacy
+     * scrape.min_plans_* setting for its name, then to 1.
+     *
+     * @param array<string,array<string,mixed>> $cur
+     * @param array<string,mixed> $familyDiff
+     */
+    private function minPlansRegistry(array $cur, ScrapeSettings $s, array $familyDiff): array
+    {
+        $counts = [];
+        foreach ($cur as $p) {
+            $k = (string) ($p['category_id'] ?? '');
+            $counts[$k] = ($counts[$k] ?? 0) + 1;
+        }
+        $legacy = $s->minPlansByFamily();
+        $ok = true;
+        $detail = [];
+        foreach ((array) ($familyDiff['families'] ?? []) as $f) {
+            $name = (string) ($f['name'] ?? $f['label'] ?? '');
+            $typical = (int) ($f['typical_plan_count'] ?? 0);
+            if ($typical > 0) {
+                $min = max(1, (int) floor($typical * (1.0 - $s->maxDropPct() / 100.0)));
+            } else {
+                $min = max(1, (int) ($legacy[$name] ?? 1));
+                if (!isset($legacy[$name])) {
+                    $min = 1;
+                }
+            }
+            $count = $counts[(string) ($f['category_id'] ?? '')] ?? 0;
+            $good = $count >= $min;
+            $ok = $ok && $good;
+            $detail[$name] = ['count' => $count, 'min' => $min, 'typical' => $typical, 'ok' => $good];
+        }
+        if ($detail === []) {
+            $ok = false; // a run that discovers no family at all must never import
+            $detail['(none)'] = ['count' => 0, 'min' => 1, 'typical' => 0, 'ok' => false];
+        }
+        return ['ok' => $ok, 'detail' => $detail];
+    }
+
+    /**
+     * Governance flags from the registry diff, shaped like PlanDiffer entries.
+     *
+     * @param array<string,mixed> $diff
+     * @return list<array<string,mixed>>
+     */
+    private function familyFlags(array $diff): array
+    {
+        $mk = static function (string $kind, string $notes, array $family): array {
+            return [
+                'kind' => $kind, 'catalog_sku' => null, 'cost_before' => null, 'cost_after' => null,
+                'spec_before' => null, 'spec_after' => null, 'notes' => $notes, 'family' => $family,
+            ];
+        };
+        $out = [];
+        foreach ((array) ($diff['new'] ?? []) as $f) {
+            if (($f['status'] ?? '') === 'hidden') {
+                continue; // first seen but not linked from the nav: recorded, nothing is imported from it
+            }
+            $why = ($f['reason'] ?? '') === 'listed_in_nav' ? 'now linked from the site navigation' : 'first seen';
+            $out[] = $mk('family_new', 'New family "' . $f['label'] . '" (' . $why . ', ' . (int) ($f['plans'] ?? 0) . ' plans), awaiting approval', $f);
+        }
+        foreach ((array) ($diff['renamed'] ?? []) as $f) {
+            $how = ($f['kind'] ?? '') === 'id_change' ? 'category id changed (history carried forward)' : 'title changed';
+            $out[] = $mk('family_renamed', 'Family renamed "' . $f['from'] . '" -> "' . $f['to'] . '": ' . $how, $f);
+        }
+        foreach ((array) ($diff['retired'] ?? []) as $f) {
+            $out[] = $mk('family_retired', 'Family "' . $f['label'] . '" vanished from the catalogue (was ' . $f['was'] . ')', $f);
+        }
+        foreach ((array) ($diff['delisted'] ?? []) as $f) {
+            $out[] = $mk('family_delisted', 'Family "' . $f['label'] . '" is no longer linked from the site navigation', $f);
+        }
+        foreach ((array) ($diff['reappeared'] ?? []) as $f) {
+            $out[] = $mk('family_reappeared', 'Previously retired family "' . $f['label'] . '" is back', $f);
+        }
+        foreach ((array) ($diff['count_changes'] ?? []) as $f) {
+            $out[] = $mk('family_count_deviation', sprintf(
+                'Family "%s" has %d plans vs typical %d (%.1f%% > %.1f%%)',
+                $f['label'], (int) $f['current'], (int) $f['typical'], (float) $f['pct'], (float) $f['max_pct']
+            ), $f);
+        }
+        foreach ((array) ($diff['plan_moves'] ?? []) as $f) {
+            $out[] = $mk('family_plan_moved', 'Plan ' . $f['slug'] . ' moved from "' . $f['from_label'] . '" to "' . $f['to_label'] . '"', $f);
+        }
+        return $out;
     }
 
     /**

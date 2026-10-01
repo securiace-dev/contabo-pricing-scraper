@@ -74,6 +74,7 @@ final class RunRepository
             'html_bytes' => (int) ($a['html_bytes'] ?? 0),
             'error' => isset($a['error']) ? substr((string) $a['error'], 0, 500) : null,
             'final_url' => isset($a['final_url']) ? substr((string) $a['final_url'], 0, 255) : null,
+            'nav_titles_json' => !empty($a['nav_titles']) && is_array($a['nav_titles']) ? json_encode(array_values($a['nav_titles']), JSON_UNESCAPED_UNICODE) : null,
             'created_at' => date('Y-m-d H:i:s'),
         ]);
     }

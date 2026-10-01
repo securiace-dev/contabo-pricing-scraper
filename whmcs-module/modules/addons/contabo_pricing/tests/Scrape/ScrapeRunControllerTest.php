@@ -162,7 +162,7 @@ final class ScrapeRunControllerTest extends TestCase
         $this->assertSame(0, Capsule::table('mod_contabo_catalog_versions')->count());
         $run = (new RunRepository())->listRuns(1)[0];
         $this->assertSame('dry_run', $run['state']);
-        $this->assertSame(16, (int) $run['plan_count']);
+        $this->assertSame(20, (int) $run["plan_count"]);
     }
 
     public function testRunsListAndDetailRender(): void
@@ -210,7 +210,7 @@ final class ScrapeRunControllerTest extends TestCase
         $j = json_decode($out, true);
         $this->assertSame(true, $j['ok']);
         $this->assertSame(true, $j['sapper_present']);
-        $this->assertSame(16, $j['plan_count']);
+        $this->assertSame(20, $j["plan_count"]);
         $this->assertSame(700, $j['cost_micro']);
         $this->assertArrayHasKey('latency_ms', $j);
         $this->assertArrayHasKey('served_by', $j);

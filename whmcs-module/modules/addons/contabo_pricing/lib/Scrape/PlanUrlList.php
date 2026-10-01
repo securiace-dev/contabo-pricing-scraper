@@ -4,112 +4,96 @@ declare(strict_types=1);
 namespace ContaboPricing\Scrape;
 
 /**
- * The ordered list of Contabo plan URLs and the rank/family helpers derived
- * from it. Mirrors ALL_PLAN_URLS in src/main.rs (rank = 1-based position;
- * family rank = 1-based position among URLs of the same family).
+ * Where a run fetches from, backed by the FamilyRegistry.
+ *
+ * One PRODUCT page embeds the whole catalogue blob (categories, products,
+ * navItems); category landing pages do not carry it. So fetch targets are
+ * product pages:
+ *
+ *  - override: an explicit scrape.plan_urls_json list wins (operator escape hatch);
+ *  - learned:  the registry's active families' sample_product_url, nav order
+ *              (the first member product of each family, built exactly as
+ *              PlanNormalizer builds product_url);
+ *  - default:  before the first accepted run, the Core VPS entry product page.
+ *
+ * Landing pages (nav_href of the active families; before the first run the
+ * six known nav links) are metadata and an optional DOM cross-check, never the
+ * primary fetch.
  */
 final class PlanUrlList
 {
+    /** Legacy scrape.min_plans_* family keys (settings fallback only; the registry is the source of truth). */
     public const FAMILY_VPS = 'Cloud VPS';
     public const FAMILY_STORAGE = 'Storage VPS';
     public const FAMILY_VDS = 'Cloud VDS';
 
-    /** @var list<string> */
-    public const DEFAULT_URLS = [
-        'https://contabo.com/en/vps/cloud-vps-10/',
-        'https://contabo.com/en/vps/cloud-vps-20/',
-        'https://contabo.com/en/vps/cloud-vps-30/',
-        'https://contabo.com/en/vps/cloud-vps-40/',
-        'https://contabo.com/en/vps/cloud-vps-50/',
-        'https://contabo.com/en/vps/cloud-vps-60/',
-        'https://contabo.com/en/storage-vps/storage-vps-10/',
-        'https://contabo.com/en/storage-vps/storage-vps-20/',
-        'https://contabo.com/en/storage-vps/storage-vps-30/',
-        'https://contabo.com/en/storage-vps/storage-vps-40/',
-        'https://contabo.com/en/storage-vps/storage-vps-50/',
-        'https://contabo.com/en/vds/vds-s/',
-        'https://contabo.com/en/vds/vds-m/',
-        'https://contabo.com/en/vds/vds-l/',
-        'https://contabo.com/en/vds/vds-xl/',
-        'https://contabo.com/en/vds/vds-xxl/',
+    public const SITE = 'https://contabo.com/en';
+    public const DEFAULT_PRODUCT_URL = 'https://contabo.com/en/vps/cloud-vps-core-4/';
+
+    /** @var list<string> nav landing links known before the first run (metadata only) */
+    public const DEFAULT_LANDING_PATHS = [
+        '/vps/', '/vps-performance/', '/vps-dedicated/', '/storage-vps/', '/dedicated-servers/', '/gpu-vps/',
     ];
 
     /** @var list<string> */
-    private $urls;
+    private $override;
+    /** @var FamilyRegistry */
+    private $registry;
 
-    /**
-     * @param list<string>|null $urls null = the built-in 16 URLs
-     */
-    public function __construct(?array $urls = null)
+    /** @param list<string> $override explicit URL list; empty = discover from the registry */
+    public function __construct(array $override = [], ?FamilyRegistry $registry = null)
     {
-        $this->urls = array_values($urls ?? self::DEFAULT_URLS);
+        $this->override = array_values($override);
+        $this->registry = $registry ?? new FamilyRegistry();
     }
 
-    /** @return list<string> */
-    public function urls(): array
+    public function isOverride(): bool
     {
-        return $this->urls;
+        return $this->override !== [];
+    }
+
+    /**
+     * Pages to fetch, in order: the first is the primary, the rest are the
+     * fall-back / verification pages (each one carries the full blob).
+     *
+     * @return list<string>
+     */
+    public function fetchTargets(): array
+    {
+        if ($this->override !== []) {
+            return $this->override;
+        }
+        $out = [];
+        foreach ($this->registry->active() as $row) {
+            $u = (string) ($row['sample_product_url'] ?? '');
+            if ($u !== '' && !in_array($u, $out, true)) {
+                $out[] = $u;
+            }
+        }
+        return $out === [] ? [self::DEFAULT_PRODUCT_URL] : $out;
+    }
+
+    /** Landing pages, for metadata and the optional DOM cross-check. @return list<string> */
+    public function landingUrls(): array
+    {
+        $out = [];
+        foreach ($this->registry->active() as $row) {
+            $h = (string) ($row['nav_href'] ?? '');
+            if ($h !== '') {
+                $out[] = self::SITE . $h;
+            }
+        }
+        if ($out === []) {
+            foreach (self::DEFAULT_LANDING_PATHS as $p) {
+                $out[] = self::SITE . $p;
+            }
+        }
+        return array_values(array_unique($out));
     }
 
     public static function slugFromUrl(string $url): string
     {
         $parts = explode('/', rtrim($url, '/'));
         return (string) end($parts);
-    }
-
-    /** Family display name for a slug (or URL); 'Unknown' when unrecognised. */
-    public function familyOf(string $slugOrUrl): string
-    {
-        $slug = strpos($slugOrUrl, '/') !== false ? self::slugFromUrl($slugOrUrl) : $slugOrUrl;
-        if (strpos($slug, 'cloud-vps-') === 0) {
-            return self::FAMILY_VPS;
-        }
-        if (strpos($slug, 'storage-vps-') === 0) {
-            return self::FAMILY_STORAGE;
-        }
-        if (strpos($slug, 'vds-') === 0) {
-            return self::FAMILY_VDS;
-        }
-        return 'Unknown';
-    }
-
-    /** 1-based position in the full list, 0 when absent. */
-    public function rankOf(string $url): int
-    {
-        $i = array_search($url, $this->urls, true);
-        return $i === false ? 0 : ((int) $i) + 1;
-    }
-
-    /** 1-based position among URLs of the same family, 0 when absent. */
-    public function familyRankOf(string $url): int
-    {
-        if ($this->rankOf($url) === 0) {
-            return 0;
-        }
-        $family = $this->familyOf($url);
-        $n = 0;
-        foreach ($this->urls as $u) {
-            if ($this->familyOf($u) !== $family) {
-                continue;
-            }
-            $n++;
-            if ($u === $url) {
-                return $n;
-            }
-        }
-        return 0;
-    }
-
-    /** @return array<string,string> family => first URL of that family */
-    public function firstUrlPerFamily(): array
-    {
-        $out = [];
-        foreach ($this->urls as $u) {
-            $f = $this->familyOf($u);
-            if (!isset($out[$f])) {
-                $out[$f] = $u;
-            }
-        }
-        return $out;
     }
 }

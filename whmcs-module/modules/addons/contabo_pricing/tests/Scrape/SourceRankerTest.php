@@ -44,9 +44,9 @@ final class SourceRankerTest extends TestCase
     public function testPriorsMatchSpike0(): void
     {
         $p = SourceRanker::PRIORS;
-        $this->assertSame(['price' => 700, 'ok' => 0.80, 'p50' => 3000], $p['treg_anyapi']);
-        $this->assertSame(['price' => 4000, 'ok' => 0.95, 'p50' => 16000], $p['alterlab']);
-        $this->assertSame(['price' => 150, 'ok' => 0.78, 'p50' => 8000], $p['treg_litescrape']);
+        $this->assertSame(['price' => 700, 'ok' => 0.95, 'p50' => 10000], $p['treg_anyapi']);
+        $this->assertSame(['price' => 4000, 'ok' => 0.95, 'p50' => 20000], $p['alterlab']);
+        $this->assertSame(['price' => 150, 'ok' => 0.50, 'p50' => 9000, 'disabled' => true], $p['treg_litescrape']);
         $this->assertFalse($p['tinyfish_fetch']['sapper']);
         $this->assertTrue($p['tinyfish_agent']['manual']);
     }
@@ -92,11 +92,21 @@ final class SourceRankerTest extends TestCase
         $this->assertSame('treg_anyapi', $o3[0]['source_id']);
         $o9 = $this->ranker->order([$this->row('alterlab'), $this->row('treg_anyapi', ['consecutive_failures' => 9])], $l, 'auto', false, self::NOW);
         $this->assertSame('treg_anyapi', $o9[0]['source_id'], 'capped at 6 => 3514 still beats 4226');
-        // litescrape (150/.78+8=200.3): x4 = 801 ; vs treg 878 -> litescrape still first even with 6 failures
-        $o = $this->ranker->order([$this->row('treg_anyapi'), $this->row('treg_litescrape', ['consecutive_failures' => 6])], $l, 'auto', false, self::NOW);
-        $this->assertSame('treg_litescrape', $o[0]['source_id']);
-        $o = $this->ranker->order([$this->row('treg_anyapi'), $this->row('treg_litescrape', ['consecutive_failures' => 7])], $l, 'auto', false, self::NOW);
-        $this->assertSame('treg_litescrape', $o[0]['source_id'], '7 behaves like 6 (cap)');
+        // 6 and 7 consecutive failures score identically (cap)
+        $a = $this->ranker->order([$this->row('treg_anyapi', ['consecutive_failures' => 6]), $this->row('alterlab')], $l, 'auto', false, self::NOW);
+        $b = $this->ranker->order([$this->row('treg_anyapi', ['consecutive_failures' => 7]), $this->row('alterlab')], $l, 'auto', false, self::NOW);
+        $this->assertSame($this->ids($a), $this->ids($b), '7 behaves like 6 (cap)');
+    }
+
+    public function testDisabledPriorIsNotAutoRankedButManualModeRespectsIt(): void
+    {
+        $rows = [$this->row('treg_litescrape'), $this->row('treg_anyapi')];
+        $auto = $this->ranker->order($rows, new CostLedger(self::NOW), 'auto', false, self::NOW);
+        $this->assertSame(['treg_anyapi'], $this->ids($auto), 'capacity 503 observed: never auto-ranked');
+        $manual = $this->ranker->order($rows, new CostLedger(self::NOW), 'manual', false, self::NOW);
+        $this->assertContains('treg_litescrape', $this->ids($manual));
+        $only = $this->ranker->order($rows, new CostLedger(self::NOW), 'auto', true, self::NOW);
+        $this->assertContains('treg_litescrape', $this->ids($only), 'explicit only_source run');
     }
 
     public function testThreeFailuresIn24hParkForSixHours(): void

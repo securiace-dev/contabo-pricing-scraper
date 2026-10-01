@@ -10,8 +10,16 @@ use ContaboPricing\Lock;
 
 /**
  * Orchestrates one scrape run: lock -> budget pre-check -> waterfall fetch ->
- * extract -> validate (deterministic gates) -> optional Jev veto -> outcome ->
- * envelope -> (auto_import only) CatalogImportService::import().
+ * extract -> family reconcile (self-learning registry, preview) -> validate
+ * (deterministic gates + family governance) -> optional Jev veto -> outcome ->
+ * envelope -> (auto_import only) CatalogImportService::import() -> registry
+ * commit (succeeded / needs_review runs only).
+ *
+ * Fetching: ONE product page carries the whole catalogue blob, so the run
+ * fetches the first learned family's sample product page (default: the Core
+ * VPS product page) and falls through to the next family's page only when no
+ * blob came back, or when a family has fewer plans than its learned typical
+ * count (cross-page consistency is then checked across the pages).
  *
  * Outcomes: rejected (any anomaly or failed gate), needs_review (risky diff,
  * Jev doubt, or scrape.require_human_review=1), auto_import. A dry run does
@@ -144,26 +152,31 @@ final class ScrapeRunService
             return $this->finishRejected($runId, 'budget_exhausted', ['reason' => 'every usable source has spent its monthly budget'], $dry, $adminId);
         }
 
-        // ── fetch waterfall ─────────────────────────────────────────────────
-        $urlList = new PlanUrlList($s->planUrls());
-        $extractor = new PlanExtractor($urlList);
-        $min = $s->minPlansByFamily();
+        // ── fetch: product page(s) that carry the catalogue blob ────────────
+        $registry = new FamilyRegistry();
+        $urlList = new PlanUrlList($s->planUrls(), $registry);
+        $extractor = new PlanExtractor($s->legacyAllowlist());
+        $targets = $urlList->fetchTargets();
+        $typicalById = [];
+        foreach ($registry->active() as $row) {
+            $typicalById[(string) $row['category_id']] = (int) $row['typical_plan_count'];
+        }
 
         $attempts = [];
         $merged = [];
-        $families = [];
+        $pages = [];
+        $structure = null;
         $runSpend = 0;
         $runSourceSpend = [];
         $jevHtml = null;
         $anyFetchOk = false;
+        $gotBlob = false;
 
-        foreach ($urlList->firstUrlPerFamily() as $family => $url) {
-            $need = $min[$family] ?? 0;
-            if ($this->familyCount($merged, $family) >= $need && $merged !== []) {
-                $families[$family] = ['url' => $url, 'min' => $need, 'count' => $this->familyCount($merged, $family), 'fetched' => false];
-                continue;
+        foreach ($targets as $url) {
+            if ($gotBlob && !$this->anyFamilyShort($merged, $typicalById)) {
+                break; // every family is at or above its learned count: the first page was enough
             }
-            $families[$family] = ['url' => $url, 'min' => $need, 'count' => 0, 'fetched' => true, 'skipped' => []];
+            $page = ['url' => $url, 'served_by' => null, 'ok' => false, 'skipped' => []];
             foreach ($ordered as $row) {
                 $id = (string) $row['source_id'];
                 $adapter = $adapters[$id] ?? null;
@@ -173,18 +186,15 @@ final class ScrapeRunService
                 $price = $adapter->priceMicroPerPage();
                 $why = $this->unaffordable($price, $id, $row, $runSpend, $runSourceSpend, $perRunCap, $monthSpend, $perSourceMonth);
                 if ($why !== null) {
-                    $families[$family]['skipped'][] = $id . ': ' . $why;
+                    $page['skipped'][] = $id . ': ' . $why;
                     continue;
                 }
 
-                $attempt = $this->fetchOne($runId, $family, $url, $adapter, $extractor);
+                $attempt = $this->fetchOne($runId, 'catalog', $url, $adapter, $extractor);
                 $attempts[] = $attempt;
                 $runSpend += $attempt['cost_micro'];
                 $runSourceSpend[$id] = ($runSourceSpend[$id] ?? 0) + $attempt['cost_micro'];
-                $familyPlans = array_filter($attempt['plans'], static function (array $p) use ($family): bool {
-                    return ($p['family'] ?? '') === $family;
-                });
-                $sufficient = $attempt['importable'] && count($familyPlans) >= $need;
+                $sufficient = $attempt['importable'] && $attempt['plans'] !== [];
                 $this->persistAttempt($runId, $attempt, $sufficient);
                 $this->sourceRepo->recordAttemptOutcome($id, $sufficient, $sufficient ? null : ($attempt['error'] ?? 'insufficient plans'));
                 if ($attempt['fetch_ok']) {
@@ -199,35 +209,49 @@ final class ScrapeRunService
                             $merged[$p['product_slug']] = $p;
                         }
                     }
-                    $families[$family]['count'] = $this->familyCount($merged, $family);
-                    $families[$family]['served_by'] = $attempt['served_by'] ?? $id;
+                    if ($structure === null && is_array($attempt['structure'])) {
+                        $structure = $attempt['structure'];
+                    }
+                    $page['ok'] = true;
+                    $page['served_by'] = $attempt['served_by'] ?? $id;
+                    $page['plans'] = count($attempt['plans']);
+                    $gotBlob = true;
                     break;
                 }
             }
+            $pages[] = $page;
         }
 
-        $plans = array_values($merged);
-        usort($plans, static function (array $a, array $b): int {
-            return [(int) ($a['plan_rank'] ?? 0), (string) $a['product_slug']] <=> [(int) ($b['plan_rank'] ?? 0), (string) $b['product_slug']];
-        });
         $cost = $runSpend;
 
         if ($attempts === []) {
-            return $this->finishRejected($runId, 'budget_exhausted', ['reason' => 'per-run or per-source cap prevented every fetch', 'families' => $families], $dry, $adminId);
+            return $this->finishRejected($runId, 'budget_exhausted', ['reason' => 'per-run or per-source cap prevented every fetch', 'pages' => $pages], $dry, $adminId);
         }
         if (!$anyFetchOk) {
             $err = 'every provider attempt failed: ' . implode(' | ', array_map(static function (array $a): string {
                 return $a['source_id'] . ': ' . (string) ($a['error'] ?? 'unknown');
             }, $attempts));
             $this->runs->finish($runId, RunRepository::STATE_FAILED, [
-                'error' => $err, 'total_cost_micro' => $cost, 'families_json' => $families,
+                'error' => $err, 'total_cost_micro' => $cost, 'families_json' => ['families' => [], 'pages' => $pages],
             ]);
             return ['run_id' => $runId, 'state' => RunRepository::STATE_FAILED, 'outcome' => null, 'plan_count' => 0, 'total_cost_micro' => $cost, 'error' => $err];
         }
 
+        // ── family reconcile (preview: nothing is written until the run is accepted) ──
+        $familyDiff = null;
+        if ($structure !== null) {
+            $familyDiff = $registry->reconcile($structure, $runId, false, $s->maxDropPct());
+            $merged = $this->applyFamilies($merged, $familyDiff);
+        }
+        $plans = array_values($merged);
+        usort($plans, static function (array $a, array $b): int {
+            return [(int) ($a['plan_rank'] ?? 0), (string) $a['product_slug']] <=> [(int) ($b['plan_rank'] ?? 0), (string) $b['product_slug']];
+        });
+        $families = ['families' => $this->familySummary($familyDiff, $plans), 'pages' => $pages];
+
         // ── validate ────────────────────────────────────────────────────────
         $last = $this->runs->latestSucceeded();
-        $validation = (new RunValidator())->evaluate($plans, $attempts, $last === null ? null : $last['plans'], $s);
+        $validation = (new RunValidator())->evaluate($plans, $attempts, $last === null ? null : $last['plans'], $s, $familyDiff);
 
         if (!$validation['passed'] || $validation['anomalies'] !== []) {
             $outcome = 'rejected';
@@ -254,7 +278,7 @@ final class ScrapeRunService
         if ($plans !== []) {
             $envelope = (new CatalogEnvelopeBuilder())->build(
                 $plans,
-                ['plans' => []],
+                CatalogEnvelopeBuilder::configurationsFromPlans($plans),
                 ['dimensions' => []],
                 gmdate('Y-m-d\TH:i:s\Z'),
                 'addon-' . AdminController::VERSION
@@ -281,7 +305,7 @@ final class ScrapeRunService
             'plan_count' => count($plans),
             'families_json' => $families,
             'total_cost_micro' => $cost,
-            'gates_json' => $validation + ['jev' => $jev, 'outcome' => $outcome],
+            'gates_json' => $validation + ['jev' => $jev, 'outcome' => $outcome, 'families' => $familyDiff],
             'decision_id' => $decisionId,
         ];
         if ($envelope !== null) {
@@ -301,6 +325,19 @@ final class ScrapeRunService
             $state = $outcome === 'rejected' ? RunRepository::STATE_REJECTED : RunRepository::STATE_NEEDS_REVIEW;
         }
         $this->runs->finish($runId, $state, $fields);
+
+        // Self-learning commit: only a run that was accepted (imported or queued for review)
+        // teaches the registry. Rejected / failed / dry runs leave it untouched, so a flagged
+        // new family is raised again until a run is actually accepted.
+        if ($structure !== null && ($state === RunRepository::STATE_SUCCEEDED || $state === RunRepository::STATE_NEEDS_REVIEW)) {
+            try {
+                $registry->reconcile($structure, $runId, true, $s->maxDropPct());
+            } catch (\Throwable $e) {
+                if (function_exists('logActivity')) {
+                    logActivity('Contabo Pricing family registry commit failed: ' . $e->getMessage());
+                }
+            }
+        }
 
         return [
             'run_id' => $runId,
@@ -418,17 +455,79 @@ final class ScrapeRunService
     }
 
     /**
+     * True when a learned family has fewer merged plans than its typical count.
+     *
      * @param array<string,array<string,mixed>> $merged
+     * @param array<string,int> $typicalById category id => typical_plan_count
      */
-    private function familyCount(array $merged, string $family): int
+    private function anyFamilyShort(array $merged, array $typicalById): bool
     {
-        $n = 0;
+        $counts = [];
         foreach ($merged as $p) {
-            if (($p['family'] ?? '') === $family) {
-                $n++;
+            $k = (string) ($p['category_id'] ?? '');
+            $counts[$k] = ($counts[$k] ?? 0) + 1;
+        }
+        foreach ($typicalById as $id => $typical) {
+            if ($typical > 0 && ($counts[$id] ?? 0) < $typical) {
+                return true;
             }
         }
-        return $n;
+        return false;
+    }
+
+    /**
+     * Keeps only plans of importable families (admin-hidden / non-plan categories drop out;
+     * allow-listed legacy plans carry no category) and applies the public display name.
+     *
+     * @param array<string,array<string,mixed>> $merged
+     * @param array<string,mixed> $diff
+     * @return array<string,array<string,mixed>>
+     */
+    private function applyFamilies(array $merged, array $diff): array
+    {
+        $names = [];
+        foreach ((array) ($diff['families'] ?? []) as $f) {
+            $names[(string) $f['category_id']] = (string) $f['name'];
+        }
+        $out = [];
+        foreach ($merged as $slug => $p) {
+            $cid = (string) ($p['category_id'] ?? '');
+            if ($cid === '') {
+                $out[$slug] = $p;
+            } elseif (isset($names[$cid])) {
+                $p['family'] = $names[$cid];
+                $out[$slug] = $p;
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * Run-level family table for families_json / the run detail page.
+     *
+     * @param array<string,mixed>|null $diff
+     * @param list<array<string,mixed>> $plans
+     * @return array<string,array<string,mixed>>
+     */
+    private function familySummary(?array $diff, array $plans): array
+    {
+        $out = [];
+        if ($diff === null) {
+            return $out;
+        }
+        foreach ((array) ($diff['families'] ?? []) as $f) {
+            $n = 0;
+            foreach ($plans as $p) {
+                if ((string) ($p['category_id'] ?? '') === (string) $f['category_id']) {
+                    $n++;
+                }
+            }
+            $out[(string) $f['name']] = [
+                'category_id' => $f['category_id'], 'slug' => $f['slug'], 'status' => $f['status'], 'approved' => $f['approved'],
+                'count' => $n, 'typical' => $f['typical_plan_count'], 'nav_href' => $f['nav_href'], 'sample_url' => $f['sample_product_url'],
+            ];
+        }
+        return $out;
     }
 
     /** @return array<string,mixed> */
@@ -438,7 +537,7 @@ final class ScrapeRunService
             'family' => $family, 'url' => $url, 'source_id' => $adapter->id(), 'served_by' => null, 'http_status' => 0,
             'fetch_ok' => false, 'importable' => false, 'sapper_present' => false, 'strategy' => null, 'plans' => [],
             'warnings' => [], 'cost_micro' => 0, 'latency_ms' => 0, 'html' => null, 'html_sha256' => null,
-            'html_bytes' => 0, 'error' => null, 'final_url' => null,
+            'html_bytes' => 0, 'error' => null, 'final_url' => null, 'structure' => null, 'nav_titles' => [],
         ];
         $t0 = microtime(true);
         try {
@@ -469,6 +568,8 @@ final class ScrapeRunService
         $a['sapper_present'] = $x->sapperPresent;
         $a['strategy'] = $x->strategy;
         $a['plans'] = $x->plans;
+        $a['structure'] = $x->structure;
+        $a['nav_titles'] = $x->navTitles;
         $a['warnings'] = $x->warnings;
         if (!$x->importable()) {
             $a['error'] = 'no importable plans (' . $x->strategy . '): ' . implode('; ', array_slice($x->warnings, 0, 3));
@@ -484,6 +585,7 @@ final class ScrapeRunService
             'http_status' => $a['http_status'], 'ok' => $ok, 'sapper_present' => $a['sapper_present'], 'strategy' => $a['strategy'],
             'plan_count' => count($a['plans']), 'cost_micro' => $a['cost_micro'], 'latency_ms' => $a['latency_ms'],
             'html_sha256' => $a['html_sha256'], 'html_bytes' => $a['html_bytes'], 'error' => $a['error'], 'final_url' => $a['final_url'],
+            'nav_titles' => $a['nav_titles'],
         ]);
     }
 

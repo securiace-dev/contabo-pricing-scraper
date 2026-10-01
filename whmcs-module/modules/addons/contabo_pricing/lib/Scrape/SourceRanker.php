@@ -18,11 +18,16 @@ namespace ContaboPricing\Scrape;
  */
 final class SourceRanker
 {
-    /** Spike-0 2026-10-01 priors. price in micro-USD, p50 in ms. */
+    /**
+     * Round-2 2026-10-01 priors (measured on the product page that carries the
+     * catalogue blob). price in micro-USD, p50 in ms. `disabled` sources are
+     * never auto-ranked (manual rank mode and only_source runs still may).
+     */
     public const PRIORS = [
-        'treg_anyapi' => ['price' => 700, 'ok' => 0.80, 'p50' => 3000],
-        'alterlab' => ['price' => 4000, 'ok' => 0.95, 'p50' => 16000],
-        'treg_litescrape' => ['price' => 150, 'ok' => 0.78, 'p50' => 8000],
+        'treg_anyapi' => ['price' => 700, 'ok' => 0.95, 'p50' => 10000],
+        'alterlab' => ['price' => 4000, 'ok' => 0.95, 'p50' => 20000],
+        // capacity 503 observed in round 2: kept for manual tests only
+        'treg_litescrape' => ['price' => 150, 'ok' => 0.50, 'p50' => 9000, 'disabled' => true],
         'tinyfish_fetch' => ['price' => 0, 'ok' => 0.999, 'p50' => 5000, 'sapper' => false],
         'tinyfish_agent' => ['price' => 640000, 'ok' => 0.90, 'p50' => 60000, 'manual' => true],
     ];
@@ -31,7 +36,7 @@ final class SourceRanker
     public const PARK_FAILURES = 3;
     public const PARK_SECONDS = 21600;
 
-    /** @return array{price:int, ok:float, p50:int, sapper?:bool, manual?:bool} */
+    /** @return array{price:int, ok:float, p50:int, sapper?:bool, manual?:bool, disabled?:bool} */
     public static function prior(string $sourceId): array
     {
         return self::PRIORS[$sourceId] ?? self::DEFAULT_PRIOR;
@@ -56,6 +61,11 @@ final class SourceRanker
             }
             $prior = self::prior((string) ($row['source_id'] ?? ''));
             if (!$includeManualOnly && !empty($prior['manual'])) {
+                continue;
+            }
+            // a `disabled` source (e.g. litescrape: capacity 503 observed) is never auto-ranked;
+            // manual rank mode and explicit only_source runs respect the operator's choice
+            if (!$includeManualOnly && $rankMode !== 'manual' && !empty($prior['disabled'])) {
                 continue;
             }
             if (isset($prior['sapper']) && $prior['sapper'] === false) {

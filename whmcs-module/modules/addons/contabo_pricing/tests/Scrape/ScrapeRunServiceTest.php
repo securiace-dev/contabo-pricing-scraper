@@ -6,10 +6,13 @@ namespace ContaboPricing\Tests\Scrape;
 use ContaboPricing\CatalogImportService;
 use ContaboPricing\Installer;
 use ContaboPricing\Lock;
+use ContaboPricing\Scrape\CatalogStructure;
 use ContaboPricing\Scrape\CostLedger;
+use ContaboPricing\Scrape\FamilyRegistry;
 use ContaboPricing\Scrape\FetchResult;
 use ContaboPricing\Scrape\FixtureSource;
 use ContaboPricing\Scrape\RunRepository;
+use ContaboPricing\Scrape\SapperLiteralDecoder;
 use ContaboPricing\Scrape\ScrapeRunService;
 use ContaboPricing\Scrape\ScrapeSettings;
 use ContaboPricing\Scrape\SourceException;
@@ -27,6 +30,7 @@ final class ScriptedSource implements SourceInterface
     /** @var string */ private $mode;
     /** @var bool */ private $manual;
     /** @var int */ public $calls = 0;
+    /** @var list<string> */ public $urls = [];
 
     /** @param string $mode ok|throw|garbage */
     public function __construct(string $id, int $price, string $mode, bool $manual = false)
@@ -42,6 +46,10 @@ final class ScriptedSource implements SourceInterface
     public function fetchFamilyPage(string $url, array $opts = []): FetchResult
     {
         $this->calls++;
+        $this->urls[] = $url;
+        if ($this->mode === 'garbage_once' && $this->calls === 1) {
+            return new FetchResult($this->id, null, '<html><body>captcha wall</body></html>', null, $this->price, 40, 200);
+        }
         if ($this->mode === 'throw') {
             throw new SourceException($this->id . ' HTTP 503: boom', 503);
         }
@@ -79,11 +87,26 @@ final class ScrapeRunServiceTest extends TestCase
     {
         Capsule::reset();
         (new Installer())->migrateTo15();
+        (new Installer())->migrateTo16();
         Capsule::$tables['mod_contabo_catalog_versions'] = [];
         Capsule::$tables['mod_contabo_catalog_items'] = [];
         $this->s = new ScrapeSettings();
         $this->s->set('scrape.require_human_review', '0');
         $this->http = new FakeHeaderExecutor();
+    }
+
+    /** Teaches the registry the fixture's lineup (two accepted runs) and approves every family. */
+    private function primeRegistry(): FamilyRegistry
+    {
+        $html = (string) file_get_contents(__DIR__ . '/../fixtures/scrape/cloud_vps_10.html');
+        $pre = (new SapperLiteralDecoder())->decodeFromHtml($html)['preloaded'][0];
+        $reg = new FamilyRegistry();
+        $reg->reconcile(new CatalogStructure($pre), 1);
+        $reg->reconcile(new CatalogStructure($pre), 2);
+        foreach ($reg->all() as $row) {
+            $reg->approve((int) $row['id']);
+        }
+        return $reg;
     }
 
     private function svc(?Lock $lock = null): ScrapeRunService
@@ -104,7 +127,7 @@ final class ScrapeRunServiceTest extends TestCase
         $r = $this->svc()->run('manual', 7, ['sources' => [$a, $b], 'dry_run' => true]);
 
         $this->assertSame('dry_run', $r['state']);
-        $this->assertSame(16, $r['plan_count']);
+        $this->assertSame(20, $r['plan_count']);
         $this->assertSame(1, $a->calls);
         $this->assertSame(1, $b->calls, 'one page carries every family, so no further fetches');
         $rows = $this->attemptRows($r['run_id']);
@@ -115,7 +138,10 @@ final class ScrapeRunServiceTest extends TestCase
         $this->assertSame(64, strlen((string) $rows[1]['html_sha256']));
         $this->assertSame('https://contabo.com/en/vps/cloud-vps-core-4/', $rows[1]['final_url']);
         $this->assertSame(700, $r['total_cost_micro']);
-        $this->assertSame(['Cloud VPS' => 6, 'Storage VPS' => 5, 'Cloud VDS' => 5], array_map(static function ($f) { return $f['count']; }, (new RunRepository())->find($r['run_id'])['families_json']));
+        $fam = (new RunRepository())->find($r['run_id'])['families_json'];
+        $this->assertSame(['Cloud VPS' => 6, 'Cloud VDS' => 5, 'Storage VPS' => 5, 'Dedicated Servers' => 4], array_map(static function ($f) { return $f['count']; }, $fam['families']));
+        $this->assertSame(['https://contabo.com/en/vps/cloud-vps-core-4/'], array_column($fam['pages'], 'url'), 'first target = the default Core VPS product page');
+        $this->assertSame(['Cloud VPS', 'Cloud VDS', 'Storage VPS', 'Dedicated Servers', 'Server Deals', 'Object Storage'], json_decode((string) $rows[1]['nav_titles_json'], true), 'rendered nav titles are kept on the attempt');
     }
 
     public function testGarbagePageFallsThroughAndCountsAsFailure(): void
@@ -125,7 +151,7 @@ final class ScrapeRunServiceTest extends TestCase
         $r = $this->svc()->run('manual', 1, ['sources' => [$a, $b], 'dry_run' => true]);
         $rows = $this->attemptRows($r['run_id']);
         $this->assertSame([0, 1], [(int) $rows[0]['ok'], (int) $rows[1]['ok']]);
-        $this->assertSame(16, $r['plan_count']);
+        $this->assertSame(20, $r['plan_count']);
     }
 
     public function testAllSourcesFailingEndsFailedAndNotifies(): void
@@ -134,7 +160,7 @@ final class ScrapeRunServiceTest extends TestCase
         $this->assertSame('failed', $r['state']);
         $this->assertStringContainsString('every provider attempt failed', $r['error']);
         $this->assertSame(0, Capsule::table('mod_contabo_catalog_versions')->count());
-        $this->assertCount(6, $this->attemptRows($r['run_id']), 'both sources tried for each of the three families');
+        $this->assertCount(2, $this->attemptRows($r['run_id']), 'both sources tried on the one product page');
     }
 
     public function testPerRunCapStopsPaidCalls(): void
@@ -152,7 +178,7 @@ final class ScrapeRunServiceTest extends TestCase
     {
         $this->s->set('scrape.per_run_cap_micro', '0');
         $r = $this->svc()->run('manual', 1, ['sources' => [new ScriptedSource('free', 0, 'ok')], 'dry_run' => true]);
-        $this->assertSame(16, $r['plan_count']);
+        $this->assertSame(20, $r['plan_count']);
     }
 
     public function testMonthlyBudgetRejectsBeforeAnyFetch(): void
@@ -170,6 +196,7 @@ final class ScrapeRunServiceTest extends TestCase
 
     public function testDryRunNeverImports(): void
     {
+        $this->primeRegistry();
         $r = $this->svc()->run('manual', 1, ['sources' => [new ScriptedSource('s', 0, 'ok')], 'dry_run' => true]);
         $this->assertSame('dry_run', $r['state']);
         $this->assertSame('auto_import', $r['outcome']);
@@ -181,12 +208,13 @@ final class ScrapeRunServiceTest extends TestCase
 
     public function testAutoImportCallsRealCatalogImportService(): void
     {
+        $this->primeRegistry();
         $r = $this->svc()->run('cron', 0, ['sources' => [new ScriptedSource('s', 0, 'ok')]]);
         $this->assertSame('succeeded', $r['state']);
         $this->assertSame('auto_import', $r['outcome']);
         $this->assertCount(1, Capsule::$tables['mod_contabo_catalog_versions']);
         $this->assertSame($r['catalog_version'], Capsule::$tables['mod_contabo_catalog_versions'][0]['catalog_version']);
-        $this->assertSame(16, Capsule::table('mod_contabo_catalog_items')->count());
+        $this->assertGreaterThan(20, Capsule::table('mod_contabo_catalog_items')->count(), '20 plans plus their configuration options');
         $run = (new RunRepository())->find($r['run_id']);
         $this->assertSame($r['catalog_version'], $run['catalog_version']);
         $this->assertNotNull($run['decision_id']);
@@ -263,6 +291,7 @@ final class ScrapeRunServiceTest extends TestCase
 
     public function testJevVetoDowngradesAutoImportToNeedsReview(): void
     {
+        $this->primeRegistry();
         $this->s->set('scrape.jev_enabled', '1');
         $this->s->setJevApiKey('jev-key-0000');
         $this->http->push(200, json_encode(['answers' => ['is_pricing_page' => ['choice' => 'no', 'confidence' => 0.93]]]));
@@ -277,6 +306,7 @@ final class ScrapeRunServiceTest extends TestCase
 
     public function testJevOutageDoesNotBlockAutoImport(): void
     {
+        $this->primeRegistry();
         $this->s->set('scrape.jev_enabled', '1');
         $this->s->setJevApiKey('jev-key-0000');
         $this->http->push(500, 'down');
@@ -305,10 +335,139 @@ final class ScrapeRunServiceTest extends TestCase
         $html = (string) file_get_contents(__DIR__ . '/../fixtures/scrape/cloud_vps_10.html');
         $this->http->push(200, json_encode(['output' => ['data' => ['html' => $html]]]), ['x-treg-cost-micro' => '700']);
         $r = $this->svc()->run('cron', 0, ['dry_run' => true]);
-        $this->assertSame(16, $r['plan_count']);
+        $this->assertSame(20, $r['plan_count']);
         $this->assertSame(700, $r['total_cost_micro']);
         $this->assertSame('https://treg.to/call/anyapi.web.scrape', $this->http->calls[0]['url']);
         $row = (new \ContaboPricing\Scrape\SourceConfigRepository())->find('treg_anyapi');
         $this->assertSame(0, (int) $row['consecutive_failures']);
+    }
+
+    // ── self-learning family registry ───────────────────────────────────────
+
+    public function testFirstRunSeesEveryFamilyAsNewAndNeedsReviewThenLearnsThem(): void
+    {
+        $a = new ScriptedSource('s', 0, 'ok');
+        $r = $this->svc()->run('cron', 0, ['sources' => [$a]]);
+        $this->assertSame('needs_review', $r['state'], 'new families are never auto-imported, even with require_human_review=0');
+        $this->assertSame(['https://contabo.com/en/vps/cloud-vps-core-4/'], $a->urls, 'one product page that carries the blob; never a landing page');
+        $kinds = array_unique(array_column((new RunRepository())->find($r['run_id'])['gates_json']['risky'], 'kind'));
+        $this->assertSame(['family_new'], array_values($kinds));
+        $diff = (new RunRepository())->find($r['run_id'])['gates_json']['families'];
+        $this->assertCount(11, $diff['new'], 'every category is recorded...');
+        $this->assertCount(4, array_filter($diff['new'], static function ($f) { return $f['status'] === 'new'; }), '...but only the 4 nav-linked plan families are importable');
+        $this->assertCount(4, $diff['unapproved']);
+        $this->assertCount(4, (new RunRepository())->find($r['run_id'])['gates_json']['risky']);
+
+        // an accepted (needs_review) run teaches the registry...
+        $reg = new FamilyRegistry();
+        $byCat = [];
+        foreach ($reg->all() as $row) {
+            $byCat[$row['slug']] = $row;
+        }
+        $this->assertSame('new', $byCat['vps']['status']);
+        $this->assertSame(6, $byCat['vps']['typical_plan_count']);
+        $this->assertSame('hidden', $byCat['vps-2026']['status']);
+        $this->assertSame('https://contabo.com/en/vds/vds-s/', $byCat['vds']['sample_product_url']);
+
+        // ...so the next run imports them (approved=0 is flagged, not blocking)
+        $r2 = $this->svc()->run('cron', 0, ['sources' => [new ScriptedSource('s', 0, 'ok')]]);
+        $this->assertSame('succeeded', $r2['state']);
+        $run2 = (new RunRepository())->find($r2['run_id']);
+        $this->assertSame([], $run2['gates_json']['families']['new']);
+        $this->assertCount(4, $run2['gates_json']['families']['unapproved']);
+        $this->assertStringContainsString('family not yet approved', implode(' ', $run2['gates_json']['warnings']));
+        foreach ($reg->all() as $row) {
+            if ($row['slug'] === 'vps') {
+                $this->assertSame('active', $row['status']);
+            }
+        }
+    }
+
+    public function testDryRunNeverWritesTheRegistry(): void
+    {
+        $r = $this->svc()->run('manual', 1, ['sources' => [new ScriptedSource('s', 0, 'ok')], 'dry_run' => true]);
+        $this->assertSame('dry_run', $r['state']);
+        $this->assertSame([], (new FamilyRegistry())->all());
+        $diff = (new RunRepository())->find($r['run_id'])['gates_json']['families'];
+        $this->assertCount(11, $diff['new'], 'the diff is still computed and shown');
+        $this->assertFalse($diff['persisted']);
+    }
+
+    public function testAdminHiddenFamilyIsNotImportedAndDisplayNameIsApplied(): void
+    {
+        $reg = $this->primeRegistry();
+        foreach ($reg->all() as $row) {
+            if ($row['slug'] === 'dedicated-servers') {
+                $reg->setHidden((int) $row['id'], true);
+            }
+            if ($row['slug'] === 'vps') {
+                $reg->renameDisplay((int) $row['id'], 'Core Cloud');
+            }
+        }
+        $r = $this->svc()->run('cron', 0, ['sources' => [new ScriptedSource('s', 0, 'ok')], 'dry_run' => true]);
+        $this->assertSame(16, $r['plan_count'], 'the hidden Dedicated Servers family drops out');
+        $plans = (new RunRepository())->find($r['run_id'])['envelope_json']['plans'];
+        $this->assertSame(['Cloud VDS', 'Core Cloud', 'Storage VPS'], $this->sortedUnique(array_column($plans, 'family')));
+    }
+
+    /** @param list<string> $v @return list<string> */
+    private function sortedUnique(array $v): array
+    {
+        $v = array_values(array_unique($v));
+        sort($v);
+        return $v;
+    }
+
+    public function testFetchesFurtherPagesOnlyWhenAFamilyIsBelowItsTypicalCount(): void
+    {
+        $reg = $this->primeRegistry();
+        $a = new ScriptedSource('s', 0, 'ok');
+        $this->svc()->run('cron', 0, ['sources' => [$a], 'dry_run' => true]);
+        $this->assertCount(1, $a->urls, 'every family at its typical count: the first page is enough');
+
+        foreach ($reg->all() as $row) {
+            if ($row['slug'] === 'vps') {
+                Capsule::table('mod_contabo_scrape_families')->where('id', $row['id'])->update(['typical_plan_count' => 7]);
+            }
+        }
+        $b = new ScriptedSource('s', 0, 'ok');
+        $r = $this->svc()->run('cron', 0, ['sources' => [$b], 'dry_run' => true]);
+        $this->assertSame([
+            'https://contabo.com/en/vps/cloud-vps-10/', 'https://contabo.com/en/vds/vds-s/',
+            'https://contabo.com/en/storage-vps/storage-vps-10/', 'https://contabo.com/en/ds/amd-ryzen-12-cores/',
+        ], $b->urls, 'Cloud VPS has 6 < 7 plans: the other families sample pages are fetched too (nav order)');
+        $this->assertSame('dry_run', $r['state']);
+        $this->assertTrue($r['gates']['cross_page_consistency']['ok']);
+    }
+
+    public function testFallsBackToTheNextFamilySamplePageWhenTheFirstYieldsNoBlob(): void
+    {
+        $this->primeRegistry();
+        $a = new ScriptedSource('s', 0, 'garbage_once');
+        $r = $this->svc()->run('cron', 0, ['sources' => [$a], 'dry_run' => true]);
+        $this->assertSame(['https://contabo.com/en/vps/cloud-vps-10/', 'https://contabo.com/en/vds/vds-s/'], $a->urls);
+        $this->assertSame(20, $r['plan_count']);
+        $rows = $this->attemptRows($r['run_id']);
+        $this->assertSame([0, 1], [(int) $rows[0]['ok'], (int) $rows[1]['ok']]);
+    }
+
+    public function testCountDeviationBeyondMaxDropIsNeedsReviewNotRejected(): void
+    {
+        $reg = $this->primeRegistry();
+        foreach ($reg->all() as $row) {
+            if ($row['slug'] === 'storage-vps') {
+                Capsule::table('mod_contabo_scrape_families')->where('id', $row['id'])->update(['typical_plan_count' => 6]); // now 5: 16.7 %
+            }
+            if ($row['slug'] === 'vds') {
+                Capsule::table('mod_contabo_scrape_families')->where('id', $row['id'])->update(['typical_plan_count' => 7]); // now 5: 28.6 %
+            }
+        }
+        $r = $this->svc()->run('cron', 0, ['sources' => [new ScriptedSource('s', 0, 'ok')], 'dry_run' => true]);
+        $this->assertSame('needs_review', $r['outcome']);
+        $this->assertTrue($r['gates']['min_plans_per_family']['ok'], 'floor(7 x 0.8) = 5: a moderate shrink is a flag, not a rejection');
+        $flags = (new RunRepository())->find($r['run_id'])['gates_json']['risky'];
+        $this->assertSame(['family_count_deviation'], array_values(array_unique(array_column($flags, 'kind'))));
+        $this->assertCount(1, $flags);
+        $this->assertSame('Cloud VDS', $flags[0]['family']['label']);
     }
 }

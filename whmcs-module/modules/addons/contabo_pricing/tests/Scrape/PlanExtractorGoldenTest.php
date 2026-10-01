@@ -31,27 +31,49 @@ final class PlanExtractorGoldenTest extends TestCase
         return $by;
     }
 
-    public function testExtractsAll16PlansViaSapperWithFamilyCounts(): void
+    public function testDiscoversFamiliesFromTheBlobItself(): void
     {
         $r = (new PlanExtractor())->extract($this->html, null, self::AT);
 
         $this->assertSame(ExtractionResult::STRATEGY_SAPPER, $r->strategy);
         $this->assertTrue($r->sapperPresent);
         $this->assertTrue($r->importable());
-        $this->assertCount(16, $r->plans);
+        $this->assertCount(20, $r->plans, 'the 4 nav-linked plan families: 6 + 5 + 5 + 4');
         $this->assertSame([], $r->warnings);
 
+        // family label = the site's nav title; order = nav order; nothing is configured
         $families = [];
         foreach ($r->plans as $p) {
             $families[$p['family']] = ($families[$p['family']] ?? 0) + 1;
         }
-        $this->assertSame(['Cloud VPS' => 6, 'Storage VPS' => 5, 'Cloud VDS' => 5], $families);
+        $this->assertSame(['Cloud VPS' => 6, 'Cloud VDS' => 5, 'Storage VPS' => 5, 'Dedicated Servers' => 4], $families);
+        $this->assertSame(['Cloud VPS', 'Cloud VDS', 'Storage VPS', 'Dedicated Servers', 'Server Deals', 'Object Storage'], $r->navTitles);
 
+        // the old 16 target slugs are all members of those families
         $slugs = array_map(static function (array $p): string {
             return $p['product_slug'];
         }, $r->plans);
-        $expected = array_map([PlanUrlList::class, 'slugFromUrl'], PlanUrlList::DEFAULT_URLS);
-        $this->assertSame($expected, $slugs);
+        foreach (['cloud-vps-10', 'cloud-vps-60', 'storage-vps-10', 'storage-vps-50', 'vds-s', 'vds-xxl'] as $s) {
+            $this->assertContains($s, $slugs);
+        }
+        // object storage and outlet are nav-linked but hold no plan-shaped products: never plans
+        $this->assertNotContains('singapore', $slugs);
+        $this->assertSame([], array_values(array_filter($slugs, static function ($s) {
+            return strpos($s, 'outlet-server') === 0;
+        })));
+    }
+
+    public function testLegacyProductsAreExcludedUnlessAllowListed(): void
+    {
+        $plain = (new PlanExtractor())->extract($this->html, null, self::AT);
+        $slugs = array_column($plain->plans, 'product_slug');
+        $this->assertNotContains('cloud-vps-12', $slugs, 'category vps-2026 is not linked from the nav');
+
+        $allowed = (new PlanExtractor(['cloud-vps-12']))->extract($this->html, null, self::AT);
+        $by = $this->plansBySlug($allowed);
+        $this->assertCount(21, $allowed->plans);
+        $this->assertSame('Legacy', $by['cloud-vps-12']['family']);
+        $this->assertSame('', $by['cloud-vps-12']['category_id']);
     }
 
     public function testCloudVps10Golden(): void
@@ -63,6 +85,7 @@ final class PlanExtractorGoldenTest extends TestCase
         $this->assertSame('https://contabo.com/en/vps/cloud-vps-10/', $p['product_url']);
         $this->assertSame(1, $p['plan_rank']);
         $this->assertSame(1, $p['plan_family_rank']);
+        $this->assertSame('vps', $p['family_key']);
         $this->assertSame(self::AT, $p['fetched_at']);
         $this->assertSame('sapper', $p['source']);
         $this->assertSame(4.5, $p['base_monthly_price']);
@@ -94,9 +117,14 @@ final class PlanExtractorGoldenTest extends TestCase
         );
 
         $this->assertSame(
-            ['cpu_count' => 4, 'ram_gb' => 8, 'port_speed_mbps' => 200, 'storage_primary_gb' => 75, 'storage_primary_type' => 'NVMe'],
+            [
+                'cpu_count' => 4, 'ram_gb' => 8, 'port_speed_mbps' => 200, 'storage_primary_gb' => 75, 'storage_primary_type' => 'NVMe',
+                'snapshot_count' => 1, 'traffic' => 'unlimited',
+            ],
             $p['specs_parsed']
         );
+        $this->assertSame(['EUR' => 4.5, 'GBP' => 4.4, 'USD' => 4.95], $p['prices']);
+        $this->assertArrayHasKey('regions', $p['options']);
         $this->assertSame(
             ['min_length' => 8, 'max_length' => 30, 'alphanumeric_only' => true, 'no_special_chars' => true],
             $p['password_rules']
@@ -124,7 +152,7 @@ final class PlanExtractorGoldenTest extends TestCase
         $this->assertSame(3, $s['specs_parsed']['cpu_count']);
         $this->assertSame(180, $s['specs_parsed']['storage_primary_gb']);
         $this->assertSame('180 GB NVMe', $s['base_storage'], 'VDS keeps the title only and trims the trailing space');
-        $this->assertSame(12, $s['plan_rank']);
+        $this->assertSame(7, $s['plan_rank'], 'after the 6 Cloud VPS plans (nav order)');
         $this->assertSame(1, $s['plan_family_rank']);
 
         $st = $by['storage-vps-50'];
@@ -132,7 +160,7 @@ final class PlanExtractorGoldenTest extends TestCase
         $this->assertSame(1400, $st['specs_parsed']['storage_primary_gb']);
         $this->assertSame('SSD', $st['specs_parsed']['storage_primary_type']);
         $this->assertSame('1.4 TB SSD', $st['base_storage']);
-        $this->assertSame(11, $st['plan_rank']);
+        $this->assertSame(16, $st['plan_rank']);
         $this->assertSame(5, $st['plan_family_rank']);
     }
 
@@ -189,7 +217,7 @@ final class PlanExtractorGoldenTest extends TestCase
         $this->assertSame(26.55, $p['periods'][1]['total_period_cost']);
         $this->assertSame('75 GB NVMe or 150 GB SSD', $p['base_storage']);
         $this->assertNull($p['password_rules']);
-        $this->assertContains('missing plan: cloud-vps-20', $r->warnings);
+        $this->assertSame('Vps', $p['family'], 'no discovered family in the S2 fallback: the type is humanised, not mapped');
     }
 
     public function testProviderJsonWithMalformedProductsIsNotImportable(): void
@@ -309,7 +337,6 @@ final class PlanExtractorGoldenTest extends TestCase
         $n = new PlanNormalizer();
         foreach ([
             ['slug' => 'cloud-vps-10', 'type' => 'vps', 'price' => ['EUR' => 0]],
-            ['slug' => 'cloud-vps-10', 'type' => 'weird', 'price' => ['EUR' => 4.5]],
             ['slug' => '../x', 'type' => 'vps', 'price' => ['EUR' => 4.5]],
             ['type' => 'vps', 'price' => ['EUR' => 4.5]],
         ] as $bad) {
@@ -322,22 +349,26 @@ final class PlanExtractorGoldenTest extends TestCase
         }
     }
 
-    public function testPlanUrlListRanks(): void
+    public function testUnknownTypeIsHumanisedNotRejected(): void
+    {
+        $plan = (new PlanNormalizer())->normalize(['slug' => 'x-1', 'type' => 'storage-vps', 'price' => ['EUR' => 4.5]], self::AT, null);
+        $this->assertSame('Storage Vps', $plan['family']);
+        $plan = (new PlanNormalizer())->normalize(['slug' => 'x-1', 'type' => 'ds', 'price' => ['EUR' => 4.5]], self::AT, null, ['family' => 'Dedicated Servers', 'family_key' => 'dedicated-servers']);
+        $this->assertSame('Dedicated Servers', $plan['family']);
+        $this->assertSame('https://contabo.com/en/ds/x-1/', $plan['product_url']);
+    }
+
+    public function testPlanUrlListIsRegistryBackedWithAnExplicitOverride(): void
     {
         $l = new PlanUrlList();
-        $this->assertSame(16, count($l->urls()));
-        $this->assertSame(12, $l->rankOf('https://contabo.com/en/vds/vds-s/'));
-        $this->assertSame(1, $l->familyRankOf('https://contabo.com/en/vds/vds-s/'));
-        $this->assertSame(0, $l->rankOf('https://contabo.com/en/vps/nope/'));
-        $this->assertSame('Storage VPS', $l->familyOf('storage-vps-20'));
-        $this->assertSame('Unknown', $l->familyOf('mystery'));
-        $this->assertSame(
-            [
-                'Cloud VPS' => 'https://contabo.com/en/vps/cloud-vps-10/',
-                'Storage VPS' => 'https://contabo.com/en/storage-vps/storage-vps-10/',
-                'Cloud VDS' => 'https://contabo.com/en/vds/vds-s/',
-            ],
-            $l->firstUrlPerFamily()
-        );
+        $this->assertSame([PlanUrlList::DEFAULT_PRODUCT_URL], $l->fetchTargets(), 'default: the Core VPS product page');
+        $this->assertSame('https://contabo.com/en/vps/', $l->landingUrls()[0], 'landing pages are metadata only');
+        $this->assertCount(6, $l->landingUrls());
+        $this->assertFalse($l->isOverride());
+
+        $o = new PlanUrlList(['https://contabo.com/en/vps/cloud-vps-core-8/']);
+        $this->assertTrue($o->isOverride());
+        $this->assertSame(['https://contabo.com/en/vps/cloud-vps-core-8/'], $o->fetchTargets());
+        $this->assertSame('cloud-vps-core-8', PlanUrlList::slugFromUrl($o->fetchTargets()[0]));
     }
 }
