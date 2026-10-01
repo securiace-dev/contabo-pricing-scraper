@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repo": "securiace-dev/securiace-vps-platform",
+    "commit": "b38cfce",
+    "module": "tests/unit/test_whitelabel.py",
+    "exported_by": "scripts/export_test_vectors.py",
+    "baseline_unit_tests": 505
+  },
+  "notes": [
+    "Top-level 'config' is the default config (from tests/unit/test_whitelabel.py::_cfg). A case may override only forbidden_terms via input.config.",
+    "Expected outcome: 'pass' (text returned unchanged) or 'blocked' (a forbidden-term error). display_name returns '<brand_prefix> <family_names[family] or family> <size_suffixes[size_key] or size_key>' and then runs the same gate.",
+    "Matching rule (corrected, R3): case-insensitive; a forbidden term is split into tokens on whitespace, '_' and '-'; tokens may be joined in the text by any run of [\\s_-]* (including zero characters); a match must begin on a token boundary (preceding character is not [A-Za-z0-9]). Hence 'CloudVPS', 'Cloud-VPS', 'cloud_vps' and 'Storage  VPS' are blocked, while '120i' does not hit the term '20i'.",
+    "The three forbidden-term inputs 'Powered by ...', 'Cloud VPS 10', 'Buy our CONTABO plan' are blocked under both the archived and corrected rule.",
+    "The archived scan_repo() file-walk is not exported (it had no tests, review R3). The port's CI/lint gate must be specified separately and must fail when it scans zero files.",
+    "Provider names appear in this file only because they are the forbidden terms / blocked inputs under test; this file is internal test data and must never be shipped to customers."
+  ],
+  "properties": [],
+  "config": {
+    "brand_prefix": "SecuriAce",
+    "family_names": {
+      "cloud_vps": "Cloud Compute"
+    },
+    "size_suffixes": {
+      "4_8": "S"
+    },
+    "region_names": {
+      "EU": "European Union"
+    },
+    "forbidden_terms": [
+      "contabo",
+      "Cloud VPS"
+    ],
+    "boilerplate": {}
+  },
+  "cases": [
+    {
+      "name": "clean_string_passes",
+      "origin": "transcribed",
+      "input": {
+        "fn": "safe",
+        "text": "SecuriAce Cloud Compute S — fast managed servers"
+      },
+      "expected": {
+        "outcome": "pass"
+      }
+    },
+    {
+      "name": "blocked_powered_by_contabo",
+      "origin": "mechanical",
+      "input": {
+        "fn": "safe",
+        "text": "Powered by Contabo"
+      },
+      "expected": {
+        "outcome": "blocked"
+      }
+    },
+    {
+      "name": "blocked_cloud_vps_10",
+      "origin": "mechanical",
+      "input": {
+        "fn": "safe",
+        "text": "Cloud VPS 10"
+      },
+      "expected": {
+        "outcome": "blocked"
+      }
+    },
+    {
+      "name": "blocked_buy_our_contabo_plan",
+      "origin": "mechanical",
+      "input": {
+        "fn": "safe",
+        "text": "Buy our CONTABO plan"
+      },
+      "expected": {
+        "outcome": "blocked"
+      }
+    },
+    {
+      "name": "display_name_brand_prefixed",
+      "origin": "oracle",
+      "input": {
+        "fn": "display_name",
+        "family": "cloud_vps",
+        "size_key": "4_8"
+      },
+      "expected": {
+        "outcome": "pass",
+        "value": "SecuriAce Cloud Compute S"
+      }
+    },
+    {
+      "name": "display_name_unknown_size_passthrough",
+      "origin": "oracle",
+      "input": {
+        "fn": "display_name",
+        "family": "cloud_vps",
+        "size_key": "99_999"
+      },
+      "expected": {
+        "outcome": "pass",
+        "value": "SecuriAce Cloud Compute 99_999"
+      }
+    },
+    {
+      "name": "cloudvps_no_separator_blocked",
+      "origin": "corrected",
+      "corrected_from": "R3",
+      "archived_behaviour": {
+        "outcome": "pass"
+      },
+      "input": {
+        "fn": "safe",
+        "text": "CloudVPS",
+        "config": {
+          "forbidden_terms": [
+            "contabo",
+            "Cloud VPS",
+            "Storage VPS"
+          ]
+        }
+      },
+      "expected": {
+        "outcome": "blocked"
+      }
+    },
+    {
+      "name": "cloud_dash_vps_blocked",
+      "origin": "corrected",
+      "corrected_from": "R3",
+      "archived_behaviour": {
+        "outcome": "pass"
+      },
+      "input": {
+        "fn": "safe",
+        "text": "Cloud-VPS",
+        "config": {
+          "forbidden_terms": [
+            "contabo",
+            "Cloud VPS",
+            "Storage VPS"
+          ]
+        }
+      },
+      "expected": {
+        "outcome": "blocked"
+      }
+    },
+    {
+      "name": "storage_double_space_vps_blocked",
+      "origin": "corrected",
+      "corrected_from": "R3",
+      "archived_behaviour": {
+        "outcome": "pass"
+      },
+      "input": {
+        "fn": "safe",
+        "text": "Storage  VPS",
+        "config": {
+          "forbidden_terms": [
+            "contabo",
+            "Cloud VPS",
+            "Storage VPS"
+          ]
+        }
+      },
+      "expected": {
+        "outcome": "blocked"
+      }
+    },
+    {
+      "name": "cloud_underscore_vps_blocked",
+      "origin": "corrected",
+      "corrected_from": "R3",
+      "archived_behaviour": {
+        "outcome": "pass"
+      },
+      "input": {
+        "fn": "safe",
+        "text": "cloud_vps",
+        "config": {
+          "forbidden_terms": [
+            "contabo",
+            "Cloud VPS",
+            "Storage VPS"
+          ]
+        }
+      },
+      "expected": {
+        "outcome": "blocked"
+      }
+    },
+    {
+      "name": "120i_not_a_20i_hit",
+      "origin": "corrected",
+      "corrected_from": "R3",
+      "archived_behaviour": {
+        "outcome": "blocked"
+      },
+      "input": {
+        "fn": "safe",
+        "text": "120i",
+        "config": {
+          "forbidden_terms": [
+            "20i"
+          ]
+        }
+      },
+      "expected": {
+        "outcome": "pass"
+      }
+    }
+  ]
+}

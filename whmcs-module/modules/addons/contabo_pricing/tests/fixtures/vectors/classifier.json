@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repo": "securiace-dev/securiace-vps-platform",
+    "commit": "b38cfce",
+    "module": "tests/unit/test_classifier.py",
+    "exported_by": "scripts/export_test_vectors.py",
+    "baseline_unit_tests": 505
+  },
+  "notes": [
+    "Input is a Diff: kind, catalog_sku, cost_before, cost_after (decimal strings or null), notes.",
+    "Expected bucket is one of safe | risky | anomaly. Unknown kinds MUST classify as anomaly.",
+    "mandatory_option_price_change: risky iff abs((after-before)/before)*100 > 10 (strict); missing cost_before/cost_after or cost_before == 0 -> risky.",
+    "os_image_removed is deliberately NOT exported. The archive classifies it SAFE with a comment 'only if not in active use; epic-1 will refine' (review H6). Its correct bucket is unresolved policy; the port owner must decide it before shipping.",
+    "Anomaly kinds take precedence over everything else."
+  ],
+  "properties": [],
+  "cases": [
+    {
+      "name": "bucket_new_plan",
+      "origin": "mechanical",
+      "input": {
+        "kind": "new_plan",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "safe"
+      }
+    },
+    {
+      "name": "bucket_cost_decrease",
+      "origin": "mechanical",
+      "input": {
+        "kind": "cost_decrease",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "safe"
+      }
+    },
+    {
+      "name": "bucket_spec_increase",
+      "origin": "mechanical",
+      "input": {
+        "kind": "spec_increase",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "safe"
+      }
+    },
+    {
+      "name": "bucket_region_added",
+      "origin": "mechanical",
+      "input": {
+        "kind": "region_added",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "safe"
+      }
+    },
+    {
+      "name": "bucket_os_image_added",
+      "origin": "mechanical",
+      "input": {
+        "kind": "os_image_added",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "safe"
+      }
+    },
+    {
+      "name": "bucket_cost_increase",
+      "origin": "mechanical",
+      "input": {
+        "kind": "cost_increase",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    },
+    {
+      "name": "bucket_spec_decrease",
+      "origin": "mechanical",
+      "input": {
+        "kind": "spec_decrease",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    },
+    {
+      "name": "bucket_plan_retired",
+      "origin": "mechanical",
+      "input": {
+        "kind": "plan_retired",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    },
+    {
+      "name": "bucket_region_removed",
+      "origin": "mechanical",
+      "input": {
+        "kind": "region_removed",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    },
+    {
+      "name": "bucket_plan_renamed",
+      "origin": "mechanical",
+      "input": {
+        "kind": "plan_renamed",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    },
+    {
+      "name": "bucket_scrape_failed",
+      "origin": "mechanical",
+      "input": {
+        "kind": "scrape_failed",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "anomaly"
+      }
+    },
+    {
+      "name": "bucket_parser_error",
+      "origin": "mechanical",
+      "input": {
+        "kind": "parser_error",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "anomaly"
+      }
+    },
+    {
+      "name": "bucket_forbidden_term_leak",
+      "origin": "mechanical",
+      "input": {
+        "kind": "forbidden_term_leak",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "anomaly"
+      }
+    },
+    {
+      "name": "bucket_unknown_family",
+      "origin": "mechanical",
+      "input": {
+        "kind": "unknown_family",
+        "catalog_sku": "vps-s"
+      },
+      "expected": {
+        "bucket": "anomaly"
+      }
+    },
+    {
+      "name": "unknown_kind_falls_through_to_anomaly",
+      "origin": "transcribed",
+      "input": {
+        "kind": "invented_kind_not_in_table",
+        "catalog_sku": "vps-s",
+        "cost_before": null,
+        "cost_after": null,
+        "spec_before": null,
+        "spec_after": null,
+        "notes": ""
+      },
+      "expected": {
+        "bucket": "anomaly"
+      }
+    },
+    {
+      "name": "full_payload_cost_increase_is_risky",
+      "origin": "transcribed",
+      "input": {
+        "kind": "cost_increase",
+        "catalog_sku": "vps-l",
+        "cost_before": "28.00",
+        "cost_after": "31.00",
+        "spec_before": null,
+        "spec_after": null,
+        "notes": "upstream raised prices in EU region"
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    },
+    {
+      "name": "mandatory_option_plus_5pct_is_safe",
+      "origin": "transcribed",
+      "input": {
+        "kind": "mandatory_option_price_change",
+        "catalog_sku": "vps-s",
+        "cost_before": "10.00",
+        "cost_after": "10.50",
+        "spec_before": null,
+        "spec_after": null,
+        "notes": ""
+      },
+      "expected": {
+        "bucket": "safe"
+      }
+    },
+    {
+      "name": "mandatory_option_plus_15pct_is_risky",
+      "origin": "transcribed",
+      "input": {
+        "kind": "mandatory_option_price_change",
+        "catalog_sku": "vps-s",
+        "cost_before": "10.00",
+        "cost_after": "11.50",
+        "spec_before": null,
+        "spec_after": null,
+        "notes": ""
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    },
+    {
+      "name": "mandatory_option_exactly_plus_10pct_is_safe_strictly_greater_threshold",
+      "origin": "transcribed",
+      "input": {
+        "kind": "mandatory_option_price_change",
+        "catalog_sku": "vps-s",
+        "cost_before": "10.00",
+        "cost_after": "11.00",
+        "spec_before": null,
+        "spec_after": null,
+        "notes": ""
+      },
+      "expected": {
+        "bucket": "safe"
+      }
+    },
+    {
+      "name": "mandatory_option_minus_15pct_is_risky_absolute",
+      "origin": "transcribed",
+      "input": {
+        "kind": "mandatory_option_price_change",
+        "catalog_sku": "vps-s",
+        "cost_before": "10.00",
+        "cost_after": "8.50",
+        "spec_before": null,
+        "spec_after": null,
+        "notes": ""
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    },
+    {
+      "name": "mandatory_option_missing_costs_is_risky",
+      "origin": "transcribed",
+      "input": {
+        "kind": "mandatory_option_price_change",
+        "catalog_sku": "vps-s",
+        "cost_before": null,
+        "cost_after": null,
+        "spec_before": null,
+        "spec_after": null,
+        "notes": ""
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    },
+    {
+      "name": "option_removed_is_risky",
+      "origin": "oracle",
+      "input": {
+        "kind": "option_removed",
+        "catalog_sku": "vps-s",
+        "cost_before": null,
+        "cost_after": null,
+        "spec_before": null,
+        "spec_after": null,
+        "notes": ""
+      },
+      "expected": {
+        "bucket": "risky"
+      }
+    }
+  ]
+}
