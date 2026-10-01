@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 14;
+    public const SCHEMA_VERSION = 15;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -2022,6 +2022,129 @@ class Installer
             ['key' => 'schema_version'],
             ['value' => '5', 'updated_at' => $now]
         );
+    }
+
+    /**
+     * Schema v15 — WHMCS-native catalog scraping: provider source registry,
+     * scrape runs + per-fetch attempts, decision records, and a stored
+     * envelope on catalog versions. Idempotent (hasTable/hasColumn guarded).
+     */
+    public function migrateTo15(): void
+    {
+        $schema = Capsule::schema();
+
+        if (!$schema->hasTable('mod_contabo_scrape_sources')) {
+            $schema->create('mod_contabo_scrape_sources', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('source_id', 40)->unique('contabo_scrape_source_uq');
+                $t->string('display_name', 80);
+                $t->tinyInteger('enabled')->default(0);
+                $t->string('base_url', 255)->nullable();
+                $t->text('api_key_enc')->nullable();
+                $t->integer('priority')->nullable();
+                $t->bigInteger('monthly_budget_micro')->default(500000);
+                $t->bigInteger('per_run_cap_micro')->default(50000);
+                $t->text('options_json')->nullable();
+                $t->integer('consecutive_failures')->default(0);
+                $t->timestamp('last_ok_at')->nullable();
+                $t->timestamp('last_fail_at')->nullable();
+                $t->string('last_error', 255)->nullable();
+                $t->timestamp('created_at')->nullable();
+                $t->timestamp('updated_at')->nullable();
+            });
+        }
+
+        if (!$schema->hasTable('mod_contabo_scrape_runs')) {
+            $schema->create('mod_contabo_scrape_runs', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('trigger', 16);
+                $t->string('state', 24);
+                $t->timestamp('started_at')->nullable();
+                $t->timestamp('finished_at')->nullable();
+                $t->integer('admin_id')->nullable();
+                $t->tinyInteger('dry_run')->default(0);
+                $t->integer('plan_count')->default(0);
+                $t->text('families_json')->nullable();
+                $t->bigInteger('total_cost_micro')->default(0);
+                $t->longText('gates_json')->nullable();
+                $t->bigInteger('decision_id')->nullable();
+                $t->string('catalog_version', 120)->nullable();
+                $t->longText('envelope_json')->nullable();
+                $t->char('envelope_hash', 64)->nullable();
+                $t->text('error')->nullable();
+                $t->index(['state', 'started_at'], 'contabo_scrape_run_state_ix');
+            });
+        }
+
+        if (!$schema->hasTable('mod_contabo_scrape_run_attempts')) {
+            $schema->create('mod_contabo_scrape_run_attempts', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->bigInteger('run_id');
+                $t->string('family', 20);
+                $t->string('url', 255);
+                $t->string('source_id', 40);
+                $t->string('served_by', 80)->nullable();
+                $t->integer('http_status')->nullable();
+                $t->tinyInteger('ok');
+                $t->tinyInteger('sapper_present');
+                $t->string('strategy', 24)->nullable();
+                $t->integer('plan_count')->default(0);
+                $t->bigInteger('cost_micro')->default(0);
+                $t->integer('latency_ms');
+                $t->char('html_sha256', 64)->nullable();
+                $t->integer('html_bytes')->default(0);
+                $t->string('error', 500)->nullable();
+                $t->timestamp('created_at')->nullable();
+                $t->index('run_id', 'contabo_scrape_attempt_run_ix');
+                $t->index(['source_id', 'created_at'], 'contabo_scrape_attempt_src_ix');
+            });
+        }
+
+        if (!$schema->hasTable('mod_contabo_decisions')) {
+            $schema->create('mod_contabo_decisions', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->bigInteger('run_id');
+                $t->string('outcome', 24);
+                $t->longText('rules_json');
+                $t->longText('jev_json')->nullable();
+                $t->decimal('threshold', 5, 4)->nullable();
+                $t->string('decided_by', 16);
+                $t->integer('admin_id')->nullable();
+                $t->timestamp('created_at')->nullable();
+                $t->index('run_id', 'contabo_decision_run_ix');
+            });
+        }
+
+        if ($schema->hasTable('mod_contabo_catalog_versions')
+            && !$schema->hasColumn('mod_contabo_catalog_versions', 'envelope_json')
+        ) {
+            $schema->table('mod_contabo_catalog_versions', static function (Blueprint $t): void {
+                $t->longText('envelope_json')->nullable();
+            });
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $seeds = [
+            'tinyfish_fetch' => 'TinyFish Fetch',
+            'treg' => 'Treg (routed)',
+            'alterlab' => 'AlterLab',
+            'tinyfish_agent' => 'TinyFish Agent (manual)',
+        ];
+        foreach ($seeds as $sourceId => $displayName) {
+            if (Capsule::table('mod_contabo_scrape_sources')->where('source_id', $sourceId)->exists()) {
+                continue;
+            }
+            Capsule::table('mod_contabo_scrape_sources')->insert([
+                'source_id' => $sourceId,
+                'display_name' => $displayName,
+                'enabled' => 0,
+                'monthly_budget_micro' => 500000,
+                'per_run_cap_micro' => 50000,
+                'consecutive_failures' => 0,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
     }
 
     /**

@@ -26,6 +26,8 @@ namespace Illuminate\Database\Schema {
             public function date(string $name): self { $this->addedColumns[] = $name; return $this; }
             public function timestamp(string $name): self { $this->addedColumns[] = $name; return $this; }
             public function integer(string $name): self { $this->addedColumns[] = $name; return $this; }
+            public function bigInteger(string $name): self { $this->addedColumns[] = $name; return $this; }
+            public function tinyInteger(string $name): self { $this->addedColumns[] = $name; return $this; }
             public function unsignedInteger(string $name): self { $this->addedColumns[] = $name; return $this; }
             public function unsignedBigInteger(string $name): self { $this->addedColumns[] = $name; return $this; }
             public function unsignedTinyInteger(string $name): self { $this->addedColumns[] = $name; return $this; }

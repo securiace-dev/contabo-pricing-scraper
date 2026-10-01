@@ -233,6 +233,35 @@ final class SchemaHealth
             'payload_hash',
             'observed_at',
         ],
+        // schema v15 — WHMCS-native catalog scraping
+        'mod_contabo_scrape_sources' => [
+            'source_id',
+            'enabled',
+            'api_key_enc',
+            'monthly_budget_micro',
+            'per_run_cap_micro',
+            'consecutive_failures',
+        ],
+        'mod_contabo_scrape_runs' => [
+            'trigger',
+            'state',
+            'started_at',
+            'envelope_json',
+            'envelope_hash',
+        ],
+        'mod_contabo_scrape_run_attempts' => [
+            'run_id',
+            'family',
+            'source_id',
+            'ok',
+            'html_sha256',
+        ],
+        'mod_contabo_decisions' => [
+            'run_id',
+            'outcome',
+            'rules_json',
+            'decided_by',
+        ],
     ];
 
     /**

@@ -112,10 +112,10 @@ final class GoldenApiContractTest extends TestCase
 
     public function testDocumentedWhmcsSchemaVersionMatchesInstaller(): void
     {
-        $this->assertSame(14, Installer::SCHEMA_VERSION);
+        $this->assertSame(15, Installer::SCHEMA_VERSION);
         $documentation = file_get_contents($this->repositoryRoot() . '/SCHEMA_VERSION.md');
         $this->assertIsString($documentation);
-        $this->assertStringContainsString('## WHMCS DB 14 — current', $documentation);
+        $this->assertStringContainsString('## WHMCS DB 15 — current', $documentation);
     }
 
     /**

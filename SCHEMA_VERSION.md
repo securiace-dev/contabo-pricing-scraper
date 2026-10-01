@@ -66,12 +66,12 @@ Initial JSON/CSV emission schema covering `contabo_base_plans.json`,
 
 ---
 
-## WHMCS DB 14 — current
+## WHMCS DB 15 — current
 
-`Installer::SCHEMA_VERSION = 14`.
+`Installer::SCHEMA_VERSION = 15`.
 
 `install()` creates the v1 tables, stamps `schema_version = 1`, then runs the
-idempotent `migrateTo2..14` chain — so both fresh installs and step-by-step
+idempotent `migrateTo2..15` chain — so both fresh installs and step-by-step
 upgrades converge to the current shape. Each `migrateToN` is guarded by
 `hasTable`/`hasColumn`.
 
@@ -100,11 +100,15 @@ Highlights by version:
 - **v13** — WHMCS-owned provider snapshot inventory projection.
 - **v14** — expiring fenced claims for operator-command and communication
   workers plus explicit lease defaults.
+- **v15** — WHMCS-native catalog scraping: `mod_contabo_scrape_sources`
+  (provider registry, 4 seeded disabled rows), `mod_contabo_scrape_runs`,
+  `mod_contabo_scrape_run_attempts`, `mod_contabo_decisions`, and
+  `mod_contabo_catalog_versions.envelope_json` (`LONGTEXT NULL`).
 
 ### Migration
 
 Every migration remains additive and idempotent. Fresh installs and upgrades
-must both finish at addon schema 14 and VPS suite schema 5. Rollback of
+must both finish at addon schema 15 and VPS suite schema 5. Rollback of
 application code does not drop columns or tables; it requires a compatible
 previous release artifact and the documented deployment runbook.
 
