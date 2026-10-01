@@ -70,6 +70,7 @@ $cb_g = static function ($k, $d = '') use ($scrape) {
       <span class="mono"><?= $esc($cb_id) ?></span>
       <?php if ($cb_manual): ?><span class="cb-pill warn">manual only</span><?php endif; ?>
       <?php if ($cb_nosapper): ?><span class="cb-pill grey">cross-check only</span><?php endif; ?>
+      <?php if (!empty($cb_s['prior']['disabled'])): ?><span class="cb-pill grey" title="capacity 503 observed in round 2">not auto-ranked</span><?php endif; ?>
       <?php if ((int) ($cb_row['consecutive_failures'] ?? 0) > 0): ?>
         <span class="cb-pill bad"><span class="dot"></span><?= (int) $cb_row['consecutive_failures'] ?> failures in a row</span>
       <?php endif; ?>

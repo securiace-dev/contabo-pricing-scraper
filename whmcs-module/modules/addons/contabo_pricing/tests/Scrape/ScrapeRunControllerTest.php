@@ -253,10 +253,12 @@ final class ScrapeRunControllerTest extends TestCase
         $this->assertStringContainsString('$0.640', $out, '40 steps x $0.016');
         $this->assertSame([], $this->http->calls, 'nothing runs before confirmation');
 
-        $this->http->push(200, (string) json_encode(['status' => 'completed', 'result' => ['products' => []], 'steps' => 5]));
+        $this->http->push(200, (string) json_encode(['run_id' => 'run_1']));
+        $this->http->push(200, (string) json_encode(['status' => 'COMPLETED', 'result' => ['products' => []], 'num_of_steps' => 5]));
         $out = $this->dispatch(['action' => 'scrape-agent-run', 'mode' => 'dry', 'confirm' => '1']);
-        $this->assertCount(1, $this->http->calls);
-        $this->assertSame('https://agent.tinyfish.ai/v1/automation/run', $this->http->calls[0]['url']);
+        $this->assertCount(2, $this->http->calls, 'one launch + one poll');
+        $this->assertSame('https://agent.tinyfish.ai/v1/automation/run-async', $this->http->calls[0]['url']);
+        $this->assertSame('https://agent.tinyfish.ai/v1/runs/run_1', $this->http->calls[1]['url']);
         $this->assertStringContainsString('Scrape run #', $out);
         $this->assertStringContainsString('tinyfish_agent', $out);
         $this->assertSame(80000, (int) ((array) Capsule::table('mod_contabo_scrape_run_attempts')->get()[0])['cost_micro']);

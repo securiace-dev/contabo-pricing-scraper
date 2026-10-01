@@ -53,6 +53,9 @@ final class ScriptedSource implements SourceInterface
         if ($this->mode === 'throw') {
             throw new SourceException($this->id . ' HTTP 503: boom', 503);
         }
+        if ($this->mode === 'throw_run') {
+            throw (new SourceException($this->id . ' run r77 failed'))->withProviderRun('r77', 32000);
+        }
         if ($this->mode === 'garbage') {
             return new FetchResult($this->id, null, '<html><body>captcha wall</body></html>', null, $this->price, 40, 200);
         }
@@ -469,5 +472,18 @@ final class ScrapeRunServiceTest extends TestCase
         $this->assertSame(['family_count_deviation'], array_values(array_unique(array_column($flags, 'kind'))));
         $this->assertCount(1, $flags);
         $this->assertSame('Cloud VDS', $flags[0]['family']['label']);
+    }
+
+    public function testAFailedPaidManualRunIsNeverRepeatedOnAnotherPageAndKeepsItsRunId(): void
+    {
+        $this->primeRegistry(); // 4 learned sample pages: a normal source would fall through them
+        $agent = new ScriptedSource('agentx', 0, 'throw_run', true);
+        $r = $this->svc()->run('manual', 1, ['sources' => [$agent], 'only_source' => 'agentx', 'dry_run' => true]);
+        $this->assertSame(1, $agent->calls, 'a non-idempotent paid call is made once, not once per fallback page');
+        $rows = $this->attemptRows($r['run_id']);
+        $this->assertCount(1, $rows);
+        $this->assertSame('tinyfish-run:r77', $rows[0]['served_by'], 'the run id is on the attempt row for recovery');
+        $this->assertSame(32000, (int) $rows[0]['cost_micro'], 'the spend of the failed run is still recorded');
+        $this->assertSame(0, (int) $rows[0]['ok']);
     }
 }

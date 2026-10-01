@@ -171,8 +171,12 @@ final class ScrapeRunService
         $jevHtml = null;
         $anyFetchOk = false;
         $gotBlob = false;
+        $triedPaidManual = false;
 
         foreach ($targets as $url) {
+            if ($triedPaidManual) {
+                break;
+            }
             if ($gotBlob && !$this->anyFamilyShort($merged, $typicalById)) {
                 break; // every family is at or above its learned count: the first page was enough
             }
@@ -192,6 +196,9 @@ final class ScrapeRunService
 
                 $attempt = $this->fetchOne($runId, 'catalog', $url, $adapter, $extractor);
                 $attempts[] = $attempt;
+                if ($adapter->manualOnly()) {
+                    $triedPaidManual = true; // non-idempotent paid call: never repeated on another page
+                }
                 $runSpend += $attempt['cost_micro'];
                 $runSourceSpend[$id] = ($runSourceSpend[$id] ?? 0) + $attempt['cost_micro'];
                 $sufficient = $attempt['importable'] && $attempt['plans'] !== [];
@@ -546,6 +553,11 @@ final class ScrapeRunService
             $a['latency_ms'] = (int) round((microtime(true) - $t0) * 1000);
             $a['http_status'] = $e->httpStatus();
             $a['error'] = $e->getMessage();
+            if ($e->providerRunId() !== null) {
+                // a paid async run that failed or was cancelled: keep its id (recover, never relaunch) and its spend
+                $a['served_by'] = 'tinyfish-run:' . $e->providerRunId();
+                $a['cost_micro'] = $e->costMicro();
+            }
             return $a;
         } catch (\Throwable $e) {
             $a['latency_ms'] = (int) round((microtime(true) - $t0) * 1000);
