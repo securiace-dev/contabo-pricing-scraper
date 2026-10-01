@@ -1,0 +1,18 @@
+{
+  "plan_slug": "cloud-vps-10",
+  "period_months": 12,
+  "currency": "INR",
+  "base_monthly_eur": 3.6,
+  "configured_monthly_eur": 3.6,
+  "setup_fee_eur": 0.0,
+  "gst_amount_eur": 0.648,
+  "fx_rate": 112.317,
+  "fx_markup": 0.035,
+  "final_monthly": 493.82190755999994,
+  "final_total": 5925.862890719999,
+  "breakdown": [
+    "base €3.60/mo",
+    "+18% GST €0.65",
+    "× EUR→INR 116.2481 (4% markup)"
+  ]
+}

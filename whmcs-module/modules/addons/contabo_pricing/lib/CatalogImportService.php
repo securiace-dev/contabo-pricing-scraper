@@ -148,6 +148,7 @@ final class CatalogImportService
                         : 0,
                     'item_count' => count($normalizedItems),
                 ]),
+                'envelope_json' => self::canonicalJson($catalog),
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
