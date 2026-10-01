@@ -40,6 +40,10 @@ class SyncEngine
     /** @var PlanSource */        private $api;
     /** @var ProfileManager */    private $profiles;
     /** @var CatalogAuditLog */   private $catalogAudit;
+    /** @var Lock */              private $lock;
+
+    public const LOCK_NAME = 'contabo_sync_run';
+    public const LOCK_TTL_SECONDS = 900;
 
     /** @var float Hard threshold (50%) above which a change is "suspicious" */
     private const SUSPICIOUS_CHANGE_RATIO = 0.50;
@@ -69,8 +73,10 @@ class SyncEngine
         Settings $settings,
         PlanSource $api,
         ProfileManager $profiles,
-        ?CatalogAuditLog $catalogAudit = null
+        ?CatalogAuditLog $catalogAudit = null,
+        ?Lock $lock = null
     ) {
+        $this->lock         = $lock ?? new Lock();
         $this->settings     = $settings;
         $this->api          = $api;
         $this->profiles     = $profiles;
@@ -84,6 +90,33 @@ class SyncEngine
      * @return array<string, mixed> summary
      */
     public function run(string $trigger = 'manual', bool $observeOnly = false): array
+    {
+        // Single-flight: cron and a manual admin run must never interleave
+        // writes to the same tblpricing cells / audit batch.
+        // Observe-only previews write nothing, so they neither need nor take it.
+        if ($observeOnly) {
+            return $this->runLocked($trigger, true);
+        }
+        $token = $this->lock->acquire(self::LOCK_NAME, self::LOCK_TTL_SECONDS);
+        if ($token === null) {
+            return [
+                'trigger'      => $trigger,
+                'status'       => 'skipped_locked',
+                'observe_only' => $observeOnly,
+                'started_at'   => date('Y-m-d H:i:s'),
+                'errors'       => [],
+                'error_message' => 'Another sync run holds the lock; skipped.',
+            ];
+        }
+        try {
+            return $this->runLocked($trigger, $observeOnly);
+        } finally {
+            $this->lock->release(self::LOCK_NAME, $token);
+        }
+    }
+
+    /** @return array<string, mixed> */
+    private function runLocked(string $trigger, bool $observeOnly): array
     {
         $startedAt = date('Y-m-d H:i:s');
         $logId = null;
