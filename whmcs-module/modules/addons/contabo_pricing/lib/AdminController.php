@@ -943,7 +943,7 @@ class AdminController
         $set = CycleSet::fromMask($mask);
         $max = 0;
         foreach ($set->enabledCycles() as $cycle) {
-            $m = (int) CycleNormalizer::monthsForCycle($cycle);
+            $m = CycleNormalizer::requireMonths($cycle);
             if ($m > $max) { $max = $m; }
         }
         return $max > 0 ? $max : 1;

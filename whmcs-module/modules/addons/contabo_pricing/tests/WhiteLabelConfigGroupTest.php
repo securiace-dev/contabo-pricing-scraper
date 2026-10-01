@@ -94,7 +94,6 @@ final class WhiteLabelConfigGroupTest extends TestCase
             __DIR__ . '/../templates/admin'
         );
         $m = new \ReflectionMethod($c, 'planGroupLabel');
-        $m->setAccessible(true);
         return (string) $m->invoke($c, $slug);
     }
 }
