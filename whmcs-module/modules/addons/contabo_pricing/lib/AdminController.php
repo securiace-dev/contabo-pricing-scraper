@@ -490,6 +490,26 @@ class AdminController
 
     // ── Pages ────────────────────────────────────────────────────────────────
 
+    /**
+     * Customer-visible config-group name for a plan: the plan's display label,
+     * never the upstream provider name (R3 white-label rule).
+     */
+    private function planGroupLabel(string $planSlug): string
+    {
+        $label = '';
+        try {
+            $plan = PlanSourceFactory::fromSettings($this->settings)->plan($planSlug);
+            $label = trim((string) ($plan['product_name'] ?? ''));
+        } catch (\Throwable $e) {
+            $label = '';
+        }
+        if ($label === '') {
+            $label = ucwords(str_replace(['-', '_'], ' ', $planSlug));
+        }
+        $label = trim((string) preg_replace('/\s*contabo\s*/i', ' ', $label));
+        return $label === '' ? 'Plan options' : $label;
+    }
+
     private function dashboard(): void
     {
         // Self-heal a stale schema on first page view (non-fatal: a failed
@@ -1144,7 +1164,7 @@ class AdminController
         };
         $syncer = new ConfigurableOptionsSyncer($adapter, $audit);
 
-        $groupName = 'Contabo ' . (string) ($profile['plan_slug'] ?? 'options');
+        $groupName = $this->planGroupLabel((string) ($profile['plan_slug'] ?? 'options'));
         $report = $syncer->observe($id, $groupName, $specs, $ctx);
 
         // Validate the default selection (one default value per dimension) through
@@ -1371,7 +1391,7 @@ class AdminController
         $syncer  = new ConfigurableOptionsSyncer($adapter, $audit, new ConfigOptionLinkRepository());
 
         try {
-            $r = $syncer->apply($id, $productId, 'contabo-' . $planSlug, 'Contabo ' . $planSlug, $specs, $ctx);
+            $r = $syncer->apply($id, $productId, 'contabo-' . $planSlug, $this->planGroupLabel($planSlug), $specs, $ctx);
         } catch (\Throwable $e) {
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing config-apply error (profile #' . $id . '): ' . $e->getMessage());
