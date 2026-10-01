@@ -104,76 +104,71 @@ final class ServicePriceWriter
     }
 
     /**
-     * Try WHMCS LocalAPI UpdateClientProduct first; fall back to a direct
-     * Capsule update if it throws or returns a non-success status.
+     * Write the price through WHMCS LocalAPI UpdateClientProduct ONLY.
+     *
+     * Fails closed: a non-success result, a missing `result` key, an exception,
+     * or a missing localAPI() helper all throw. There is deliberately NO raw
+     * Capsule fallback — a raw `tblhosting` write bypasses WHMCS hooks and
+     * invoice/recalculation logic and would mask an upstream failure. The throw
+     * aborts the surrounding transaction so no action-ledger row is written.
      *
      * Visible to the transaction closure via $self. Intentionally not private
      * so the transaction closure (a static fn) can call it.
      *
      * @internal
      * @return array{via:string, message:string|null}
+     * @throws \RuntimeException when the LocalAPI write did not succeed
      */
     public function writeViaLocalApiOrFallback(int $serviceId, float $newAmount): array
     {
         $formatted = number_format($newAmount, 4, '.', '');
 
-        if (function_exists('localAPI')) {
-            try {
-                /** @var array<string,mixed> $r */
-                $r = \localAPI('UpdateClientProduct', [
-                    'serviceid'       => $serviceId,
-                    // CORRECT: `recurringamount` is the UpdateClientProduct API
-                    // field (WHMCS maps it to the `amount` column internally). This
-                    // is an API param, NOT a raw column — do NOT "fix" it to `amount`
-                    // (that would break the API call). The raw fallback uses `amount`.
-                    'recurringamount' => $formatted,
-                    // Notifier owns customer email; never let LocalAPI send it.
-                    'noemail'         => true,
-                ]);
-                $status  = isset($r['result']) ? (string) $r['result'] : '';
-                $message = isset($r['message']) ? (string) $r['message'] : '';
-                if ($status === 'success') {
-                    return ['via' => 'localapi_updateclientproduct', 'message' => null];
-                }
-                // Non-success → fall through to raw update.
-                $this->rawUpdate($serviceId, $newAmount);
-                $this->logFallback($serviceId, 'UpdateClientProduct returned ' . $status . ': ' . $message);
-                return ['via' => 'raw_fallback_localapi_non_success', 'message' => $message];
-            } catch (\Throwable $e) {
-                $this->rawUpdate($serviceId, $newAmount);
-                $this->logFallback($serviceId, 'UpdateClientProduct threw: ' . $e->getMessage());
-                return ['via' => 'raw_fallback_localapi_threw', 'message' => $e->getMessage()];
-            }
+        if (!function_exists('localAPI')) {
+            $this->logFailure($serviceId, 'localAPI() unavailable');
+            throw new \RuntimeException(
+                'ServicePriceWriter: WHMCS localAPI() is unavailable; refusing to write service '
+                . $serviceId . ' (no raw fallback).'
+            );
         }
 
-        // LocalAPI helper is not loaded (test env or stripped WHMCS).
-        $this->rawUpdate($serviceId, $newAmount);
-        $this->logFallback($serviceId, 'localAPI() unavailable; raw Capsule path used');
-        return ['via' => 'raw_fallback_no_localapi', 'message' => 'localAPI helper unavailable'];
+        try {
+            /** @var array<string,mixed> $r */
+            $r = \localAPI('UpdateClientProduct', [
+                'serviceid'       => $serviceId,
+                // `recurringamount` is the UpdateClientProduct API field (WHMCS
+                // maps it to the `amount` column internally). It is an API
+                // param, NOT a raw column.
+                'recurringamount' => $formatted,
+                // Notifier owns customer email; never let LocalAPI send it.
+                'noemail'         => true,
+            ]);
+        } catch (\Throwable $e) {
+            $this->logFailure($serviceId, 'UpdateClientProduct threw: ' . $e->getMessage());
+            throw new \RuntimeException(
+                'ServicePriceWriter: UpdateClientProduct threw for service ' . $serviceId . ': ' . $e->getMessage(),
+                0,
+                $e
+            );
+        }
+
+        $status  = is_array($r) && isset($r['result']) ? (string) $r['result'] : '';
+        $message = is_array($r) && isset($r['message']) ? (string) $r['message'] : '';
+        if ($status !== 'success') {
+            $this->logFailure($serviceId, 'UpdateClientProduct returned "' . $status . '": ' . $message);
+            throw new \RuntimeException(
+                'ServicePriceWriter: UpdateClientProduct did not succeed for service ' . $serviceId
+                . ($status === '' ? ' (no result key)' : ' (' . $status . ')')
+                . ($message !== '' ? ': ' . $message : '')
+            );
+        }
+        return ['via' => 'localapi_updateclientproduct', 'message' => null];
     }
 
-    /**
-     * The ONE place that issues a raw Capsule update against
-     * `tblhosting.recurringamount`. Lives here so the grep enforcement test
-     * has a single line to match.
-     */
-    private function rawUpdate(int $serviceId, float $newAmount): void
-    {
-        // RAW fallback writes the REAL column `tblhosting.amount`. Do NOT change
-        // this to `recurringamount` — that is NOT a raw tblhosting column (it is
-        // the LocalAPI / Service-model FIELD name; see the UpdateClientProduct
-        // param in writeViaLocalApiOrFallback(), which is correct there). A raw
-        // update of `recurringamount` errors "Unknown column" on a live WHMCS.
-        Capsule::table('tblhosting')
-            ->where('id', $serviceId)
-            ->update(['amount' => $newAmount]);
-    }
-
-    private function logFallback(int $serviceId, string $message): void
+    private function logFailure(int $serviceId, string $message): void
     {
         if (function_exists('logActivity')) {
             \logActivity(
-                'Contabo Pricing: ServicePriceWriter raw fallback on service '
+                'Contabo Pricing: ServicePriceWriter write failed (fail closed) on service '
                 . $serviceId . ' — ' . $message
             );
         }
