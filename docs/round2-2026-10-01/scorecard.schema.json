@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Contabo round-2 catalogue scorecard",
+  "description": "Required-value set for the provider cross-comparison. All money amounts are EUR, net of VAT, per month unless a field says otherwise. Use null-free output: omit a field you cannot find instead of guessing.",
+  "type": "object",
+  "required": ["families"],
+  "properties": {
+    "families": {
+      "type": "array",
+      "description": "Product families in site order: Core VPS, Performance VPS, Max Performance VPS, Storage VPS, Dedicated Servers, GPU VPS.",
+      "items": {
+        "type": "object",
+        "required": ["label", "plans"],
+        "properties": {
+          "key": { "type": "string", "description": "Category slug, e.g. vps, performance-vps, vds, storage-vps, dedicated-servers, gpu-vps." },
+          "label": { "type": "string", "description": "Family name exactly as shown in the site navigation." },
+          "plans": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["title", "slug", "availability", "prices", "periods", "specs"],
+              "properties": {
+                "title": { "type": "string", "description": "Plan name as shown, e.g. Cloud VPS 4." },
+                "slug": { "type": "string", "description": "Product slug, e.g. cloud-vps-core-4." },
+                "availability": { "type": "string", "description": "available, out_of_stock, unavailable or coming-soon." },
+                "prices": {
+                  "type": "object",
+                  "description": "Monthly list price per currency, net of VAT.",
+                  "required": ["EUR", "USD", "GBP"],
+                  "properties": {
+                    "EUR": { "type": "number" },
+                    "USD": { "type": "number" },
+                    "GBP": { "type": "number" }
+                  }
+                },
+                "previous_price": { "type": "number", "description": "Struck-through previous monthly EUR price, if shown." },
+                "periods": {
+                  "type": "array",
+                  "description": "Billing periods offered (1, 3, 6, 12, 24 months). EUR amounts. discount = total discount over the whole period; effective_monthly = (price*months - discount)/months; total = price*months - discount.",
+                  "items": {
+                    "type": "object",
+                    "required": ["months", "discount", "effective_monthly", "total"],
+                    "properties": {
+                      "months": { "type": "integer" },
+                      "discount": { "type": "number" },
+                      "effective_monthly": { "type": "number" },
+                      "total": { "type": "number" }
+                    }
+                  }
+                },
+                "specs": {
+                  "type": "object",
+                  "properties": {
+                    "cpu_cores": { "type": "integer", "description": "vCPU / virtual / physical core count." },
+                    "ram_gb": { "type": "number" },
+                    "storage_gb": { "type": "number", "description": "Primary storage in GB (1 TB = 1000 GB; 2 x 1 TB = 2000)." },
+                    "storage_type": { "type": "string", "description": "SSD, NVMe or HDD." },
+                    "snapshots": { "type": "integer" },
+                    "port_mbps": { "type": "number", "description": "Port speed in Mbit/s (1 Gbit/s = 1000)." },
+                    "traffic": { "type": "string", "description": "unlimited or the stated allowance." },
+                    "gpu": { "type": "string", "description": "GPU model for GPU VPS, e.g. NVIDIA RTX 6000." }
+                  }
+                },
+                "options": {
+                  "type": "object",
+                  "description": "Configurator values for this plan (monthly EUR, net).",
+                  "properties": {
+                    "regions": {
+                      "type": "array",
+                      "description": "Region surcharges, e.g. Asia (India). European Union = 0.",
+                      "items": {
+                        "type": "object",
+                        "required": ["name", "monthly_price"],
+                        "properties": {
+                          "name": { "type": "string" },
+                          "monthly_price": { "type": "number" }
+                        }
+                      }
+                    },
+                    "storage_upgrades": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["name", "monthly_price"],
+                        "properties": {
+                          "name": { "type": "string" },
+                          "monthly_price": { "type": "number" }
+                        }
+                      }
+                    },
+                    "backup": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "monthly_price": { "type": "number" }
+                      }
+                    },
+                    "object_storage": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["name", "monthly_price"],
+                        "properties": {
+                          "name": { "type": "string" },
+                          "size_gb": { "type": "number" },
+                          "monthly_price": { "type": "number" }
+                        }
+                      }
+                    },
+                    "os_images": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["name"],
+                        "properties": {
+                          "name": { "type": "string" },
+                          "monthly_price": { "type": "number" }
+                        }
+                      }
+                    },
+                    "apps": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["name"],
+                        "properties": {
+                          "name": { "type": "string" },
+                          "monthly_price": { "type": "number" }
+                        }
+                      }
+                    },
+                    "panels": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["name"],
+                        "properties": {
+                          "name": { "type": "string" },
+                          "monthly_price": { "type": "number" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
