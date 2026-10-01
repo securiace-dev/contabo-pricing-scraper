@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace ContaboPricing\Tests;
 
-use ContaboPricing\ApiClient;
 use ContaboPricing\CatalogAuditLog;
 use ContaboPricing\CycleSet;
 use ContaboPricing\ProfileManager;
@@ -178,8 +177,7 @@ final class SyncEngineObserveTest extends TestCase
         CatalogAuditLog $audit,
         ProfileManager $profiles
     ): SyncEngine {
-        $api = new class extends ApiClient {
-            public function __construct() {}
+        $api = new class extends StubPlanSource {
 
             public function meta(): array
             {

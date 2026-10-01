@@ -143,7 +143,7 @@ class AdminController
                 $this->jsonFail('plan_slug is required', 400);
                 return;
             }
-            $api = new ApiClient($this->settings);
+            $api = PlanSourceFactory::fromSettings($this->settings);
             $body = [
                 'plan_slug'     => $planSlug,
                 'period_months' => $period,
@@ -171,7 +171,7 @@ class AdminController
     private function ajaxFx(): void
     {
         try {
-            $api = new ApiClient($this->settings);
+            $api = PlanSourceFactory::fromSettings($this->settings);
             $res = $api->fx();
             // Compute a best-effort age_minutes if the FX endpoint exposes a
             // timestamp under any of the common field names.
@@ -197,12 +197,12 @@ class AdminController
             if (function_exists('check_token')) {
                 check_token();
             }
-            $api = new ApiClient($this->settings);
+            $api = PlanSourceFactory::fromSettings($this->settings);
             $meta = $api->meta();
             $this->jsonOk([
                 'ok'              => true,
                 'scraper_version' => isset($meta['scraper_version']) ? (string) $meta['scraper_version'] : (isset($meta['version']) ? (string) $meta['version'] : ''),
-                'snapshot_at'     => isset($meta['snapshot_at']) ? (string) $meta['snapshot_at'] : (isset($meta['generated_at']) ? (string) $meta['generated_at'] : ''),
+                'snapshot_at'     => isset($meta['snapshot_meta']['generated_at']) ? (string) $meta['snapshot_meta']['generated_at'] : (isset($meta['snapshot_at']) ? (string) $meta['snapshot_at'] : (isset($meta['generated_at']) ? (string) $meta['generated_at'] : '')),
             ]);
         } catch (\Throwable $e) {
             // Soft-fail with 200 + ok:false so the UI can render a bad pill.
@@ -283,7 +283,7 @@ class AdminController
                 $this->jsonFail('plan_slug is required', 400);
                 return;
             }
-            $api = new ApiClient($this->settings);
+            $api = PlanSourceFactory::fromSettings($this->settings);
             $cfg = $api->configurator($planSlug);
             $controls = $this->buildConfiguratorControls($cfg);
 
@@ -496,7 +496,7 @@ class AdminController
         // migration is logged, the dashboard still renders what it can).
         SchemaHealth::assertOrMigrate();
 
-        $api = new ApiClient($this->settings);
+        $api = PlanSourceFactory::fromSettings($this->settings);
         $meta = []; $err = null;
         try { $meta = $api->meta(); } catch (\Throwable $e) { $err = $e->getMessage(); }
 
@@ -520,7 +520,7 @@ class AdminController
     private function profiles(array $req): void
     {
         $pm = new ProfileManager($this->settings);
-        $api = new ApiClient($this->settings);
+        $api = PlanSourceFactory::fromSettings($this->settings);
         $plans = [];
         try { $plans = $api->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
 
@@ -826,7 +826,7 @@ class AdminController
         // conflict — same slug, different configuration. Render the chooser; no write happened.
         $existing = is_array($result['existing'] ?? null) ? $result['existing'] : [];
         $plans = [];
-        try { $plans = (new ApiClient($this->settings))->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
+        try { $plans = (PlanSourceFactory::fromSettings($this->settings))->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
         $this->render('profiles.tpl', [
             'profiles'        => $this->annotateDrift((new ProfileManager($this->settings))->listProfiles(false), $plans),
             'available_plans' => $plans,
@@ -947,7 +947,7 @@ class AdminController
         $selections = is_array($selections) ? $selections : [];
 
         try {
-            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
         } catch (\Throwable $e) {
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing: fixed-completeness check skipped (configurator fetch failed) for '
@@ -1106,7 +1106,7 @@ class AdminController
         $omitted  = [];
         $apiError = '';
         try {
-            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
             $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
             $parsed  = DimensionParser::parse($optionsMap);
             $specs   = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
@@ -1257,7 +1257,7 @@ class AdminController
 
         $planSlug = (string) ($profile['plan_slug'] ?? '');
         try {
-            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
             $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
             $parsed = DimensionParser::parse($optionsMap);
             $specs  = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
@@ -1340,7 +1340,7 @@ class AdminController
 
         $planSlug = (string) ($profile['plan_slug'] ?? '');
         try {
-            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
             $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
             $parsed = DimensionParser::parse($optionsMap);
             $specs  = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
@@ -1527,7 +1527,7 @@ class AdminController
         $specs    = [];
         $apiError = '';
         try {
-            $cfg        = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg        = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
             $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
             $parsed     = DimensionParser::parse($optionsMap);
             $specs      = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
@@ -2141,7 +2141,7 @@ class AdminController
         if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $observeOnly = (string) ($req['mode'] ?? 'observe') !== 'apply';
-        $engine = new SyncEngine($this->settings, new ApiClient($this->settings), new ProfileManager($this->settings));
+        $engine = new SyncEngine($this->settings, PlanSourceFactory::fromSettings($this->settings), new ProfileManager($this->settings));
         $summary = $engine->run('manual', $observeOnly);
         $this->render('sync_run_result.tpl', ['summary' => $summary]);
     }
@@ -2149,16 +2149,28 @@ class AdminController
     private function refreshApi(): void
     {
         if (!$this->verifyToken()) { return; }
-        $api = new ApiClient($this->settings);
-        try {
-            $r = $api->refresh();
-            $this->redirect('dashboard', ['flash' => "Refresh queued: {$r['job_id']}"]);
-        } catch (\Throwable $e) {
-            if (function_exists('logActivity')) {
-                logActivity('Contabo Pricing refresh-api error: ' . $e->getMessage());
-            }
-            $this->redirect('dashboard', ['flash' => 'Refresh failed; see the activity log for detail.']);
+        // The scrape now runs inside the addon; hand over to its admin action.
+        $this->redirect('scrape-run');
+    }
+
+    /**
+     * Envelope stored on the newest succeeded scrape run, or null when none.
+     *
+     * @return array<string,mixed>|null
+     */
+    private function latestScrapeEnvelope(): ?array
+    {
+        $rows = Capsule::table('mod_contabo_scrape_runs')
+            ->where('state', 'succeeded')
+            ->orderByDesc('id')
+            ->limit(1)
+            ->get();
+        foreach ($rows as $row) {
+            $json = (string) (((array) $row)['envelope_json'] ?? '');
+            $decoded = $json === '' ? null : json_decode($json, true);
+            return is_array($decoded) ? $decoded : null;
         }
+        return null;
     }
 
     private function catalogImport(): void
@@ -2169,12 +2181,18 @@ class AdminController
 
         $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
         try {
-            $catalog = (new ApiClient($this->settings))->catalog();
-            $result = (new CatalogImportService())->import($catalog, $adminId);
+            $envelope = $this->latestScrapeEnvelope();
+            if ($envelope === null) {
+                $this->redirect('mappings', [
+                    'flash' => 'No completed scrape run with a stored catalog yet. Run a scrape first.',
+                ]);
+                return;
+            }
+            $result = (new CatalogImportService())->import($envelope, $adminId);
             $verb = $result['created'] ? 'Imported' : 'Verified existing';
             $this->redirect('mappings', [
                 'flash' => sprintf(
-                    '%s Rust catalog %s (%d items).',
+                    '%s catalog %s (%d items).',
                     $verb,
                     $result['catalog_version'],
                     $result['item_count']
@@ -2446,7 +2464,7 @@ class AdminController
         $fxFetched  = null;
         $fxStale    = true;
         try {
-            $fx = (new ApiClient($this->settings))->fx();
+            $fx = (PlanSourceFactory::fromSettings($this->settings))->fx();
             $rates = (isset($fx['rates']) && is_array($fx['rates'])) ? $fx['rates'] : [];
             if ($rates !== []) {
                 $fxRates = [];

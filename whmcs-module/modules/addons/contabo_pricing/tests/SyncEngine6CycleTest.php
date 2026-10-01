@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace ContaboPricing\Tests;
 
-use ContaboPricing\ApiClient;
 use ContaboPricing\CatalogAuditLog;
 use ContaboPricing\CycleSet;
 use ContaboPricing\ProfileManager;
@@ -621,8 +620,7 @@ final class SyncEngine6CycleTest extends TestCase
             365,                             // logRetentionDays
             ''                                // moduleLink
         );
-        $api = new class extends ApiClient {
-            public function __construct() { /* no-op — never called in unit tests */ }
+        $api = new class extends StubPlanSource {
         };
         $profileMgr = new class($settings) extends ProfileManager {
             public function listProfiles(bool $activeOnly = true, bool $includeTrashed = false): array { return []; }

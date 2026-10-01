@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-use ContaboPricing\ApiClient;
+use ContaboPricing\PlanSourceFactory;
 use ContaboPricing\AuditLog;
 use ContaboPricing\ProfileManager;
 use ContaboPricing\Settings;
@@ -60,7 +60,7 @@ add_hook('DailyCronJob', 10, static function (): void {
         $settings = Settings::fromVars($vars);
         $engine = new SyncEngine(
             $settings,
-            new ApiClient($settings),
+            PlanSourceFactory::fromSettings($settings),
             new ProfileManager($settings),
         );
 

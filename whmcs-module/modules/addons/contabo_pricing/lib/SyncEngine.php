@@ -37,7 +37,7 @@ use WHMCS\Database\Capsule;
 class SyncEngine
 {
     /** @var Settings */          private $settings;
-    /** @var ApiClient */         private $api;
+    /** @var PlanSource */        private $api;
     /** @var ProfileManager */    private $profiles;
     /** @var CatalogAuditLog */   private $catalogAudit;
 
@@ -67,7 +67,7 @@ class SyncEngine
 
     public function __construct(
         Settings $settings,
-        ApiClient $api,
+        PlanSource $api,
         ProfileManager $profiles,
         ?CatalogAuditLog $catalogAudit = null
     ) {
