@@ -262,6 +262,20 @@ final class SchemaHealth
             'rules_json',
             'decided_by',
         ],
+        // schema v16 — self-learning family registry
+        'mod_contabo_scrape_families' => [
+            'category_id',
+            'slug',
+            'status',
+            'approved',
+            'typical_plan_count',
+            'plan_count_history_json',
+            'title_history_json',
+            'plan_slugs_json',
+            'sample_product_url',
+            'display_name',
+            'successor_of',
+        ],
     ];
 
     /**

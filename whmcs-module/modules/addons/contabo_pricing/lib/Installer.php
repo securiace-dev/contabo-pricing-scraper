@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 15;
+    public const SCHEMA_VERSION = 16;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -2164,6 +2164,68 @@ class Installer
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
+        }
+    }
+
+    /**
+     * Schema v16 — self-learning family registry. One row per upstream
+     * category id (the stable key), written only by FamilyRegistry from what
+     * the site itself reports each run. Attempts also record the nav titles
+     * the page rendered. Idempotent (hasTable/hasColumn guarded).
+     */
+    public function migrateTo16(): void
+    {
+        $schema = Capsule::schema();
+
+        if (!$schema->hasTable('mod_contabo_scrape_families')) {
+            $schema->create('mod_contabo_scrape_families', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('category_id', 40)->unique('contabo_scrape_family_cat_uq');
+                $t->string('slug', 80);
+                $t->string('title', 160);
+                $t->string('nav_title', 160)->nullable();
+                $t->string('nav_href', 255)->nullable();
+                $t->integer('nav_position')->nullable();
+                $t->string('status', 16)->default('new');
+                $t->timestamp('first_seen_at')->nullable();
+                $t->timestamp('last_seen_at')->nullable();
+                $t->integer('last_plan_count')->default(0);
+                $t->integer('typical_plan_count')->default(0);
+                $t->text('plan_count_history_json')->nullable();
+                $t->text('title_history_json')->nullable();
+                $t->text('plan_slugs_json')->nullable();
+                $t->string('sample_product_url', 255)->nullable();
+                $t->tinyInteger('approved')->default(0);
+                $t->tinyInteger('admin_hidden')->default(0);
+                $t->string('display_name', 160)->nullable();
+                $t->string('successor_of', 40)->nullable();
+                $t->bigInteger('last_run_id')->nullable();
+                $t->text('notes')->nullable();
+                $t->timestamp('created_at')->nullable();
+                $t->timestamp('updated_at')->nullable();
+                $t->index(['status', 'nav_position'], 'contabo_scrape_family_status_ix');
+            });
+        }
+
+        if ($schema->hasTable('mod_contabo_scrape_run_attempts')
+            && !$schema->hasColumn('mod_contabo_scrape_run_attempts', 'nav_titles_json')
+        ) {
+            $schema->table('mod_contabo_scrape_run_attempts', static function (Blueprint $t): void {
+                $t->text('nav_titles_json')->nullable();
+            });
+        }
+
+        // plan_urls_json is an explicit override only from v16 on: an empty
+        // list means "discover from the registry". The old built-in default
+        // (16 legacy plan URLs) is cleared so it can never pin a stale list.
+        if (Capsule::table('mod_contabo_settings')->where('key', 'scrape.plan_urls_json')->exists()) {
+            $v = (string) Capsule::table('mod_contabo_settings')->where('key', 'scrape.plan_urls_json')->value('value');
+            $d = json_decode($v, true);
+            $legacy = is_array($d) && count($d) === 16 && strpos((string) ($d[0] ?? ''), 'https://contabo.com/en/vps/cloud-vps-10/') === 0;
+            if ($legacy) {
+                Capsule::table('mod_contabo_settings')->where('key', 'scrape.plan_urls_json')
+                    ->update(['value' => '[]', 'updated_at' => date('Y-m-d H:i:s')]);
+            }
         }
     }
 

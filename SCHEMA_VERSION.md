@@ -71,12 +71,12 @@ Historical. Initial JSON/CSV file emission schema (data/output artefacts of the 
 
 ---
 
-## WHMCS DB 15 — current
+## WHMCS DB 16 — current
 
-`Installer::SCHEMA_VERSION = 15`.
+`Installer::SCHEMA_VERSION = 16`.
 
 `install()` creates the v1 tables, stamps `schema_version = 1`, then runs the
-idempotent `migrateTo2..15` chain — so both fresh installs and step-by-step
+idempotent `migrateTo2..16` chain — so both fresh installs and step-by-step
 upgrades converge to the current shape. Each `migrateToN` is guarded by
 `hasTable`/`hasColumn`.
 
@@ -109,11 +109,20 @@ Highlights by version:
   (provider registry, 4 seeded disabled rows), `mod_contabo_scrape_runs`,
   `mod_contabo_scrape_run_attempts`, `mod_contabo_decisions`, and
   `mod_contabo_catalog_versions.envelope_json` (`LONGTEXT NULL`).
+- **v16** — self-learning family registry: `mod_contabo_scrape_families`
+  (one row per upstream `categories[].id`: slug, title, nav title/href/position,
+  `status` active|hidden|retired|new, first/last seen, `last_plan_count`,
+  `typical_plan_count` (median of `plan_count_history_json`, last 5 accepted
+  runs), `title_history_json`, `plan_slugs_json`, `sample_product_url`,
+  `approved`, `admin_hidden`, `display_name`, `successor_of`, `notes`) and
+  `mod_contabo_scrape_run_attempts.nav_titles_json` (the category titles the
+  fetched page rendered). `scrape.plan_urls_json` becomes an explicit override
+  only; the migration clears the old 16-URL default so it cannot pin a stale list.
 
 ### Migration
 
 Every migration remains additive and idempotent. Fresh installs and upgrades
-must both finish at addon schema 15 and VPS suite schema 5. Rollback of
+must both finish at addon schema 16 and VPS suite schema 5. Rollback of
 application code does not drop columns or tables; it requires a compatible
 previous release artifact and the documented deployment runbook.
 

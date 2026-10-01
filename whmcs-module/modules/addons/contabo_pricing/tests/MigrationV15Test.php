@@ -63,8 +63,8 @@ final class MigrationV15Test extends TestCase
         $this->assertSame(5, Capsule::table('mod_contabo_scrape_sources')->count());
     }
 
-    public function testSchemaVersionIs15(): void
+    public function testSchemaVersionIsAtLeast15(): void
     {
-        $this->assertSame(15, Installer::SCHEMA_VERSION);
+        $this->assertGreaterThanOrEqual(15, Installer::SCHEMA_VERSION);
     }
 }

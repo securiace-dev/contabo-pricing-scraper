@@ -50,7 +50,7 @@ final class ScrapeRunControllerTest extends TestCase
         Capsule::$tables['mod_contabo_catalog_versions'] = [];
         Capsule::$tables['mod_contabo_catalog_items'] = [];
         Capsule::$tables['mod_contabo_settings'] = array_merge(Capsule::$tables['mod_contabo_settings'] ?? [], [
-            ['key' => 'schema_version', 'value' => '15'],
+            ['key' => 'schema_version', 'value' => '16'],
         ]);
         $this->http = new FakeHeaderExecutor();
         $this->c = new SeamedAdminController(
