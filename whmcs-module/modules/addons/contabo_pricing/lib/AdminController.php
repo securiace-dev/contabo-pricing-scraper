@@ -2189,6 +2189,12 @@ class AdminController
                 return;
             }
             $result = (new CatalogImportService())->import($envelope, $adminId);
+            if (!empty($result['error'])) {
+                $this->redirect('mappings', [
+                    'flash' => 'Catalog import rejected: ' . (string) ($result['message'] ?? $result['error']),
+                ]);
+                return;
+            }
             $verb = $result['created'] ? 'Imported' : 'Verified existing';
             $this->redirect('mappings', [
                 'flash' => sprintf(

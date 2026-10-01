@@ -22,10 +22,15 @@ final class CatalogImportService
     public const SUPPORTED_SCHEMA_VERSION = '1.0';
 
     /**
+     * Guardrails (structured rejection, no version row written): an empty item
+     * list, or a plan-item count that dropped from the previous version by more
+     * than `scrape.max_drop_pct` percent (default 20) unless $opts['force'].
+     *
      * @param array<string,mixed> $catalog
-     * @return array{catalog_version:string,payload_hash:string,item_count:int,created:bool}
+     * @param array{force?:bool} $opts
+     * @return array{catalog_version:string,payload_hash:string,item_count:int,created:bool,error?:string,message?:string,previous_plan_count?:int,new_plan_count?:int}
      */
-    public function import(array $catalog, int $adminId = 0): array
+    public function import(array $catalog, int $adminId = 0, array $opts = []): array
     {
         $catalogVersion = trim((string) ($catalog['catalog_version'] ?? ''));
         $payloadHash = strtolower(trim((string) ($catalog['payload_hash'] ?? '')));
@@ -41,6 +46,15 @@ final class CatalogImportService
         }
         if (!is_array($items) || count($items) > self::MAX_ITEMS) {
             throw new RuntimeException('The Rust catalog item list is invalid or exceeds the safe import limit.');
+        }
+        if ($items === []) {
+            return $this->rejection(
+                'empty_catalog',
+                'The catalog contains no items; refusing to import an empty catalog.',
+                $catalogVersion,
+                $payloadHash,
+                0
+            );
         }
         if (!preg_match('/^[a-f0-9]{64}$/', $payloadHash)) {
             throw new RuntimeException('The Rust catalog payload hash is invalid.');
@@ -121,6 +135,25 @@ final class CatalogImportService
             ];
         }
 
+        if (empty($opts['force'])) {
+            $drop = $this->planDropViolation($normalizedItems);
+            if ($drop !== null) {
+                return $this->rejection(
+                    'plan_count_drop',
+                    sprintf(
+                        'Plan count dropped from %d to %d (more than %s%% allowed); re-import with force to override.',
+                        $drop['previous'],
+                        $drop['new'],
+                        rtrim(rtrim(number_format($drop['max_pct'], 2, '.', ''), '0'), '.')
+                    ),
+                    $catalogVersion,
+                    $payloadHash,
+                    count($normalizedItems),
+                    ['previous_plan_count' => $drop['previous'], 'new_plan_count' => $drop['new']]
+                );
+            }
+        }
+
         Capsule::connection()->transaction(function () use (
             $catalog,
             $catalogVersion,
@@ -167,6 +200,69 @@ final class CatalogImportService
             'item_count' => count($normalizedItems),
             'created' => true,
         ];
+    }
+
+    /**
+     * @param list<array<string,mixed>> $normalizedItems
+     * @return array{previous:int,new:int,max_pct:float}|null
+     */
+    private function planDropViolation(array $normalizedItems): ?array
+    {
+        $prev = Capsule::table(self::VERSION_TABLE)
+            ->whereIn('state', ['observed', 'published'])
+            ->orderByDesc('id')
+            ->limit(1)
+            ->get();
+        $prevId = 0;
+        foreach ($prev as $row) {
+            $prevId = (int) (((array) $row)['id'] ?? 0);
+            break;
+        }
+        if ($prevId <= 0) {
+            return null;
+        }
+        $previous = (int) Capsule::table(self::ITEM_TABLE)
+            ->where('catalog_version_id', $prevId)
+            ->where('item_type', 'plan')
+            ->count();
+        if ($previous <= 0) {
+            return null;
+        }
+        $new = 0;
+        foreach ($normalizedItems as $item) {
+            if ($item['item_type'] === 'plan') {
+                $new++;
+            }
+        }
+        $raw = Capsule::table('mod_contabo_settings')->where('key', 'scrape.max_drop_pct')->value('value');
+        $maxPct = ($raw === null || !is_numeric($raw)) ? 20.0 : (float) $raw;
+        $dropPct = (($previous - $new) / $previous) * 100.0;
+        if ($new < $previous && $dropPct > $maxPct) {
+            return ['previous' => $previous, 'new' => $new, 'max_pct' => $maxPct];
+        }
+        return null;
+    }
+
+    /**
+     * @param array<string,int> $extra
+     * @return array<string,mixed>
+     */
+    private function rejection(
+        string $code,
+        string $message,
+        string $catalogVersion,
+        string $payloadHash,
+        int $itemCount,
+        array $extra = []
+    ): array {
+        return array_merge([
+            'catalog_version' => $catalogVersion,
+            'payload_hash' => $payloadHash,
+            'item_count' => $itemCount,
+            'created' => false,
+            'error' => $code,
+            'message' => $message,
+        ], $extra);
     }
 
     /**
