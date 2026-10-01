@@ -47,6 +47,7 @@ final class ScrapeRunControllerTest extends TestCase
     {
         Capsule::reset();
         (new Installer())->migrateTo15();
+        (new Installer())->migrateTo16();
         Capsule::$tables['mod_contabo_catalog_versions'] = [];
         Capsule::$tables['mod_contabo_catalog_items'] = [];
         Capsule::$tables['mod_contabo_settings'] = array_merge(Capsule::$tables['mod_contabo_settings'] ?? [], [
@@ -90,7 +91,7 @@ final class ScrapeRunControllerTest extends TestCase
     /** @return list<string> */
     public static function mutators(): array
     {
-        return ['data-sources-save', 'scrape-run', 'scrape-run-import', 'scrape-agent-run'];
+        return ['data-sources-save', 'scrape-run', 'scrape-run-import', 'scrape-agent-run', 'family-approve', 'family-hide', 'family-rename-display'];
     }
 
     public function testGetToAMutatorIsRejectedAndDoesNothing(): void
@@ -267,5 +268,60 @@ final class ScrapeRunControllerTest extends TestCase
         (new SourceConfigRepository())->save('tinyfish_agent', ['enabled' => 1, 'api_key' => 'AG-SECRET']);
         $this->dispatch(['action' => 'scrape-agent-run', 'mode' => 'dry', 'confirm' => '1']);
         $this->assertSame([], $this->http->calls, '$0.64 worst case exceeds the default $0.50 monthly budget');
+    }
+
+    // ── Families section (self-learning registry governance) ────────────────
+
+    public function testFamiliesSectionAndGovernanceActions(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $this->pushPage();
+        $this->dispatch(['action' => 'scrape-run', 'mode' => 'live']); // new families: needs_review, but the registry learns them
+        $this->assertSame('needs_review', (new RunRepository())->find($this->lastRunId())['state']);
+        unset($_SERVER['REQUEST_METHOD']);
+
+        $page = $this->dispatch(['action' => 'data-sources']);
+        $this->assertStringContainsString('id="families"', $page);
+        $this->assertStringContainsString('Cloud VPS', $page);
+        $this->assertStringContainsString('Dedicated Servers', $page);
+        $this->assertStringContainsString('name="action" value="family-approve"', $page);
+        $this->assertStringContainsString('not approved', $page);
+
+        $reg = new \ContaboPricing\Scrape\FamilyRegistry();
+        $byslug = [];
+        foreach ($reg->all() as $r) {
+            $byslug[$r['slug']] = (int) $r['id'];
+        }
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $this->dispatch(['action' => 'family-approve', 'id' => (string) $byslug['vps']]);
+        $this->assertSame(1, $reg->find($byslug['vps'])['approved']);
+        $this->dispatch(['action' => 'family-rename-display', 'id' => (string) $byslug['vps'], 'display_name' => '  Core   Cloud ']);
+        $this->assertSame('Core Cloud', $reg->find($byslug['vps'])['display_name']);
+        $this->dispatch(['action' => 'family-hide', 'id' => (string) $byslug['storage-vps']]);
+        $row = $reg->find($byslug['storage-vps']);
+        $this->assertSame([1, 'hidden'], [$row['admin_hidden'], $row['status']]);
+        $this->dispatch(['action' => 'family-hide', 'id' => (string) $byslug['storage-vps'], 'undo' => '1']);
+        $this->assertSame(0, $reg->find($byslug['storage-vps'])['admin_hidden']);
+        $this->dispatch(['action' => 'family-approve', 'id' => '99999']);
+        $this->assertSame('Unknown family.', $this->c->redirects[count($this->c->redirects) - 1][1]['flash']);
+        $this->assertSame('data-sources', $this->c->redirects[0][0]);
+        unset($_SERVER['REQUEST_METHOD']);
+
+        $page = $this->dispatch(['action' => 'data-sources']);
+        $this->assertStringContainsString('Core Cloud', $page);
+    }
+
+    public function testRunDetailShowsTheFamilyDiffAndPageNavTitles(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $this->pushPage();
+        $this->dispatch(['action' => 'scrape-run', 'mode' => 'dry']);
+        unset($_SERVER['REQUEST_METHOD']);
+        $detail = $this->dispatch(['action' => 'scrape-run-detail', 'id' => (string) $this->lastRunId()]);
+        $this->assertStringContainsString('New family &quot;Cloud VPS&quot;', $detail);
+        $this->assertStringContainsString('nav: Cloud VPS | Cloud VDS | Storage VPS | Dedicated Servers', $detail);
+        $this->assertStringContainsString('https://contabo.com/en/vps/cloud-vps-core-4/', $detail);
+        $this->assertStringContainsString('The registry was not updated by this run', $detail);
+        $this->assertContains('family_new', array_column((new RunRepository())->find($this->lastRunId())['gates_json']['risky'], 'kind'));
     }
 }

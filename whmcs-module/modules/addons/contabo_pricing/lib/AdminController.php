@@ -97,6 +97,9 @@ class AdminController
             case 'data-sources':         $this->dataSources($req); return;
             case 'data-sources-save':    $this->dataSourcesSave($req); return;
             case 'ajax-source-test':     $this->ajaxSourceTest($req); return;
+            case 'family-approve':       $this->familyAction('approve', $req); return;
+            case 'family-hide':          $this->familyAction('hide', $req); return;
+            case 'family-rename-display': $this->familyAction('rename', $req); return;
             case 'scrape-run':           $this->scrapeRun($req); return;
             case 'scrape-runs':          $this->scrapeRuns($req); return;
             case 'scrape-run-detail':    $this->scrapeRunDetail($req); return;
@@ -3704,11 +3707,48 @@ class AdminController
             'scrape' => $s->all(),
             'jev_key_set' => $s->hasJevApiKey(),
             'jev_key_mask' => SecretStore::mask($jevKey),
+            'families' => (new \ContaboPricing\Scrape\FamilyRegistry())->all(),
             'month_spend_micro' => $ledger->monthSpendMicro(),
             'flash' => (string) ($req['flash'] ?? ''),
         ];
         unset($jevKey);
         $this->render('data_sources.tpl', $data);
+    }
+
+    /**
+     * Family governance (POST + CSRF): approve a family, hide / unhide it from
+     * the import, or set its public display name. Never touches the plan data.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function familyAction(string $kind, array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $id = (int) ($req['id'] ?? 0);
+        $reg = new \ContaboPricing\Scrape\FamilyRegistry();
+        $row = $reg->find($id);
+        if ($row === null) {
+            $this->go('data-sources', ['flash' => 'Unknown family.']);
+            return;
+        }
+        $name = \ContaboPricing\Scrape\FamilyRegistry::effectiveName($row);
+        if ($kind === 'approve') {
+            $reg->approve($id);
+            $msg = 'Approved family "' . $name . '".';
+        } elseif ($kind === 'hide') {
+            $undo = (string) ($req['undo'] ?? '') === '1';
+            $reg->setHidden($id, !$undo);
+            $msg = ($undo ? 'Family "' : 'Hidden family "') . $name . ($undo ? '" imports again.' : '": it will no longer be imported.');
+        } else {
+            $reg->renameDisplay($id, (string) ($req['display_name'] ?? ''));
+            $msg = 'Display name of "' . $row['slug'] . '" updated.';
+        }
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing family ' . $kind . ' (' . (string) $row['slug'] . ') by admin ' . $this->adminId());
+        }
+        $this->go('data-sources', ['flash' => $msg]);
     }
 
     /** @param array<string,mixed> $req */

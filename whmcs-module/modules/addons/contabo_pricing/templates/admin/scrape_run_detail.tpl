@@ -33,7 +33,10 @@ $cb_gates = is_array($cb_gates_blob['gates'] ?? null) ? $cb_gates_blob['gates'] 
 $cb_warnings = is_array($cb_gates_blob['warnings'] ?? null) ? $cb_gates_blob['warnings'] : [];
 $cb_jev = is_array($cb_gates_blob['jev'] ?? null) ? $cb_gates_blob['jev'] : null;
 $cb_outcome = (string) ($cb_gates_blob['outcome'] ?? ($decision['outcome'] ?? ''));
-$cb_fam = is_array($run['families_json'] ?? null) ? $run['families_json'] : [];
+$cb_fam_blob = is_array($run['families_json'] ?? null) ? $run['families_json'] : [];
+$cb_fam = is_array($cb_fam_blob['families'] ?? null) ? $cb_fam_blob['families'] : [];
+$cb_pages = is_array($cb_fam_blob['pages'] ?? null) ? $cb_fam_blob['pages'] : [];
+$cb_fdiff = is_array($cb_gates_blob['families'] ?? null) ? $cb_gates_blob['families'] : [];
 $cb_state = (string) ($run['state'] ?? '');
 $cb_id = (int) ($run['id'] ?? 0);
 ?>
@@ -118,7 +121,7 @@ $cb_id = (int) ($run['id'] ?? 0);
     <p class="cb-card-sub">No provider was called<?= !empty($run['error']) ? ' (' . $esc((string) $run['error']) . ')' : '' ?>.</p>
   <?php else: ?>
   <table class="cb-table">
-    <thead><tr><th>Family</th><th>Source</th><th>Served by</th><th>HTTP</th><th>OK</th><th>Strategy</th><th class="right">Plans</th><th class="right">Cost</th><th class="right">ms</th><th>Page SHA-256</th><th>Error</th></tr></thead>
+    <thead><tr><th>Family</th><th>Source</th><th>Served by</th><th>HTTP</th><th>OK</th><th>Strategy</th><th class="right">Plans</th><th class="right">Cost</th><th class="right">ms</th><th>Page SHA-256</th><th>Page / nav titles</th><th>Error</th></tr></thead>
     <tbody>
     <?php foreach ($attempts as $cb_a): ?>
       <tr>
@@ -132,20 +135,61 @@ $cb_id = (int) ($run['id'] ?? 0);
         <td class="right mono"><?= $esc($cb_usd($cb_a['cost_micro'])) ?></td>
         <td class="right mono"><?= (int) $cb_a['latency_ms'] ?></td>
         <td class="mono"><?= $esc(substr((string) ($cb_a['html_sha256'] ?? ''), 0, 12)) ?></td>
+        <td class="mono"><?= $esc((string) ($cb_a['url'] ?? '')) ?>
+          <?php $cb_nt = json_decode((string) ($cb_a['nav_titles_json'] ?? ''), true); ?>
+          <?php if (is_array($cb_nt) && $cb_nt !== []): ?><div class="cb-card-sub">nav: <?= $esc(implode(' | ', array_map('strval', $cb_nt))) ?></div><?php endif; ?>
+        </td>
         <td class="mono"><?= $esc(substr((string) ($cb_a['error'] ?? ''), 0, 160)) ?><?= !empty($cb_a['final_url']) ? ' &rarr; ' . $esc((string) $cb_a['final_url']) : '' ?></td>
       </tr>
     <?php endforeach; ?>
     </tbody>
   </table>
   <?php endif; ?>
-  <?php if (!empty($cb_fam)): ?>
-  <p class="cb-card-sub">
-    <?php foreach ($cb_fam as $cb_fn => $cb_fi): ?>
-      <?= $esc((string) $cb_fn) ?>: <span class="mono"><?= (int) ($cb_fi['count'] ?? 0) ?>/<?= (int) ($cb_fi['min'] ?? 0) ?></span>
-      <?= empty($cb_fi['fetched']) ? '(satisfied by an earlier page)' : '' ?>&nbsp;&nbsp;
+  <?php if (!empty($cb_pages)): ?>
+  <p class="cb-card-sub">Pages fetched:
+    <?php foreach ($cb_pages as $cb_pg): ?>
+      <span class="mono"><?= $esc((string) ($cb_pg['url'] ?? '')) ?></span> <?= !empty($cb_pg['ok']) ? '<span class="cb-pill good">blob</span>' : '<span class="cb-pill bad">no blob</span>' ?>&nbsp;
     <?php endforeach; ?>
   </p>
   <?php endif; ?>
+</div>
+
+<div class="cb-card">
+  <h3>Families</h3>
+  <?php if (empty($cb_fam) && empty($cb_fdiff)): ?>
+    <p class="cb-card-sub">No family information (the run ended before the catalogue blob was read).</p>
+  <?php else: ?>
+  <table class="cb-table">
+    <thead><tr><th>Family</th><th>Status</th><th class="right">Plans / typical</th><th>Approval</th></tr></thead>
+    <tbody>
+    <?php foreach ($cb_fam as $cb_fn => $cb_fi): ?>
+      <tr>
+        <td><?= $esc((string) $cb_fn) ?> <span class="mono cb-card-sub"><?= $esc((string) ($cb_fi['slug'] ?? '')) ?></span></td>
+        <td><?= $esc((string) ($cb_fi['status'] ?? '')) ?></td>
+        <td class="right mono"><?= (int) ($cb_fi['count'] ?? 0) ?> / <?= (int) ($cb_fi['typical'] ?? 0) ?></td>
+        <td><?= !empty($cb_fi['approved']) ? '<span class="cb-pill good">approved</span>' : '<span class="cb-pill warn">not approved</span>' ?></td>
+      </tr>
+    <?php endforeach; ?>
+    </tbody>
+  </table>
+  <?php endif; ?>
+  <?php
+  $cb_lines = [];
+  foreach ((array) ($cb_fdiff['new'] ?? []) as $cb_x) { if (($cb_x['status'] ?? '') !== 'hidden') { $cb_lines[] = ['new', 'New family "' . ($cb_x['label'] ?? '') . '" (' . (int) ($cb_x['plans'] ?? 0) . ' plans, ' . ($cb_x['reason'] ?? 'first seen') . ')']; } }
+  foreach ((array) ($cb_fdiff['renamed'] ?? []) as $cb_x) { $cb_lines[] = ['renamed', 'Renamed "' . ($cb_x['from'] ?? '') . '" to "' . ($cb_x['to'] ?? '') . '"' . (($cb_x['kind'] ?? '') === 'id_change' ? ' (new category id; history carried forward)' : '')]; }
+  foreach ((array) ($cb_fdiff['retired'] ?? []) as $cb_x) { $cb_lines[] = ['retired', 'Vanished from the catalogue: "' . ($cb_x['label'] ?? '') . '"']; }
+  foreach ((array) ($cb_fdiff['delisted'] ?? []) as $cb_x) { $cb_lines[] = ['delisted', 'No longer linked from the nav: "' . ($cb_x['label'] ?? '') . '"']; }
+  foreach ((array) ($cb_fdiff['reappeared'] ?? []) as $cb_x) { $cb_lines[] = ['reappeared', 'Back after retirement: "' . ($cb_x['label'] ?? '') . '"']; }
+  foreach ((array) ($cb_fdiff['count_changes'] ?? []) as $cb_x) { $cb_lines[] = ['count', '"' . ($cb_x['label'] ?? '') . '" has ' . (int) ($cb_x['current'] ?? 0) . ' plans vs typical ' . (int) ($cb_x['typical'] ?? 0) . ' (' . ($cb_x['pct'] ?? 0) . '%)']; }
+  foreach ((array) ($cb_fdiff['plan_moves'] ?? []) as $cb_x) { $cb_lines[] = ['moved', 'Plan ' . ($cb_x['slug'] ?? '') . ' moved from "' . ($cb_x['from_label'] ?? '') . '" to "' . ($cb_x['to_label'] ?? '') . '"']; }
+  ?>
+  <?php foreach ($cb_lines as $cb_ln): ?>
+    <p class="cb-card-sub"><span class="cb-pill warn"><?= $esc($cb_ln[0]) ?></span> <?= $esc($cb_ln[1]) ?></p>
+  <?php endforeach; ?>
+  <?php if (!empty($cb_fdiff) && empty($cb_fdiff['persisted'])): ?>
+    <p class="cb-card-sub">The registry was not updated by this run (dry run, rejected or failed). The same findings are raised again until a run is accepted.</p>
+  <?php endif; ?>
+  <p class="cb-card-sub"><a href="<?= $esc($module_link) ?>&amp;action=data-sources#families">Manage families &rarr;</a></p>
 </div>
 
 <div class="cb-card">

@@ -13,6 +13,7 @@
  * @var string   $module_link
  * @var list<array<string,mixed>> $sources
  * @var array<string,string> $scrape
+ * @var list<array<string,mixed>> $families
  * @var bool     $jev_key_set
  * @var string   $jev_key_mask
  * @var int      $month_spend_micro
@@ -204,7 +205,7 @@ $cb_g = static function ($k, $d = '') use ($scrape) {
         </td>
       </tr>
       <tr>
-        <th>Minimum plans</th>
+        <th>Minimum plans<br><span class="cb-card-sub">fallback for a family not learned yet</span></th>
         <td>
           <label>Cloud VPS <input type="number" min="0" step="1" name="min_plans_cloud_vps" value="<?= $esc($cb_g('scrape.min_plans_cloud_vps')) ?>"></label>
           <label>Storage VPS <input type="number" min="0" step="1" name="min_plans_storage_vps" value="<?= $esc($cb_g('scrape.min_plans_storage_vps')) ?>"></label>
@@ -278,5 +279,75 @@ $cb_g = static function ($k, $d = '') use ($scrape) {
     <button type="submit" class="cb-btn">Save data sources</button>
   </div>
 </form>
+
+<!-- ───────────── Families (learned from the site every run) ───────────── -->
+<?php
+$cb_families = isset($families) && is_array($families) ? $families : [];
+$cb_fam_tone = static function ($s) {
+    return $s === 'active' ? 'good' : ($s === 'new' ? 'warn' : ($s === 'retired' ? 'bad' : 'grey'));
+};
+?>
+<div class="cb-card" id="families">
+  <h3>Families</h3>
+  <p class="cb-card-sub">
+    Discovered from the upstream site on every run, never configured: a family is a category the site's navigation links to.
+    A new, renamed or vanished family, or a plan count far from its typical count, holds the run for review.
+    Approving, hiding or renaming here never edits plan data; a hidden family is skipped by the import.
+  </p>
+  <?php if (empty($cb_families)): ?>
+    <p class="cb-card-sub">Nothing learned yet. The first accepted run (needs review is fine) records the lineup.</p>
+  <?php else: ?>
+  <table class="cb-table">
+    <thead><tr><th>Family</th><th>Site name</th><th>Status</th><th class="right">Plans (typical)</th><th>Seen</th><th>Governance</th></tr></thead>
+    <tbody>
+    <?php foreach ($cb_families as $cb_f):
+      $cb_fid = (int) $cb_f['id'];
+      $cb_site = (string) ($cb_f['nav_title'] ?? '') !== '' ? (string) $cb_f['nav_title'] : (string) $cb_f['title'];
+      $cb_hist = is_array($cb_f['title_history'] ?? null) ? $cb_f['title_history'] : [];
+    ?>
+      <tr>
+        <td>
+          <strong><?= $esc(\ContaboPricing\Scrape\FamilyRegistry::effectiveName($cb_f)) ?></strong>
+          <div class="mono cb-card-sub"><?= $esc((string) $cb_f['slug']) ?> &middot; <?= $esc((string) $cb_f['category_id']) ?><?= !empty($cb_f['nav_href']) ? ' &middot; ' . $esc((string) $cb_f['nav_href']) : '' ?></div>
+          <?php if (!empty($cb_f['successor_of'])): ?><div class="cb-card-sub">successor of <span class="mono"><?= $esc((string) $cb_f['successor_of']) ?></span></div><?php endif; ?>
+        </td>
+        <td>
+          <?= $esc($cb_site) ?>
+          <?php if (count($cb_hist) > 1): ?><div class="cb-card-sub">renamed <?= count($cb_hist) - 1 ?>&times;: <?= $esc(implode(' &rarr; ', array_map(static function ($h) { return (string) ($h['title'] ?? ''); }, $cb_hist))) ?></div><?php endif; ?>
+        </td>
+        <td>
+          <span class="cb-pill <?= $esc($cb_fam_tone((string) $cb_f['status'])) ?>"><?= $esc((string) $cb_f['status']) ?></span>
+          <?= (int) $cb_f['admin_hidden'] === 1 ? '<span class="cb-pill grey">hidden by admin</span>' : '' ?>
+          <?= (int) $cb_f['approved'] === 1 ? '<span class="cb-pill good">approved</span>' : '<span class="cb-pill warn">not approved</span>' ?>
+        </td>
+        <td class="right mono"><?= (int) $cb_f['last_plan_count'] ?> (<?= (int) $cb_f['typical_plan_count'] ?>)</td>
+        <td class="mono cb-card-sub"><?= $esc((string) ($cb_f['first_seen_at'] ?? '')) ?><br><?= $esc((string) ($cb_f['last_seen_at'] ?? '')) ?></td>
+        <td>
+          <?php if ((int) $cb_f['approved'] !== 1): ?>
+          <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+            <input type="hidden" name="action" value="family-approve"><input type="hidden" name="id" value="<?= $cb_fid ?>">
+            <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
+            <button type="submit" class="cb-btn subtle">Approve</button>
+          </form>
+          <?php endif; ?>
+          <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+            <input type="hidden" name="action" value="family-hide"><input type="hidden" name="id" value="<?= $cb_fid ?>">
+            <?php if ((int) $cb_f['admin_hidden'] === 1): ?><input type="hidden" name="undo" value="1"><?php endif; ?>
+            <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
+            <button type="submit" class="cb-btn subtle"><?= (int) $cb_f['admin_hidden'] === 1 ? 'Unhide' : 'Hide' ?></button>
+          </form>
+          <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+            <input type="hidden" name="action" value="family-rename-display"><input type="hidden" name="id" value="<?= $cb_fid ?>">
+            <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
+            <input type="text" name="display_name" maxlength="160" placeholder="display name" value="<?= $esc((string) ($cb_f['display_name'] ?? '')) ?>" aria-label="Display name for <?= $esc((string) $cb_f['slug']) ?>">
+            <button type="submit" class="cb-btn subtle">Rename</button>
+          </form>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+    </tbody>
+  </table>
+  <?php endif; ?>
+</div>
 
 </div>
