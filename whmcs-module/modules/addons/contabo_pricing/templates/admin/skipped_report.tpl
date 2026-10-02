@@ -52,15 +52,14 @@ require __DIR__ . '/_layout_open.tpl';
 
 <header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" data-cb-u="u-0cbe035c55">Skipped report</h2>
+    <h2 class="display" data-cb-u="u-0cbe035c55">Historical skipped decisions</h2>
     <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
-      Decisions the engine chose not to apply, grouped by reason. Use this to spot
-      bottlenecks (e.g. lots of <code class="mono">notice_scheduled</code>) before flipping the apply phase.
+      Historical non-applied repricing decisions, grouped by reason. The current cron path does not generate fresh rows, so treat this as archive evidence and policy review, not as an active rollout console.
     </p>
   </div>
   <div data-cb-u="u-b887bfd543">
-    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=repricing">&larr; Dashboard</a>
-    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=price-decisions">Audit log</a>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=repricing">&larr; Repricing diagnostics</a>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=price-decisions">Decision log</a>
   </div>
 </header>
 

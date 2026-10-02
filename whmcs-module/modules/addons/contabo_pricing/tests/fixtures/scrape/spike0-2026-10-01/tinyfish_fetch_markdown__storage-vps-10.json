@@ -1,0 +1,18 @@
+{
+    "provider": "tinyfish_fetch:markdown",
+    "url": "https://contabo.com/en/storage-vps/storage-vps-10/",
+    "http_status": 200,
+    "ok": true,
+    "sapper_present": false,
+    "decoder_ok": false,
+    "plan_count": 0,
+    "family_plan_count": "",
+    "strategy": "dom_probe",
+    "latency_ms": 6854,
+    "served_by": null,
+    "cost_micro": 0,
+    "body_bytes": 875,
+    "sha256": "c3f1068de2c16b194beb93aaedf04b9ec7c5b57b6e87c725ce71442568612bdc",
+    "error": null,
+    "recorded_at": "2026-10-01T05:46:32+00:00"
+}

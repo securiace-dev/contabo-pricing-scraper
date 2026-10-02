@@ -6,7 +6,7 @@
  *   • modal + drawer open/close
  *   • live quote preview (AJAX → /ajax-quote)
  *   • FX rate preview (AJAX → /ajax-fx, polled hourly)
- *   • Test API connection button (AJAX → /ajax-meta-probe)
+ *   • Test source button (AJAX → /ajax-source-test)
  *   • Sparkline rendering (AJAX → /ajax-profile-versions)
  *   • Profile drawer hydration (AJAX → /ajax-profile)
  *   • Keyboard shortcuts: /, n, r, Esc
@@ -131,6 +131,7 @@
       tr.setAttribute('data-cb-status-pass', show ? '1' : '0');
       applyCombinedFilters(tr);
     });
+    refreshVisibleCount(table);
   }
 
   // Apply the cycle-pill filter (data-cb-filter-cycle="<cycle>") to all rows in
@@ -142,6 +143,7 @@
       tr.setAttribute('data-cb-cycle-pass', show ? '1' : '0');
       applyCombinedFilters(tr);
     });
+    refreshVisibleCount(table);
   }
 
   // Combine the latest status + cycle filter results for a single row. Either
@@ -150,9 +152,20 @@
   function applyCombinedFilters(tr) {
     var statusPass = tr.getAttribute('data-cb-status-pass');
     var cyclePass  = tr.getAttribute('data-cb-cycle-pass');
+    var searchPass = tr.getAttribute('data-cb-search-pass');
+    var datePass   = tr.getAttribute('data-cb-date-pass');
     var ok = (statusPass === null || statusPass === '1')
-          && (cyclePass  === null || cyclePass  === '1');
+          && (cyclePass  === null || cyclePass  === '1')
+          && (searchPass === null || searchPass === '1')
+          && (datePass   === null || datePass   === '1');
     tr.hidden = !ok;
+  }
+
+  function refreshVisibleCount(table) {
+    var countEls = $$('[data-cb-visible-count]');
+    if (!countEls.length || !table) return;
+    var visible = $$('tbody tr', table).filter(function (tr) { return !tr.hidden; }).length;
+    countEls.forEach(function (el) { el.textContent = String(visible); });
   }
 
   function wireFilterPills() {
@@ -210,12 +223,15 @@
       input.addEventListener('input', debounce(function () {
         var q = input.value.trim().toLowerCase();
         $$('tbody tr', table).forEach(function (tr) {
-          if (!q) { tr.hidden = false; return; }
-          var hay = (tr.getAttribute('data-cb-profile-name') || '') + ' '
+          var hay = (tr.getAttribute('data-cb-search-text') || '') + ' '
+                  + (tr.getAttribute('data-cb-profile-name') || '') + ' '
                   + (tr.getAttribute('data-cb-trigger') || '') + ' '
                   + tr.textContent;
-          tr.hidden = hay.toLowerCase().indexOf(q) === -1;
+          var show = !q || hay.toLowerCase().indexOf(q) !== -1;
+          tr.setAttribute('data-cb-search-pass', show ? '1' : '0');
+          applyCombinedFilters(tr);
         });
+        refreshVisibleCount(table);
       }, 150));
     });
   }
@@ -388,6 +404,76 @@
     return modal.querySelector('[data-cb-cfg-reset]');
   }
 
+  function getSelectedPlanLabel(modal) {
+    var planEl = modal.querySelector('[data-cb-cfg-plan]');
+    if (!planEl || !planEl.options || planEl.selectedIndex < 0) return '';
+    var opt = planEl.options[planEl.selectedIndex];
+    return opt ? String(opt.text || '').trim() : '';
+  }
+
+  function setProfileFormErrors(modal, errors) {
+    var box = modal.querySelector('[data-cb-form-errors]');
+    if (!box) return;
+    if (!Array.isArray(errors) || errors.length === 0) {
+      box.hidden = true;
+      box.innerHTML = '';
+      return;
+    }
+    box.hidden = false;
+    box.innerHTML = '<strong>Review this profile before saving.</strong><ul>'
+      + errors.map(function (msg) {
+        return '<li>' + escapeHtml(String(msg)) + '</li>';
+      }).join('')
+      + '</ul>';
+  }
+
+  function updateProfileSummary(modal) {
+    var planLabel = getSelectedPlanLabel(modal);
+    var modeSel = modal.querySelector('[data-cb-profile-mode]');
+    var syncSel = modal.querySelector('select[name="sync_strategy"]');
+    var statePill = modal.querySelector('[data-cb-configurator-state]');
+    var summaryStatus = modal.querySelector('[data-cb-profile-summary-status]');
+    var summaryPlan = modal.querySelector('[data-cb-summary-plan]');
+    var summaryMode = modal.querySelector('[data-cb-summary-mode]');
+    var summaryCycles = modal.querySelector('[data-cb-summary-cycles]');
+    var summarySync = modal.querySelector('[data-cb-summary-sync]');
+    var checked = modal.querySelectorAll('[data-cb-publish-cycle]:checked').length;
+    var total = modal.querySelectorAll('[data-cb-publish-cycle]').length;
+    var mode = modeSel ? modeSel.value : 'fixed_admin_profile';
+    var isFixed = (mode !== 'customer_configurable_product');
+
+    if (summaryPlan) summaryPlan.textContent = planLabel || 'Not selected';
+    if (summaryMode) {
+      summaryMode.textContent = isFixed
+        ? 'Fixed admin profile'
+        : 'Customer-configurable product';
+    }
+    if (summaryCycles) {
+      summaryCycles.textContent = checked === total
+        ? 'All six source cycles'
+        : (checked + ' of ' + total + ' source cycles');
+    }
+    if (summarySync) {
+      var syncValue = syncSel ? syncSel.value : 'notify';
+      summarySync.textContent = syncValue === 'auto-apply'
+        ? 'Auto-apply drift'
+        : (syncValue === 'manual' ? 'Manual review only' : 'Notify on drift');
+    }
+    if (statePill) {
+      statePill.textContent = planLabel ? 'Plan loaded' : 'Choose a plan';
+      statePill.className = 'cb-pill ' + (planLabel ? 'good' : 'grey');
+    }
+    if (summaryStatus) {
+      if (!planLabel) {
+        summaryStatus.textContent = 'Choose a plan to begin.';
+      } else if (isFixed) {
+        summaryStatus.textContent = 'Fixed mode: every required option below must be pinned before save.';
+      } else {
+        summaryStatus.textContent = 'Configurable mode: save the source profile, then curate customer-visible options in Exposure.';
+      }
+    }
+  }
+
   function renderConfigurator(modal, cfg) {
     var root = getCfgRoot(modal);
     if (!root) return;
@@ -491,6 +577,7 @@
     if (jsonEl) jsonEl.value = JSON.stringify(serialised);
     // OS + Region are derived server-side from the options JSON above
     // (single source of truth) — no hidden region/os inputs to mirror.
+    updateProfileSummary(modal);
   }
 
   function loadConfiguratorForModal(modal, opts) {
@@ -557,6 +644,7 @@
       if (cb.checked) mask |= parseInt(cb.getAttribute('data-cb-bit'), 10) || 0;
     });
     hidden.value = String(mask === 0 ? 63 : mask);
+    updateProfileSummary(modal);
   }
 
   // Source (cost) price per cycle, EUR/mo, from the configurator's periods map.
@@ -583,6 +671,7 @@
       if (best === null) best = avail[0];
       span.textContent = '€' + scraped[best].toFixed(2) + '/mo';
     });
+    updateProfileSummary(modal);
   }
 
   // Reshape the form to the selected mode. Fixed = pre-packaged SKU: the admin
@@ -594,16 +683,21 @@
     var isFixed = (mode !== 'customer_configurable_product');
     var exposeField = modal.querySelector('[data-cb-expose-field]');
     if (exposeField) exposeField.hidden = isFixed;
+    var fixedNote = modal.querySelector('[data-cb-fixed-note]');
+    if (fixedNote) fixedNote.hidden = !isFixed;
     var hint = modal.querySelector('[data-cb-mode-hint]');
     if (hint) {
       hint.textContent = isFixed
         ? 'Pre-packaged plan: pick a value for every option below — that locked set becomes the SKU. Customers cannot change it.'
         : 'Configurable product: customers choose the options you expose. Curate exposure via the Exposure editor after saving.';
     }
+    updateProfileSummary(modal);
   }
 
-  function primeProfileCreateMode(modal) {
+  function primeProfileCreateMode(modal, prefill) {
+    prefill = prefill || {};
     var titleEl = modal.querySelector('[data-cb-modal-title]');
+    var subtitleEl = modal.querySelector('[data-cb-modal-subtitle]');
     var actionEl = modal.querySelector('[data-cb-form-action]');
     var idEl = modal.querySelector('[data-cb-form-id]');
     var submitEl = modal.querySelector('[data-cb-submit-label]');
@@ -612,33 +706,50 @@
     var stratEl = modal.querySelector('select[name="sync_strategy"]');
     var modeEl = modal.querySelector('[data-cb-profile-mode]');
     var exposeEl = modal.querySelector('[data-cb-expose-config]');
+    var planEl = modal.querySelector('[data-cb-cfg-plan]');
+    var advancedEl = modal.querySelector('[data-cb-advanced-fields]');
     if (titleEl) titleEl.textContent = 'Create profile';
+    if (subtitleEl) subtitleEl.textContent = 'Start with the source plan and locked configuration. Customer-facing pricing and checkout options are decided later on the Mappings page.';
     if (submitEl) submitEl.textContent = 'Create profile';
     if (actionEl) actionEl.value = 'profile-create';
     if (idEl) { idEl.disabled = true; idEl.value = ''; }
-    if (nameEl) nameEl.value = '';
-    if (tagsEl) tagsEl.value = '';
-    if (stratEl) stratEl.value = 'notify';
-    if (modeEl) modeEl.value = 'fixed_admin_profile';
-    if (exposeEl) exposeEl.checked = true;
+    if (nameEl) nameEl.value = prefill.name || '';
+    if (tagsEl) tagsEl.value = prefill.tags || '';
+    if (stratEl) stratEl.value = prefill.sync_strategy || 'notify';
+    if (modeEl) modeEl.value = prefill.mode || 'fixed_admin_profile';
+    if (exposeEl) exposeEl.checked = String(prefill.expose_configurable_options == null ? 1 : prefill.expose_configurable_options) !== '0';
     // Default: source all six cycles (the mapping narrows to customer-facing).
-    modal.querySelectorAll('[data-cb-publish-cycle]').forEach(function (cb) { cb.checked = true; });
+    var savedMask = prefill.published_cycles_mask == null
+      ? 63 : (parseInt(prefill.published_cycles_mask, 10) || 63);
+    modal.querySelectorAll('[data-cb-publish-cycle]').forEach(function (cb) {
+      var bit = parseInt(cb.getAttribute('data-cb-bit'), 10) || 0;
+      cb.checked = (savedMask & bit) !== 0;
+    });
     syncPublishedMask(modal);
     applyModeUi(modal);
-    var planEl = modal.querySelector('[data-cb-cfg-plan]');
-    if (planEl) planEl.value = '';
-    loadConfiguratorForModal(modal);
+    if (planEl) planEl.value = prefill.plan_slug || '';
+    if (advancedEl) advancedEl.open = !!prefill.advanced_open;
+    setProfileFormErrors(modal, Array.isArray(prefill.errors) ? prefill.errors : []);
+    updateProfileSummary(modal);
+    if (planEl && planEl.value) {
+      loadConfiguratorForModal(modal, { prefill: prefill.options || {} });
+    } else {
+      loadConfiguratorForModal(modal);
+    }
   }
 
   function primeProfileEditMode(modal, profileId) {
     var titleEl = modal.querySelector('[data-cb-modal-title]');
+    var subtitleEl = modal.querySelector('[data-cb-modal-subtitle]');
     var actionEl = modal.querySelector('[data-cb-form-action]');
     var idEl = modal.querySelector('[data-cb-form-id]');
     var submitEl = modal.querySelector('[data-cb-submit-label]');
     if (titleEl) titleEl.textContent = 'Edit profile #' + profileId;
+    if (subtitleEl) subtitleEl.textContent = 'Update the source profile definition. Existing customer pricing still follows the mapping and repricing rules.';
     if (submitEl) submitEl.textContent = 'Save profile';
     if (actionEl) actionEl.value = 'profile-save';
     if (idEl) { idEl.disabled = false; idEl.value = String(profileId); }
+    setProfileFormErrors(modal, []);
 
     ajax('GET', 'ajax-profile-edit-form', { id: profileId }).then(function (j) {
       if (j.error) { cbToast('Edit load failed: ' + j.error, 'bad'); return; }
@@ -672,6 +783,42 @@
     });
   }
 
+  function validateProfileForm(modal) {
+    var errors = [];
+    var nameEl = modal.querySelector('input[name="name"]');
+    var planEl = modal.querySelector('[data-cb-cfg-plan]');
+    var modeSel = modal.querySelector('[data-cb-profile-mode]');
+    var mode = modeSel ? modeSel.value : 'fixed_admin_profile';
+    var isFixed = (mode !== 'customer_configurable_product');
+    var state = cbCfgState.get(modal);
+
+    if (!nameEl || !String(nameEl.value || '').trim()) {
+      errors.push('Enter a display name for operators.');
+    }
+    if (!planEl || !String(planEl.value || '').trim()) {
+      errors.push('Choose a Contabo plan first.');
+    }
+    if (isFixed && state && state.cfg && Array.isArray(state.cfg.controls)) {
+      var missing = [];
+      state.cfg.controls.forEach(function (c, ci) {
+        if (c.optional) return;
+        var selectEl = modal.querySelector('select[data-cb-cfg-control-idx="' + ci + '"]');
+        if (!selectEl) {
+          missing.push(c.label);
+          return;
+        }
+        var opt = selectEl.options[selectEl.selectedIndex];
+        var label = opt ? String(opt.getAttribute('data-cb-opt-label') || '') : '';
+        if (!label || label === 'None') missing.push(c.label);
+      });
+      if (missing.length) {
+        errors.push('Fixed profile: select a value for every required option: ' + missing.join(', ') + '.');
+      }
+    }
+    setProfileFormErrors(modal, errors);
+    return errors;
+  }
+
   function wireConfiguratorForms() {
     $$('[data-cb-configurator-form]').forEach(function (form) {
       var modal = form.closest('.cb-modal');
@@ -682,6 +829,10 @@
 
       var debouncedLoad = debounce(function () { loadConfiguratorForModal(modal); }, 200);
       if (planEl) planEl.addEventListener('change', debouncedLoad);
+      if (planEl) planEl.addEventListener('change', function () {
+        setProfileFormErrors(modal, []);
+        updateProfileSummary(modal);
+      });
       if (periodEl) periodEl.addEventListener('change', function () {
         // Period change doesn't require a re-fetch — anchors are in the cfg
         // we already loaded. Just recompute.
@@ -695,7 +846,12 @@
       });
       // Mode toggle reshapes the form (fixed = pre-packaged, no exposure).
       var modeSel = modal.querySelector('[data-cb-profile-mode]');
-      if (modeSel) modeSel.addEventListener('change', function () { applyModeUi(modal); });
+      if (modeSel) modeSel.addEventListener('change', function () {
+        setProfileFormErrors(modal, []);
+        applyModeUi(modal);
+      });
+      var syncSel = modal.querySelector('select[name="sync_strategy"]');
+      if (syncSel) syncSel.addEventListener('change', function () { updateProfileSummary(modal); });
       if (resetBtn) {
         resetBtn.addEventListener('click', function (e) {
           e.preventDefault();
@@ -710,10 +866,26 @@
       }
       // On submit, force a final recalc so the JSON payload reflects the
       // current selections even if a change event was missed.
-      form.addEventListener('submit', function () {
+      form.addEventListener('submit', function (event) {
         if (cbCfgState.get(modal)) recalcCfg(modal);
+        if (validateProfileForm(modal).length) {
+          event.preventDefault();
+        }
       });
     });
+  }
+
+  function wireProfileFormState() {
+    var script = document.querySelector('[data-cb-profile-form-state]');
+    if (!script) return;
+    var modal = document.getElementById('cb-modal-profile-create');
+    if (!modal) return;
+    try {
+      primeProfileCreateMode(modal, JSON.parse(script.textContent || '{}'));
+      openModal('profile-create');
+    } catch (_e) {
+      primeProfileCreateMode(modal);
+    }
   }
 
   function escapeHtml(s) {
@@ -778,44 +950,51 @@
   function wireFxPreview() {
     if (!$('[data-cb-fx-preview]')) return;
     fetchFxOnce();
+    $$('[data-cb-action="fx-refresh"]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        fetchFxOnce();
+      });
+    });
     setInterval(fetchFxOnce, 60 * 1000);
   }
 
-  // ── test API connection ───────────────────────────────────────────────────
+  // ── test data source ──────────────────────────────────────────────────────
 
   function wireTestApi() {
-    $$('[data-cb-action="test-api-connection"]').forEach(function (btn) {
+    // data-cb-action="test-source" data-source-id=ID -> scrape provider probe
+    function setResult(el, tone, text) {
+      if (!el) return;
+      el.className = 'cb-inline-result cb-tone-' + tone;
+      el.textContent = text;
+    }
+    function describeSource(j) {
+      if (!j.ok) {
+        return 'Failed: ' + (j.error || j.note || 'no usable page') +
+          (j.connection ? ' (' + j.connection + ')' : '');
+      }
+      var cost = '$' + ((j.cost_micro || 0) / 1e6).toFixed(4);
+      return (j.sapper_present ? 'sapper blob found' : 'no sapper blob') +
+        ' · ' + (j.plan_count || 0) + ' plans · ' + (j.latency_ms || 0) + ' ms · ' + cost +
+        (j.served_by ? ' · served by ' + j.served_by : '') +
+        (j.note ? ' · ' + j.note : '');
+    }
+    $$('[data-cb-action="test-source"]').forEach(function (btn) {
       var result = btn.parentNode ? btn.parentNode.querySelector('[data-cb-result]') : null;
       btn.addEventListener('click', function (e) {
         e.preventDefault();
         btn.disabled = true;
         var origLabel = btn.textContent;
         btn.textContent = 'Testing…';
-        if (result) {
-          result.className = 'cb-inline-result cb-tone-muted';
-          result.textContent = 'Checking provider catalog API…';
-        }
-        ajax('POST', 'ajax-meta-probe', {}).then(function (j) {
+        setResult(result, 'muted', 'Fetching one page through the provider…');
+        ajax('POST', 'ajax-source-test', { source_id: btn.getAttribute('data-source-id') || '' }).then(function (j) {
           btn.disabled = false;
           btn.textContent = origLabel;
-          if (j.ok) {
-            if (result) {
-              result.className = 'cb-inline-result cb-tone-good';
-              result.textContent = 'API reachable · scraper ' + (j.scraper_version || '?') + ' · ' + (j.snapshot_at || '');
-            }
-          } else {
-            if (result) {
-              result.className = 'cb-inline-result cb-tone-bad';
-              result.textContent = 'API error: ' + (j.error || 'unknown');
-            }
-          }
+          setResult(result, j.ok ? 'good' : 'bad', describeSource(j));
         }).catch(function (err) {
           btn.disabled = false;
           btn.textContent = origLabel;
-          if (result) {
-            result.className = 'cb-inline-result cb-tone-bad';
-            result.textContent = 'API unreachable: ' + String(err);
-          }
+          setResult(result, 'bad', 'Source unreachable: ' + String(err));
         });
       });
     });
@@ -930,6 +1109,70 @@
     return String(s).replace(/["\\]/g, '\\$&');
   }
 
+  function parseJsonObject(raw) {
+    if (!raw) return {};
+    try {
+      var parsed = JSON.parse(String(raw));
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch (_err) {
+      return {};
+    }
+  }
+
+  function applySavedMarkupOverrides(scope, overrides) {
+    $$('[data-cb-markup-editor]', scope).forEach(function (editor) {
+      editor.hidden = true;
+    });
+    $$('[data-cb-markup-toggle]', scope).forEach(function (btn) {
+      btn.textContent = '+ Override';
+    });
+    $$('[data-cb-markup-strategy]', scope).forEach(function (sel) {
+      sel.value = 'inherit';
+    });
+    $$('[data-cb-markup-value]', scope).forEach(function (input) {
+      input.value = '';
+    });
+
+    Object.keys(overrides || {}).forEach(function (cycle) {
+      var rule = overrides[cycle] || {};
+      var editor = scope.querySelector('[data-cb-markup-editor="' + cssAttrEscape(cycle) + '"]');
+      var btn = scope.querySelector('[data-cb-markup-toggle="' + cssAttrEscape(cycle) + '"]');
+      var strategyEl = scope.querySelector('[data-cb-markup-strategy="' + cssAttrEscape(cycle) + '"]');
+      var valueEl = scope.querySelector('[data-cb-markup-value="' + cssAttrEscape(cycle) + '"]');
+      if (editor) editor.hidden = false;
+      if (btn) btn.textContent = '− Hide';
+      if (strategyEl && rule.strategy) strategyEl.value = String(rule.strategy);
+      if (valueEl && rule.value != null && rule.value !== '') valueEl.value = String(rule.value);
+    });
+  }
+
+  function applySavedMappingState(scope, state) {
+    state = state || {};
+    var catalogMask = parseInt(state.catalogMask || 0, 10) || 0;
+    var renewalMask = parseInt(state.renewalMask || 0, 10) || 0;
+
+    $$('[data-cb-cycle-bit-catalog]', scope).forEach(function (cb) {
+      var bit = parseInt(cb.getAttribute('data-cb-cycle-bit-catalog'), 10);
+      cb.checked = !cb.disabled && ((catalogMask & (1 << bit)) !== 0);
+    });
+    $$('[data-cb-cycle-bit-renewal]', scope).forEach(function (cb) {
+      var bit = parseInt(cb.getAttribute('data-cb-cycle-bit-renewal'), 10);
+      cb.checked = !cb.disabled && ((renewalMask & (1 << bit)) !== 0);
+    });
+
+    var roundingEl = scope.querySelector('[data-cb-rounding-mode]');
+    if (roundingEl && state.roundingMode) roundingEl.value = String(state.roundingMode);
+
+    var sourceOverridesInput = scope.querySelector('[data-cb-source-overrides-json]');
+    if (sourceOverridesInput) {
+      sourceOverridesInput.value = JSON.stringify(state.sourceOverrides || {});
+    }
+
+    applySavedMarkupOverrides(scope, state.markupOverrides || {});
+    refreshMarkupOverridesJson(scope);
+    refreshMappingMasks(scope);
+  }
+
   function refreshMappingPreview(scope, catalog, renewal) {
     var body = scope.querySelector('[data-cb-mapping-preview-body]');
     if (!body) return;
@@ -1015,7 +1258,8 @@
     });
   }
 
-  function loadMappingCycles(scope) {
+  function loadMappingCycles(scope, opts) {
+    opts = opts || {};
     var productEl = scope.querySelector('[data-cb-product-id]');
     var currencyEl = scope.querySelector('[data-cb-currency-id]');
     var loading = scope.querySelector('[data-cb-cycles-loading]');
@@ -1026,7 +1270,8 @@
         loading.hidden = false;
         loading.classList.remove('cb-tone-bad');
       }
-      return;
+      refreshMappingMasks(scope);
+      return Promise.resolve(false);
     }
     var profileEl = scope.querySelector('[data-cb-mapping-profile]');
     var params = { product_id: productId };
@@ -1039,24 +1284,70 @@
     }
     var respectDisabledEl = scope.querySelector('[data-cb-respect-disabled]');
     var respectDisabled = respectDisabledEl ? respectDisabledEl.checked : true;
-    ajax('GET', 'ajax-product-cycles', params).then(function (j) {
+    return ajax('GET', 'ajax-product-cycles', params).then(function (j) {
       if (j.error) {
         if (loading) {
           loading.textContent = 'Could not load: ' + j.error;
           loading.classList.add('cb-tone-bad');
         }
-        return;
+        return false;
       }
       if (loading) {
         loading.hidden = true;
       }
       renderCycleTableRows(scope, j.cycles || [], respectDisabled, j.source_eur || {});
-      refreshMappingMasks(scope);
+      if (opts.mappingState) {
+        applySavedMappingState(scope, opts.mappingState);
+      } else {
+        refreshMappingMasks(scope);
+      }
+      return true;
     }).catch(function (err) {
       if (loading) {
         loading.textContent = 'Network error: ' + String(err);
         loading.classList.add('cb-tone-bad');
       }
+      return false;
+    });
+  }
+
+  function wireSyncHistoryDateFilters() {
+    var table = $('[data-cb-table="sync-history"]');
+    var fromEl = $('[data-cb-date-from]');
+    var toEl = $('[data-cb-date-to]');
+    if (!table || !fromEl || !toEl) return;
+
+    var apply = function () {
+      var from = fromEl.value || '';
+      var to = toEl.value || '';
+      $$('tbody tr', table).forEach(function (tr) {
+        var started = String(tr.getAttribute('data-cb-started') || '').slice(0, 10);
+        var show = true;
+        if (from && started && started < from) show = false;
+        if (to && started && started > to) show = false;
+        tr.setAttribute('data-cb-date-pass', show ? '1' : '0');
+        applyCombinedFilters(tr);
+      });
+      refreshVisibleCount(table);
+    };
+
+    fromEl.addEventListener('change', apply);
+    toEl.addEventListener('change', apply);
+    apply();
+  }
+
+  function wireSkippedGroups() {
+    $$('[data-cb-toggle-group]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var group = btn.getAttribute('data-cb-toggle-group');
+        var body = document.querySelector('[data-cb-group-body="' + cssAttrEscape(group) + '"]');
+        if (!body) return;
+        var expanded = btn.getAttribute('aria-expanded') !== 'false';
+        body.hidden = expanded;
+        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        btn.textContent = expanded ? 'Expand' : 'Collapse';
+      });
     });
   }
 
@@ -1113,18 +1404,22 @@
           var row = btn.closest('[data-cb-mapping-row]');
           var catalogMask = row ? parseInt(row.getAttribute('data-cb-mapping-catalog-mask') || '0', 10) : 0;
           var renewalMask = row ? parseInt(row.getAttribute('data-cb-mapping-renewal-mask') || '0', 10) : 0;
-          $$('[data-cb-cycle-bit-catalog]', scope).forEach(function (cb) {
-            var bit = parseInt(cb.getAttribute('data-cb-cycle-bit-catalog'), 10);
-            cb.checked = !cb.disabled && ((catalogMask & (1 << bit)) !== 0);
-          });
-          $$('[data-cb-cycle-bit-renewal]', scope).forEach(function (cb) {
-            var bit = parseInt(cb.getAttribute('data-cb-cycle-bit-renewal'), 10);
-            cb.checked = !cb.disabled && ((renewalMask & (1 << bit)) !== 0);
-          });
+          var mappingState = {
+            catalogMask: catalogMask,
+            renewalMask: renewalMask,
+            roundingMode: row ? row.getAttribute('data-cb-mapping-rounding-mode') : '',
+            markupOverrides: parseJsonObject(row ? row.getAttribute('data-cb-mapping-markup-overrides-json') : ''),
+            sourceOverrides: parseJsonObject(row ? row.getAttribute('data-cb-mapping-source-overrides-json') : '')
+          };
+          var respectDisabledEl = scope.querySelector('[data-cb-respect-disabled]');
+          var overwriteFreeEl = scope.querySelector('[data-cb-overwrite-free]');
+          var syncSetupFeesEl = scope.querySelector('[data-cb-sync-setup-fees]');
+          if (respectDisabledEl && row) respectDisabledEl.checked = row.getAttribute('data-cb-mapping-respect-disabled') !== '0';
+          if (overwriteFreeEl && row) overwriteFreeEl.checked = row.getAttribute('data-cb-mapping-overwrite-free') === '1';
+          if (syncSetupFeesEl && row) syncSetupFeesEl.checked = row.getAttribute('data-cb-mapping-sync-setup-fees') === '1';
           // Load the latest catalog prices so we can show the actual current_price
-          // alongside the loaded masks.
-          loadMappingCycles(scope);
-          refreshMappingMasks(scope);
+          // alongside the saved mapping state.
+          loadMappingCycles(scope, { mappingState: mappingState });
         });
       });
 
@@ -1156,9 +1451,6 @@
       } else if (e.key === 'n') {
         var n = $('[data-cb-open-modal="profile-create"]');
         if (n) { e.preventDefault(); n.click(); }
-      } else if (e.key === 'r') {
-        var r = $('[data-cb-action="test-api-connection"]');
-        if (r) { e.preventDefault(); r.click(); }
       }
     });
   }
@@ -1174,10 +1466,13 @@
     wireModals();
     wireQuotePreview();
     wireConfiguratorForms();
+    wireProfileFormState();
     wireFxPreview();
     wireTestApi();
     wireSparklines();
     wireMappingForm();
+    wireSyncHistoryDateFilters();
+    wireSkippedGroups();
     wireShortcuts();
   }
 

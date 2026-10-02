@@ -12,7 +12,7 @@ use Illuminate\Database\Schema\Blueprint;
  */
 class Installer
 {
-    public const SCHEMA_VERSION = 14;
+    public const SCHEMA_VERSION = 16;
 
     /** Tables created on activation. Order matters for FK references. */
     public function install(): void
@@ -2022,6 +2022,211 @@ class Installer
             ['key' => 'schema_version'],
             ['value' => '5', 'updated_at' => $now]
         );
+    }
+
+    /**
+     * Schema v15 — WHMCS-native catalog scraping: provider source registry,
+     * scrape runs + per-fetch attempts, decision records, and a stored
+     * envelope on catalog versions. Idempotent (hasTable/hasColumn guarded).
+     */
+    public function migrateTo15(): void
+    {
+        $schema = Capsule::schema();
+
+        if (!$schema->hasTable('mod_contabo_scrape_sources')) {
+            $schema->create('mod_contabo_scrape_sources', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('source_id', 40)->unique('contabo_scrape_source_uq');
+                $t->string('display_name', 80);
+                $t->tinyInteger('enabled')->default(0);
+                $t->string('base_url', 255)->nullable();
+                $t->text('api_key_enc')->nullable();
+                $t->integer('priority')->nullable();
+                $t->bigInteger('monthly_budget_micro')->default(500000);
+                $t->bigInteger('per_run_cap_micro')->default(50000);
+                $t->text('options_json')->nullable();
+                $t->integer('consecutive_failures')->default(0);
+                $t->timestamp('last_ok_at')->nullable();
+                $t->timestamp('last_fail_at')->nullable();
+                $t->string('last_error', 255)->nullable();
+                $t->timestamp('created_at')->nullable();
+                $t->timestamp('updated_at')->nullable();
+            });
+        }
+
+        if (!$schema->hasTable('mod_contabo_scrape_runs')) {
+            $schema->create('mod_contabo_scrape_runs', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('trigger', 16);
+                $t->string('state', 24);
+                $t->timestamp('started_at')->nullable();
+                $t->timestamp('finished_at')->nullable();
+                $t->integer('admin_id')->nullable();
+                $t->tinyInteger('dry_run')->default(0);
+                $t->integer('plan_count')->default(0);
+                $t->text('families_json')->nullable();
+                $t->bigInteger('total_cost_micro')->default(0);
+                $t->longText('gates_json')->nullable();
+                $t->bigInteger('decision_id')->nullable();
+                $t->string('catalog_version', 120)->nullable();
+                $t->longText('envelope_json')->nullable();
+                $t->char('envelope_hash', 64)->nullable();
+                $t->text('error')->nullable();
+                $t->index(['state', 'started_at'], 'contabo_scrape_run_state_ix');
+            });
+        }
+
+        if (!$schema->hasTable('mod_contabo_scrape_run_attempts')) {
+            $schema->create('mod_contabo_scrape_run_attempts', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->bigInteger('run_id');
+                $t->string('family', 20);
+                $t->string('url', 255);
+                $t->string('source_id', 40);
+                $t->string('served_by', 80)->nullable();
+                $t->integer('http_status')->nullable();
+                $t->tinyInteger('ok');
+                $t->tinyInteger('sapper_present');
+                $t->string('strategy', 24)->nullable();
+                $t->integer('plan_count')->default(0);
+                $t->bigInteger('cost_micro')->default(0);
+                $t->integer('latency_ms');
+                $t->char('html_sha256', 64)->nullable();
+                $t->integer('html_bytes')->default(0);
+                $t->string('error', 500)->nullable();
+                $t->string('final_url', 255)->nullable();
+                $t->timestamp('created_at')->nullable();
+                $t->index('run_id', 'contabo_scrape_attempt_run_ix');
+                $t->index(['source_id', 'created_at'], 'contabo_scrape_attempt_src_ix');
+            });
+        }
+
+        if ($schema->hasTable('mod_contabo_scrape_run_attempts')
+            && !$schema->hasColumn('mod_contabo_scrape_run_attempts', 'final_url')
+        ) {
+            $schema->table('mod_contabo_scrape_run_attempts', static function (Blueprint $t): void {
+                $t->string('final_url', 255)->nullable();
+            });
+        }
+
+        if (!$schema->hasTable('mod_contabo_decisions')) {
+            $schema->create('mod_contabo_decisions', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->bigInteger('run_id');
+                $t->string('outcome', 24);
+                $t->longText('rules_json');
+                $t->longText('jev_json')->nullable();
+                $t->decimal('threshold', 5, 4)->nullable();
+                $t->string('decided_by', 16);
+                $t->integer('admin_id')->nullable();
+                $t->timestamp('created_at')->nullable();
+                $t->index('run_id', 'contabo_decision_run_ix');
+            });
+        }
+
+        if ($schema->hasTable('mod_contabo_catalog_versions')
+            && !$schema->hasColumn('mod_contabo_catalog_versions', 'envelope_json')
+        ) {
+            $schema->table('mod_contabo_catalog_versions', static function (Blueprint $t): void {
+                $t->longText('envelope_json')->nullable();
+            });
+        }
+
+        $now = date('Y-m-d H:i:s');
+        // Spike-0 2026-10-01: treg_anyapi is the primary S1 source (order 1);
+        // treg_litescrape is a disabled extra; tinyfish_fetch cannot carry the
+        // __SAPPER__ blob (cross-check only); tinyfish_agent is manual-only.
+        $seeds = [
+            'treg_anyapi' => ['Treg anyapi.web.scrape', 1, 1, null],
+            'alterlab' => ['AlterLab (js)', 0, null, null],
+            'treg_litescrape' => ['Treg litescrape (extra)', 0, null, [
+                'endpoint_id' => 'litescrape.web.fetch.post',
+                'query' => ['timeout' => 90],
+                'body_params' => ['respond_with' => 'html', 'engine' => 'browser', 'page_timeout' => 60],
+                'prior_cost_micro' => 150,
+            ]],
+            'tinyfish_fetch' => ['TinyFish Fetch (cross-check)', 0, null, null],
+            'tinyfish_agent' => ['TinyFish Agent (manual)', 0, null, null],
+        ];
+        foreach ($seeds as $sourceId => $def) {
+            if (Capsule::table('mod_contabo_scrape_sources')->where('source_id', $sourceId)->exists()) {
+                continue;
+            }
+            Capsule::table('mod_contabo_scrape_sources')->insert([
+                'source_id' => $sourceId,
+                'display_name' => $def[0],
+                'enabled' => $def[1],
+                'priority' => $def[2],
+                'options_json' => $def[3] === null ? null : json_encode($def[3], JSON_UNESCAPED_SLASHES),
+                'monthly_budget_micro' => 500000,
+                'per_run_cap_micro' => 50000,
+                'consecutive_failures' => 0,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+    }
+
+    /**
+     * Schema v16 — self-learning family registry. One row per upstream
+     * category id (the stable key), written only by FamilyRegistry from what
+     * the site itself reports each run. Attempts also record the nav titles
+     * the page rendered. Idempotent (hasTable/hasColumn guarded).
+     */
+    public function migrateTo16(): void
+    {
+        $schema = Capsule::schema();
+
+        if (!$schema->hasTable('mod_contabo_scrape_families')) {
+            $schema->create('mod_contabo_scrape_families', static function (Blueprint $t): void {
+                $t->bigIncrements('id');
+                $t->string('category_id', 40)->unique('contabo_scrape_family_cat_uq');
+                $t->string('slug', 80);
+                $t->string('title', 160);
+                $t->string('nav_title', 160)->nullable();
+                $t->string('nav_href', 255)->nullable();
+                $t->integer('nav_position')->nullable();
+                $t->string('status', 16)->default('new');
+                $t->timestamp('first_seen_at')->nullable();
+                $t->timestamp('last_seen_at')->nullable();
+                $t->integer('last_plan_count')->default(0);
+                $t->integer('typical_plan_count')->default(0);
+                $t->text('plan_count_history_json')->nullable();
+                $t->text('title_history_json')->nullable();
+                $t->text('plan_slugs_json')->nullable();
+                $t->string('sample_product_url', 255)->nullable();
+                $t->tinyInteger('approved')->default(0);
+                $t->tinyInteger('admin_hidden')->default(0);
+                $t->string('display_name', 160)->nullable();
+                $t->string('successor_of', 40)->nullable();
+                $t->bigInteger('last_run_id')->nullable();
+                $t->text('notes')->nullable();
+                $t->timestamp('created_at')->nullable();
+                $t->timestamp('updated_at')->nullable();
+                $t->index(['status', 'nav_position'], 'contabo_scrape_family_status_ix');
+            });
+        }
+
+        if ($schema->hasTable('mod_contabo_scrape_run_attempts')
+            && !$schema->hasColumn('mod_contabo_scrape_run_attempts', 'nav_titles_json')
+        ) {
+            $schema->table('mod_contabo_scrape_run_attempts', static function (Blueprint $t): void {
+                $t->text('nav_titles_json')->nullable();
+            });
+        }
+
+        // plan_urls_json is an explicit override only from v16 on: an empty
+        // list means "discover from the registry". The old built-in default
+        // (16 legacy plan URLs) is cleared so it can never pin a stale list.
+        if (Capsule::table('mod_contabo_settings')->where('key', 'scrape.plan_urls_json')->exists()) {
+            $v = (string) Capsule::table('mod_contabo_settings')->where('key', 'scrape.plan_urls_json')->value('value');
+            $d = json_decode($v, true);
+            $legacy = is_array($d) && count($d) === 16 && strpos((string) ($d[0] ?? ''), 'https://contabo.com/en/vps/cloud-vps-10/') === 0;
+            if ($legacy) {
+                Capsule::table('mod_contabo_settings')->where('key', 'scrape.plan_urls_json')
+                    ->update(['value' => '[]', 'updated_at' => date('Y-m-d H:i:s')]);
+            }
+        }
     }
 
     /**

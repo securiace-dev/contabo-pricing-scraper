@@ -12,6 +12,20 @@ final class PaidOrderSnapshotServiceTest extends TestCase
     protected function setUp(): void
     {
         Capsule::reset();
+        Capsule::$columns['mod_contabo_catalog_versions'] = [
+            'catalog_version', 'state', 'payload_hash', 'source_observed_at',
+        ];
+        Capsule::$columns['mod_contabo_catalog_items'] = [
+            'catalog_version_id', 'machine_id', 'provider_id', 'item_type',
+            'availability_state', 'payload_hash', 'payload_json',
+        ];
+        Capsule::$columns['mod_contabo_mapping_publications'] = [
+            'mapping_version', 'product_id', 'catalog_version_id', 'provider_sku_id',
+            'state', 'payload_hash', 'payload_json',
+        ];
+        Capsule::$columns['mod_contabo_publication_approvals'] = [
+            'publication_type', 'publication_version', 'decision', 'admin_id', 'preview_hash',
+        ];
         $this->seed();
     }
 
@@ -88,6 +102,20 @@ final class PaidOrderSnapshotServiceTest extends TestCase
         $this->assertSame('additional_ipv4', $byDimension['Additional IPv4']['machine_code']);
         $this->assertSame(3, $byDimension['Additional IPv4']['quantity']);
         $this->assertSame(0, $byDimension['Additional IPv4']['whmcs_sub_id']);
+    }
+
+    public function testCompatibilityModeRejectsDraftCreationBeforeSnapshotWrite(): void
+    {
+        unset(
+            Capsule::$columns['mod_contabo_catalog_versions'],
+            Capsule::$columns['mod_contabo_catalog_items'],
+            Capsule::$columns['mod_contabo_mapping_publications'],
+            Capsule::$columns['mod_contabo_publication_approvals']
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Publication/catalog features are disabled');
+        (new PaidOrderSnapshotService())->createDraft(10, 20, 30);
     }
 
     private function seed(): void

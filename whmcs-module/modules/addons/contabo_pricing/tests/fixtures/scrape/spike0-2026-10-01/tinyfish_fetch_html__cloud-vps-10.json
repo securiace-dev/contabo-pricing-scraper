@@ -1,0 +1,18 @@
+{
+    "provider": "tinyfish_fetch:html",
+    "url": "https://contabo.com/en/vps/cloud-vps-10/",
+    "http_status": 200,
+    "ok": true,
+    "sapper_present": false,
+    "decoder_ok": false,
+    "plan_count": 0,
+    "family_plan_count": "",
+    "strategy": "dom_probe",
+    "latency_ms": 4894,
+    "served_by": null,
+    "cost_micro": 0,
+    "body_bytes": 2024,
+    "sha256": "51b8feeab1d5245a533790fb5a72085ad389d3a5f355e5e7ba3133edbd23ce6e",
+    "error": null,
+    "recorded_at": "2026-10-01T05:46:12+00:00"
+}

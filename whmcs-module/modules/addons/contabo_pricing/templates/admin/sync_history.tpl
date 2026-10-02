@@ -38,13 +38,20 @@ $cb_duration = static function ($a, $b) {
     if ($d < 3600) { return floor($d / 60) . 'm ' . ($d % 60) . 's'; }
     return floor($d / 3600) . 'h ' . floor(($d % 3600) / 60) . 'm';
 };
+
+/** Catalog source version recorded by the run (local scrape pipeline). */
+$cb_source_version = static function ($summary) {
+    return is_array($summary) && !empty($summary['catalog_scraper_version'])
+        ? (string) $summary['catalog_scraper_version']
+        : '';
+};
 ?>
 
 <!-- ───────────────────── Header ───────────────────── -->
 <div class="cb-card">
-  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Sync history</h2>
+  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Sync runs</h2>
   <p class="cb-card-sub" data-cb-u="u-5074b45d61">
-    Recent automated and manual sync runs against the Contabo pricing API. Click a row for the full summary JSON.
+    Recent automated and manual sync runs against the addon-native catalog. Filter by status, date, or search terms to review operational behaviour.
   </p>
 </div>
 
@@ -124,6 +131,7 @@ $cb_duration = static function ($a, $b) {
         if (is_array($cb_summary_decoded) && isset($cb_summary_decoded['snapshot_generated_at'])) {
             $cb_snap_at = (string) $cb_summary_decoded['snapshot_generated_at'];
         }
+        $cb_api_used = $cb_source_version($cb_summary_decoded);
         $cb_dur = $cb_duration($cb_started, $cb_finished);
       ?>
         <tr data-cb-log-row
@@ -177,8 +185,19 @@ $cb_duration = static function ($a, $b) {
             <?php if ($cb_error_msg !== ''): ?>
               <code class="mono" data-cb-u="u-21e471ac42"
                     title="<?= $esc($cb_error_msg) ?>"><?= $esc($cb_trunc($cb_error_msg, 60)) ?></code>
+              <?php if ($cb_api_used !== ''): ?>
+                <div class="cb-card-sub" data-cb-u="u-9f803cd406">
+                  catalog source <code class="mono"><?= $esc($cb_api_used) ?></code>
+                </div>
+              <?php endif; ?>
             <?php else: ?>
-              <span data-cb-u="u-eac7694072">—</span>
+              <?php if ($cb_api_used !== ''): ?>
+                <div class="cb-card-sub" data-cb-u="u-9f803cd406">
+                  catalog source <code class="mono"><?= $esc($cb_api_used) ?></code>
+                </div>
+              <?php else: ?>
+                <span data-cb-u="u-eac7694072">—</span>
+              <?php endif; ?>
             <?php endif; ?>
           </td>
         </tr>

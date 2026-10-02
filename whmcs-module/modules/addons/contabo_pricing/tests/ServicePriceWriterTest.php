@@ -10,11 +10,9 @@ use WHMCS\Database\Capsule;
 require_once __DIR__ . '/_localapi_stub.php';
 
 /**
- * 0.5.1 parity — ServicePriceWriter LocalAPI-vs-raw-column distinction.
- *
- * The LocalAPI UpdateClientProduct payload MUST use `recurringamount` (the API
- * field name — correct). The raw Capsule fallback MUST write `amount` (the real
- * column). Conflating the two is the exact trap a sed-style edit would fall into.
+ * ServicePriceWriter: LocalAPI-only, fail-closed (H2). The UpdateClientProduct
+ * payload uses the `recurringamount` API field; any non-success result throws
+ * and NEVER falls back to a raw tblhosting write.
  */
 final class ServicePriceWriterTest extends TestCase
 {
@@ -59,25 +57,70 @@ final class ServicePriceWriterTest extends TestCase
         $this->assertSame([], array_values($tblhosting));
     }
 
-    public function testRawFallbackWritesAmountColumn(): void
+    private function tblhostingUpdates(): array
     {
-        // LocalAPI returns non-success → fall back to the raw update, which must
-        // write the REAL `amount` column, NOT `recurringamount`.
-        $GLOBALS['__cp_localapi_response'] = ['result' => 'error', 'message' => 'boom'];
-
-        $via = (new ServicePriceWriter(true))->writeViaLocalApiOrFallback(7, 50.0);
-
-        $this->assertStringContainsString('raw_fallback', $via['via']);
-        // The LocalAPI attempt still used the recurringamount API field.
-        $this->assertArrayHasKey('recurringamount', $GLOBALS['__cp_localapi_calls'][0]['values']);
-
-        // The raw fallback wrote `amount` (and never recurringamount).
-        $updates = array_values(array_filter(Capsule::$calls, static function ($c) {
+        return array_values(array_filter(Capsule::$calls, static function ($c) {
             return ($c['table'] ?? '') === 'tblhosting' && isset($c['update']);
         }));
-        $this->assertCount(1, $updates);
-        $this->assertArrayHasKey('amount', $updates[0]['update']);
-        $this->assertArrayNotHasKey('recurringamount', $updates[0]['update']);
-        $this->assertSame(50.0, $updates[0]['update']['amount']);
+    }
+
+    public function testNonSuccessFailsClosedWithoutRawWrite(): void
+    {
+        $GLOBALS['__cp_localapi_response'] = ['result' => 'error', 'message' => 'boom'];
+        try {
+            (new ServicePriceWriter(true))->writeViaLocalApiOrFallback(7, 50.0);
+            $this->fail('expected RuntimeException');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('boom', $e->getMessage());
+        }
+        $this->assertSame([], $this->tblhostingUpdates());
+    }
+
+    public function testMissingResultKeyIsFailure(): void
+    {
+        $GLOBALS['__cp_localapi_response'] = ['message' => 'weird'];
+        $this->expectException(\RuntimeException::class);
+        try {
+            (new ServicePriceWriter(true))->writeViaLocalApiOrFallback(7, 50.0);
+        } finally {
+            $this->assertSame([], $this->tblhostingUpdates());
+        }
+    }
+
+    public function testNonArrayLocalApiResponseFailsClosed(): void
+    {
+        $GLOBALS['__cp_localapi_response'] = 'not-an-array';
+        $this->expectException(\RuntimeException::class);
+        try {
+            (new ServicePriceWriter(true))->writeViaLocalApiOrFallback(7, 50.0);
+        } finally {
+            $this->assertSame([], $this->tblhostingUpdates());
+        }
+    }
+
+    public function testFailureInsideUpdateWritesNoActionLedgerRow(): void
+    {
+        $GLOBALS['__cp_localapi_response'] = ['result' => 'error', 'message' => 'denied'];
+        try {
+            (new ServicePriceWriter(true))->updateRecurringAmount(7, 50.0, 'policy', 1);
+            $this->fail('expected RuntimeException');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('denied', $e->getMessage());
+        }
+        $this->assertSame([], Capsule::$inserts);
+        $this->assertSame([], $this->tblhostingUpdates());
+    }
+
+    public function testExactWireStringOfWrittenPrice(): void
+    {
+        // Mutation survivor: pin number_format(..., 4, '.', '') — rounding,
+        // 4 decimals, '.' decimal point, no thousands separator.
+        $GLOBALS['__cp_localapi_response'] = ['result' => 'success'];
+        $w = new ServicePriceWriter(true);
+        $w->writeViaLocalApiOrFallback(7, 12345.678949);
+        $w->writeViaLocalApiOrFallback(7, 0.5);
+        $this->assertSame('12345.6789', $GLOBALS['__cp_localapi_calls'][0]['values']['recurringamount']);
+        $this->assertSame('0.5000', $GLOBALS['__cp_localapi_calls'][1]['values']['recurringamount']);
+        $this->assertTrue($GLOBALS['__cp_localapi_calls'][1]['values']['noemail']);
     }
 }

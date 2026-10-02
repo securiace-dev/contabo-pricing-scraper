@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace ContaboPricing\Tests;
 
-use ContaboPricing\ApiClient;
 use ContaboPricing\CatalogAuditLog;
 use ContaboPricing\CycleSet;
 use ContaboPricing\ProfileManager;
@@ -233,11 +232,10 @@ final class PerCycleSourcePricingTest extends TestCase
     private function makeEngine(): SyncEngine
     {
         $settings = new Settings(
-            'http://localhost:8080/api/v1', '', 'manual', 'INR',
+            'manual', 'INR',
             true, 0.0, 365, ''
         );
-        $api = new class extends ApiClient {
-            public function __construct() {}
+        $api = new class extends StubPlanSource {
         };
         $profileMgr = new class($settings) extends ProfileManager {
             public function listProfiles(bool $activeOnly = true, bool $includeTrashed = false): array { return []; }

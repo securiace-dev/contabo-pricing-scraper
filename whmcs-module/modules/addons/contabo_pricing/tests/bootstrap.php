@@ -9,14 +9,27 @@ if (!defined('WHMCS')) {
 if (!function_exists('logActivity')) {
     function logActivity(string $message): void
     {
-        // no-op in tests
+        $GLOBALS['contabo_pricing_test_activity_log'][] = $message;
     }
 }
 
 if (!function_exists('sendAdminNotification')) {
     function sendAdminNotification(...$_args): void
     {
-        // no-op in tests
+        $GLOBALS['contabo_pricing_test_notifications'][] = $_args;
+    }
+}
+
+if (!function_exists('add_hook')) {
+    function add_hook(string $hookPoint, int $priority, callable $callback): void
+    {
+        if (!isset($GLOBALS['contabo_pricing_test_hooks'][$hookPoint])) {
+            $GLOBALS['contabo_pricing_test_hooks'][$hookPoint] = [];
+        }
+        $GLOBALS['contabo_pricing_test_hooks'][$hookPoint][] = [
+            'priority' => $priority,
+            'callback' => $callback,
+        ];
     }
 }
 
@@ -54,6 +67,11 @@ if (!function_exists('generate_token')) {
 if (!function_exists('check_token')) {
     function check_token(string $_mode = 'POST'): bool
     {
+        // Tests flip this global to simulate WHMCS rejecting a CSRF token
+        // (the real helper throws a ProgrammerException).
+        if (!empty($GLOBALS['__cb_token_fail'])) {
+            throw new \RuntimeException('Invalid CSRF token');
+        }
         return true;
     }
 }

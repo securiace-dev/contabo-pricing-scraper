@@ -8,8 +8,6 @@ on:
       - 'scripts/extract-changelog-section.sh'
       - 'scripts/inspect-github-release.sh'
       - 'scripts/check-workflow-trust.rb'
-      - 'scripts/resolve-scraper-release.sh'
-      - 'scripts/test-resolve-scraper-release.sh'
       - 'scripts/test-workflow-trust-contract.sh'
       - 'scripts/test-whmcs-release-contract.sh'
       - '.github/actionlint.yaml'
@@ -22,8 +20,6 @@ on:
       - 'scripts/extract-changelog-section.sh'
       - 'scripts/inspect-github-release.sh'
       - 'scripts/check-workflow-trust.rb'
-      - 'scripts/resolve-scraper-release.sh'
-      - 'scripts/test-resolve-scraper-release.sh'
       - 'scripts/test-workflow-trust-contract.sh'
       - 'scripts/test-whmcs-release-contract.sh'
       - '.github/actionlint.yaml'
@@ -75,21 +71,14 @@ jobs:
             scripts/package-whmcs-suite.sh \
             scripts/extract-changelog-section.sh \
             scripts/inspect-github-release.sh \
-            scripts/resolve-scraper-release.sh \
-            scripts/test-resolve-scraper-release.sh \
             scripts/test-workflow-trust-contract.sh \
             scripts/test-whmcs-release-contract.sh
           shellcheck --severity=style \
             scripts/package-whmcs-suite.sh \
             scripts/extract-changelog-section.sh \
             scripts/inspect-github-release.sh \
-            scripts/resolve-scraper-release.sh \
-            scripts/test-resolve-scraper-release.sh \
             scripts/test-workflow-trust-contract.sh \
             scripts/test-whmcs-release-contract.sh
 
       - name: Validate changelog and package contracts
         run: bash scripts/test-whmcs-release-contract.sh
-
-      - name: Validate scraper release selection
-        run: bash scripts/test-resolve-scraper-release.sh

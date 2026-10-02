@@ -7,7 +7,7 @@ use WHMCS\Database\Capsule;
 
 /**
  * Fail-closed validation for VPS products immediately before WHMCS creates an
- * order. The guard never calls the Rust catalog API or Contabo: checkout is
+ * order. The guard never calls any catalog service or Contabo: checkout is
  * validated exclusively against the last approved, locally published contract.
  */
 final class CheckoutGuard
@@ -61,6 +61,7 @@ final class CheckoutGuard
      */
     private function assertProductContract(int $productId, array $cartProduct): void
     {
+        SchemaHealth::requirePublicationSupport();
         $mappingObject = Capsule::table('mod_contabo_mapping')
             ->where('product_id', $productId)
             ->where('active', 1)

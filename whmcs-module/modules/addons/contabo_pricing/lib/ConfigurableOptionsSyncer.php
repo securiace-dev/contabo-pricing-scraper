@@ -85,7 +85,7 @@ final class ConfigurableOptionsSyncer
 
         $group = $this->adapter->upsertGroup(
             $groupName,
-            'Contabo configurable options (profile #' . $profileId . ')'
+            'Configurable options (profile #' . $profileId . ')'
         );
         $auditCount += $this->audit->observe(
             $profileId,
@@ -279,7 +279,7 @@ final class ConfigurableOptionsSyncer
 
         $summary = ['created' => 0, 'updated' => 0, 'noop' => 0, 'skipped' => 0, 'drift_skipped' => 0];
 
-        $group   = $this->adapter->upsertGroup($groupName, 'Contabo configurable options (profile #' . $profileId . ')');
+        $group   = $this->adapter->upsertGroup($groupName, 'Configurable options (profile #' . $profileId . ')');
         $groupId = (int) ($group['id'] ?? 0);
         $this->links->upsertGroupLink($profileId, $productId, $groupKey, $groupId > 0 ? $groupId : null);
         if ($groupId > 0) {

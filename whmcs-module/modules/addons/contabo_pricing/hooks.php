@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-use ContaboPricing\ApiClient;
+use ContaboPricing\PlanSourceFactory;
 use ContaboPricing\AuditLog;
 use ContaboPricing\ProfileManager;
 use ContaboPricing\Settings;
@@ -48,6 +48,51 @@ function contabo_pricing_loadModuleVars(): array
 }
 
 /**
+ * Native catalog scrape. Runs BEFORE the price sync (priority 5 < 10) so a
+ * freshly imported catalog is what the sync sees. Does nothing unless
+ * scrape.enabled=1; ScrapeRunService enforces the lock, budgets and gates,
+ * and cron never runs manual-only sources.
+ */
+add_hook('DailyCronJob', 5, static function (): void {
+    try {
+        if (!class_exists('\\ContaboPricing\\Scrape\\ScrapeRunService')) {
+            return;
+        }
+        $scrapeSettings = new \ContaboPricing\Scrape\ScrapeSettings();
+        if (!$scrapeSettings->enabled()) {
+            return;
+        }
+        (new \ContaboPricing\Scrape\ScrapeRunService($scrapeSettings))->run('cron');
+    } catch (\Throwable $e) {
+        logActivity('Contabo Pricing scrape cron failed: ' . $e->getMessage());
+    }
+});
+
+/**
+ * @param array<string,mixed> $syncSummary
+ * @param array<string,mixed> $observeSummary
+ * @param array<string,mixed> $context
+ */
+function contabo_pricing_sendDailyDigest(array $syncSummary, array $observeSummary, array $context = []): void
+{
+    $digest = (new \ContaboPricing\DailyOperationsDigestBuilder())->build($syncSummary, $observeSummary, $context);
+    if (!empty($digest['should_send']) && function_exists('sendAdminNotification')) {
+        sendAdminNotification('system', (string) $digest['subject'], (string) $digest['message']);
+    }
+}
+
+function contabo_pricing_sendCronFailureAlert(string $message): void
+{
+    if (function_exists('sendAdminNotification')) {
+        sendAdminNotification(
+            'system',
+            'Contabo Pricing daily digest [failed]',
+            "Unified daily Contabo operations digest\nOverall status: failed\n\nFailures and degraded behavior\n" . $message
+        );
+    }
+}
+
+/**
  * Runs once per WHMCS daily cron pass. Triggers a sync if the addon has been
  * active long enough since the last run. Idempotent — SyncEngine short-circuits
  * when /meta reports the same snapshot as the previous successful run.
@@ -60,27 +105,31 @@ add_hook('DailyCronJob', 10, static function (): void {
         $settings = Settings::fromVars($vars);
         $engine = new SyncEngine(
             $settings,
-            new ApiClient($settings),
+            PlanSourceFactory::fromSettings($settings),
             new ProfileManager($settings),
         );
 
         $summary = $engine->run('cron');
-
-        // Notify admin only on changes / failures, never on 'no-change'.
-        if (in_array($summary['status'] ?? '', ['succeeded', 'failed'], true)) {
-            $msg  = "Contabo Pricing sync ({$summary['status']}): ";
-            $msg .= "profiles checked {$summary['profiles_checked']}, changed {$summary['profiles_changed']}, ";
-            $msg .= "products updated {$summary['products_updated']}.";
-            if (!empty($summary['errors'])) {
-                $msg .= "\n\nErrors:\n" . implode("\n", array_map('strval', $summary['errors']));
-            }
-            sendAdminNotification('system', 'Contabo Pricing sync', $msg);
-        }
+        $observeSummary = class_exists('\\ContaboPricing\\CronDriver')
+            ? (new \ContaboPricing\CronDriver())->runObserveSweep()
+            : [
+                'status' => 'warning',
+                'started_at' => date('Y-m-d H:i:s'),
+                'finished_at' => date('Y-m-d H:i:s'),
+                'candidate_mapped_services' => 0,
+                'renewal_evaluation_mode' => 'cron_driver_missing',
+                'renewal_evaluation_message' => 'CronDriver is not deployed, so the repricing observation block is unavailable.',
+                'scheduled_changes' => [],
+                'errors' => ['CronDriver class unavailable during daily digest run.'],
+                'notes' => [],
+            ];
+        contabo_pricing_sendDailyDigest($summary, is_array($observeSummary) ? $observeSummary : []);
 
         // Trim audit log
         (new AuditLog())->prune($settings->logRetentionDays);
     } catch (\Throwable $e) {
         logActivity('Contabo Pricing daily cron failed: ' . $e->getMessage());
+        contabo_pricing_sendCronFailureAlert('Daily cron hook failed before the digest completed: ' . $e->getMessage());
     }
 });
 
@@ -90,9 +139,9 @@ add_hook('DailyCronJob', 10, static function (): void {
 // is NOT registered here; that's Phase B work (see harmonic-popping-hollerith.md
 // deliverable 12). We register:
 //
-//   - DailyCronJob (priority 10, lower than the SyncEngine cron above) → walks
-//     mapped services, emits read-only decisions via CronDriver, scans
-//     scheduled changes, prunes old audit rows. NEVER writes tblhosting.
+//   - DailyCronJob (priority 10) → runs the sync, appends the CronDriver
+//     observation/scheduled-change summary, and sends one unified admin digest.
+//     The repricing portion remains observational and NEVER writes tblhosting.
 //   - InvoiceCreation / InvoiceCreated (priority 99) → watchdogs that compare
 //     freshly generated invoice line amounts to the latest applied decision
 //     and log any mismatch. They MUST NOT mutate the invoice; that's enforced
@@ -105,16 +154,6 @@ add_hook('DailyCronJob', 10, static function (): void {
 // All registrations are guarded by class_exists() so a partial deployment
 // (e.g. Agent C's Watchdog not yet shipped) degrades gracefully instead of
 // fatalling the cron.
-
-add_hook('DailyCronJob', 20, static function (): void {
-    try {
-        if (class_exists('\\ContaboPricing\\CronDriver')) {
-            (new \ContaboPricing\CronDriver())->runObserveSweep();
-        }
-    } catch (\Throwable $e) {
-        logActivity('Contabo Pricing CronDriver hook failed: ' . $e->getMessage());
-    }
-});
 
 add_hook('InvoiceCreation', 99, static function ($vars): void {
     try {

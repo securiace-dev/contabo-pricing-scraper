@@ -217,8 +217,8 @@ final class MigrationV5Test extends TestCase
             ->where('key', 'schema_version')
             ->value('value');
 
-        $this->assertSame(14, $recorded, 'upgrade() must record schema_version=14 (full chain through migrateTo14)');
-        $this->assertSame(14, Installer::SCHEMA_VERSION, 'SCHEMA_VERSION constant must be 14');
+        $this->assertSame(16, $recorded, "upgrade() must record schema_version=16 (full chain through migrateTo16)");
+        $this->assertSame(16, Installer::SCHEMA_VERSION, "SCHEMA_VERSION constant must be 16");
         $this->assertSame(
             '600',
             (string) Capsule::table('mod_securiacevps_schema')

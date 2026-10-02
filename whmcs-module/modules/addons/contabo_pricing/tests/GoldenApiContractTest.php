@@ -15,6 +15,13 @@ final class GoldenApiContractTest extends TestCase
     protected function setUp(): void
     {
         Capsule::reset();
+        Capsule::$columns['mod_contabo_catalog_versions'] = [
+            'catalog_version', 'state', 'payload_hash', 'source_observed_at',
+        ];
+        Capsule::$columns['mod_contabo_catalog_items'] = [
+            'catalog_version_id', 'machine_id', 'provider_id', 'item_type',
+            'availability_state', 'payload_hash', 'payload_json',
+        ];
         Capsule::$tables['mod_contabo_catalog_versions'] = [];
         Capsule::$tables['mod_contabo_catalog_items'] = [];
     }
@@ -22,7 +29,7 @@ final class GoldenApiContractTest extends TestCase
     public function testAllRequiredGoldenFixturesArePresentAndNestedTypesAreStable(): void
     {
         $fixtures = [];
-        foreach (['meta', 'plans', 'catalog', 'quote', 'openapi'] as $name) {
+        foreach (['meta', 'plans', 'catalog', 'quote'] as $name) {
             $fixtures[$name] = $this->fixture($name);
         }
 
@@ -64,24 +71,6 @@ final class GoldenApiContractTest extends TestCase
         }
         $this->assertIsArray($quote['breakdown']);
         $this->assertNotSame([], $quote['breakdown']);
-
-        $openapi = $fixtures['openapi'];
-        $this->assertSame('3.0.3', $openapi['openapi']);
-        $this->assertSame(self::API_SCHEMA_VERSION, $openapi['info']['x-api-schema-version']);
-        $this->assertSame(
-            CatalogImportService::SUPPORTED_SCHEMA_VERSION,
-            $openapi['info']['x-catalog-schema-version']
-        );
-        foreach ($this->requiredRoutes() as $path => $method) {
-            $this->assertArrayHasKey($path, $openapi['paths']);
-            $this->assertArrayHasKey($method, $openapi['paths'][$path]);
-            $this->assertIsString($openapi['paths'][$path][$method]['operationId']);
-            $this->assertIsArray($openapi['paths'][$path][$method]['responses']);
-        }
-        $this->assertSame(
-            [['bearerAuth' => []]],
-            $openapi['paths']['/api/v1/refresh']['post']['security']
-        );
     }
 
     public function testGoldenCatalogIsAcceptedByTheWhmcsConsumerWithoutProductWrites(): void
@@ -112,10 +101,10 @@ final class GoldenApiContractTest extends TestCase
 
     public function testDocumentedWhmcsSchemaVersionMatchesInstaller(): void
     {
-        $this->assertSame(14, Installer::SCHEMA_VERSION);
+        $this->assertSame(16, Installer::SCHEMA_VERSION);
         $documentation = file_get_contents($this->repositoryRoot() . '/SCHEMA_VERSION.md');
         $this->assertIsString($documentation);
-        $this->assertStringContainsString('## WHMCS DB 14 — current', $documentation);
+        $this->assertStringContainsString('## WHMCS DB 16 — current', $documentation);
     }
 
     /**
@@ -135,27 +124,6 @@ final class GoldenApiContractTest extends TestCase
         $decoded = json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($decoded);
         return $decoded;
-    }
-
-    /**
-     * @return array<string,string>
-     */
-    private function requiredRoutes(): array
-    {
-        return [
-            '/api/v1/health' => 'get',
-            '/api/v1/meta' => 'get',
-            '/api/v1/plans' => 'get',
-            '/api/v1/plans/{slug}' => 'get',
-            '/api/v1/plans/{slug}/configurator' => 'get',
-            '/api/v1/options' => 'get',
-            '/api/v1/catalog' => 'get',
-            '/api/v1/fx' => 'get',
-            '/api/v1/quote' => 'post',
-            '/api/v1/jobs/{id}' => 'get',
-            '/api/v1/openapi.json' => 'get',
-            '/api/v1/refresh' => 'post',
-        ];
     }
 
     private function repositoryRoot(): string

@@ -50,6 +50,21 @@ final class CycleNormalizer
     }
 
     /**
+     * Like monthsForCycle() but rejects an unknown cycle instead of returning
+     * null, so callers can never silently coerce it to 0 months (H1).
+     *
+     * @throws \InvalidArgumentException for an unsupported cycle literal
+     */
+    public static function requireMonths(string $cycle): int
+    {
+        $months = self::monthsForCycle($cycle);
+        if ($months === null) {
+            throw new \InvalidArgumentException('Unknown billing cycle: ' . $cycle);
+        }
+        return $months;
+    }
+
+    /**
      * Whether a WHMCS billing-cycle literal is one the engine can price for.
      *
      * @param string $cycle WHMCS billing-cycle literal.

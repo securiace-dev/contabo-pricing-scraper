@@ -66,7 +66,7 @@ final class SchemaHealthTest extends TestCase
         $this->assertTrue($result['ok'], 'assertOrMigrate must succeed');
         $this->assertSame(3, $result['from']);
         $this->assertSame(Installer::SCHEMA_VERSION, $result['to']);
-        $this->assertSame(14, $result['to']);
+        $this->assertSame(16, $result["to"]);
         $this->assertNull($result['error']);
 
         // The migration must have added the v4 identity columns.
@@ -77,7 +77,7 @@ final class SchemaHealthTest extends TestCase
         // And the recorded schema_version is now current.
         $recorded = (int) Capsule::table('mod_contabo_settings')
             ->where('key', 'schema_version')->value('value');
-        $this->assertSame(14, $recorded);
+        $this->assertSame(16, $recorded);
 
         // Post-condition: schema is now healthy.
         $after = SchemaHealth::requiredColumnsPresent();
@@ -166,5 +166,103 @@ final class SchemaHealthTest extends TestCase
         $this->assertContains('mod_contabo_profile.profile_identity_json', $result['missing']);
         // Mapping columns all present → none of them listed missing.
         $this->assertNotContains('mod_contabo_mapping.catalog_cycles_mask', $result['missing']);
+    }
+
+    public function testPublicationTablesAreOptionalInCompatibilityMode(): void
+    {
+        foreach (['mod_contabo_catalog_versions', 'mod_contabo_catalog_items', 'mod_contabo_mapping_publications', 'mod_contabo_publication_approvals'] as $t) {
+            unset(Capsule::$columns[$t]);
+        }
+        Capsule::$columns['mod_contabo_settings'] = ['key', 'value', 'updated_at'];
+        Capsule::$tables['mod_contabo_settings'] = [
+            ['key' => 'schema_version', 'value' => '14', 'updated_at' => '2026-09-06 00:00:00'],
+        ];
+        Capsule::$columns['mod_contabo_mapping'] = [
+            'catalog_cycles_mask', 'renewal_cycles_mask', 'markup_overrides_json',
+            'setup_fee_overrides_json', 'respect_disabled_cycles',
+            'overwrite_free_cycles', 'sync_setup_fees', 'rounding_mode',
+            'published_mapping_version', 'provider_sku_id', 'rust_catalog_version',
+            'mapping_state', 'mapping_payload_hash', 'mapping_effective_at',
+        ];
+        Capsule::$columns['mod_contabo_profile'] = [
+            'profile_mode', 'profile_fingerprint_hash', 'profile_identity_json',
+            'product_scope_key', 'commercial_variant', 'audience_segment',
+            'published_cycles_mask', 'deleted_at',
+        ];
+        Capsule::$columns['mod_securiacevps_schema'] = ['key', 'value'];
+        Capsule::$columns['mod_securiacevps_order_snapshots'] = [
+            'snapshot_uuid', 'service_id', 'state', 'payload_json',
+            'configuration_hash', 'price_hash', 'sealed_at',
+        ];
+        Capsule::$columns['mod_securiacevps_resources'] = [
+            'service_id', 'provider_account_id', 'provider_resource_id', 'provider_state',
+            'provisioning_state', 'ownership_state', 'resource_version',
+        ];
+        Capsule::$columns['mod_securiacevps_operations'] = [
+            'operation_uuid', 'service_id', 'operation_type', 'operation_generation',
+            'state', 'command_id', 'request_fingerprint', 'idempotency_key',
+            'fencing_token', 'unknown_outcome', 'correlation_id', 'payload_json',
+        ];
+        Capsule::$columns['mod_securiacevps_operation_attempts'] = [
+            'operation_uuid', 'attempt_number', 'fencing_token', 'state',
+        ];
+        Capsule::$columns['mod_securiacevps_provider_requests'] = [
+            'operation_uuid', 'request_fingerprint', 'idempotency_key', 'state', 'unknown_outcome',
+        ];
+        Capsule::$columns['mod_securiacevps_service_locks'] = [
+            'service_id', 'operation_uuid', 'lease_owner', 'lease_expires_at', 'fencing_token',
+        ];
+        Capsule::$columns['mod_securiacevps_capabilities'] = [
+            'provider_account_id', 'capability', 'state',
+        ];
+        Capsule::$columns['mod_securiacevps_reconciliation'] = [
+            'finding_uuid', 'finding_type', 'severity', 'state', 'evidence_hash',
+        ];
+        Capsule::$columns['mod_securiacevps_adoption'] = [
+            'service_id', 'provider_account_id', 'provider_resource_id', 'state', 'confidence',
+        ];
+        Capsule::$columns['mod_securiacevps_billing_sagas'] = [
+            'saga_uuid', 'service_id', 'saga_type', 'state',
+        ];
+        Capsule::$columns['mod_securiacevps_audit_events'] = [
+            'event_uuid', 'event_type', 'outcome', 'event_hash',
+        ];
+        Capsule::$columns['mod_securiacevps_operator_commands'] = [
+            'command_uuid', 'command_type', 'requested_by_admin_id', 'state',
+            'payload_hash', 'claim_token', 'claim_expires_at',
+        ];
+        Capsule::$columns['mod_securiacevps_secrets'] = [
+            'secret_uuid', 'service_id', 'operation_uuid', 'secret_type',
+            'encrypted_value', 'reveal_token_hash', 'reveal_token_ciphertext', 'expires_at',
+        ];
+        Capsule::$columns['mod_securiacevps_communications'] = [
+            'communication_uuid', 'service_id', 'message_type', 'state',
+            'payload_hash', 'claim_token', 'claim_expires_at',
+        ];
+        Capsule::$columns['mod_securiacevps_snapshot_inventory'] = [
+            'service_id', 'provider_account_id', 'provider_resource_id', 'snapshot_id',
+            'name', 'payload_hash', 'observed_at',
+        ];
+
+        // Schema v15/v16 scrape tables are not what this test is about: seed them
+        // so only the optional publication/catalog tables are absent.
+        foreach (SchemaHealth::requiredColumnList() as $qualified) {
+            list($table, $column) = explode('.', $qualified, 2);
+            if (!isset(Capsule::$columns[$table])) {
+                Capsule::$columns[$table] = [];
+            }
+            if (!in_array($column, Capsule::$columns[$table], true)) {
+                Capsule::$columns[$table][] = $column;
+            }
+        }
+
+        $result = SchemaHealth::requiredColumnsPresent();
+
+        $this->assertTrue($result['healthy']);
+        $this->assertTrue($result['compatibility_mode']);
+        $this->assertFalse($result['publication_catalog_supported']);
+        $this->assertSame([], $result['missing']);
+        $this->assertContains('mod_contabo_catalog_versions.catalog_version', $result['optional_missing']);
+        $this->assertContains('mod_contabo_mapping_publications.mapping_version', $result['optional_missing']);
     }
 }

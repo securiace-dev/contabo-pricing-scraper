@@ -1,12 +1,9 @@
 <?php
 /**
- * Repricing dashboard — Phase A read-mostly view.
+ * Repricing diagnostics — inactive workflow view.
  *
- * Shows a 4-tile KPI strip + a recent-decisions table with filter pills.
- * Phase A means every decision row here will have `applied = false` /
- * `skip_reason = phase_observe_only` until the admin flips the phase in
- * tax-settings later. The page still surfaces every decision so the admin
- * can confirm the engine's logic before enabling writes.
+ * Shows historical repricing diagnostics without implying the workflow is live.
+ * Daily cron does not currently emit new per-service decisions here.
  *
  * @var \Closure $esc
  * @var string   $module_link
@@ -87,17 +84,17 @@ require __DIR__ . '/_layout_open.tpl';
 
 <header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" data-cb-u="u-0cbe035c55">Repricing</h2>
+    <h2 class="display" data-cb-u="u-0cbe035c55">Renewal repricing diagnostics</h2>
     <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
-      Renewal pricing policy engine — decisions are emitted by the daily observe sweep.
-      Phase A is read-only; nothing here writes <code class="mono">tblhosting.recurringamount</code>.
+      This workflow is policy-limited and not currently live end to end. Daily cron does not create fresh repricing decisions,
+      and this screen is kept only as a historical diagnostic view for already-recorded rows.
     </p>
   </div>
   <div data-cb-u="u-9c170d8708">
     <span class="cb-pill <?= $esc($cb_phase_tone) ?>" title="Repricing phase">
       <span class="dot"></span>phase: <?= $esc($cb_phase) ?>
     </span>
-    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=price-decisions">Audit log</a>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=price-decisions">Decision log</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=skipped-report">Skipped report</a>
     <a class="cb-btn<?= ((int) $awaiting) > 0 ? '' : ' ghost' ?>" href="<?= $esc($module_link) ?>&amp;action=approval-queue">Approval queue<?php if (((int) $awaiting) > 0): ?> (<?= $esc((string) (int) $awaiting) ?>)<?php endif; ?></a>
     <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=tax-settings">Tax settings</a>
@@ -105,6 +102,13 @@ require __DIR__ . '/_layout_open.tpl';
 </header>
 
 <?php /* Toolbar — filter pills + search ----------------------------------- */ ?>
+<div class="cb-card">
+  <p class="cb-card-sub">
+    Use <strong>Profiles</strong>, <strong>Mappings</strong>, and <strong>Sync runs</strong> for supported pricing work today.
+    Treat every repricing page here as dormant unless the backend workflow is explicitly reactivated in a future release.
+  </p>
+</div>
+
 <div class="cb-toolbar" role="region" aria-label="Decision filters">
   <span class="glabel">Status</span>
   <div class="cb-filter-pills" data-cb-filter-group="repricing-status" role="group">

@@ -14,6 +14,20 @@ final class MappingPublicationServiceTest extends TestCase
     protected function setUp(): void
     {
         Capsule::reset();
+        Capsule::$columns['mod_contabo_catalog_versions'] = [
+            'catalog_version', 'state', 'payload_hash', 'source_observed_at',
+        ];
+        Capsule::$columns['mod_contabo_catalog_items'] = [
+            'catalog_version_id', 'machine_id', 'provider_id', 'item_type',
+            'availability_state', 'payload_hash', 'payload_json',
+        ];
+        Capsule::$columns['mod_contabo_mapping_publications'] = [
+            'mapping_version', 'product_id', 'catalog_version_id', 'provider_sku_id',
+            'state', 'payload_hash', 'payload_json',
+        ];
+        Capsule::$columns['mod_contabo_publication_approvals'] = [
+            'publication_type', 'publication_version', 'decision', 'admin_id', 'preview_hash',
+        ];
         Capsule::$tables['mod_contabo_mapping'] = [[
             'id' => 7,
             'profile_id' => 11,
@@ -117,6 +131,25 @@ final class MappingPublicationServiceTest extends TestCase
             9,
             'yes'
         );
+    }
+
+    public function testCompatibilityModeRejectsPreviewWithoutPublicationTables(): void
+    {
+        unset(
+            Capsule::$columns['mod_contabo_catalog_versions'],
+            Capsule::$columns['mod_contabo_catalog_items'],
+            Capsule::$columns['mod_contabo_mapping_publications'],
+            Capsule::$columns['mod_contabo_publication_approvals']
+        );
+        unset(
+            Capsule::$tables['mod_contabo_catalog_versions'],
+            Capsule::$tables['mod_contabo_mapping_publications'],
+            Capsule::$tables['mod_contabo_publication_approvals']
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Publication/catalog features are disabled');
+        (new MappingPublicationService())->preview(7, $this->selection());
     }
 
     /**

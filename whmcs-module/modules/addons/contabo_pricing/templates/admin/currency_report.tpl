@@ -69,7 +69,7 @@ $cb_fx_at    = $fx_fetched_at ?? null;
 </div>
 <?php elseif (array_key_exists('fx_rates', get_defined_vars()) && $fx_rates === null): ?>
 <div class="cb-card" data-cb-u="u-dac72abfd9">
-  <p data-cb-u="u-171a169012"><strong>FX rates unavailable.</strong> The pricing API server could not be reached; INR equivalents below may be stale or absent.</p>
+  <p data-cb-u="u-171a169012"><strong>FX rates unavailable.</strong> The FX rate source could not be reached; INR equivalents below may be stale or absent.</p>
 </div>
 <?php endif; ?>
 

@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '1.0.0';
+    public const VERSION = '1.1.0';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -34,6 +34,10 @@ class AdminController
     {
         $action = (string) ($req['action'] ?? 'dashboard');
         switch ($action) {
+            case 'proposals':               $this->proposals($req); return;
+            case 'proposal-preview':        $this->proposalPreview($req); return;
+            case 'proposal-send-ticket':    $this->proposalDeliveryAttempt($req, 'ticket'); return;
+            case 'proposal-send-email':     $this->proposalDeliveryAttempt($req, 'email'); return;
             case 'profiles':         $this->profiles($req); return;
             case 'profiles-trash':   $this->profilesTrash($req); return;
             case 'profile-create':   $this->profileCreate($req); return;
@@ -66,11 +70,9 @@ class AdminController
             case 'provider-write-control': $this->providerWriteControl($req); return;
             case 'sync-history':     $this->syncHistory(); return;
             case 'sync-run':         $this->syncRun($req); return;
-            case 'refresh-api':      $this->refreshApi(); return;
             case 'settings':         $this->settingsView(); return;
             case 'ajax-quote':           $this->ajaxQuote($req); return;
             case 'ajax-fx':              $this->ajaxFx(); return;
-            case 'ajax-meta-probe':      $this->ajaxMetaProbe(); return;
             case 'ajax-profile-versions': $this->ajaxProfileVersions($req); return;
             case 'ajax-profile':         $this->ajaxProfile($req); return;
             case 'ajax-configurator':    $this->ajaxConfigurator($req); return;
@@ -95,6 +97,18 @@ class AdminController
             case 'approval-approve':     $this->approvalApprove($req); return;
             case 'approval-reject':      $this->approvalReject($req); return;
             case 'ajax-approval-count':  $this->ajaxApprovalCount(); return;
+            // ── Native catalog scraping (data sources + runs) ────────────────
+            case 'data-sources':         $this->dataSources($req); return;
+            case 'data-sources-save':    $this->dataSourcesSave($req); return;
+            case 'ajax-source-test':     $this->ajaxSourceTest($req); return;
+            case 'family-approve':       $this->familyAction('approve', $req); return;
+            case 'family-hide':          $this->familyAction('hide', $req); return;
+            case 'family-rename-display': $this->familyAction('rename', $req); return;
+            case 'scrape-run':           $this->scrapeRun($req); return;
+            case 'scrape-runs':          $this->scrapeRuns($req); return;
+            case 'scrape-run-detail':    $this->scrapeRunDetail($req); return;
+            case 'scrape-run-import':    $this->scrapeRunImport($req); return;
+            case 'scrape-agent-run':     $this->scrapeAgentRun($req); return;
             case 'dashboard':
             default:                 $this->dashboard(); return;
         }
@@ -105,8 +119,7 @@ class AdminController
     // Each method emits JSON only and returns immediately. Read-only endpoints
     // (ajax-fx, ajax-profile-versions, ajax-profile) intentionally do NOT call
     // check_token() — they're side-effect-free and a stale token shouldn't
-    // break the drawer. Mutating endpoints (ajax-quote which hits a paid API,
-    // ajax-meta-probe which can leak server reachability) DO require a token.
+    // break the drawer. Mutating endpoints (ajax-quote which hits a paid API) DO require a token.
 
     /** Send JSON headers + body for an OK response. Always returns void. */
     private function jsonOk(array $payload): void
@@ -143,7 +156,7 @@ class AdminController
                 $this->jsonFail('plan_slug is required', 400);
                 return;
             }
-            $api = new ApiClient($this->settings);
+            $api = PlanSourceFactory::fromSettings($this->settings);
             $body = [
                 'plan_slug'     => $planSlug,
                 'period_months' => $period,
@@ -171,7 +184,7 @@ class AdminController
     private function ajaxFx(): void
     {
         try {
-            $api = new ApiClient($this->settings);
+            $api = PlanSourceFactory::fromSettings($this->settings);
             $res = $api->fx();
             // Compute a best-effort age_minutes if the FX endpoint exposes a
             // timestamp under any of the common field names.
@@ -188,28 +201,6 @@ class AdminController
             $this->jsonOk($res);
         } catch (\Throwable $e) {
             $this->jsonFail($e->getMessage());
-        }
-    }
-
-    private function ajaxMetaProbe(): void
-    {
-        try {
-            if (function_exists('check_token')) {
-                check_token();
-            }
-            $api = new ApiClient($this->settings);
-            $meta = $api->meta();
-            $this->jsonOk([
-                'ok'              => true,
-                'scraper_version' => isset($meta['scraper_version']) ? (string) $meta['scraper_version'] : (isset($meta['version']) ? (string) $meta['version'] : ''),
-                'snapshot_at'     => isset($meta['snapshot_at']) ? (string) $meta['snapshot_at'] : (isset($meta['generated_at']) ? (string) $meta['generated_at'] : ''),
-            ]);
-        } catch (\Throwable $e) {
-            // Soft-fail with 200 + ok:false so the UI can render a bad pill.
-            if (!headers_sent()) {
-                header('Content-Type: application/json; charset=utf-8');
-            }
-            echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
         }
     }
 
@@ -283,7 +274,7 @@ class AdminController
                 $this->jsonFail('plan_slug is required', 400);
                 return;
             }
-            $api = new ApiClient($this->settings);
+            $api = PlanSourceFactory::fromSettings($this->settings);
             $cfg = $api->configurator($planSlug);
             $controls = $this->buildConfiguratorControls($cfg);
 
@@ -490,13 +481,33 @@ class AdminController
 
     // ── Pages ────────────────────────────────────────────────────────────────
 
+    /**
+     * Customer-visible config-group name for a plan: the plan's display label,
+     * never the upstream provider name (R3 white-label rule).
+     */
+    private function planGroupLabel(string $planSlug): string
+    {
+        $label = '';
+        try {
+            $plan = PlanSourceFactory::fromSettings($this->settings)->plan($planSlug);
+            $label = trim((string) ($plan['product_name'] ?? ''));
+        } catch (\Throwable $e) {
+            $label = '';
+        }
+        if ($label === '') {
+            $label = ucwords(str_replace(['-', '_'], ' ', $planSlug));
+        }
+        $label = trim((string) preg_replace('/\s*contabo\s*/i', ' ', $label));
+        return $label === '' ? 'Plan options' : $label;
+    }
+
     private function dashboard(): void
     {
         // Self-heal a stale schema on first page view (non-fatal: a failed
         // migration is logged, the dashboard still renders what it can).
         SchemaHealth::assertOrMigrate();
 
-        $api = new ApiClient($this->settings);
+        $api = PlanSourceFactory::fromSettings($this->settings);
         $meta = []; $err = null;
         try { $meta = $api->meta(); } catch (\Throwable $e) { $err = $e->getMessage(); }
 
@@ -517,10 +528,135 @@ class AdminController
         ]);
     }
 
+    /** @param array<string,mixed> $req */
+    private function proposals(array $req): void
+    {
+        $this->renderProposalStudio($req, null, '');
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposalPreview(array $req): void
+    {
+        if (!$this->requirePost() || !$this->verifyToken()) {
+            return;
+        }
+        $result = null;
+        $error = '';
+        try {
+            $result = (new ProposalMaker($this->settings))->build($req);
+        } catch (\Throwable $e) {
+            $error = $this->proposalError($e);
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing Proposal Studio preview rejected: ' . $error);
+            }
+        }
+        $this->renderProposalStudio($req, $result, $error);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function proposalDeliveryAttempt(array $req, string $channel): void
+    {
+        if (!$this->requirePost() || !$this->verifyToken()) {
+            return;
+        }
+        $result = null;
+        $error = '';
+        try {
+            $maker = new ProposalMaker($this->settings);
+            $result = $maker->build($req);
+            $maker->assertDeliveryAllowed(
+                (string) ($result['version_id'] ?? ''),
+                $channel,
+                max(0, (int) ($req['client_id'] ?? 0)),
+                (string) ($req['recipient'] ?? '')
+            );
+        } catch (\Throwable $e) {
+            $error = $this->proposalError($e);
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing Proposal Studio delivery blocked: ' . $error);
+            }
+        }
+        $this->renderProposalStudio($req, $result, $error);
+    }
+
+    /**
+     * @param array<string,mixed> $req
+     * @param array<string,mixed>|null $result
+     */
+    private function renderProposalStudio(array $req, ?array $result, string $error): void
+    {
+        $maker = new ProposalMaker($this->settings);
+        $catalogue = $maker->catalogue();
+        $taxRequested = $this->settings->proposalOutputTaxEnabled;
+        $taxEffective = $taxRequested
+            && $this->settings->proposalOutputTaxRegistrationVerified
+            && $this->settings->proposalOutputTaxCommercialMode === 'gst_exclusive';
+        $taxReason = $taxEffective
+            ? 'Verified registration + GST-exclusive commercial mode.'
+            : ($taxRequested
+                ? 'Requested but blocked until registration and GST-exclusive commercial mode both match.'
+                : 'Safe default: no separate Securiace output GST.');
+        $this->render('proposal_maker.tpl', [
+            'plans' => $catalogue['plans'],
+            'catalog_error' => $catalogue['error'],
+            'managed_tiers' => ProposalMaker::managedTiers(),
+            'visibility_modes' => ['show', 'total_only', 'silent_include', 'internal_only', 'exclude', 'calculated_only'],
+            'settings' => $this->settings,
+            'form' => $this->proposalForm($req),
+            'result' => $result,
+            'error' => $error,
+            'tax_gate' => [
+                'requested' => $taxRequested,
+                'effective' => $taxEffective,
+                'reason' => $taxReason,
+            ],
+            'delivery_gate' => [
+                'effective' => false,
+                'reason' => 'Sending is blocked until immutable versions, approval records, durable outbox/idempotency, and attachment-token persistence are implemented.',
+            ],
+        ]);
+    }
+
+    /** @param array<string,mixed> $req @return array<string,mixed> */
+    private function proposalForm(array $req): array
+    {
+        $keys = [
+            'client_id', 'client_name', 'recipient', 'proposal_title', 'profile',
+            'plan_slug', 'period_months', 'currency', 'fx_rate', 'fx_card_markup_pct',
+            'region', 'os', 'selections_json', 'managed_tier', 'managed_quantity', 'owner_margin_pct',
+            'owner_margin_scope', 'provider_visibility', 'configuration_visibility',
+            'managed_visibility', 'owner_visibility', 'tax_visibility',
+            'comparison_visibility', 'comparison_plan_slugs', 'client_notes_visibility', 'client_notes',
+            'internal_notes', 'report_document_json', 'narrative_mode',
+        ];
+        $form = [];
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $req) && is_scalar($req[$key])) {
+                $form[$key] = (string) $req[$key];
+            }
+        }
+        return $form;
+    }
+
+    private function proposalError(\Throwable $e): string
+    {
+        if ($e instanceof \InvalidArgumentException || $e instanceof \RuntimeException) {
+            $message = $e->getMessage();
+            foreach ([$this->settings->apiToken, $this->settings->proposalAiApiKey] as $secret) {
+                if ($secret !== '') {
+                    $message = str_replace($secret, '[redacted]', $message);
+                }
+            }
+            $message = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $message) ?? '';
+            return substr($message, 0, 600);
+        }
+        return 'Proposal Studio could not complete this action; see the activity log.';
+    }
+
     private function profiles(array $req): void
     {
         $pm = new ProfileManager($this->settings);
-        $api = new ApiClient($this->settings);
+        $api = PlanSourceFactory::fromSettings($this->settings);
         $plans = [];
         try { $plans = $api->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
 
@@ -532,6 +668,31 @@ class AdminController
             // When a delete just happened, the page renders an inline Undo for it.
             'undo_id' => isset($req['undo_id']) ? (int) $req['undo_id'] : 0,
             'trash_count' => count($pm->listTrashed()),
+        ]);
+    }
+
+    /**
+     * Re-render the profiles page with the create-profile modal re-opened and
+     * the submitted values preserved, so operators can correct issues in place.
+     *
+     * @param array<string,mixed> $state
+     * @param list<string> $errors
+     */
+    private function renderProfileCreateForm(array $state, array $errors): void
+    {
+        $pm = new ProfileManager($this->settings);
+        $api = PlanSourceFactory::fromSettings($this->settings);
+        $plans = [];
+        try { $plans = $api->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
+
+        $this->render('profiles.tpl', [
+            'profiles' => $this->annotateDrift($pm->listProfiles(false), $plans),
+            'available_plans' => $plans,
+            'flash' => '',
+            'undo_id' => 0,
+            'trash_count' => count($pm->listTrashed()),
+            'cb_profile_form_state' => $state,
+            'cb_profile_form_errors' => $errors,
         ]);
     }
 
@@ -573,6 +734,7 @@ class AdminController
      */
     private function profileDelete(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
@@ -598,6 +760,7 @@ class AdminController
      */
     private function profileRestore(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
@@ -624,6 +787,7 @@ class AdminController
      */
     private function profilePurge(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
@@ -751,6 +915,7 @@ class AdminController
 
     private function profileCreate(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -764,25 +929,13 @@ class AdminController
             if ($derived['os'] !== '')     { $os = $derived['os']; }
             if ($derived['region'] !== '') { $region = $derived['region']; }
         }
-        // v8: cycles the profile SOURCES (offered superset). Default 63 (all six)
-        // when the form posts nothing. period_months is DERIVED from the longest
-        // published cycle so the slug + identity fingerprint stay stable (the
-        // Period dropdown is gone from the form).
+        // v8: source period and published cycles are separate concerns. The
+        // hidden period_months field carries the source basis; the published
+        // mask only controls which customer-facing terms are offered later on.
         $publishedMask = $this->coercePublishedMask($req['published_cycles_mask'] ?? null);
-        $periodMonths  = $this->longestPublishedMonths($publishedMask);
+        $periodMonths  = $this->coerceSourcePeriodMonths($req['period_months'] ?? null, 12);
 
         $mode = $this->normalizeProfileMode($req['profile_mode'] ?? null);
-
-        // Fixed mode is a pre-packaged SKU: every configurator dimension must be
-        // pinned to a concrete value. Reject an incomplete fixed profile.
-        if ($mode === ProfileIdentityResolver::MODE_FIXED) {
-            $err = $this->fixedCompletenessError((string) ($req['plan_slug'] ?? ''), $optionsPayload);
-            if ($err !== null) {
-                $this->redirect('profiles', ['flash' => 'Cannot create fixed profile — ' . $err]);
-                return;
-            }
-        }
-
         $create = [
             'slug'          => (string) ($req['slug'] ?? ''),
             'name'          => trim((string) ($req['name'] ?? '')),
@@ -793,15 +946,36 @@ class AdminController
             'os'            => $os,
             'tags'          => (string) ($req['tags'] ?? ''),
             'sync_strategy' => (string) ($req['sync_strategy'] ?? $this->settings->defaultSyncStrategy),
-            // Mode + exposure gate. profile_mode feeds the identity fingerprint
-            // (fixed vs configurable hash differently — see ProfileIdentityResolver);
-            // expose_configurable_options is the master switch ConfigurableOptionsSyncer
-            // honours on Apply. Both default to the backward-compatible values.
             'profile_mode'  => $mode,
             'expose_configurable_options' => $this->normalizeExposeFlag($req['expose_configurable_options'] ?? null),
+            'advanced_open' => !empty($req['published_cycles_mask'])
+                || !empty($req['tags'])
+                || (string) ($req['sync_strategy'] ?? $this->settings->defaultSyncStrategy) !== 'notify'
+                || ((int) $this->normalizeExposeFlag($req['expose_configurable_options'] ?? null)) === 0,
         ];
         if ($optionsPayload !== null) {
             $create['options'] = $optionsPayload;
+        }
+
+        $errors = [];
+        if ($create['plan_slug'] === '') {
+            $errors[] = 'Choose a Contabo plan first.';
+        }
+        if ($create['name'] === '') {
+            $errors[] = 'Enter a display name for operators.';
+        }
+
+        // Fixed mode is a pre-packaged SKU: every configurator dimension must be
+        // pinned to a concrete value. Reject an incomplete fixed profile.
+        if ($mode === ProfileIdentityResolver::MODE_FIXED) {
+            $err = $this->fixedCompletenessError((string) ($req['plan_slug'] ?? ''), $optionsPayload);
+            if ($err !== null) {
+                $errors[] = 'Fixed profile: ' . ucfirst($err);
+            }
+        }
+        if ($errors !== []) {
+            $this->renderProfileCreateForm($create, $errors);
+            return;
         }
 
         try {
@@ -826,7 +1000,7 @@ class AdminController
         // conflict — same slug, different configuration. Render the chooser; no write happened.
         $existing = is_array($result['existing'] ?? null) ? $result['existing'] : [];
         $plans = [];
-        try { $plans = (new ApiClient($this->settings))->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
+        try { $plans = (PlanSourceFactory::fromSettings($this->settings))->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
         $this->render('profiles.tpl', [
             'profiles'        => $this->annotateDrift((new ProfileManager($this->settings))->listProfiles(false), $plans),
             'available_plans' => $plans,
@@ -843,6 +1017,7 @@ class AdminController
 
     private function profileSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
         $pm = new ProfileManager($this->settings);
@@ -856,13 +1031,19 @@ class AdminController
             if ($derived['region'] !== '') { $region = $derived['region']; }
         }
 
-        // v8: published cycles → derived period_months. Only patch them when the
-        // form actually posted the mask (so a partial save can't reset cycles).
+        // v8: published cycles stay independent from the source-period basis.
+        // Only patch each value when the form actually posted it.
         $publishedMask = null;
         $periodMonths  = null;
         if (isset($req['published_cycles_mask'])) {
             $publishedMask = $this->coercePublishedMask($req['published_cycles_mask']);
-            $periodMonths  = $this->longestPublishedMonths($publishedMask);
+        }
+        if (isset($req['period_months'])) {
+            $existing = $pm->find($id);
+            $periodMonths = $this->coerceSourcePeriodMonths(
+                $req['period_months'],
+                (int) ($existing['period_months'] ?? 12)
+            );
         }
 
         // Fixed-mode completeness: validate when this save sets/keeps fixed mode
@@ -915,6 +1096,18 @@ class AdminController
     }
 
     /**
+     * Source-period basis for the profile. This is intentionally independent of
+     * the published/customer-facing cycle mask.
+     *
+     * @param mixed $raw
+     */
+    private function coerceSourcePeriodMonths($raw, int $fallback = 12): int
+    {
+        $months = (int) $raw;
+        return $months > 0 ? $months : $fallback;
+    }
+
+    /**
      * Longest (max-months) cycle enabled in a published mask, used to derive the
      * profile's primary period_months for slug + identity. Falls back to 1.
      */
@@ -923,7 +1116,7 @@ class AdminController
         $set = CycleSet::fromMask($mask);
         $max = 0;
         foreach ($set->enabledCycles() as $cycle) {
-            $m = (int) CycleNormalizer::monthsForCycle($cycle);
+            $m = CycleNormalizer::requireMonths($cycle);
             if ($m > $max) { $max = $m; }
         }
         return $max > 0 ? $max : 1;
@@ -947,7 +1140,7 @@ class AdminController
         $selections = is_array($selections) ? $selections : [];
 
         try {
-            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
         } catch (\Throwable $e) {
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing: fixed-completeness check skipped (configurator fetch failed) for '
@@ -1106,7 +1299,7 @@ class AdminController
         $omitted  = [];
         $apiError = '';
         try {
-            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
             $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
             $parsed  = DimensionParser::parse($optionsMap);
             $specs   = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
@@ -1144,7 +1337,7 @@ class AdminController
         };
         $syncer = new ConfigurableOptionsSyncer($adapter, $audit);
 
-        $groupName = 'Contabo ' . (string) ($profile['plan_slug'] ?? 'options');
+        $groupName = $this->planGroupLabel((string) ($profile['plan_slug'] ?? 'options'));
         $report = $syncer->observe($id, $groupName, $specs, $ctx);
 
         // Validate the default selection (one default value per dimension) through
@@ -1257,7 +1450,7 @@ class AdminController
 
         $planSlug = (string) ($profile['plan_slug'] ?? '');
         try {
-            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
             $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
             $parsed = DimensionParser::parse($optionsMap);
             $specs  = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
@@ -1308,6 +1501,7 @@ class AdminController
      */
     private function configApply(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -1340,7 +1534,7 @@ class AdminController
 
         $planSlug = (string) ($profile['plan_slug'] ?? '');
         try {
-            $cfg = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
             $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
             $parsed = DimensionParser::parse($optionsMap);
             $specs  = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
@@ -1371,7 +1565,7 @@ class AdminController
         $syncer  = new ConfigurableOptionsSyncer($adapter, $audit, new ConfigOptionLinkRepository());
 
         try {
-            $r = $syncer->apply($id, $productId, 'contabo-' . $planSlug, 'Contabo ' . $planSlug, $specs, $ctx);
+            $r = $syncer->apply($id, $productId, 'contabo-' . $planSlug, $this->planGroupLabel($planSlug), $specs, $ctx);
         } catch (\Throwable $e) {
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing config-apply error (profile #' . $id . '): ' . $e->getMessage());
@@ -1458,6 +1652,7 @@ class AdminController
      */
     private function configExposureSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -1527,7 +1722,7 @@ class AdminController
         $specs    = [];
         $apiError = '';
         try {
-            $cfg        = (new ApiClient($this->settings))->configurator($planSlug);
+            $cfg        = (PlanSourceFactory::fromSettings($this->settings))->configurator($planSlug);
             $optionsMap = (isset($cfg['options']) && is_array($cfg['options'])) ? $cfg['options'] : [];
             $parsed     = DimensionParser::parse($optionsMap);
             $specs      = isset($parsed['specs']) && is_array($parsed['specs']) ? $parsed['specs'] : [];
@@ -1614,6 +1809,7 @@ class AdminController
      */
     private function capabilityEditorSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
         $id      = (int) ($req['id'] ?? 0);
@@ -1690,6 +1886,7 @@ class AdminController
      */
     private function compatibilityEditorSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
         $id      = (int) ($req['id'] ?? 0);
@@ -1761,24 +1958,29 @@ class AdminController
     {
         $pm = new ProfileManager($this->settings);
         $profiles = $pm->listProfiles(false);
+        $publicationCatalogSupport = SchemaHealth::publicationCatalogSupport();
         $whmcsProducts = Capsule::table('tblproducts')
             ->orderBy('name')->limit(500)
             ->get(['id', 'name', 'gid'])->map(static fn ($r) => (array) $r)->all();
         $mappings = Capsule::table('mod_contabo_mapping')
             ->orderByDesc('updated_at')->get()->map(static fn ($r) => (array) $r)->all();
-        $catalogVersions = Capsule::table('mod_contabo_catalog_versions')
-            ->whereNotIn('state', ['invalid', 'retired'])
-            ->orderByDesc('source_observed_at')
-            ->limit(100)
-            ->get()
-            ->map(static fn ($r) => (array) $r)
-            ->all();
-        $mappingPublications = Capsule::table('mod_contabo_mapping_publications')
-            ->orderByDesc('created_at')
-            ->limit(100)
-            ->get()
-            ->map(static fn ($r) => (array) $r)
-            ->all();
+        $catalogVersions = [];
+        $mappingPublications = [];
+        if (!empty($publicationCatalogSupport['supported'])) {
+            $catalogVersions = Capsule::table('mod_contabo_catalog_versions')
+                ->whereNotIn('state', ['invalid', 'retired'])
+                ->orderByDesc('source_observed_at')
+                ->limit(100)
+                ->get()
+                ->map(static fn ($r) => (array) $r)
+                ->all();
+            $mappingPublications = Capsule::table('mod_contabo_mapping_publications')
+                ->orderByDesc('created_at')
+                ->limit(100)
+                ->get()
+                ->map(static fn ($r) => (array) $r)
+                ->all();
+        }
 
         $currencies = [];
         $defaultCurrencyId = 0;
@@ -1809,6 +2011,12 @@ class AdminController
             'catalog_versions'    => $catalogVersions,
             'mapping_publications' => $mappingPublications,
             'publication_preview' => $publicationPreview,
+            'publication_catalog_supported' => !empty($publicationCatalogSupport['supported']),
+            'publication_catalog_message' => (string) ($publicationCatalogSupport['message'] ?? ''),
+            'publication_catalog_missing' => isset($publicationCatalogSupport['missing'])
+                && is_array($publicationCatalogSupport['missing'])
+                ? $publicationCatalogSupport['missing']
+                : [],
             'flash'               => (string) ($req['flash'] ?? ''),
         ]);
     }
@@ -1830,6 +2038,7 @@ class AdminController
      */
     private function mappingSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -2141,24 +2350,29 @@ class AdminController
         if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $observeOnly = (string) ($req['mode'] ?? 'observe') !== 'apply';
-        $engine = new SyncEngine($this->settings, new ApiClient($this->settings), new ProfileManager($this->settings));
+        $engine = new SyncEngine($this->settings, PlanSourceFactory::fromSettings($this->settings), new ProfileManager($this->settings));
         $summary = $engine->run('manual', $observeOnly);
         $this->render('sync_run_result.tpl', ['summary' => $summary]);
     }
 
-    private function refreshApi(): void
+    /**
+     * Envelope stored on the newest succeeded scrape run, or null when none.
+     *
+     * @return array<string,mixed>|null
+     */
+    private function latestScrapeEnvelope(): ?array
     {
-        if (!$this->verifyToken()) { return; }
-        $api = new ApiClient($this->settings);
-        try {
-            $r = $api->refresh();
-            $this->redirect('dashboard', ['flash' => "Refresh queued: {$r['job_id']}"]);
-        } catch (\Throwable $e) {
-            if (function_exists('logActivity')) {
-                logActivity('Contabo Pricing refresh-api error: ' . $e->getMessage());
-            }
-            $this->redirect('dashboard', ['flash' => 'Refresh failed; see the activity log for detail.']);
+        $rows = Capsule::table('mod_contabo_scrape_runs')
+            ->where('state', 'succeeded')
+            ->orderByDesc('id')
+            ->limit(1)
+            ->get();
+        foreach ($rows as $row) {
+            $json = (string) (((array) $row)['envelope_json'] ?? '');
+            $decoded = $json === '' ? null : json_decode($json, true);
+            return is_array($decoded) ? $decoded : null;
         }
+        return null;
     }
 
     private function catalogImport(): void
@@ -2169,12 +2383,24 @@ class AdminController
 
         $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
         try {
-            $catalog = (new ApiClient($this->settings))->catalog();
-            $result = (new CatalogImportService())->import($catalog, $adminId);
+            $envelope = $this->latestScrapeEnvelope();
+            if ($envelope === null) {
+                $this->redirect('mappings', [
+                    'flash' => 'No completed scrape run with a stored catalog yet. Run a scrape first.',
+                ]);
+                return;
+            }
+            $result = (new CatalogImportService())->import($envelope, $adminId);
+            if (!empty($result['error'])) {
+                $this->redirect('mappings', [
+                    'flash' => 'Catalog import rejected: ' . (string) ($result['message'] ?? $result['error']),
+                ]);
+                return;
+            }
             $verb = $result['created'] ? 'Imported' : 'Verified existing';
             $this->redirect('mappings', [
                 'flash' => sprintf(
-                    '%s Rust catalog %s (%d items).',
+                    '%s catalog %s (%d items).',
                     $verb,
                     $result['catalog_version'],
                     $result['item_count']
@@ -2409,7 +2635,9 @@ class AdminController
         }
 
         http_response_code(405);
-        header('Allow: POST');
+        if (!headers_sent()) {
+            header('Allow: POST');
+        }
         echo '<div class="errorbox">This action requires a POST request.</div>';
         return false;
     }
@@ -2446,7 +2674,7 @@ class AdminController
         $fxFetched  = null;
         $fxStale    = true;
         try {
-            $fx = (new ApiClient($this->settings))->fx();
+            $fx = (PlanSourceFactory::fromSettings($this->settings))->fx();
             $rates = (isset($fx['rates']) && is_array($fx['rates'])) ? $fx['rates'] : [];
             if ($rates !== []) {
                 $fxRates = [];
@@ -2640,6 +2868,7 @@ class AdminController
 
     private function approvalApprove(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -2723,6 +2952,7 @@ class AdminController
 
     private function approvalReject(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -2896,6 +3126,7 @@ class AdminController
 
     private function maintenanceMigrate(): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $r = SchemaHealth::assertOrMigrate();
         $flash = !empty($r['ok'])
@@ -2906,6 +3137,7 @@ class AdminController
 
     private function maintenancePurge(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
 
         // DRY-RUN (preview only): report the exact blast radius — what the purge
@@ -3390,6 +3622,7 @@ class AdminController
      */
     private function taxSettingsSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
 
         $mode = (string) ($req['tax_registration_mode'] ?? '');
@@ -3621,5 +3854,372 @@ class AdminController
             ];
         }
         return $out;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // Native catalog scraping: data sources, runs, manual agent run
+    // ═════════════════════════════════════════════════════════════════════════
+
+    /** HTTP transport for provider calls. Overridable so tests never touch the network. */
+    protected function scrapeExecutor(): \ContaboPricing\Scrape\HeaderAwareExecutor
+    {
+        return new CurlRequestExecutor();
+    }
+
+    /** Redirect seam (the base redirect() exits). Overridable in tests. @param array<string,mixed> $extra */
+    protected function go(string $action, array $extra = []): void
+    {
+        $this->redirect($action, $extra);
+    }
+
+    private function adminId(): int
+    {
+        return isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+    }
+
+    /** @param array<string,mixed> $req */
+    private function dataSources(array $req): void
+    {
+        if (!$this->guardSchema()) { return; }
+        $s = new \ContaboPricing\Scrape\ScrapeSettings();
+        $repo = new \ContaboPricing\Scrape\SourceConfigRepository();
+        $ledger = new \ContaboPricing\Scrape\CostLedger();
+        $spend = $ledger->perSourceMonthSpend();
+
+        $sources = [];
+        foreach ($repo->all() as $row) {
+            $id = (string) $row['source_id'];
+            $key = SecretStore::open((string) ($row['api_key_enc'] ?? ''));
+            $opts = json_decode((string) ($row['options_json'] ?? ''), true);
+            $prior = \ContaboPricing\Scrape\SourceRanker::prior($id);
+            $maxSteps = is_array($opts) && isset($opts['max_steps']) ? max(1, (int) $opts['max_steps']) : 40;
+            unset($row['api_key_enc']); // sealed blob is never handed to a template either
+            $sources[] = [
+                'row' => $row,
+                'key_set' => $key !== '',
+                // the plaintext never leaves this method: only a pill flag and a masked tail
+                'key_mask' => SecretStore::mask($key),
+                'month_spend_micro' => $spend[$id] ?? 0,
+                'manual_only' => !empty($prior['manual']),
+                'supports_sapper' => !isset($prior['sapper']) || $prior['sapper'] !== false,
+                'prior' => $prior,
+                'max_steps' => $maxSteps,
+                'max_cost_micro' => $maxSteps * 16000,
+            ];
+            unset($key);
+        }
+        $jevKey = $s->jevApiKey();
+        $data = [
+            'sources' => $sources,
+            'scrape' => $s->all(),
+            'jev_key_set' => $s->hasJevApiKey(),
+            'jev_key_mask' => SecretStore::mask($jevKey),
+            'families' => (new \ContaboPricing\Scrape\FamilyRegistry())->all(),
+            'month_spend_micro' => $ledger->monthSpendMicro(),
+            'flash' => (string) ($req['flash'] ?? ''),
+        ];
+        unset($jevKey);
+        $this->render('data_sources.tpl', $data);
+    }
+
+    /**
+     * Family governance (POST + CSRF): approve a family, hide / unhide it from
+     * the import, or set its public display name. Never touches the plan data.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function familyAction(string $kind, array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $id = (int) ($req['id'] ?? 0);
+        $reg = new \ContaboPricing\Scrape\FamilyRegistry();
+        $row = $reg->find($id);
+        if ($row === null) {
+            $this->go('data-sources', ['flash' => 'Unknown family.']);
+            return;
+        }
+        $name = \ContaboPricing\Scrape\FamilyRegistry::effectiveName($row);
+        if ($kind === 'approve') {
+            $reg->approve($id);
+            $msg = 'Approved family "' . $name . '".';
+        } elseif ($kind === 'hide') {
+            $undo = (string) ($req['undo'] ?? '') === '1';
+            $reg->setHidden($id, !$undo);
+            $msg = ($undo ? 'Family "' : 'Hidden family "') . $name . ($undo ? '" imports again.' : '": it will no longer be imported.');
+        } else {
+            $reg->renameDisplay($id, (string) ($req['display_name'] ?? ''));
+            $msg = 'Display name of "' . $row['slug'] . '" updated.';
+        }
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing family ' . $kind . ' (' . (string) $row['slug'] . ') by admin ' . $this->adminId());
+        }
+        $this->go('data-sources', ['flash' => $msg]);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function dataSourcesSave(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        try {
+            $res = (new \ContaboPricing\Scrape\DataSourcesForm())->apply($req);
+            if (function_exists('logActivity')) {
+                // key VALUES are never logged; only which providers had a key replaced
+                logActivity('Contabo Pricing data sources saved by admin ' . $this->adminId()
+                    . ($res['keys_replaced'] !== [] ? ' (keys replaced: ' . implode(',', $res['keys_replaced']) . ')' : ''));
+            }
+            $this->go('data-sources', ['flash' => $res['message']]);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing data-sources save error: ' . $e->getMessage());
+            }
+            $this->go('data-sources', ['flash' => 'Save failed; see the activity log for detail.']);
+        }
+    }
+
+    /**
+     * POST: exercise one provider end to end (one real fetch of the cloud-vps
+     * page; the cheap connection probe only runs when that fetch fails, to
+     * tell a credentials problem from a target problem without paying twice).
+     *
+     * @param array<string,mixed> $req
+     */
+    private function ajaxSourceTest(array $req): void
+    {
+        try {
+            if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'POST')) !== 'POST') {
+                $this->jsonFail('POST required', 405);
+                return;
+            }
+            if (function_exists('check_token')) {
+                check_token();
+            }
+            $sourceId = (string) ($req['source_id'] ?? '');
+            $repo = new \ContaboPricing\Scrape\SourceConfigRepository();
+            $row = $repo->find($sourceId);
+            if ($row === null) {
+                $this->jsonFail('Unknown data source', 404);
+                return;
+            }
+            if (SecretStore::open((string) ($row['api_key_enc'] ?? '')) === '') {
+                $this->jsonOk(['ok' => false, 'error' => 'No API key configured for this source.']);
+                return;
+            }
+            $source = (new \ContaboPricing\Scrape\SourceFactory($this->scrapeExecutor(), $repo))->build($row);
+
+            if ($source->manualOnly()) {
+                $c = $source->testConnection();
+                $this->jsonOk([
+                    'ok' => (bool) $c['ok'], 'sapper_present' => false, 'plan_count' => 0,
+                    'latency_ms' => (int) $c['latency_ms'], 'cost_micro' => 0, 'served_by' => null,
+                    'note' => 'Manual-only source: no live page fetch is made from a test.',
+                ]);
+                return;
+            }
+
+            $s = new \ContaboPricing\Scrape\ScrapeSettings();
+            // the first learned family's product page (it carries the whole catalogue blob)
+            $url = (string) (new \ContaboPricing\Scrape\PlanUrlList($s->planUrls()))->fetchTargets()[0];
+
+            $price = $source->priceMicroPerPage();
+            $ledger = new \ContaboPricing\Scrape\CostLedger();
+            if ($price > 0 && $ledger->sourceMonthSpend($sourceId) + $price > (int) ($row['monthly_budget_micro'] ?? PHP_INT_MAX)) {
+                $this->jsonOk(['ok' => false, 'error' => 'Monthly budget for this source would be exceeded.']);
+                return;
+            }
+
+            $out = ['ok' => false, 'sapper_present' => false, 'plan_count' => 0, 'latency_ms' => 0, 'cost_micro' => 0, 'served_by' => null];
+            $runs = new \ContaboPricing\Scrape\RunRepository();
+            try {
+                $f = $source->fetchFamilyPage($url);
+                $x = (new \ContaboPricing\Scrape\PlanExtractor($s->legacyAllowlist()))->extract($f->html, $f->json);
+                $out['sapper_present'] = $x->sapperPresent;
+                $out['plan_count'] = count($x->plans);
+                $out['latency_ms'] = $f->latencyMs;
+                $out['cost_micro'] = $f->costMicro;
+                $out['served_by'] = $f->servedBy;
+                $out['final_url'] = $f->finalUrl;
+                $out['ok'] = $source->supportsSapper() ? $x->importable() : ($f->html !== null && $f->html !== '');
+                if (!$source->supportsSapper()) {
+                    $out['note'] = 'Cross-check only: rendered text, no sapper blob (never used for plan extraction).';
+                }
+                // test spend counts against the budgets (run_id 0 = not part of a run)
+                $runs->addAttempt(0, [
+                    'family' => 'test', 'url' => $url, 'source_id' => $sourceId, 'served_by' => $f->servedBy,
+                    'http_status' => $f->httpStatus, 'ok' => $out['ok'], 'sapper_present' => $x->sapperPresent,
+                    'strategy' => $x->strategy, 'plan_count' => count($x->plans), 'cost_micro' => $f->costMicro,
+                    'latency_ms' => $f->latencyMs, 'final_url' => $f->finalUrl,
+                ]);
+            } catch (\ContaboPricing\Scrape\SourceException $e) {
+                $c = $source->testConnection();
+                $out['error'] = $e->getMessage();
+                $out['connection'] = $c['message'];
+                $out['latency_ms'] = (int) $c['latency_ms'];
+            }
+            $this->jsonOk($out);
+        } catch (\Throwable $e) {
+            $this->jsonFail($e->getMessage());
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function scrapeRun(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $dry = (string) ($req['mode'] ?? 'dry') !== 'live';
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(300);
+        }
+        try {
+            $svc = new \ContaboPricing\Scrape\ScrapeRunService(null, $this->scrapeExecutor());
+            $summary = $svc->run('manual', $this->adminId(), ['dry_run' => $dry]);
+            $this->renderScrapeRunDetail((int) $summary['run_id'], (string) ($req['flash'] ?? ''), $summary);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing scrape run failed: ' . $e->getMessage());
+            }
+            echo '<div class="errorbox">The scrape run failed; see the activity log for detail.</div>';
+        }
+    }
+
+    /** @param array<string,mixed> $req */
+    private function scrapeRuns(array $req): void
+    {
+        if (!$this->guardSchema()) { return; }
+        $this->renderScrapeRuns((string) ($req['flash'] ?? ''), null);
+    }
+
+    /** @param array<string,mixed>|null $agentConfirm */
+    private function renderScrapeRuns(string $flash, ?array $agentConfirm): void
+    {
+        $s = new \ContaboPricing\Scrape\ScrapeSettings();
+        $ledger = new \ContaboPricing\Scrape\CostLedger();
+        $this->render('scrape_runs.tpl', [
+            'runs' => (new \ContaboPricing\Scrape\RunRepository())->listRuns(50),
+            'scrape' => $s->all(),
+            'month_spend_micro' => $ledger->monthSpendMicro(),
+            'flash' => $flash,
+            'agent_confirm' => $agentConfirm,
+        ]);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function scrapeRunDetail(array $req): void
+    {
+        if (!$this->guardSchema()) { return; }
+        $id = (int) ($req['id'] ?? 0);
+        if ($id <= 0 || (new \ContaboPricing\Scrape\RunRepository())->find($id) === null) {
+            echo '<div class="errorbox">Scrape run not found.</div>';
+            return;
+        }
+        $this->renderScrapeRunDetail($id, (string) ($req['flash'] ?? ''), null);
+    }
+
+    /** @param array<string,mixed>|null $summary */
+    private function renderScrapeRunDetail(int $id, string $flash, ?array $summary): void
+    {
+        $runs = new \ContaboPricing\Scrape\RunRepository();
+        $d = $runs->detail($id);
+        if ($d === null) {
+            echo '<div class="errorbox">Scrape run not found.</div>';
+            return;
+        }
+        // diff vs the last good (succeeded) run that predates this one
+        $diffs = [];
+        $baseline = $runs->latestSucceeded($id);
+        $env = $d['run']['envelope_json'] ?? null;
+        if (is_array($env) && isset($env['plans']) && is_array($env['plans'])) {
+            $prev = \ContaboPricing\Scrape\RunValidator::bySlug($baseline === null ? [] : $baseline['plans']);
+            $next = \ContaboPricing\Scrape\RunValidator::bySlug($env['plans']);
+            foreach (\ContaboPricing\Scrape\PlanDiffer::diff($prev, $next) as $df) {
+                $df['bucket'] = \ContaboPricing\Scrape\ChangeClassifier::classify($df);
+                $diffs[] = $df;
+            }
+        }
+        unset($d['run']['envelope_json']); // heavy; the template never needs the raw envelope
+        $this->render('scrape_run_detail.tpl', [
+            'run' => $d['run'],
+            'attempts' => $d['attempts'],
+            'decision' => $d['decision'],
+            'diffs' => $diffs,
+            'baseline_run_id' => $baseline === null ? null : (int) $baseline['run']['id'],
+            'summary' => $summary,
+            'flash' => $flash,
+        ]);
+    }
+
+    /** @param array<string,mixed> $req */
+    private function scrapeRunImport(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $id = (int) ($req['id'] ?? 0);
+        try {
+            $res = (new \ContaboPricing\Scrape\ScrapeRunService(null, $this->scrapeExecutor()))
+                ->importStored($id, $this->adminId());
+            $this->go('scrape-run-detail', ['id' => $id, 'flash' => sprintf(
+                '%s catalog %s (%d items).',
+                $res['created'] ? 'Imported' : 'Verified existing',
+                $res['catalog_version'],
+                $res['item_count']
+            )]);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing scrape-run import failed: ' . $e->getMessage());
+            }
+            $this->go('scrape-run-detail', ['id' => $id, 'flash' => 'Import refused: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Manual-only TinyFish Agent run. The first POST shows the worst-case cost
+     * (max_steps x $0.016) for confirmation; only a POST carrying confirm=1 runs.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function scrapeAgentRun(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        if (!$this->guardSchema()) { return; }
+        $repo = new \ContaboPricing\Scrape\SourceConfigRepository();
+        $row = $repo->find('tinyfish_agent');
+        $opts = $row === null ? [] : json_decode((string) ($row['options_json'] ?? ''), true);
+        $maxSteps = is_array($opts) && isset($opts['max_steps']) ? max(1, (int) $opts['max_steps']) : 40;
+        $maxCost = $maxSteps * 16000;
+        $mode = (string) ($req['mode'] ?? 'dry') === 'live' ? 'live' : 'dry';
+
+        if (empty($req['confirm'])) {
+            $this->renderScrapeRuns('', [
+                'max_steps' => $maxSteps,
+                'max_cost_micro' => $maxCost,
+                'mode' => $mode,
+                'enabled' => $row !== null && (int) ($row['enabled'] ?? 0) === 1,
+            ]);
+            return;
+        }
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(600);
+        }
+        try {
+            $svc = new \ContaboPricing\Scrape\ScrapeRunService(null, $this->scrapeExecutor());
+            $summary = $svc->run('manual', $this->adminId(), [
+                'dry_run' => $mode !== 'live',
+                'only_source' => 'tinyfish_agent',
+                'per_run_cap_micro' => $maxCost,
+            ]);
+            $this->renderScrapeRunDetail((int) $summary['run_id'], '', $summary);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing agent run failed: ' . $e->getMessage());
+            }
+            echo '<div class="errorbox">The agent run failed; see the activity log for detail.</div>';
+        }
     }
 }

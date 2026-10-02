@@ -1,0 +1,272 @@
+{
+  "_comment": "Ground truth for scripts/round2-score.php. Source: the two upstream checkout screenshots (2026-10-01) cross-checked against the round-1 __SAPPER__ blob (treg_anyapi.html). Money = EUR net per month. Screenshot gross = net * 1.18 (India VAT 18 %).",
+  "vat_rate": 0.18,
+  "tolerance": 0.005,
+  "families": {
+    "vps": {
+      "label": "Core VPS",
+      "category_id": "10DEvjcxkYDo1JI3howydY",
+      "periods_months": [
+        1,
+        3,
+        6,
+        12,
+        24
+      ],
+      "required_specs": [
+        "cpu_cores",
+        "ram_gb",
+        "storage_gb",
+        "storage_type",
+        "port_mbps",
+        "traffic",
+        "snapshots"
+      ],
+      "plans": [
+        "cloud-vps-core-4",
+        "cloud-vps-core-6",
+        "cloud-vps-core-8",
+        "cloud-vps-core-12",
+        "cloud-vps-core-16",
+        "cloud-vps-core-18"
+      ]
+    },
+    "performance-vps": {
+      "label": "Performance VPS",
+      "category_id": "7lZk81jQ5rYYlc436aSOZy",
+      "periods_months": [
+        1,
+        3,
+        6,
+        12,
+        24
+      ],
+      "required_specs": [
+        "cpu_cores",
+        "ram_gb",
+        "storage_gb",
+        "storage_type",
+        "port_mbps",
+        "traffic",
+        "snapshots"
+      ],
+      "plans": [
+        "cloud-vps-plus-4",
+        "cloud-vps-plus-6",
+        "cloud-vps-plus-8",
+        "cloud-vps-plus-12",
+        "cloud-vps-plus-16",
+        "cloud-vps-plus-18"
+      ]
+    },
+    "vds": {
+      "label": "Max Performance VPS",
+      "category_id": "3uwQtVY6ygQ7FN3hfT5Rb1",
+      "periods_months": [
+        1,
+        3,
+        6,
+        12,
+        24
+      ],
+      "required_specs": [
+        "cpu_cores",
+        "ram_gb",
+        "storage_gb",
+        "storage_type",
+        "port_mbps",
+        "traffic"
+      ],
+      "plans": [
+        "vds-s",
+        "vds-m",
+        "vds-l",
+        "vds-xl",
+        "vds-xxl"
+      ]
+    },
+    "storage-vps": {
+      "label": "Storage VPS",
+      "category_id": "4UpVqEYIJEouRdSmd7fXb9",
+      "periods_months": [
+        1,
+        3,
+        6,
+        12,
+        24
+      ],
+      "required_specs": [
+        "cpu_cores",
+        "ram_gb",
+        "storage_gb",
+        "storage_type",
+        "port_mbps",
+        "traffic"
+      ],
+      "plans": [
+        "storage-vps-10",
+        "storage-vps-20",
+        "storage-vps-30",
+        "storage-vps-40",
+        "storage-vps-50"
+      ]
+    },
+    "dedicated-servers": {
+      "label": "Dedicated Servers",
+      "category_id": "59t0KpSNCisB5B2rYidaKU",
+      "periods_months": [
+        1,
+        3,
+        6,
+        12
+      ],
+      "required_specs": [
+        "cpu_cores",
+        "ram_gb",
+        "storage_gb",
+        "storage_type",
+        "port_mbps",
+        "traffic"
+      ],
+      "plans": [
+        "amd-ryzen-12-cores",
+        "amd-genoa-24-cores",
+        "ds-40",
+        "ds-50"
+      ]
+    },
+    "gpu-vps": {
+      "label": "GPU VPS",
+      "category_id": "XoA1rec97V3geJrEccFLf",
+      "periods_months": [
+        1,
+        3,
+        6,
+        12,
+        24
+      ],
+      "required_specs": [
+        "cpu_cores",
+        "ram_gb",
+        "storage_gb",
+        "storage_type",
+        "port_mbps",
+        "traffic",
+        "snapshots",
+        "gpu"
+      ],
+      "plans": [
+        "gpu-vps-plus-18"
+      ]
+    }
+  },
+  "configurator_plans": {
+    "cloud-vps-core-4": {
+      "required_options": [
+        "regions",
+        "storage_upgrades",
+        "backup",
+        "object_storage",
+        "os_images",
+        "apps",
+        "panels"
+      ],
+      "checks": {
+        "prices.EUR": 5.5,
+        "prices.USD": 6.6,
+        "prices.GBP": 5.4,
+        "specs.cpu_cores": 4,
+        "specs.ram_gb": 8,
+        "specs.storage_gb": 100,
+        "specs.storage_type": "SSD",
+        "specs.snapshots": 1,
+        "specs.port_mbps": 200,
+        "specs.traffic": "unlimited",
+        "periods[months=12].discount": 9.9,
+        "periods[months=24].discount": 26.4,
+        "options.regions[name=Asia (India)].monthly_price": 2.4,
+        "options.storage_upgrades[name=200 GB SSD].monthly_price": 1.5,
+        "options.backup.monthly_price": 1.65,
+        "options.object_storage[name=1 TB Object Storage in Asia].monthly_price": 11.96,
+        "options.os_images[name=Ubuntu 24.04].monthly_price": 0
+      },
+      "gross_checks": [
+        {
+          "path": "prices.EUR",
+          "expected_gross": 6.49
+        },
+        {
+          "path": "options.regions[name=Asia (India)].monthly_price",
+          "expected_gross": 2.83
+        },
+        {
+          "path": "options.storage_upgrades[name=200 GB SSD].monthly_price",
+          "expected_gross": 1.77
+        },
+        {
+          "path": "options.backup.monthly_price",
+          "expected_gross": 1.95
+        },
+        {
+          "path": "options.object_storage[name=1 TB Object Storage in Asia].monthly_price",
+          "expected_gross": 14.11
+        }
+      ],
+      "percent_checks": [
+        {
+          "months": 12,
+          "percent": 15
+        },
+        {
+          "months": 24,
+          "percent": 20
+        }
+      ]
+    },
+    "gpu-vps-plus-18": {
+      "required_options": [
+        "regions",
+        "storage_upgrades",
+        "object_storage",
+        "os_images",
+        "apps",
+        "panels"
+      ],
+      "checks": {
+        "prices.EUR": 999,
+        "prices.USD": 1199,
+        "prices.GBP": 969,
+        "specs.gpu": "NVIDIA RTX 6000",
+        "specs.cpu_cores": 18,
+        "specs.ram_gb": 96,
+        "specs.storage_gb": 900,
+        "specs.storage_type": "NVMe",
+        "specs.snapshots": 5,
+        "specs.port_mbps": 1000,
+        "specs.traffic": "unlimited",
+        "periods[months=12].discount": 1798.2,
+        "periods[months=24].discount": 4795.2
+      },
+      "gross_checks": [
+        {
+          "path": "periods[months=12].effective_monthly",
+          "expected_gross": 1002.0
+        },
+        {
+          "path": "periods[months=24].effective_monthly",
+          "expected_gross": 943.06
+        }
+      ],
+      "percent_checks": [
+        {
+          "months": 12,
+          "percent": 15
+        },
+        {
+          "months": 24,
+          "percent": 20
+        }
+      ]
+    }
+  }
+}

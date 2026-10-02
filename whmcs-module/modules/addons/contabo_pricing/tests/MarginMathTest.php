@@ -181,4 +181,69 @@ final class MarginMathTest extends TestCase
         $base  = MarginCalculator::landedCostMonthly(10.0, 90.0, 2.0, 2.0, 18.0, false);
         $this->assertEqualsWithDelta($base, $whole, 0.0001);
     }
+
+    // ── H1 (addon side): corrected margin_engine.json vectors ────────────────
+    //
+    // Source: docs/test-vectors/margin_engine.json (securiace-vps-platform).
+    // Addon mapping: term total = sellPriceForCycle(monthly cost, cost_plus_pct,
+    // markup, null, months), which multiplies by months EXACTLY ONCE and rounds
+    // ONCE. A "full"-mode period discount d is equivalent to scaling the cost by
+    // (1 - d/100) before markup. The vectors' `period_discount_mode markup_only`
+    // cases (gst_markup_only_annually, kwarg_override_full_to_markup_only_annually)
+    // are SKIPPED: the addon has no such mode.
+
+    /** @return array<string,array{0:string,1:float,2:float,3:float,4:float,5:int,6:float}> name, cost, tax%, discount%, markup%, months, term_total */
+    public static function correctedTermVectors(): array
+    {
+        return [
+            'annual_stacks_after_markup'  => ['annual_stacks_after_markup', 4.50, 0.0, 10.0, 40.0, 12, 68.04],
+            'semiannually'                => ['semiannually', 4.50, 0.0, 5.0, 40.0, 6, 35.91],
+            'zero_pct_quarterly'          => ['zero_pct_quarterly', 4.50, 0.0, 0.0, 40.0, 3, 18.90],
+            'gst_full_annually'           => ['gst_full_annually', 4.50, 18.0, 10.0, 40.0, 12, 80.29],
+            'biennially_xl_relaxed_floor' => ['biennially_xl_relaxed_floor', 50.00, 0.0, 15.0, 25.0, 24, 1275.00],
+        ];
+    }
+
+    /**
+     * @dataProvider correctedTermVectors
+     */
+    public function testCorrectedMarginEngineTermTotals(
+        string $name,
+        float $cost,
+        float $upstreamTaxPct,
+        float $discountPct,
+        float $markupPct,
+        int $months,
+        float $expectedTermTotal
+    ): void {
+        $landed = MarginCalculator::landedCostMonthly($cost, 1.0, 0.0, 0.0, $upstreamTaxPct, false);
+        $discounted = $landed * (1.0 - $discountPct / 100.0);
+        $term = MarginCalculator::sellPriceForCycle($discounted, 'cost_plus_pct', $markupPct, null, $months);
+        $this->assertEqualsWithDelta($expectedTermTotal, $term, 0.0001, $name);
+    }
+
+    public function testMonthsMultiplyExactlyOnceAndRoundOnce(): void
+    {
+        $monthly = MarginCalculator::landedCostMonthly(1.234, 1.0, 0.0, 0.0, 0.0, true);
+        // landed cost for a cycle = monthly x months, once.
+        $this->assertEqualsWithDelta($monthly * 12, MarginCalculator::landedCostForCycle(1.234, 1.0, 0.0, 0.0, 0.0, true, 12), 1e-12);
+        // round-once: 1.234 x 1.4 x 12 = 20.7312 -> 20.73, NOT 12 x round(1.7276, 2) = 20.76.
+        $once = MarginCalculator::sellPriceForCycle($monthly, 'cost_plus_pct', 40.0, null, 12);
+        $this->assertSame(20.73, $once);
+        $this->assertNotSame(round(round($monthly * 1.4, 2) * 12, 2), $once);
+    }
+
+    public function testUnknownCycleIsRejectedNotZero(): void
+    {
+        $this->assertNull(\ContaboPricing\CycleNormalizer::monthsForCycle('never_heard_of_it'));
+        $this->assertSame(12, \ContaboPricing\CycleNormalizer::requireMonths('Annually'));
+        $this->expectException(\InvalidArgumentException::class);
+        \ContaboPricing\CycleNormalizer::requireMonths('never_heard_of_it');
+    }
+
+    public function testNonPositiveMonthsRejectedByMargin(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        MarginCalculator::sellPriceForCycle(10.0, 'cost_plus_pct', 40.0, null, 0);
+    }
 }

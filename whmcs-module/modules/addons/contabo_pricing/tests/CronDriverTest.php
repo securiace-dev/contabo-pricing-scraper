@@ -20,6 +20,8 @@ final class CronDriverTest extends TestCase
     protected function setUp(): void
     {
         Capsule::reset();
+        $GLOBALS['contabo_pricing_test_activity_log'] = [];
+        $GLOBALS['contabo_pricing_test_notifications'] = [];
     }
 
     public function testLoadActiveMappedServiceIdsUsesAmountColumn(): void
@@ -48,9 +50,23 @@ final class CronDriverTest extends TestCase
         ]);
         Capsule::table('mod_contabo_pricing_action')->insert(['id' => 1]); // table presence
 
-        (new CronDriver())->runObserveSweep();
+        $summary = (new CronDriver())->runObserveSweep();
 
         // The stale decision was pruned (sweep reached pruneOldDecisions).
         $this->assertSame(0, Capsule::table('mod_contabo_price_decision')->where('id', 1)->count());
+        $this->assertSame('warning', $summary['status']);
+        $this->assertSame(1, $summary['candidate_mapped_services']);
+        $this->assertSame('phase_b_pending', $summary['renewal_evaluation_mode']);
+        $this->assertStringContainsString('Phase B', (string) $summary['renewal_evaluation_message']);
+    }
+
+    public function testObserveSweepReturnsSchemaWarningWhenTablesMissing(): void
+    {
+        $summary = (new CronDriver())->runObserveSweep();
+
+        $this->assertSame('warning', $summary['status']);
+        $this->assertFalse($summary['schema_ready']);
+        $this->assertSame('schema_unavailable', $summary['renewal_evaluation_mode']);
+        $this->assertStringContainsString('required Contabo Pricing tables', (string) $summary['renewal_evaluation_message']);
     }
 }

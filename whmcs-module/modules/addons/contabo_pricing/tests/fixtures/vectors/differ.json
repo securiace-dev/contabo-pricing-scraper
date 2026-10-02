@@ -1,0 +1,2417 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repo": "securiace-dev/securiace-vps-platform",
+    "commit": "b38cfce",
+    "module": "tests/unit/test_differ.py",
+    "exported_by": "scripts/export_test_vectors.py",
+    "baseline_unit_tests": 505
+  },
+  "notes": [
+    "Input: prev/next are lists of snapshot rows. Cost values are decimal strings (compare numerically).",
+    "Expected: 'kinds' is the ordered list of Diff.kind and is the primary assertion for every case. 'diffs' (oracle/corrected cases) are full Diff objects.",
+    "Compare diffs on kind, catalog_sku, cost_before, cost_after, spec_before, spec_after. 'notes' is informational free text; do not assert on it except that cost diffs carry a magnitude.",
+    "Output order: sorted by upstream_sku, then emission order within a SKU (cost diff, then spec_increase, then spec_decrease, then plan_renamed).",
+    "Spec change is only inspected when prev.spec_hash != next.spec_hash. Numeric dimensions: cpu_count, ram_gb, storage_primary_gb, port_speed_mbps.",
+    "plan_renamed is emitted only when product_name changed and no numeric dimension moved.",
+    "Mechanical cases give only kinds; the other origins carry full diffs.",
+    "Cases with origin 'corrected' REPLACE archived behaviour: a port must implement the corrected rule (H6: any non-numeric / null / type-changed numeric spec field is a parser_error, storage type downgrade is a spec_decrease; H10: empty next snapshot is a single scrape_failed with null catalog_sku, not mass plan_retired).",
+    "The archived classification of os_image_removed as SAFE is not part of the differ.",
+    "Corrected storage-type ranking (NVMe > SSD > HDD) is the minimum needed for these vectors; the full ordering is a port decision to confirm."
+  ],
+  "properties": [
+    "pure (inputs not mutated; repeated calls give identical output)",
+    "order-independent (permuting prev/next row order yields the same set of (catalog_sku, kind) pairs)"
+  ],
+  "cases": [
+    {
+      "name": "per_dimension_cpu_count_2_to_4",
+      "origin": "mechanical",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 2,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_increase"
+        ]
+      }
+    },
+    {
+      "name": "per_dimension_cpu_count_4_to_2",
+      "origin": "mechanical",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 2,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_decrease"
+        ]
+      }
+    },
+    {
+      "name": "per_dimension_ram_gb_4.0_to_8.0",
+      "origin": "mechanical",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 4.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_increase"
+        ]
+      }
+    },
+    {
+      "name": "per_dimension_ram_gb_16.0_to_4.0",
+      "origin": "mechanical",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 4.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_decrease"
+        ]
+      }
+    },
+    {
+      "name": "per_dimension_storage_primary_gb_100_to_200",
+      "origin": "mechanical",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 100,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_increase"
+        ]
+      }
+    },
+    {
+      "name": "per_dimension_storage_primary_gb_400_to_100",
+      "origin": "mechanical",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 400,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 100,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_decrease"
+        ]
+      }
+    },
+    {
+      "name": "per_dimension_port_speed_mbps_200_to_1000",
+      "origin": "mechanical",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 200,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 1000,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_increase"
+        ]
+      }
+    },
+    {
+      "name": "per_dimension_port_speed_mbps_1000_to_200",
+      "origin": "mechanical",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 1000,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 200,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_decrease"
+        ]
+      }
+    },
+    {
+      "name": "identical_runs_empty",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          },
+          {
+            "upstream_sku": "vps-m",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h2",
+            "cost_base_currency": "20.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          },
+          {
+            "upstream_sku": "vps-m",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h2",
+            "cost_base_currency": "20.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [],
+        "diffs": []
+      }
+    },
+    {
+      "name": "two_empty_runs",
+      "origin": "oracle",
+      "input": {
+        "prev": [],
+        "next": []
+      },
+      "expected": {
+        "kinds": [],
+        "diffs": []
+      }
+    },
+    {
+      "name": "new_sku_new_plan",
+      "origin": "oracle",
+      "input": {
+        "prev": [],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "12.50",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "new_plan"
+        ],
+        "diffs": [
+          {
+            "kind": "new_plan",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": "12.50",
+            "spec_before": null,
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "cost_increase_10pct",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "11.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "cost_increase"
+        ],
+        "diffs": [
+          {
+            "kind": "cost_increase",
+            "catalog_sku": "vps-s",
+            "cost_before": "10.00",
+            "cost_after": "11.00",
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "magnitude=0.1000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "cost_decrease_5pct",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "20.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "19.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "cost_decrease"
+        ],
+        "diffs": [
+          {
+            "kind": "cost_decrease",
+            "catalog_sku": "vps-s",
+            "cost_before": "20.00",
+            "cost_after": "19.00",
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "magnitude=-0.0500"
+          }
+        ]
+      }
+    },
+    {
+      "name": "cost_change_magnitude_in_notes",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "11.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "cost_increase"
+        ],
+        "diffs": [
+          {
+            "kind": "cost_increase",
+            "catalog_sku": "vps-s",
+            "cost_before": "10.00",
+            "cost_after": "11.00",
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "magnitude=0.1000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "cpu_up_is_spec_increase",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_increase"
+        ],
+        "diffs": [
+          {
+            "kind": "spec_increase",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "cpu_count: 4 -> 6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ram_down_is_spec_decrease",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_decrease"
+        ],
+        "diffs": [
+          {
+            "kind": "spec_decrease",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "ram_gb: 16.0 -> 8.0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "storage_down_is_spec_decrease",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 400,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_decrease"
+        ],
+        "diffs": [
+          {
+            "kind": "spec_decrease",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 400,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "storage_primary_gb: 400 -> 200"
+          }
+        ]
+      }
+    },
+    {
+      "name": "port_speed_up_is_spec_increase",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 1000,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_increase"
+        ],
+        "diffs": [
+          {
+            "kind": "spec_increase",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 1000,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "port_speed_mbps: 400 -> 1000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "cpu_up_and_ram_down_emit_both",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_increase",
+          "spec_decrease"
+        ],
+        "diffs": [
+          {
+            "kind": "spec_increase",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "cpu_count: 4 -> 6"
+          },
+          {
+            "kind": "spec_decrease",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "ram_gb: 16.0 -> 8.0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "rename_only_is_plan_renamed",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS Small",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "plan_renamed"
+        ],
+        "diffs": [
+          {
+            "kind": "plan_renamed",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS Small",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "product_name: 'VPS S' -> 'VPS Small'"
+          }
+        ]
+      }
+    },
+    {
+      "name": "rename_and_cost_increase",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS Small",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "11.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "cost_increase",
+          "plan_renamed"
+        ],
+        "diffs": [
+          {
+            "kind": "cost_increase",
+            "catalog_sku": "vps-s",
+            "cost_before": "10.00",
+            "cost_after": "11.00",
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS Small",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "magnitude=0.1000"
+          },
+          {
+            "kind": "plan_renamed",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS Small",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "product_name: 'VPS S' -> 'VPS Small'"
+          }
+        ]
+      }
+    },
+    {
+      "name": "rename_with_spec_change_no_plan_renamed",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS Small",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_increase"
+        ],
+        "diffs": [
+          {
+            "kind": "spec_increase",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS Small",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "cpu_count: 4 -> 6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "cost_increase_with_spec_increase",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "12.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "cost_increase",
+          "spec_increase"
+        ],
+        "diffs": [
+          {
+            "kind": "cost_increase",
+            "catalog_sku": "vps-s",
+            "cost_before": "10.00",
+            "cost_after": "12.00",
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "magnitude=0.2000"
+          },
+          {
+            "kind": "spec_increase",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 6,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "cpu_count: 4 -> 6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "mixed_batch_only_changed_skus",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-unchanged",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-u",
+            "cost_base_currency": "5.00",
+            "cost_currency": "EUR"
+          },
+          {
+            "upstream_sku": "vps-cost-change",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-cc",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          },
+          {
+            "upstream_sku": "vps-retired",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-r",
+            "cost_base_currency": "20.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-unchanged",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-u",
+            "cost_base_currency": "5.00",
+            "cost_currency": "EUR"
+          },
+          {
+            "upstream_sku": "vps-cost-change",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-cc",
+            "cost_base_currency": "11.00",
+            "cost_currency": "EUR"
+          },
+          {
+            "upstream_sku": "vps-new",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-n",
+            "cost_base_currency": "8.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "cost_increase",
+          "new_plan",
+          "plan_retired"
+        ],
+        "diffs": [
+          {
+            "kind": "cost_increase",
+            "catalog_sku": "vps-cost-change",
+            "cost_before": "10.00",
+            "cost_after": "11.00",
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "magnitude=0.1000"
+          },
+          {
+            "kind": "new_plan",
+            "catalog_sku": "vps-new",
+            "cost_before": null,
+            "cost_after": "8.00",
+            "spec_before": null,
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": ""
+          },
+          {
+            "kind": "plan_retired",
+            "catalog_sku": "vps-retired",
+            "cost_before": "20.00",
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": null,
+            "notes": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "missing_spec_keys_on_both_sides_no_change",
+      "origin": "oracle",
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "P",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0
+              }
+            },
+            "spec_hash": "h",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "P",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0
+              }
+            },
+            "spec_hash": "h",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [],
+        "diffs": []
+      }
+    },
+    {
+      "name": "removed_sku_in_nonempty_snapshot",
+      "origin": "corrected",
+      "corrected_from": "H10",
+      "archived_behaviour": {
+        "kinds": [
+          "plan_retired"
+        ],
+        "diffs": [
+          {
+            "kind": "plan_retired",
+            "catalog_sku": "vps-s",
+            "cost_before": "12.50",
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": null,
+            "notes": ""
+          }
+        ]
+      },
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "12.50",
+            "cost_currency": "EUR"
+          },
+          {
+            "upstream_sku": "vps-m",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h2",
+            "cost_base_currency": "20.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-m",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h2",
+            "cost_base_currency": "20.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "plan_retired"
+        ],
+        "diffs": [
+          {
+            "kind": "plan_retired",
+            "catalog_sku": "vps-s",
+            "cost_before": "12.50",
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": null,
+            "notes": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "empty_next_snapshot_is_scrape_failed",
+      "origin": "corrected",
+      "corrected_from": "H10",
+      "archived_behaviour": {
+        "kinds": [
+          "plan_retired",
+          "plan_retired"
+        ],
+        "diffs": [
+          {
+            "kind": "plan_retired",
+            "catalog_sku": "vps-m",
+            "cost_before": "20.00",
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": null,
+            "notes": ""
+          },
+          {
+            "kind": "plan_retired",
+            "catalog_sku": "vps-s",
+            "cost_before": "12.50",
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": null,
+            "notes": ""
+          }
+        ]
+      },
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h1",
+            "cost_base_currency": "12.50",
+            "cost_currency": "EUR"
+          },
+          {
+            "upstream_sku": "vps-m",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h2",
+            "cost_base_currency": "20.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": []
+      },
+      "expected": {
+        "kinds": [
+          "scrape_failed"
+        ],
+        "diffs": [
+          {
+            "kind": "scrape_failed",
+            "catalog_sku": null,
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": null,
+            "spec_after": null,
+            "notes": "next snapshot empty while previous had 2 rows; treat as failed scrape, not mass retirement"
+          }
+        ]
+      }
+    },
+    {
+      "name": "spec_field_becomes_null_is_parser_error",
+      "origin": "corrected",
+      "corrected_from": "H6",
+      "archived_behaviour": {
+        "kinds": [],
+        "diffs": []
+      },
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": null,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "parser_error"
+        ],
+        "diffs": [
+          {
+            "kind": "parser_error",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": null,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "specs_parsed.ram_gb: 16.0 -> None (non-numeric)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "spec_field_becomes_string_is_parser_error",
+      "origin": "corrected",
+      "corrected_from": "H6",
+      "archived_behaviour": {
+        "kinds": [],
+        "diffs": []
+      },
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": "8",
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "parser_error"
+        ],
+        "diffs": [
+          {
+            "kind": "parser_error",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 16.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": "8",
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "notes": "specs_parsed.ram_gb: 16.0 -> '8' (non-numeric)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "storage_type_downgrade_is_spec_decrease",
+      "origin": "corrected",
+      "corrected_from": "H6",
+      "archived_behaviour": {
+        "kinds": [],
+        "diffs": []
+      },
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "HDD"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "spec_decrease"
+        ],
+        "diffs": [
+          {
+            "kind": "spec_decrease",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "HDD"
+              }
+            },
+            "notes": "storage_primary_type: NVMe -> HDD"
+          }
+        ]
+      }
+    },
+    {
+      "name": "storage_type_downgrade_with_cost_cut",
+      "origin": "corrected",
+      "corrected_from": "H6",
+      "archived_behaviour": {
+        "kinds": [
+          "cost_decrease"
+        ],
+        "diffs": [
+          {
+            "kind": "cost_decrease",
+            "catalog_sku": "vps-s",
+            "cost_before": "10.00",
+            "cost_after": "9.00",
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "HDD"
+              }
+            },
+            "notes": "magnitude=-0.1000"
+          }
+        ]
+      },
+      "input": {
+        "prev": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_hash": "h-old",
+            "cost_base_currency": "10.00",
+            "cost_currency": "EUR"
+          }
+        ],
+        "next": [
+          {
+            "upstream_sku": "vps-s",
+            "family": "cloud_vps",
+            "spec": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "HDD"
+              }
+            },
+            "spec_hash": "h-new",
+            "cost_base_currency": "9.00",
+            "cost_currency": "EUR"
+          }
+        ]
+      },
+      "expected": {
+        "kinds": [
+          "cost_decrease",
+          "spec_decrease"
+        ],
+        "diffs": [
+          {
+            "kind": "cost_decrease",
+            "catalog_sku": "vps-s",
+            "cost_before": "10.00",
+            "cost_after": "9.00",
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "HDD"
+              }
+            },
+            "notes": "magnitude=-0.1000"
+          },
+          {
+            "kind": "spec_decrease",
+            "catalog_sku": "vps-s",
+            "cost_before": null,
+            "cost_after": null,
+            "spec_before": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "NVMe"
+              }
+            },
+            "spec_after": {
+              "product_name": "VPS S",
+              "specs_parsed": {
+                "cpu_count": 4,
+                "ram_gb": 8.0,
+                "storage_primary_gb": 200,
+                "port_speed_mbps": 400,
+                "storage_primary_type": "HDD"
+              }
+            },
+            "notes": "storage_primary_type: NVMe -> HDD"
+          }
+        ]
+      }
+    }
+  ]
+}
