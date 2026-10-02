@@ -243,8 +243,6 @@ try {
     // ── 1b) Proposal Studio preview-only safety boundary ────────────────────
     smoke_section('proposal studio preview boundary');
     $proposalSettings = new Settings(
-        'http://localhost:8080/api/v1',
-        '',
         'notify',
         'INR',
         false,
