@@ -89,6 +89,7 @@ final class SyncEngineObserveTest extends TestCase
 
         $this->assertSame('preview', $result['status']);
         $this->assertTrue($result['observe_only']);
+        $this->assertSame('t-1', $result['catalog_scraper_version']);
         $this->assertSame(1, $result['profiles_changed']);
         $this->assertSame(1, $result['products_planned']);
         $this->assertSame(1, $result['cycles_planned']);
@@ -98,6 +99,32 @@ final class SyncEngineObserveTest extends TestCase
         $this->assertSame([], Capsule::$calls);
         $this->assertSame([], Capsule::$inserts);
         $this->assertSame([], $audit->rows);
+    }
+
+    public function testPersistedSyncSummaryRecordsCatalogSourceVersionForRun(): void
+    {
+        $profile = [
+            'id' => 1,
+            'slug' => 'vps-test',
+            'plan_slug' => 'vps-test',
+            'period_months' => 1,
+            'sync_strategy' => 'auto-apply',
+            'published_cycles_mask' => CycleSet::fromCycles(['Monthly'])->toMask(),
+        ];
+        $profiles = new ObserveProfileManager($this->settings(), [$profile]);
+        $audit = new ObserveCatalogAuditSpy();
+        $engine = $this->makeEngine($audit, $profiles);
+        $this->seedCatalog();
+
+        $result = $engine->run('manual', false);
+
+        $this->assertSame('succeeded', $result['status']);
+        $this->assertArrayHasKey('mod_contabo_sync_log', Capsule::$tables);
+        $this->assertCount(1, Capsule::$tables['mod_contabo_sync_log']);
+        $row = Capsule::$tables['mod_contabo_sync_log'][0];
+        $summary = json_decode((string) ($row['summary'] ?? ''), true);
+        $this->assertIsArray($summary);
+        $this->assertSame('t-1', $summary['catalog_scraper_version'] ?? null);
     }
 
     public function testExplicitZeroSetupFeePreviewsAndClearsStalePositiveFee(): void
@@ -179,7 +206,7 @@ final class SyncEngineObserveTest extends TestCase
 
             public function meta(): array
             {
-                return ['snapshot_meta' => ['generated_at' => '2026-07-30T00:00:00Z']];
+                return ['scraper_version' => 't-1', 'snapshot_meta' => ['generated_at' => '2026-07-30T00:00:00Z']];
             }
 
             public function fx(): array

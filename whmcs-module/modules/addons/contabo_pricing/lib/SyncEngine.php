@@ -166,6 +166,7 @@ class SyncEngine
                 }
             }
             $summary['snapshot_generated_at'] = $sourceGeneratedAt;
+            $summary['catalog_scraper_version'] = (string) ($meta['scraper_version'] ?? ($meta['snapshot_meta']['scraper_version'] ?? ''));
 
             // FX once per run — every profile uses the same rate snapshot.
             $fx = [];
