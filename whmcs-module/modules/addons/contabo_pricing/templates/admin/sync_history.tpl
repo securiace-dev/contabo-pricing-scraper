@@ -49,9 +49,9 @@ $cb_source_version = static function ($summary) {
 
 <!-- ───────────────────── Header ───────────────────── -->
 <div class="cb-card">
-  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Sync history</h2>
+  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Sync runs</h2>
   <p class="cb-card-sub" data-cb-u="u-5074b45d61">
-    Recent automated and manual sync runs against the Contabo pricing API. Click a row for the full summary JSON.
+    Recent automated and manual sync runs against the Contabo pricing API. Filter by status, date, or search terms to review operational behaviour.
   </p>
 </div>
 

@@ -800,12 +800,11 @@ class AdminController
             if ($derived['os'] !== '')     { $os = $derived['os']; }
             if ($derived['region'] !== '') { $region = $derived['region']; }
         }
-        // v8: cycles the profile SOURCES (offered superset). Default 63 (all six)
-        // when the form posts nothing. period_months is DERIVED from the longest
-        // published cycle so the slug + identity fingerprint stay stable (the
-        // Period dropdown is gone from the form).
+        // v8: source period and published cycles are separate concerns. The
+        // hidden period_months field carries the source basis; the published
+        // mask only controls which customer-facing terms are offered later on.
         $publishedMask = $this->coercePublishedMask($req['published_cycles_mask'] ?? null);
-        $periodMonths  = $this->longestPublishedMonths($publishedMask);
+        $periodMonths  = $this->coerceSourcePeriodMonths($req['period_months'] ?? null, 12);
 
         $mode = $this->normalizeProfileMode($req['profile_mode'] ?? null);
         $create = [
@@ -903,13 +902,19 @@ class AdminController
             if ($derived['region'] !== '') { $region = $derived['region']; }
         }
 
-        // v8: published cycles → derived period_months. Only patch them when the
-        // form actually posted the mask (so a partial save can't reset cycles).
+        // v8: published cycles stay independent from the source-period basis.
+        // Only patch each value when the form actually posted it.
         $publishedMask = null;
         $periodMonths  = null;
         if (isset($req['published_cycles_mask'])) {
             $publishedMask = $this->coercePublishedMask($req['published_cycles_mask']);
-            $periodMonths  = $this->longestPublishedMonths($publishedMask);
+        }
+        if (isset($req['period_months'])) {
+            $existing = $pm->find($id);
+            $periodMonths = $this->coerceSourcePeriodMonths(
+                $req['period_months'],
+                (int) ($existing['period_months'] ?? 12)
+            );
         }
 
         // Fixed-mode completeness: validate when this save sets/keeps fixed mode
@@ -959,6 +964,18 @@ class AdminController
         // A genuinely-empty selection is almost always a JS glitch; fall back to
         // all-offered rather than silently sourcing nothing.
         return $mask === 0 ? CycleSet::MASK_MAX : $mask;
+    }
+
+    /**
+     * Source-period basis for the profile. This is intentionally independent of
+     * the published/customer-facing cycle mask.
+     *
+     * @param mixed $raw
+     */
+    private function coerceSourcePeriodMonths($raw, int $fallback = 12): int
+    {
+        $months = (int) $raw;
+        return $months > 0 ? $months : $fallback;
     }
 
     /**
@@ -1812,24 +1829,29 @@ class AdminController
     {
         $pm = new ProfileManager($this->settings);
         $profiles = $pm->listProfiles(false);
+        $publicationCatalogSupport = SchemaHealth::publicationCatalogSupport();
         $whmcsProducts = Capsule::table('tblproducts')
             ->orderBy('name')->limit(500)
             ->get(['id', 'name', 'gid'])->map(static fn ($r) => (array) $r)->all();
         $mappings = Capsule::table('mod_contabo_mapping')
             ->orderByDesc('updated_at')->get()->map(static fn ($r) => (array) $r)->all();
-        $catalogVersions = Capsule::table('mod_contabo_catalog_versions')
-            ->whereNotIn('state', ['invalid', 'retired'])
-            ->orderByDesc('source_observed_at')
-            ->limit(100)
-            ->get()
-            ->map(static fn ($r) => (array) $r)
-            ->all();
-        $mappingPublications = Capsule::table('mod_contabo_mapping_publications')
-            ->orderByDesc('created_at')
-            ->limit(100)
-            ->get()
-            ->map(static fn ($r) => (array) $r)
-            ->all();
+        $catalogVersions = [];
+        $mappingPublications = [];
+        if (!empty($publicationCatalogSupport['supported'])) {
+            $catalogVersions = Capsule::table('mod_contabo_catalog_versions')
+                ->whereNotIn('state', ['invalid', 'retired'])
+                ->orderByDesc('source_observed_at')
+                ->limit(100)
+                ->get()
+                ->map(static fn ($r) => (array) $r)
+                ->all();
+            $mappingPublications = Capsule::table('mod_contabo_mapping_publications')
+                ->orderByDesc('created_at')
+                ->limit(100)
+                ->get()
+                ->map(static fn ($r) => (array) $r)
+                ->all();
+        }
 
         $currencies = [];
         $defaultCurrencyId = 0;
@@ -1860,6 +1882,12 @@ class AdminController
             'catalog_versions'    => $catalogVersions,
             'mapping_publications' => $mappingPublications,
             'publication_preview' => $publicationPreview,
+            'publication_catalog_supported' => !empty($publicationCatalogSupport['supported']),
+            'publication_catalog_message' => (string) ($publicationCatalogSupport['message'] ?? ''),
+            'publication_catalog_missing' => isset($publicationCatalogSupport['missing'])
+                && is_array($publicationCatalogSupport['missing'])
+                ? $publicationCatalogSupport['missing']
+                : [],
             'flash'               => (string) ($req['flash'] ?? ''),
         ]);
     }

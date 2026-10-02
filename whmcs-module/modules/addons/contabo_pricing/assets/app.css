@@ -213,7 +213,7 @@ body:has(.cb-wrap) { overflow-x: clip; }
 .cb-disclosure > summary::after { content: "+"; font-size: 20px; color: var(--accent); line-height: 1; }
 .cb-disclosure[open] > summary::after { content: "−"; }
 .cb-disclosure > summary + * { margin-top: 16px; }
-.cb-error ul { margin: 8px 0 0 18px; }
+.cb-error ul { margin: 8px 0 0 16px; }
 
 /* keyboard shortcut display */
 .kbd { display: inline-block; padding: 4px 8px; background: var(--chip); border: 1px solid var(--border); border-radius: 4px; font-size: 10.5px; font-family: var(--font-data); color: var(--muted); }
