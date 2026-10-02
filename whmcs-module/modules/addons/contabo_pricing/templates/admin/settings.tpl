@@ -2,7 +2,7 @@
 
 <?php
 /**
- * Read-only settings view — sectioned cards.
+ * Runtime/config reference view — sectioned cards.
  *
  * @var \Closure $esc
  * @var string   $module_link
@@ -19,7 +19,7 @@ $cb_log_ret     = isset($settings->logRetentionDays) ? (int) $settings->logReten
 
 <!-- ───────────────────── Header ───────────────────── -->
 <div class="cb-card">
-  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Settings</h2>
+  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Runtime &amp; configuration</h2>
   <p class="cb-card-sub" data-cb-u="u-5074b45d61">
     Edit these values from <strong>Setup → Addon Modules → Contabo Pricing Sync → Configure</strong>.
     Values shown here are read-only.

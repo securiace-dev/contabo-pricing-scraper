@@ -605,6 +605,7 @@ class AdminController
      */
     private function profileDelete(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
@@ -630,6 +631,7 @@ class AdminController
      */
     private function profileRestore(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
@@ -656,6 +658,7 @@ class AdminController
      */
     private function profilePurge(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
@@ -783,6 +786,7 @@ class AdminController
 
     private function profileCreate(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -885,6 +889,7 @@ class AdminController
 
     private function profileSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
         $pm = new ProfileManager($this->settings);
@@ -1350,6 +1355,7 @@ class AdminController
      */
     private function configApply(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -1500,6 +1506,7 @@ class AdminController
      */
     private function configExposureSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -1656,6 +1663,7 @@ class AdminController
      */
     private function capabilityEditorSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
         $id      = (int) ($req['id'] ?? 0);
@@ -1732,6 +1740,7 @@ class AdminController
      */
     private function compatibilityEditorSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
         $id      = (int) ($req['id'] ?? 0);
@@ -1872,6 +1881,7 @@ class AdminController
      */
     private function mappingSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -2701,6 +2711,7 @@ class AdminController
 
     private function approvalApprove(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -2784,6 +2795,7 @@ class AdminController
 
     private function approvalReject(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         if (!$this->guardSchema()) { return; }
 
@@ -2957,6 +2969,7 @@ class AdminController
 
     private function maintenanceMigrate(): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
         $r = SchemaHealth::assertOrMigrate();
         $flash = !empty($r['ok'])
@@ -2967,6 +2980,7 @@ class AdminController
 
     private function maintenancePurge(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
 
         // DRY-RUN (preview only): report the exact blast radius — what the purge
@@ -3451,6 +3465,7 @@ class AdminController
      */
     private function taxSettingsSave(array $req): void
     {
+        if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
 
         $mode = (string) ($req['tax_registration_mode'] ?? '');

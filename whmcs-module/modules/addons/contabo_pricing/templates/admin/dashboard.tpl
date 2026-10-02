@@ -153,7 +153,7 @@ require __DIR__ . '/_layout_open.tpl';
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles">Manage profiles</a>
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=mappings">Edit mappings</a>
     <span data-cb-u="u-6253876a64"></span>
-    <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=settings">Settings</a>
+    <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=settings">Runtime &amp; config</a>
   </div>
 </div>
 

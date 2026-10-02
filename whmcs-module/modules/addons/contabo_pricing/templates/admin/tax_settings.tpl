@@ -64,12 +64,11 @@ require __DIR__ . '/_layout_open.tpl';
   <div>
     <h2 class="display" data-cb-u="u-0cbe035c55">Tax settings</h2>
     <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
-      Pluggable tax-recovery mode used by <code class="mono">MarginCalculator</code>. Every decision row
-      records a <code class="mono">tax_mode_snapshot</code>, so historical margin doesn't change when this is flipped.
+      Stored repricing tax inputs used by <code class="mono">MarginCalculator</code>. These values remain editable, but the surrounding repricing workflow is currently dormant and daily cron does not create fresh decisions from them.
     </p>
   </div>
   <div data-cb-u="u-b887bfd543">
-    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=repricing">&larr; Dashboard</a>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=repricing">&larr; Repricing diagnostics</a>
   </div>
 </header>
 
