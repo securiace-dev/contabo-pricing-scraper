@@ -122,15 +122,15 @@ require __DIR__ . '/_layout_open.tpl';
       <h3 data-cb-u="u-64970cd978">Get started</h3>
       <div class="cb-card-title" data-cb-u="u-7259bbafaa">You're connected, but nothing is being synced yet.</div>
       <p class="cb-card-sub" data-cb-u="u-2b0e8ce8c2">
-        The sync engine walks <em>profiles</em> — named templates that pair a Contabo plan
-        with a billing period, region, and OS. Until you create at least one profile,
+        A <em>profile</em> is your saved source plan definition: the Contabo plan,
+        source period, region, and operating system you want to buy against. Until you create at least one profile,
         every sync run will report 0 profiles checked.
       </p>
       <ol data-cb-u="u-b44378b3c1">
         <li><strong>Create a profile</strong> (e.g. <em>Cloud VPS 10 — EU — Ubuntu — 12 mo</em>)</li>
-        <li><strong>Map it</strong> to one or more WHMCS products + tick the billing cycles to update</li>
-        <li><strong>Choose a sync strategy</strong> per profile: <code>manual</code> (record only), <code>notify</code> (email on drift), or <code>auto-apply</code> (push prices immediately)</li>
-        <li><strong>Run sync</strong> — the daily cron will keep it fresh after the first manual run</li>
+        <li><strong>Map it</strong> to a WHMCS product and choose which cycles you offer to customers</li>
+        <li><strong>Choose a sync strategy</strong> per profile: <code>manual</code> (record only), <code>notify</code> (email on drift), or <code>auto-apply</code> (push catalog prices immediately)</li>
+        <li><strong>Run sync</strong> to refresh product pricing from the latest snapshot</li>
       </ol>
       <div data-cb-u="u-9e77998f13">
         <a class="cb-btn" href="<?= $esc($module_link) ?>&amp;action=profiles">Create your first profile</a>
@@ -166,6 +166,39 @@ require __DIR__ . '/_layout_open.tpl';
     <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=mappings">Edit mappings</a>
     <span data-cb-u="u-6253876a64"></span>
     <a class="cb-btn subtle" href="<?= $esc($module_link) ?>&amp;action=settings">Runtime &amp; config</a>
+  </div>
+</div>
+
+<div data-cb-u="u-7c4d3c876f">
+  <div class="cb-card">
+    <h3>Profiles</h3>
+    <div class="cb-card-title">Define source plans</div>
+    <div class="cb-card-sub">Create the saved Contabo plan variants you price from.</div>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles">Open profiles &rarr;</a>
+  </div>
+
+  <div class="cb-card">
+    <h3>Mappings</h3>
+    <div class="cb-card-title">Set customer pricing rules</div>
+    <div class="cb-card-sub">Connect profiles to WHMCS products and choose cycle policy.</div>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=mappings">Open mappings &rarr;</a>
+  </div>
+
+  <div class="cb-card">
+    <h3>Sync runs</h3>
+    <div class="cb-card-title">Review catalog refreshes</div>
+    <div class="cb-card-sub">Inspect recent manual and cron-driven pricing runs.</div>
+    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=sync-history">Open sync runs &rarr;</a>
+  </div>
+
+  <div class="cb-card">
+    <h3>Health &amp; advanced</h3>
+    <div class="cb-card-title">Verify runtime and policy</div>
+    <div class="cb-card-sub">Check runtime inputs, schema health, and dormant advanced surfaces.</div>
+    <div data-cb-u="u-9e77998f13">
+      <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=settings">Runtime &amp; reference</a>
+      <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=maintenance">Diagnostics</a>
+    </div>
   </div>
 </div>
 
@@ -226,44 +259,6 @@ require __DIR__ . '/_layout_open.tpl';
       </div>
     <?php endif; ?>
   <?php endif; ?>
-</div>
-
-<?php /* Three-card summary row ------------------------------------------ */ ?>
-<div data-cb-u="u-7c4d3c876f">
-
-  <div class="cb-card">
-    <h3>Profiles</h3>
-    <div class="cb-card-title"><span class="mono"><?= (int) $profile_count ?></span> active</div>
-    <div class="cb-card-sub">
-      <span class="mono"><?= (int) $version_count ?></span> stored version<?= ((int) $version_count) === 1 ? '' : 's' ?> across all profiles.
-    </div>
-    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=profiles">Manage profiles &rarr;</a>
-  </div>
-
-  <div class="cb-card">
-    <h3>Mappings</h3>
-    <div class="cb-card-title"><span class="mono"><?= (int) $mapping_count ?></span> active</div>
-    <div class="cb-card-sub">
-      Profile-to-WHMCS product bindings driving renewal pricing.
-    </div>
-    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=mappings">Edit mappings &rarr;</a>
-  </div>
-
-  <div class="cb-card">
-    <h3>Recent activity</h3>
-    <div class="cb-card-title">
-      <?php if (!empty($last_sync)): ?>
-        <span class="mono"><?= (int) ($cb_changed + $cb_updated) ?></span> change<?= (($cb_changed + $cb_updated) === 1) ? '' : 's' ?>
-      <?php else: ?>
-        <span class="mono">0</span> changes
-      <?php endif; ?>
-    </div>
-    <div class="cb-card-sub">
-      From the latest sync run<?= !empty($last_sync) && $cb_last_started !== '' ? ' on ' . $esc(substr($cb_last_started, 0, 10)) : '' ?>.
-    </div>
-    <a class="cb-btn ghost" href="<?= $esc($module_link) ?>&amp;action=sync-history">View sync history &rarr;</a>
-  </div>
-
 </div>
 
 </div>

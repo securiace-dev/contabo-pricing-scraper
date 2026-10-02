@@ -84,9 +84,9 @@ require __DIR__ . '/_layout_open.tpl';
 
 <header data-cb-u="u-f266e2da93">
   <div>
-    <h2 class="display" data-cb-u="u-0cbe035c55">Repricing diagnostics</h2>
+    <h2 class="display" data-cb-u="u-0cbe035c55">Renewal repricing diagnostics</h2>
     <p class="cb-card-sub" data-cb-u="u-8c7c145b64">
-      This workflow is not currently live. Daily cron does not create fresh repricing decisions,
+      This workflow is policy-limited and not currently live end to end. Daily cron does not create fresh repricing decisions,
       and this screen is kept only as a historical diagnostic view for already-recorded rows.
     </p>
   </div>
@@ -104,7 +104,8 @@ require __DIR__ . '/_layout_open.tpl';
 <?php /* Toolbar — filter pills + search ----------------------------------- */ ?>
 <div class="cb-card">
   <p class="cb-card-sub">
-    Use sync, profiles, and mappings for supported pricing operations today. Treat every repricing page here as dormant unless the backend workflow is reactivated end-to-end in a future release.
+    Use <strong>Profiles</strong>, <strong>Mappings</strong>, and <strong>Sync runs</strong> for supported pricing work today.
+    Treat every repricing page here as dormant unless the backend workflow is explicitly reactivated in a future release.
   </p>
 </div>
 

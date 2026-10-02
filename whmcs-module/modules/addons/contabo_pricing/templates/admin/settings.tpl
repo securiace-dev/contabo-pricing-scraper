@@ -22,15 +22,20 @@ $cb_token_set   = $cb_api_token !== '';
 
 <!-- ───────────────────── Header ───────────────────── -->
 <div class="cb-card">
-  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Runtime &amp; configuration</h2>
+  <h2 class="cb-card-title display" data-cb-u="u-ab79ea2b85">Health &amp; advanced reference</h2>
   <p class="cb-card-sub" data-cb-u="u-5074b45d61">
-    This page is a read-only runtime reference. Change saved values in
+    This page is a read-only runtime reference for the health and advanced surfaces.
+    Change saved values in
     <strong>Setup → Addon Modules → Contabo Pricing Sync → Configure</strong>, then return here to verify what the addon is using.
   </p>
 </div>
 
 <div class="cb-card">
-  <h3>Operator note</h3>
+  <h3>What this page is for</h3>
+  <p class="cb-card-sub">
+    Use <strong>Profiles</strong>, <strong>Mappings</strong>, and <strong>Sync runs</strong> for day-to-day work.
+    This page exists to verify runtime inputs and advanced configuration posture.
+  </p>
   <p class="cb-card-sub">
     For Dokploy or other containerized WHMCS installs, the addon should usually target
     <code class="mono">http://contabo-pricing:8080/api/v1</code> from inside the app container, not

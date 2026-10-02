@@ -34,6 +34,13 @@
 
 $cb_default_currency_id = isset($default_currency_id) ? (int) $default_currency_id : 0;
 $cb_currencies = isset($whmcs_currencies) && is_array($whmcs_currencies) ? $whmcs_currencies : [];
+$cb_publication_catalog_supported = !empty($publication_catalog_supported);
+$cb_publication_catalog_message = isset($publication_catalog_message)
+    ? (string) $publication_catalog_message
+    : 'Publication/catalog features are unavailable on this schema.';
+$cb_publication_catalog_missing = isset($publication_catalog_missing) && is_array($publication_catalog_missing)
+    ? $publication_catalog_missing
+    : [];
 
 // Canonical six-cycle ordering shared with CycleSet / CyclePricingMap.
 $cb_cycles = [
@@ -58,15 +65,14 @@ $cb_rounding_modes = [
   <div>
     <h2 class="display" data-cb-u="u-0cbe035c55">Mappings</h2>
     <p class="cb-card-sub" data-cb-u="u-8a5832c351">
-      Link Contabo profiles to WHMCS products and choose, per billing cycle, whether
-      SyncEngine writes to the catalog (<code class="mono">tblpricing</code>) and whether
-      RenewalEngine considers it for existing services.
+      Connect each source profile to a WHMCS product, then choose which billing cycles
+      are offered in the catalog and which existing services are eligible for renewal repricing.
     </p>
   </div>
   <form method="post" action="<?= $esc($module_link) ?>">
     <input type="hidden" name="action" value="catalog-import">
     <?= generate_token() ?>
-    <button type="submit" class="cb-btn subtle">Import catalog</button>
+    <button type="submit" class="cb-btn subtle"<?= $cb_publication_catalog_supported ? '' : ' disabled' ?>>Import catalog</button>
   </form>
 </header>
 
@@ -78,8 +84,8 @@ $cb_rounding_modes = [
 
   <!-- ───────── Left card: add / update mapping ───────── -->
   <section class="cb-card" data-cb-mapping-form-scope>
-    <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Add or update mapping</h3>
-    <p class="cb-card-sub" data-cb-u="u-619b35a9f4">Pick a profile, product, currency, then per-cycle catalog/renewal flags.</p>
+    <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Create or revise product pricing rules</h3>
+    <p class="cb-card-sub" data-cb-u="u-619b35a9f4">Pick the source profile and product, load the current catalog prices, then restore or adjust the saved cycle policy.</p>
 
     <form method="post" action="<?= $esc($module_link) ?>" data-cb-form="mapping-save">
       <input type="hidden" name="action" value="mapping-save">
@@ -153,7 +159,7 @@ $cb_rounding_modes = [
       <input type="hidden" name="source_overrides_json" value="{}" data-cb-source-overrides-json>
 
       <div class="cb-field">
-        <label>Billing cycles</label>
+        <label>Billing cycle policy</label>
         <div class="cb-inset" data-cb-u="u-41290e0232">
           <table class="cb-table" data-cb-cycles-table>
             <thead>
@@ -161,8 +167,8 @@ $cb_rounding_modes = [
                 <th>Cycle</th>
                 <th class="right">Source (from profile)</th>
                 <th class="right">Catalog price</th>
-                <th data-cb-u="u-905008530c">Catalog sync</th>
-                <th data-cb-u="u-905008530c">Renewal reprice</th>
+                <th data-cb-u="u-905008530c">Offer for new orders</th>
+                <th data-cb-u="u-905008530c">Allow renewal repricing</th>
                 <th>Markup override</th>
               </tr>
             </thead>
@@ -217,7 +223,7 @@ $cb_rounding_modes = [
             </tbody>
           </table>
           <div data-cb-cycles-loading data-cb-u="u-f0c6b37bc8">
-            Pick a product to load catalog prices…
+            Pick a product to load the current catalog state…
           </div>
         </div>
       </div>
@@ -249,7 +255,7 @@ $cb_rounding_modes = [
       <div class="cb-inset" data-cb-u="u-86e35488e1" data-cb-mapping-preview>
         <div class="cb-card-sub" data-cb-u="u-0d248ae75a">Summary</div>
         <div data-cb-mapping-preview-body>
-          <span class="muted" data-cb-u="u-7e6609e5f6">Pick a profile + product to preview which cycles will sync.</span>
+          <span class="muted" data-cb-u="u-7e6609e5f6">Pick a profile and product to review the saved cycle policy.</span>
         </div>
       </div>
 
@@ -317,6 +323,12 @@ $cb_rounding_modes = [
             data-cb-mapping-active="<?= $isActive ? 1 : 0 ?>"
             data-cb-mapping-catalog-mask="<?= (int) $catalogMask ?>"
             data-cb-mapping-renewal-mask="<?= (int) $renewalMask ?>"
+            data-cb-mapping-rounding-mode="<?= $esc((string) ($m['rounding_mode'] ?? 'exact_2_decimals')) ?>"
+            data-cb-mapping-respect-disabled="<?= !array_key_exists('respect_disabled_cycles', $m) || !empty($m['respect_disabled_cycles']) ? 1 : 0 ?>"
+            data-cb-mapping-overwrite-free="<?= !empty($m['overwrite_free_cycles']) ? 1 : 0 ?>"
+            data-cb-mapping-sync-setup-fees="<?= !empty($m['sync_setup_fees']) ? 1 : 0 ?>"
+            data-cb-mapping-markup-overrides-json="<?= $esc((string) ($m['markup_overrides_json'] ?? '{}')) ?>"
+            data-cb-mapping-source-overrides-json="<?= $esc((string) ($m['source_overrides_json'] ?? '{}')) ?>"
             data-cb-sort-profile_slug="<?= $esc(strtolower($pSlug)) ?>"
             data-cb-sort-product_name="<?= $esc(strtolower($wpName)) ?>"
             data-cb-sort-updated_at="<?= $esc($updated) ?>"
@@ -383,18 +395,26 @@ $cb_rounding_modes = [
 <section class="cb-card" data-cb-u="u-76977cc9f2">
   <header data-cb-u="u-69d1e8a1fb">
     <div>
-      <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Provisioning publication</h3>
+      <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Advanced provider publication</h3>
       <p class="cb-card-sub" data-cb-u="u-8a5832c351">
-        Seal stable Rust catalog and Contabo Customer API identifiers for future orders.
-        Previewing does not change the active mapping. Approval requires the exact preview hash.
+        Operator-only workflow for sealing provider identifiers after the pricing rule is already settled.
+        This does not change catalog pricing, and some installs intentionally run without this capability.
       </p>
     </div>
-    <span class="cb-pill warn">preview first</span>
+    <span class="cb-pill warn">advanced</span>
   </header>
 
-  <?php if (empty($catalog_versions)): ?>
+  <?php if (!$cb_publication_catalog_supported): ?>
     <div class="cb-empty">
-      Import a versioned Rust catalog before publishing a provisioning mapping.
+      <?= $esc($cb_publication_catalog_message) ?>
+      <?php if (!empty($cb_publication_catalog_missing)): ?>
+        Missing:
+        <code class="mono"><?= $esc(implode(', ', $cb_publication_catalog_missing)) ?></code>
+      <?php endif; ?>
+    </div>
+  <?php elseif (empty($catalog_versions)): ?>
+    <div class="cb-empty">
+      Import a versioned provider catalog before this advanced publication step can be used.
     </div>
   <?php elseif (empty($mappings)): ?>
     <div class="cb-empty">Create a product mapping before publishing provider identifiers.</div>
@@ -460,7 +480,7 @@ $cb_rounding_modes = [
         </div>
       </div>
       <div data-cb-u="u-a858745d5d">
-        <button type="submit" class="cb-btn">Generate preview</button>
+        <button type="submit" class="cb-btn">Generate sealed preview</button>
       </div>
     </form>
   <?php endif; ?>
@@ -472,7 +492,7 @@ $cb_rounding_modes = [
     );
   ?>
     <div class="cb-publication-review" role="region" aria-labelledby="cb-publication-review-title">
-      <h4 id="cb-publication-review-title">Approval review</h4>
+      <h4 id="cb-publication-review-title">Publication approval review</h4>
       <dl class="cb-key-values">
         <div><dt>Version</dt><dd class="mono"><?= $esc($publication_preview['mapping_version'] ?? '') ?></dd></div>
         <div><dt>Preview SHA-256</dt><dd class="mono"><?= $esc($publication_preview['preview_hash'] ?? '') ?></dd></div>
@@ -504,11 +524,13 @@ $cb_rounding_modes = [
 </section>
 
 <section class="cb-card" data-cb-u="u-76977cc9f2">
-  <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Publication history</h3>
+  <h3 class="cb-card-title" data-cb-u="u-0cbe035c55">Advanced publication history</h3>
   <p class="cb-card-sub" data-cb-u="u-2b0e8ce8c2">
-    Immutable previews and their approval state. Superseded versions remain available for order history.
+    Immutable provider-publication previews and their approval state. Superseded versions remain available for order history.
   </p>
-  <?php if (empty($mapping_publications)): ?>
+  <?php if (!$cb_publication_catalog_supported): ?>
+    <div class="cb-empty"><?= $esc($cb_publication_catalog_message) ?></div>
+  <?php elseif (empty($mapping_publications)): ?>
     <div class="cb-empty">No publication previews have been created.</div>
   <?php else: ?>
     <table class="cb-table">

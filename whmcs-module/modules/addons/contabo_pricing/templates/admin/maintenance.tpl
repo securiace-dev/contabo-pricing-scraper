@@ -15,7 +15,10 @@
  * @var array{
  *   healthy:bool,
  *   missing:list<string>,
- *   schema_version:int
+ *   schema_version:int,
+ *   compatibility_mode?:bool,
+ *   optional_missing?:list<string>,
+ *   publication_catalog_supported?:bool
  * } $cb_schema_health                 SchemaHealth::requiredColumnsPresent().
  * @var int      $cb_schema_target     Installer::SCHEMA_VERSION (target).
  * @var string   $cb_purge_phrase      SchemaHealth::PURGE_CONFIRMATION_PHRASE.
@@ -54,6 +57,10 @@ $cb_missing = isset($cb_health['missing']) && is_array($cb_health['missing'])
 $cb_current = isset($cb_health['schema_version']) ? (int) $cb_health['schema_version'] : 0;
 $cb_target  = isset($cb_schema_target) ? (int) $cb_schema_target : $cb_current;
 $cb_phrase  = isset($cb_purge_phrase) ? (string) $cb_purge_phrase : 'PURGE CONTABO PRICING DATA';
+$cb_compatibility_mode = !empty($cb_health['compatibility_mode']);
+$cb_optional_missing = isset($cb_health['optional_missing']) && is_array($cb_health['optional_missing'])
+    ? $cb_health['optional_missing']
+    : [];
 
 $cb_flash = isset($_REQUEST['flash']) ? (string) $_REQUEST['flash'] : '';
 $cb_err   = isset($_REQUEST['error']) ? (string) $_REQUEST['error'] : '';
@@ -128,6 +135,18 @@ require __DIR__ . '/_layout_open.tpl';
       <code class="mono">mod_contabo_mapping</code> and
       <code class="mono">mod_contabo_profile</code>.
     </p>
+    <?php if ($cb_compatibility_mode): ?>
+      <p class="cb-card-sub" data-cb-u="u-d83761292e">
+        Compatibility mode is active: publication/catalog tables are absent on this WHMCS schema,
+        so catalog import and mapping publication remain disabled until those addon tables exist.
+      </p>
+      <?php if ($cb_optional_missing !== []): ?>
+        <p class="muted">
+          Optional capability gap:
+          <code class="mono"><?= $esc(implode(', ', $cb_optional_missing)) ?></code>
+        </p>
+      <?php endif; ?>
+    <?php endif; ?>
   <?php else: ?>
     <p data-cb-u="u-919cd4969c">
       The following required columns are missing. Run migrations to repair:

@@ -328,4 +328,23 @@ final class MappingFormTest extends TestCase
             'initial render disables catalog checkboxes until ajax-product-cycles returns'
         );
     }
+
+    /**
+     * Test 30 — The mappings table must expose the saved mapping policy fields
+     * needed by the edit button so JS can rehydrate the form after the async
+     * cycle metadata load completes.
+     */
+    public function testMappingsTemplateExposesEditHydrationAttributes(): void
+    {
+        $tplPath = realpath(__DIR__ . '/../templates/admin/mappings.tpl');
+        $this->assertNotFalse($tplPath);
+        $tpl = (string) file_get_contents($tplPath);
+
+        $this->assertStringContainsString('data-cb-mapping-rounding-mode', $tpl);
+        $this->assertStringContainsString('data-cb-mapping-respect-disabled', $tpl);
+        $this->assertStringContainsString('data-cb-mapping-overwrite-free', $tpl);
+        $this->assertStringContainsString('data-cb-mapping-sync-setup-fees', $tpl);
+        $this->assertStringContainsString('data-cb-mapping-markup-overrides-json', $tpl);
+        $this->assertStringContainsString('data-cb-mapping-source-overrides-json', $tpl);
+    }
 }

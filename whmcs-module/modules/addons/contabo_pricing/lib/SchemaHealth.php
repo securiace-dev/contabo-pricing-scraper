@@ -18,10 +18,11 @@ use WHMCS\Database\Capsule;
  *      Failures are caught and surfaced as a structured array so the caller
  *      can render a friendly UI error instead of leaking a stack trace.
  *
- *   2. requiredColumnsPresent() — verifies the v4 runtime column set actually
- *      exists on `mod_contabo_mapping` + `mod_contabo_profile`, returning the
- *      list of missing "table.column" strings (powers the maintenance-page
- *      green/red health panel).
+ *   2. requiredColumnsPresent() — verifies the always-required runtime column
+ *      set exists, while separately classifying publication/catalog tables as
+ *      an optional capability. Older WHMCS-aligned installs may run in a
+ *      compatibility mode where those v10+ tables are absent, which must be
+ *      supported rather than treated as fatal drift.
  *
  * Also hosts the purge-confirmation phrase validator (isPurgeConfirmed) so the
  * maintenance-purge handler + the maintenance template share one source of
@@ -174,37 +175,6 @@ final class SchemaHealth
             'claim_token',
             'claim_expires_at',
         ],
-        'mod_contabo_catalog_versions' => [
-            'catalog_version',
-            'state',
-            'payload_hash',
-            'source_observed_at',
-        ],
-        'mod_contabo_catalog_items' => [
-            'catalog_version_id',
-            'machine_id',
-            'provider_id',
-            'item_type',
-            'availability_state',
-            'payload_hash',
-            'payload_json',
-        ],
-        'mod_contabo_mapping_publications' => [
-            'mapping_version',
-            'product_id',
-            'catalog_version_id',
-            'provider_sku_id',
-            'state',
-            'payload_hash',
-            'payload_json',
-        ],
-        'mod_contabo_publication_approvals' => [
-            'publication_type',
-            'publication_version',
-            'decision',
-            'admin_id',
-            'preview_hash',
-        ],
         'mod_securiacevps_secrets' => [
             'secret_uuid',
             'service_id',
@@ -234,6 +204,58 @@ final class SchemaHealth
             'observed_at',
         ],
     ];
+
+    /**
+     * Publication/catalog tables are addon-owned, but older live environments
+     * may legitimately omit them. Their absence disables publication/catalog
+     * flows explicitly; it must not make the whole addon look unhealthy.
+     *
+     * @var array<string, list<string>>
+     */
+    private const OPTIONAL_CATALOG_COLUMNS = [
+        'mod_contabo_catalog_versions' => [
+            'catalog_version',
+            'state',
+            'payload_hash',
+            'source_observed_at',
+        ],
+        'mod_contabo_catalog_items' => [
+            'catalog_version_id',
+            'machine_id',
+            'provider_id',
+            'item_type',
+            'availability_state',
+            'payload_hash',
+            'payload_json',
+        ],
+    ];
+
+    /**
+     * @var array<string, list<string>>
+     */
+    private const OPTIONAL_PUBLICATION_COLUMNS = [
+        'mod_contabo_mapping_publications' => [
+            'mapping_version',
+            'product_id',
+            'catalog_version_id',
+            'provider_sku_id',
+            'state',
+            'payload_hash',
+            'payload_json',
+        ],
+        'mod_contabo_publication_approvals' => [
+            'publication_type',
+            'publication_version',
+            'decision',
+            'admin_id',
+            'preview_hash',
+        ],
+    ];
+
+    private const CATALOG_COMPATIBILITY_MESSAGE =
+        'Catalog import is disabled because this WHMCS schema does not include the addon catalog tables.';
+    private const PUBLICATION_COMPATIBILITY_MESSAGE =
+        'Publication/catalog features are disabled because this WHMCS schema does not include the addon publication tables.';
 
     /**
      * Reads the recorded schema_version; if lower than Installer::SCHEMA_VERSION
@@ -286,11 +308,19 @@ final class SchemaHealth
      * Verifies the v4 required runtime column set exists. Returns the list of
      * missing "table.column" strings (empty list = healthy). Never throws.
      *
-     * @return array{healthy:bool, missing:list<string>, schema_version:int}
+     * @return array{
+     *   healthy:bool,
+     *   missing:list<string>,
+     *   schema_version:int,
+     *   compatibility_mode:bool,
+     *   optional_missing:list<string>,
+     *   publication_catalog_supported:bool
+     * }
      */
     public static function requiredColumnsPresent(): array
     {
         $missing = [];
+        $compatibility = self::publicationCatalogSupport();
         try {
             $schema = Capsule::schema();
             foreach (self::REQUIRED_COLUMNS as $table => $columns) {
@@ -322,6 +352,9 @@ final class SchemaHealth
                 'healthy'        => false,
                 'missing'        => $missing,
                 'schema_version' => 0,
+                'compatibility_mode' => true,
+                'optional_missing' => $compatibility['missing'],
+                'publication_catalog_supported' => false,
             ];
         }
 
@@ -329,6 +362,9 @@ final class SchemaHealth
             'healthy'        => $missing === [],
             'missing'        => $missing,
             'schema_version' => self::currentSchemaVersion(),
+            'compatibility_mode' => !$compatibility['supported'],
+            'optional_missing' => $compatibility['missing'],
+            'publication_catalog_supported' => $compatibility['supported'],
         ];
     }
 
@@ -348,6 +384,113 @@ final class SchemaHealth
             }
         }
         return $out;
+    }
+
+    /**
+     * @return array{supported:bool, missing:list<string>, message:string}
+     */
+    public static function publicationCatalogSupport(): array
+    {
+        return self::combineCompatibilitySupport(
+            self::catalogSupport(),
+            self::publicationSupport()
+        );
+    }
+
+    /**
+     * @return array{supported:bool, missing:list<string>, message:string}
+     */
+    public static function catalogSupport(): array
+    {
+        return self::optionalColumnsSupport(
+            self::OPTIONAL_CATALOG_COLUMNS,
+            self::CATALOG_COMPATIBILITY_MESSAGE
+        );
+    }
+
+    /**
+     * @return array{supported:bool, missing:list<string>, message:string}
+     */
+    public static function publicationSupport(): array
+    {
+        return self::combineCompatibilitySupport(
+            self::catalogSupport(),
+            self::optionalColumnsSupport(
+                self::OPTIONAL_PUBLICATION_COLUMNS,
+                self::PUBLICATION_COMPATIBILITY_MESSAGE
+            )
+        );
+    }
+
+    public static function requireCatalogSupport(): void
+    {
+        $support = self::catalogSupport();
+        if (!$support['supported']) {
+            throw new \RuntimeException($support['message']);
+        }
+    }
+
+    public static function requirePublicationSupport(): void
+    {
+        $support = self::publicationSupport();
+        if (!$support['supported']) {
+            throw new \RuntimeException($support['message']);
+        }
+    }
+
+    /**
+     * @param array<string, list<string>> $tables
+     * @return array{supported:bool, missing:list<string>, message:string}
+     */
+    private static function optionalColumnsSupport(array $tables, string $message): array
+    {
+        $missing = [];
+        try {
+            $schema = Capsule::schema();
+            foreach ($tables as $table => $columns) {
+                if (!$schema->hasTable($table)) {
+                    foreach ($columns as $column) {
+                        $missing[] = $table . '.' . $column;
+                    }
+                    continue;
+                }
+                foreach ($columns as $column) {
+                    if (!$schema->hasColumn($table, $column)) {
+                        $missing[] = $table . '.' . $column;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            foreach ($tables as $table => $columns) {
+                foreach ($columns as $column) {
+                    $missing[] = $table . '.' . $column;
+                }
+            }
+        }
+
+        return [
+            'supported' => $missing === [],
+            'missing' => $missing,
+            'message' => $message,
+        ];
+    }
+
+    /**
+     * @param array{supported:bool, missing:list<string>, message:string} ...$supports
+     * @return array{supported:bool, missing:list<string>, message:string}
+     */
+    private static function combineCompatibilitySupport(array ...$supports): array
+    {
+        $missing = [];
+        foreach ($supports as $support) {
+            $missing = array_merge($missing, $support['missing']);
+        }
+
+        return [
+            'supported' => $missing === [],
+            'missing' => $missing,
+            'message' => self::PUBLICATION_COMPATIBILITY_MESSAGE,
+        ];
     }
 
     /**

@@ -12,6 +12,20 @@ final class CheckoutGuardTest extends TestCase
     protected function setUp(): void
     {
         Capsule::reset();
+        Capsule::$columns['mod_contabo_catalog_versions'] = [
+            'catalog_version', 'state', 'payload_hash', 'source_observed_at',
+        ];
+        Capsule::$columns['mod_contabo_catalog_items'] = [
+            'catalog_version_id', 'machine_id', 'provider_id', 'item_type',
+            'availability_state', 'payload_hash', 'payload_json',
+        ];
+        Capsule::$columns['mod_contabo_mapping_publications'] = [
+            'mapping_version', 'product_id', 'catalog_version_id', 'provider_sku_id',
+            'state', 'payload_hash', 'payload_json',
+        ];
+        Capsule::$columns['mod_contabo_publication_approvals'] = [
+            'publication_type', 'publication_version', 'decision', 'admin_id', 'preview_hash',
+        ];
         $this->seed();
     }
 
@@ -79,6 +93,20 @@ final class CheckoutGuardTest extends TestCase
             1,
             (new CheckoutGuard())->validateProducts([$this->cartProduct()])
         );
+    }
+
+    public function testCompatibilityModeFailsClosedWhenPublicationTablesAreAbsent(): void
+    {
+        unset(
+            Capsule::$columns['mod_contabo_catalog_versions'],
+            Capsule::$columns['mod_contabo_catalog_items'],
+            Capsule::$columns['mod_contabo_mapping_publications'],
+            Capsule::$columns['mod_contabo_publication_approvals']
+        );
+
+        $errors = (new CheckoutGuard())->validateProducts([$this->cartProduct()]);
+        $this->assertCount(1, $errors);
+        $this->assertStringContainsString('review your selections', $errors[0]);
     }
 
     /** @return array<string,mixed> */

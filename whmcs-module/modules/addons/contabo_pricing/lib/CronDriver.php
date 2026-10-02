@@ -39,28 +39,70 @@ final class CronDriver
     }
 
     /**
-     * The Phase A daily sweep:
-     *   - observes (no apply),
-     *   - prunes stale decision rows,
-     *   - emits an admin digest hook-point (currently a no-op stub since the
-     *     digest mailer is Agent C territory; Phase A surfaces the same data
-     *     via the Repricing dashboard).
+     * The daily repricing/renewal observation sweep. Returns a digest-friendly
+     * summary instead of only logging side effects.
      *
-     * Wrapped in try/catch by the hook caller; we re-throw nothing.
+     * @return array<string,mixed>
      */
-    public function runObserveSweep(): void
+    public function runObserveSweep(): array
     {
+        $summary = [
+            'trigger' => 'daily_cron',
+            'started_at' => date('Y-m-d H:i:s'),
+            'cron_run_id' => $this->cronRunId,
+            'status' => 'healthy',
+            'schema_ready' => false,
+            'candidate_mapped_services' => 0,
+            'renewal_evaluation_mode' => 'inactive',
+            'renewal_evaluation_message' => '',
+            'scheduled_changes' => [
+                'schedules_processed' => 0,
+                'schedules_applied' => 0,
+                'schedules_deferred' => 0,
+                'services_evaluated' => 0,
+                'catalog_intents_logged' => 0,
+                'decisions' => [],
+            ],
+            'errors' => [],
+            'notes' => [],
+        ];
+
         try {
-            $this->ensureSchemaPresent();
-            $this->observeMappedServices();
-            // Process due scheduled changes (Phase A: engine gate keeps this observe-only).
-            $this->processScheduledChanges();
+            $summary['schema_ready'] = $this->ensureSchemaPresent();
+            if (!$summary['schema_ready']) {
+                $summary['status'] = 'warning';
+                $summary['renewal_evaluation_mode'] = 'schema_unavailable';
+                $summary['renewal_evaluation_message'] = 'Repricing observation skipped because required Contabo Pricing tables are not available yet.';
+                $summary['notes'][] = 'Observation skipped until repricing schema tables exist.';
+                return $this->finishSummary($summary);
+            }
+
+            $observeSummary = $this->observeMappedServices();
+            $summary['candidate_mapped_services'] = (int) ($observeSummary['candidate_mapped_services'] ?? 0);
+            $summary['renewal_evaluation_mode'] = (string) ($observeSummary['renewal_evaluation_mode'] ?? 'inactive');
+            $summary['renewal_evaluation_message'] = (string) ($observeSummary['renewal_evaluation_message'] ?? '');
+            if (!empty($observeSummary['notes']) && is_array($observeSummary['notes'])) {
+                $summary['notes'] = array_merge($summary['notes'], $observeSummary['notes']);
+            }
+            if (!empty($observeSummary['errors']) && is_array($observeSummary['errors'])) {
+                $summary['errors'] = array_merge($summary['errors'], $observeSummary['errors']);
+            }
+
+            $summary['scheduled_changes'] = $this->processScheduledChanges();
+            if (!empty($summary['scheduled_changes']['errors']) && is_array($summary['scheduled_changes']['errors'])) {
+                $summary['errors'] = array_merge($summary['errors'], $summary['scheduled_changes']['errors']);
+            }
+
             $this->pruneOldDecisions();
         } catch (\Throwable $e) {
+            $summary['status'] = 'failed';
+            $summary['errors'][] = 'CronDriver sweep failed: ' . $e->getMessage();
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing CronDriver sweep failed: ' . $e->getMessage());
             }
         }
+
+        return $this->finishSummary($summary);
     }
 
     /**
@@ -81,15 +123,29 @@ final class CronDriver
      * Phase A is observe-only by definition and we don't want to crash the
      * cron because a sibling component hasn't shipped.
      */
-    private function observeMappedServices(): void
+    private function observeMappedServices(): array
     {
+        $summary = [
+            'candidate_mapped_services' => 0,
+            'renewal_evaluation_mode' => 'inactive',
+            'renewal_evaluation_message' => '',
+            'notes' => [],
+            'errors' => [],
+        ];
+
         if (!class_exists('\\ContaboPricing\\RenewalEngine')) {
-            return;
+            $summary['renewal_evaluation_mode'] = 'renewal_engine_missing';
+            $summary['renewal_evaluation_message'] = 'RenewalEngine is not deployed, so repricing observation could not evaluate services.';
+            $summary['notes'][] = 'RenewalEngine classes are unavailable in this deployment.';
+            return $summary;
         }
 
         $serviceIds = $this->loadActiveMappedServiceIds();
+        $summary['candidate_mapped_services'] = count($serviceIds);
         if (empty($serviceIds)) {
-            return;
+            $summary['renewal_evaluation_mode'] = 'no_candidates';
+            $summary['renewal_evaluation_message'] = 'No active mapped services needed repricing observation today.';
+            return $summary;
         }
 
         // Phase A observe: per-service RenewalEngine evaluation needs the full
@@ -104,6 +160,10 @@ final class CronDriver
                 . count($serviceIds) . ' active mapped service(s) identified; '
                 . 'per-service RenewalEngine evaluation is wired in Phase B (not invoked).');
         }
+        $summary['renewal_evaluation_mode'] = 'phase_b_pending';
+        $summary['renewal_evaluation_message'] = 'Active mapped services were identified, but per-service RenewalEngine evaluation is intentionally inactive in the daily cron until Phase B is wired.';
+        $summary['notes'][] = 'Mapped-service counts are observational only; no recurring amounts were recalculated.';
+        return $summary;
     }
 
     /**
@@ -146,13 +206,26 @@ final class CronDriver
         return $ids;
     }
 
-    private function processScheduledChanges(): void
+    private function processScheduledChanges(): array
     {
+        $summary = [
+            'schedules_processed' => 0,
+            'schedules_applied' => 0,
+            'schedules_deferred' => 0,
+            'services_evaluated' => 0,
+            'catalog_intents_logged' => 0,
+            'decisions' => [],
+            'errors' => [],
+            'processor_mode' => 'inactive',
+        ];
+
         if (!class_exists('\\ContaboPricing\\ScheduledChangeProcessor')) {
-            return;
+            $summary['processor_mode'] = 'processor_missing';
+            return $summary;
         }
         if (!Capsule::schema()->hasTable('mod_contabo_price_change_schedule')) {
-            return;
+            $summary['processor_mode'] = 'schedule_table_missing';
+            return $summary;
         }
 
         // Build a minimal settings bag — ScheduledChangeProcessor only reads
@@ -173,7 +246,8 @@ final class CronDriver
 
         try {
             $processor = new ScheduledChangeProcessor($settings);
-            $summary = $processor->run();
+            $summary = array_merge($summary, $processor->run());
+            $summary['processor_mode'] = 'executed';
             if (function_exists('logActivity') && ($summary['schedules_processed'] ?? 0) > 0) {
                 logActivity(sprintf(
                     'Contabo Pricing ScheduledChangeProcessor: %d processed, %d applied, %d deferred, %d services evaluated.',
@@ -184,10 +258,13 @@ final class CronDriver
                 ));
             }
         } catch (\Throwable $e) {
+            $summary['processor_mode'] = 'failed';
+            $summary['errors'][] = 'ScheduledChangeProcessor failed: ' . $e->getMessage();
             if (function_exists('logActivity')) {
                 logActivity('Contabo Pricing: ScheduledChangeProcessor failed: ' . $e->getMessage());
             }
         }
+        return $summary;
     }
 
     /**
@@ -235,5 +312,26 @@ final class CronDriver
         return substr($hex, 0, 8) . '-' . substr($hex, 8, 4) . '-'
             . substr($hex, 12, 4) . '-' . substr($hex, 16, 4) . '-'
             . substr($hex, 20, 12);
+    }
+
+    /**
+     * @param array<string,mixed> $summary
+     * @return array<string,mixed>
+     */
+    private function finishSummary(array $summary): array
+    {
+        if ($summary['status'] !== 'failed') {
+            if (!empty($summary['errors'])) {
+                $summary['status'] = 'warning';
+            } elseif (
+                (string) ($summary['renewal_evaluation_mode'] ?? '') === 'phase_b_pending'
+                || (string) ($summary['renewal_evaluation_mode'] ?? '') === 'schema_unavailable'
+                || (string) ($summary['renewal_evaluation_mode'] ?? '') === 'renewal_engine_missing'
+            ) {
+                $summary['status'] = 'warning';
+            }
+        }
+        $summary['finished_at'] = date('Y-m-d H:i:s');
+        return $summary;
     }
 }
