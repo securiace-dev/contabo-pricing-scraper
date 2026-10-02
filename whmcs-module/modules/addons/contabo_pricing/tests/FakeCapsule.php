@@ -119,7 +119,22 @@ if (!class_exists(__NAMESPACE__ . '\\Capsule', false)) {
             self::$calls = [];
             self::$inserts = [];
             self::$tables = [];
-            self::$columns = [];
+            // Mirror Installer: the catalog + publication tables always exist on a
+            // migrated schema. Compatibility-mode tests unset them explicitly.
+            self::$columns = [
+                'mod_contabo_catalog_versions' => ['catalog_version', 'state', 'payload_hash', 'source_observed_at'],
+                'mod_contabo_catalog_items' => [
+                    'catalog_version_id', 'machine_id', 'provider_id', 'item_type',
+                    'availability_state', 'payload_hash', 'payload_json',
+                ],
+                'mod_contabo_mapping_publications' => [
+                    'mapping_version', 'product_id', 'catalog_version_id', 'provider_sku_id',
+                    'state', 'payload_hash', 'payload_json',
+                ],
+                'mod_contabo_publication_approvals' => [
+                    'publication_type', 'publication_version', 'decision', 'admin_id', 'preview_hash',
+                ],
+            ];
             self::$statements = [];
             self::$nextId = 1;
             self::$returnStdClass = false;

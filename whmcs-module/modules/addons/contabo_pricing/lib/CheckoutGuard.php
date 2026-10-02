@@ -61,6 +61,7 @@ final class CheckoutGuard
      */
     private function assertProductContract(int $productId, array $cartProduct): void
     {
+        SchemaHealth::requirePublicationSupport();
         $mappingObject = Capsule::table('mod_contabo_mapping')
             ->where('product_id', $productId)
             ->where('active', 1)

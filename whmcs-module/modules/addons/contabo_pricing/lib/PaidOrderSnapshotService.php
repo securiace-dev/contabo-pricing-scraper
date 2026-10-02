@@ -21,6 +21,7 @@ final class PaidOrderSnapshotService
         int $serviceId,
         int $quoteTtlSeconds = 1800
     ): string {
+        SchemaHealth::requirePublicationSupport();
         $service = $this->row('tblhosting', 'id', $serviceId);
         if ($service === null) {
             throw new \RuntimeException('Service #' . $serviceId . ' was not found');

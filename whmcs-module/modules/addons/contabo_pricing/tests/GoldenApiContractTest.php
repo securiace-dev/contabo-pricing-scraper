@@ -15,6 +15,13 @@ final class GoldenApiContractTest extends TestCase
     protected function setUp(): void
     {
         Capsule::reset();
+        Capsule::$columns['mod_contabo_catalog_versions'] = [
+            'catalog_version', 'state', 'payload_hash', 'source_observed_at',
+        ];
+        Capsule::$columns['mod_contabo_catalog_items'] = [
+            'catalog_version_id', 'machine_id', 'provider_id', 'item_type',
+            'availability_state', 'payload_hash', 'payload_json',
+        ];
         Capsule::$tables['mod_contabo_catalog_versions'] = [];
         Capsule::$tables['mod_contabo_catalog_items'] = [];
     }

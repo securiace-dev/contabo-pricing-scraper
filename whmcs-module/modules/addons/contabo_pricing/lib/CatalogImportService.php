@@ -32,6 +32,7 @@ final class CatalogImportService
      */
     public function import(array $catalog, int $adminId = 0, array $opts = []): array
     {
+        SchemaHealth::requireCatalogSupport();
         $catalogVersion = trim((string) ($catalog['catalog_version'] ?? ''));
         $payloadHash = strtolower(trim((string) ($catalog['payload_hash'] ?? '')));
         $schemaVersion = trim((string) ($catalog['schema_version'] ?? ''));

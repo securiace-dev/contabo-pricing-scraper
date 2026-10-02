@@ -13,6 +13,13 @@ final class CatalogImportServiceTest extends TestCase
     protected function setUp(): void
     {
         Capsule::reset();
+        Capsule::$columns['mod_contabo_catalog_versions'] = [
+            'catalog_version', 'state', 'payload_hash', 'source_observed_at',
+        ];
+        Capsule::$columns['mod_contabo_catalog_items'] = [
+            'catalog_version_id', 'machine_id', 'provider_id', 'item_type',
+            'availability_state', 'payload_hash', 'payload_json',
+        ];
         Capsule::$tables['mod_contabo_catalog_versions'] = [];
         Capsule::$tables['mod_contabo_catalog_items'] = [];
         Capsule::$tables['mod_contabo_settings'] = [];
@@ -158,6 +165,16 @@ final class CatalogImportServiceTest extends TestCase
         ];
         $catalog['payload_hash'] = hash('sha256', CatalogImportService::canonicalJson($catalog));
         return $catalog;
+    }
+
+    public function testCompatibilityModeRejectsImportBeforeAnyWrite(): void
+    {
+        unset(Capsule::$columns['mod_contabo_catalog_versions'], Capsule::$columns['mod_contabo_catalog_items']);
+        unset(Capsule::$tables['mod_contabo_catalog_versions'], Capsule::$tables['mod_contabo_catalog_items']);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Catalog import is disabled');
+        (new CatalogImportService())->import($this->catalog(), 9);
     }
 
     /**

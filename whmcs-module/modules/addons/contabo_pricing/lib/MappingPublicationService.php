@@ -30,6 +30,7 @@ final class MappingPublicationService
      */
     public function preview(int $mappingId, array $selection): array
     {
+        SchemaHealth::requirePublicationSupport();
         if ($mappingId <= 0) {
             throw new InvalidArgumentException('A valid mapping is required.');
         }
@@ -153,6 +154,7 @@ final class MappingPublicationService
         string $confirmation,
         string $reason = ''
     ): array {
+        SchemaHealth::requirePublicationSupport();
         $mappingVersion = trim($mappingVersion);
         $previewHash = strtolower(trim($previewHash));
         if ($mappingVersion === '' || strlen($previewHash) !== 64) {
