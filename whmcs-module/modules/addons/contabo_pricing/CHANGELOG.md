@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.1.0 — 2026-08-05 (Proposal Studio preview boundary)
+
+- Adds an admin-first, deterministic Proposal Studio with separate client and
+  internal artifacts; delivery remains hard-blocked until immutable approval,
+  durable outbox/idempotency, and attachment-token persistence are available.
+- Separates provider tax cash/recoverability, FX/card markup, owner adjustment,
+  and fail-closed Securiace output GST; tax-inclusive provider quotes are
+  decomposed before landed-cost recovery logic.
+- Adds Founder Managed quantities from 1–99, scaling annual fees and included
+  monthly Founder minutes while preserving per-server and total evidence.
+- Adds up to four authoritative same-term plan comparisons with non-billing
+  totals, field-specific visibility, and cross-family warnings.
+- Adds bounded OpenAI-compatible narrative assistance with deterministic
+  fallback, advisory cost metadata, redirect/endpoint safeguards, and strict
+  client-projection leakage checks.
+
 ## securiacevps 2.0.0 — 2026-07-30 (WHMCS-native lifecycle and customer experience)
 
 This release replaces direct request/response provisioning with the canonical
