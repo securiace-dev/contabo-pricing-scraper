@@ -1,9 +1,3 @@
 {
-  "mcpServers": {
-    "mempalace": {
-      "type": "stdio",
-      "command": "mempalace-mcp",
-      "env": {}
-    }
-  }
+  "mcpServers": {}
 }
