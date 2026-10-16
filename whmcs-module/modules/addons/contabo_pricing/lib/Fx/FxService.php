@@ -17,7 +17,10 @@ use WHMCS\Database\Capsule;
  */
 final class FxService
 {
-    public const URL = 'https://api.frankfurter.app/latest?base=EUR&symbols=INR';
+    // frankfurter.app 301s to frankfurter.dev; keep the current host so a
+    // no-follow executor still works. CurlRequestExecutor also follows HTTPS
+    // redirects if the provider moves again.
+    public const URL = 'https://api.frankfurter.dev/v1/latest?base=EUR&symbols=INR';
     public const TTL_SECONDS = 300;
     private const TABLE = 'mod_contabo_settings';
     private const KEY_JSON = 'fx.cache_json';

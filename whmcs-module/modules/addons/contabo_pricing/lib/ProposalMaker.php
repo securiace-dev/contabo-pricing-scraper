@@ -53,7 +53,9 @@ final class ProposalMaker
     ) {
         $this->settings = $settings;
         $this->api = $api ?? PlanSourceFactory::fromSettings($settings);
-        $this->executor = $executor ?? new CurlRequestExecutor();
+        // Never follow redirects on the AI hop: a 302 would forward the Bearer
+        // token. Fx/scrape use the default (follow) executor instead.
+        $this->executor = $executor ?? new CurlRequestExecutor(false);
     }
 
     /**

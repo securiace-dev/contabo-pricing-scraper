@@ -250,6 +250,22 @@ Exact Dokploy service IDs and script names remain blocked until
 `whmcs-prod-new` / `securiace-whmcs-prod` are shared — see
 [`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
 
+## Addon 1.1.2 — FX fetch and fail-closed missing rate
+
+No schema bump (`Installer::SCHEMA_VERSION` stays 16). `AdminController::VERSION`
+is `1.1.2`. Open the add-on admin page after file copy so WHMCS records the
+version. Do not deploy from this document without an explicit go.
+
+Extra verify after copy:
+
+1. Settings currency is INR. Run **Sync → Observe** first. A live Frankfurter
+   fetch must produce a positive `fx_rate` on any previewed version (EUR 3.6
+   lands near INR 400, never INR 3.6). If Frankfurter is down, the run must
+   be `failed` with `FX rate unavailable for INR` in `error_message` / digest /
+   Activity Log — never `succeeded` with `fx_rate` NULL.
+2. The 1.1.1 traps below still apply (GST No, catalog imported, schema 16,
+   hashed backup).
+
 ## Addon 1.1.1 — term translation and sync diagnostics
 
 This release does **not** add a schema version. `Installer::SCHEMA_VERSION`

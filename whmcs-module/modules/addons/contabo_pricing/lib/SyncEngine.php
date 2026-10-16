@@ -199,10 +199,17 @@ class SyncEngine
             $summary['catalog_scraper_version'] = (string) ($meta['scraper_version'] ?? ($meta['snapshot_meta']['scraper_version'] ?? ''));
 
             // FX once per run — every profile uses the same rate snapshot.
+            // A missing rate for a non-EUR currency used to passthrough euros
+            // as local (e.g. EUR 3.6 stored as INR 3.6). That is never a
+            // successful sync: fail before any profile version or catalog write.
             $fx = [];
-            try { $fx = $this->api->fx(); } catch (\Throwable $e) { /* /fx still stub in API */ }
-            $fxRate   = isset($fx['eurInr']) ? (float) $fx['eurInr'] : null;
-            $fxSource = isset($fx['source']) ? (string) $fx['source'] : null;
+            $fxError = '';
+            try {
+                $fx = $this->api->fx();
+            } catch (\Throwable $e) {
+                $fxError = $e->getMessage();
+            }
+            [$fxRate, $fxSource] = $this->requireFxRateForLocalCurrency($fx, $fxError);
 
             $byPlanSlug = [];
             $activeProfiles = $this->profiles->listProfiles(true);
@@ -348,6 +355,44 @@ class SyncEngine
                 ? $this->finishWithoutWrite('failed', $summary, $e->getMessage())
                 : $this->finalise((int) $logId, 'failed', $summary, $e->getMessage());
         }
+    }
+
+    /**
+     * EUR is a passthrough (no rate required). Any other currency needs a
+     * positive finite eurInr before we write prices — otherwise
+     * ProfileVersionInput::toLocalMonthly stores the euro amount as local.
+     *
+     * @param array<string,mixed> $fx
+     * @return array{0:?float,1:?string}
+     */
+    private function requireFxRateForLocalCurrency(array $fx, string $fxError): array
+    {
+        $currency = strtoupper(trim($this->settings->currencyIso));
+        $rate = null;
+        if (isset($fx['eurInr']) && is_numeric($fx['eurInr'])) {
+            $candidate = (float) $fx['eurInr'];
+            if ($candidate > 0.0 && is_finite($candidate)) {
+                $rate = $candidate;
+            }
+        }
+        $source = isset($fx['source']) && $fx['source'] !== ''
+            ? (string) $fx['source']
+            : null;
+
+        if ($currency === 'EUR') {
+            return [$rate, $source];
+        }
+        if ($rate === null) {
+            $detail = $fxError !== ''
+                ? $fxError
+                : 'no positive EUR→' . $currency . ' rate in the FX response';
+            throw new \RuntimeException(
+                'FX rate unavailable for ' . $currency
+                . '; refusing to store EUR amounts as ' . $currency . '. '
+                . $detail
+            );
+        }
+        return [$rate, $source];
     }
 
     /** @param array<string,mixed> $profile */

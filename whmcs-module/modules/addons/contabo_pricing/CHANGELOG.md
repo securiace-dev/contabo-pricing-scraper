@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.2 — 2026-10-16 (FX fetch + fail-closed missing rate)
+
+- Frankfurter URL is now `https://api.frankfurter.dev/v1/latest?base=EUR&symbols=INR`
+  (the old `api.frankfurter.app` host 301s and the previous cURL executor did
+  not follow redirects).
+- `CurlRequestExecutor` follows HTTPS redirects (max 5) by default. Proposal
+  Studio AI still constructs the executor with follow disabled so a 302 cannot
+  forward the Bearer token.
+- A missing or failed FX rate for a non-EUR currency is a fatal sync error.
+  The run no longer stores euro amounts as INR (`fx_rate = NULL`). The real
+  error is written to `error_message`, the digest, and the Activity Log.
+
 ## 1.1.1 — 2026-10-16 (sync diagnostics + term translation)
 
 - Sync failures now keep the real `error_message` in the daily digest and
