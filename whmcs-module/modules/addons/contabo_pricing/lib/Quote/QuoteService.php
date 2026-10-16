@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace ContaboPricing\Quote;
 
+use ContaboPricing\TermPolicy;
+use ContaboPricing\TermTranslator;
+
 /**
  * Port of POST /quote from the retired Rust API (src/api/handlers.rs
  * quote()). Pure math: no I/O. Callers supply the plan row and (for INR) the
@@ -11,7 +14,13 @@ namespace ContaboPricing\Quote;
  * Request keys (Rust wire names): plan_slug, period_months, currency, gst
  * (bool), fx_markup (ratio, 0.035 = 3.5%), fx_rate. Optionally `cycle`
  * (monthly|quarterly|semiannually|annually|biennially|triennially) instead of
- * period_months. Unknown cycles / periods are rejected, never coerced.
+ * period_months. Unknown cycle names are rejected. Any positive period N is
+ * priced via {@see TermTranslator}: native when Contabo publishes N, otherwise
+ * derived (never fails the quote unless nothing can price N). WHMCS can bill
+ * only 1/3/6/12/24/36; other N is for headline periods and Proposal Studio.
+ *
+ * GST is added only when the caller sets gst=true. The translator never adds
+ * tax; Securiace is not GST registered and the add-on default is off.
  *
  * PHP 7.4 polyglot.
  */
@@ -39,15 +48,18 @@ final class QuoteService
     {
         $months = $this->resolveMonths($req);
 
-        $row = null;
-        foreach ((array) ($plan['periods'] ?? []) as $p) {
-            if (is_array($p) && (int) ($p['months'] ?? 0) === $months) {
-                $row = $p;
-                break;
-            }
-        }
-        if ($row === null) {
-            throw new \InvalidArgumentException("period {$months} mo is not offered for this plan");
+        $published = TermTranslator::publishedTerms($plan);
+        $listMonthly = isset($plan['base_monthly_price']) && is_numeric($plan['base_monthly_price'])
+            ? (float) $plan['base_monthly_price'] : null;
+        $resolved = TermTranslator::resolve(
+            $published,
+            $months,
+            TermPolicy::policy(),
+            $listMonthly,
+            TermPolicy::adjustPct()
+        );
+        if ($resolved === null) {
+            throw new \InvalidArgumentException("period {$months} mo cannot be priced for this plan");
         }
 
         $planSlug = (string) ($req['plan_slug'] ?? ($plan['product_slug'] ?? ($plan['slug'] ?? '')));
@@ -55,13 +67,16 @@ final class QuoteService
         $gst = !empty($req['gst']);
         $fxMarkup = (float) ($req['fx_markup'] ?? 0.0);
 
-        $base = (float) ($row['effective_monthly'] ?? 0.0);
-        $setup = (float) ($row['setup_fee'] ?? 0.0);
+        $base = (float) $resolved['monthly_eur'];
+        $setup = TermTranslator::oneTime((float) $resolved['setup_eur']);
         $configured = $base; // selection deltas are not applied (parity with Rust)
         $gstAmt = $gst ? $configured * self::GST_RATE : 0.0;
         $afterGst = $configured + $gstAmt;
 
         $breakdown = [sprintf('base €%.2f/mo', $base)];
+        if (!empty($resolved['derived'])) {
+            $breakdown[] = 'derived (not official Contabo): ' . (string) $resolved['formula'];
+        }
         if ($gst) {
             $breakdown[] = sprintf('+18%% GST €%.2f', $gstAmt);
         }
@@ -95,6 +110,10 @@ final class QuoteService
             'final_monthly' => $finalMonthly,
             'final_total' => $finalTotal,
             'breakdown' => $breakdown,
+            'term_source' => (string) $resolved['source'],
+            'term_derived' => !empty($resolved['derived']),
+            'term_source_months' => (int) $resolved['source_months'],
+            'term_formula' => (string) $resolved['formula'],
         ];
     }
 
@@ -109,7 +128,7 @@ final class QuoteService
             return self::CYCLE_MONTHS[$key];
         }
         $m = (int) ($req['period_months'] ?? 0);
-        if (!in_array($m, array_values(self::CYCLE_MONTHS), true)) {
+        if ($m <= 0) {
             throw new \InvalidArgumentException('unsupported period_months: ' . $m);
         }
         return $m;

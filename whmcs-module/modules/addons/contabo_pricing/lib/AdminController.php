@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '1.1.0';
+    public const VERSION = '1.1.1';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -70,7 +70,8 @@ class AdminController
             case 'provider-write-control': $this->providerWriteControl($req); return;
             case 'sync-history':     $this->syncHistory(); return;
             case 'sync-run':         $this->syncRun($req); return;
-            case 'settings':         $this->settingsView(); return;
+            case 'settings':         $this->settingsView($req); return;
+            case 'settings-save':    $this->termSettingsSave($req); return;
             case 'ajax-quote':           $this->ajaxQuote($req); return;
             case 'ajax-fx':              $this->ajaxFx(); return;
             case 'ajax-profile-versions': $this->ajaxProfileVersions($req); return;
@@ -642,10 +643,11 @@ class AdminController
     {
         if ($e instanceof \InvalidArgumentException || $e instanceof \RuntimeException) {
             $message = $e->getMessage();
-            foreach ([$this->settings->apiToken, $this->settings->proposalAiApiKey] as $secret) {
-                if ($secret !== '') {
-                    $message = str_replace($secret, '[redacted]', $message);
-                }
+            $secret = isset($this->settings->proposalAiApiKey)
+                ? (string) $this->settings->proposalAiApiKey
+                : '';
+            if ($secret !== '') {
+                $message = str_replace($secret, '[redacted]', $message);
             }
             $message = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $message) ?? '';
             return substr($message, 0, 600);
@@ -662,13 +664,38 @@ class AdminController
 
         $this->render('profiles.tpl', [
             // Trashed profiles are excluded by default (listProfiles filters them).
-            'profiles' => $this->annotateDrift($pm->listProfiles(false), $plans),
+            'profiles' => $this->annotateDerivedTerm($pm, $this->annotateDrift($pm->listProfiles(false), $plans)),
             'available_plans' => $plans,
             'flash' => (string) ($req['flash'] ?? ''),
             // When a delete just happened, the page renders an inline Undo for it.
             'undo_id' => isset($req['undo_id']) ? (int) $req['undo_id'] : 0,
             'trash_count' => count($pm->listTrashed()),
         ]);
+    }
+
+    /**
+     * Flag profiles whose headline period is a DERIVED term (not an official
+     * Contabo price) from the provenance stored on the latest profile version.
+     *
+     * @param list<array<string,mixed>> $profiles
+     * @return list<array<string,mixed>>
+     */
+    private function annotateDerivedTerm(ProfileManager $pm, array $profiles): array
+    {
+        foreach ($profiles as $i => $p) {
+            $profiles[$i]['derived_term'] = null;
+            try {
+                $v = $pm->latestVersion((int) ($p['id'] ?? 0));
+                $snap = $v === null ? null : ($v['options_snapshot'] ?? null);
+                $profiles[$i]['derived_term'] = TermTranslator::headlineFromSnapshot(
+                    $snap,
+                    (int) ($p['period_months'] ?? 0)
+                );
+            } catch (\Throwable $e) {
+                // read-only annotation; never break the page
+            }
+        }
+        return $profiles;
     }
 
     /**
@@ -686,7 +713,7 @@ class AdminController
         try { $plans = $api->plans(); } catch (\Throwable $e) { /* read-only path tolerates API outage */ }
 
         $this->render('profiles.tpl', [
-            'profiles' => $this->annotateDrift($pm->listProfiles(false), $plans),
+            'profiles' => $this->annotateDerivedTerm($pm, $this->annotateDrift($pm->listProfiles(false), $plans)),
             'available_plans' => $plans,
             'flash' => '',
             'undo_id' => 0,
@@ -2287,9 +2314,12 @@ class AdminController
             // price side by side. EUR/mo by cycle months, with the same nearest-≤
             // fallback the engine uses (24/36 → 12-mo, etc.).
             $source = [];
+            $sourceDerived = [];
             $profileId = (int) ($req['profile_id'] ?? 0);
             if ($profileId > 0) {
-                $source = $this->profileSourceVector($profileId);
+                $ctx = $this->profileSourceContext($profileId);
+                $source = $ctx['source'];
+                $sourceDerived = $ctx['derived'];
             }
 
             $this->jsonOk([
@@ -2299,6 +2329,7 @@ class AdminController
                 'cycles'        => $cycles,
                 'profile_id'    => $profileId,
                 'source_eur'    => (object) $source,
+                'source_derived' => (object) $sourceDerived,
             ]);
         } catch (\Throwable $e) {
             $this->jsonFail($e->getMessage());
@@ -2311,11 +2342,16 @@ class AdminController
      *
      * @return array<int,float>
      */
-    private function profileSourceVector(int $profileId): array
+    /**
+     * Latest per-cycle SOURCE vector plus derived-term flags for the mapping UI.
+     *
+     * @return array{source:array<int,float>,derived:array<int,true>}
+     */
+    private function profileSourceContext(int $profileId): array
     {
         $version = (new ProfileManager($this->settings))->latestVersion($profileId);
         if ($version === null) {
-            return [];
+            return ['source' => [], 'derived' => []];
         }
         $raw = $version['period_prices_json'] ?? null;
         $vector = [];
@@ -2334,7 +2370,18 @@ class AdminController
                 $out[$mi] = (float) $eur;
             }
         }
-        return $out;
+        $derived = [];
+        $snap = $version['options_snapshot'] ?? null;
+        if (is_string($snap)) {
+            $decodedSnap = json_decode($snap, true);
+            $snap = is_array($decodedSnap) ? $decodedSnap : null;
+        }
+        foreach ((array) (is_array($snap) ? ($snap['_term_provenance'] ?? []) : []) as $prov) {
+            if (is_array($prov) && !empty($prov['derived']) && (int) ($prov['months'] ?? 0) > 0) {
+                $derived[(int) $prov['months']] = true;
+            }
+        }
+        return ['source' => $out, 'derived' => $derived];
     }
 
     private function syncHistory(): void
@@ -2580,9 +2627,45 @@ class AdminController
         $this->redirect('operations', ['flash' => 'Request rejected: ' . $safe]);
     }
 
-    private function settingsView(): void
+    /** @param array<string,mixed> $req */
+    private function settingsView(array $req = []): void
     {
-        $this->render('settings.tpl', ['settings' => $this->settings]);
+        $this->render('settings.tpl', [
+            'settings' => $this->settings,
+            'flash' => (string) ($req['flash'] ?? ''),
+            'term_policy' => TermPolicy::policy(),
+            'term_addon_policy' => TermPolicy::addonPolicy(),
+            'term_adjust_pct_json' => TermPolicy::adjustPctJson(),
+        ]);
+    }
+
+    /**
+     * Persist term-translation policy (nearest-term vs proportional and the
+     * optional derived-term adjustment). POST before CSRF, same contract as
+     * taxSettingsSave.
+     *
+     * @param array<string,mixed> $req
+     */
+    private function termSettingsSave(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+
+        try {
+            TermPolicy::save(
+                (string) ($req['term_policy'] ?? TermTranslator::POLICY_NEAREST_TERM),
+                (string) ($req['term_addon_policy'] ?? TermTranslator::POLICY_PROPORTIONAL),
+                (string) ($req['term_adjust_pct_json'] ?? '{}')
+            );
+            $this->redirect('settings', ['flash' => 'Term translation settings saved. Defaults keep existing prices until you change them.']);
+        } catch (\InvalidArgumentException $e) {
+            $this->redirect('settings', ['flash' => $e->getMessage()]);
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo Pricing term-settings save error: ' . $e->getMessage());
+            }
+            $this->redirect('settings', ['flash' => 'Save failed; see the activity log for detail.']);
+        }
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

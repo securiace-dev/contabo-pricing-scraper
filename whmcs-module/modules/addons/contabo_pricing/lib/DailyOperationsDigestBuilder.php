@@ -68,11 +68,17 @@ final class DailyOperationsDigestBuilder
     {
         $syncStatus = (string) ($syncSummary['status'] ?? '');
         $observeStatus = (string) ($observeSummary['status'] ?? '');
-        if ($syncStatus === 'failed' || $observeStatus === 'failed' || !empty($context['hook_errors'])) {
+        if (
+            $syncStatus === 'failed'
+            || $observeStatus === 'failed'
+            || !empty($context['hook_errors'])
+            || trim((string) ($syncSummary['error_message'] ?? '')) !== ''
+        ) {
             return 'failed';
         }
         if (
             !empty($syncSummary['errors'])
+            || !empty($syncSummary['warnings'])
             || !empty($observeSummary['errors'])
             || $observeStatus === 'warning'
             || (int) (($observeSummary['scheduled_changes']['schedules_deferred'] ?? 0)) > 0
@@ -250,11 +256,35 @@ final class DailyOperationsDigestBuilder
     private function buildFailureLines(array $syncSummary, array $observeSummary, array $context): array
     {
         $lines = [];
+        // The sync's top-level error_message used to be dropped from the digest,
+        // hiding the real cause of "profiles checked 0" failures. Always show it.
+        $fatal = trim((string) ($syncSummary['error_message'] ?? ''));
+        if ($fatal !== '') {
+            $lines[] = 'Fatal error: ' . $fatal;
+        }
         foreach ($this->bucketMessages($syncSummary['errors'] ?? []) as $bucket => $messages) {
+            // 'Fatal error: ...' is already printed above; do not repeat it.
+            $messages = array_values(array_filter($messages, static function ($m) use ($fatal): bool {
+                return $fatal === '' || $m !== 'Fatal error: ' . $fatal;
+            }));
+            if ($messages === []) {
+                continue;
+            }
             $lines[] = ucfirst($bucket) . ': ' . implode(' | ', array_slice($messages, 0, 3));
         }
         foreach ($this->bucketMessages($observeSummary['errors'] ?? []) as $bucket => $messages) {
             $lines[] = ucfirst($bucket) . ': ' . implode(' | ', array_slice($messages, 0, 3));
+        }
+        $warnings = isset($syncSummary['warnings']) && is_array($syncSummary['warnings']) ? $syncSummary['warnings'] : [];
+        if ($warnings !== []) {
+            $lines[] = 'Warnings: ' . implode(' | ', array_slice(array_map('strval', $warnings), 0, 5))
+                . (count($warnings) > 5 ? ' | +' . (count($warnings) - 5) . ' more' : '');
+        }
+        $derived = isset($syncSummary['derived_terms']) && is_array($syncSummary['derived_terms']) ? $syncSummary['derived_terms'] : [];
+        if ($derived !== []) {
+            $lines[] = 'Derived (NOT official Contabo) terms priced for ' . count($derived)
+                . ' profile(s), policy ' . (string) ($syncSummary['term_policy'] ?? 'nearest-term')
+                . '. See Sync history for the per-term formula.';
         }
         if (!empty($context['hook_errors']) && is_array($context['hook_errors'])) {
             $lines[] = 'Hook failures: ' . implode(' | ', array_slice($context['hook_errors'], 0, 3));

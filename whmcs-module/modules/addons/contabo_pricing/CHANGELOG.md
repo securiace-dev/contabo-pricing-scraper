@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.1.1 — 2026-10-16 (sync diagnostics + term translation)
+
+- Sync failures now keep the real `error_message` in the daily digest and
+  write `Contabo Pricing sync failed: …` to the WHMCS Activity Log. An empty
+  local catalog fails fast with `Preflight failed: …` instead of
+  `profiles checked 0` and no text.
+- A missing or unpriceable term is a warning and never fails the run.
+  Stale catalogs (>14 days) and zero active profiles also warn only.
+- New `TermTranslator` / `TermPolicy` engine prices any profile period N:
+  native Contabo rate when published, otherwise nearest published term at or
+  below N (default), otherwise proportional from the monthly list price.
+  Optional extra adjustment on derived terms defaults to 0 (0–50%). Setup
+  fees stay one-time. Add-ons scale monthly × N unless a native per-term map
+  exists. Default policy reproduces the previous per-cycle vector, so
+  existing prices do not change until an operator changes the setting.
+- Derived terms are flagged in `sync_log.summary.derived_terms`,
+  `options_snapshot._term_provenance`, Profiles (pill), Sync history (badge),
+  the sync result page, Mappings source cells, and Proposal Studio (internal
+  note names Contabo; client text does not).
+- GST defaults off (`apply_gst_18 = no`). The translator never adds GST.
+  Securiace is not GST registered. Existing WHMCS installs that already
+  stored `yes` keep that value until Configure is saved as No.
+- WHMCS can bill only 1/3/6/12/24/36-month cycles. Other N works as a
+  headline period and for quotes only.
+- Known rounding quirk left unchanged to avoid price drift: local monthly is
+  still rounded to 2 dp before × N (up to ₹0.005 × N).
+- Fixes Proposal Studio error redaction reading the removed `Settings::apiToken`.
+
 ## 1.1.0 — 2026-08-05 (Proposal Studio preview boundary)
 
 - Adds an admin-first, deterministic Proposal Studio with separate client and

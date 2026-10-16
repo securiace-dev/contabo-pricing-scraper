@@ -250,6 +250,36 @@ Exact Dokploy service IDs and script names remain blocked until
 `whmcs-prod-new` / `securiace-whmcs-prod` are shared — see
 [`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
 
+## Addon 1.1.1 — term translation and sync diagnostics
+
+This release does **not** add a schema version. `Installer::SCHEMA_VERSION`
+stays at 16. Do not deploy from this document without an explicit go.
+
+Deploy traps:
+
+1. **Open the add-on admin page after file copy.** `AdminController::VERSION`
+   is now `1.1.1`, so WHMCS will call `contabo_pricing_upgrade()` on the next
+   admin load of the module. Schema v15/v16 still only migrate when
+   `SchemaHealth::assertOrMigrate()` runs (first add-on admin page view). Do
+   not wait for cron.
+2. **Set `apply_gst_18` to No** (Setup → Addon Modules → Contabo Pricing Sync
+   → Configure). Securiace is not GST registered. New installs default No;
+   an existing `yes` row stays until someone saves No.
+3. **Local catalog must already hold a version** before cron relies on it.
+   After PR #32 there is no pricing-service HTTP hop. Run one manual scrape
+   or import from Data sources and review it (`scrape.require_human_review=1`).
+   Do not enable `scrape.enabled` until that review. An empty catalog now fails
+   the sync with `Preflight failed: the local Contabo catalog is empty`.
+4. Confirm `schema_version = 16` after opening the admin page.
+5. Run **Sync → Observe (preview)** first (no writes). 24/36-month profiles
+   should list derived terms, not `period N mo not offered`. Then one manual
+   **Apply**. Newest `mod_contabo_sync_log` row should be `succeeded` or
+   `no-change` with `error_message` NULL. Default term policy changes no
+   existing native-term prices.
+6. Keep a hashed copy of the previous add-on tree and `mod_contabo_*` /
+   `tblpricing` backup before copy. Code rollback is the copied tree; the
+   new `term.*` settings rows are inert without this code.
+
 ## Rollback boundaries
 
 - **Local catalog / scrape outage:** keep last verified imported catalog; pause

@@ -20,7 +20,7 @@ final class SettingsTest extends TestCase
 
         $this->assertSame('notify', $s->defaultSyncStrategy);
         $this->assertSame('INR', $s->currencyIso);
-        $this->assertTrue($s->applyGst18);
+        $this->assertFalse($s->applyGst18, 'GST must default off; Securiace is not GST registered');
         $this->assertSame(3.5, $s->fxMarkupPct);
         $this->assertSame(365, $s->logRetentionDays);
         $this->assertSame('addonmodules.php?module=contabo_pricing', $s->moduleLink);

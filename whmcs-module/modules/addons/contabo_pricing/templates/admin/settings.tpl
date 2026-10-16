@@ -15,6 +15,10 @@ $cb_currency    = isset($settings->currencyIso) ? (string) $settings->currencyIs
 $cb_apply_gst   = !empty($settings->applyGst18);
 $cb_fx_markup   = isset($settings->fxMarkupPct) ? (float) $settings->fxMarkupPct : 0.0;
 $cb_log_ret     = isset($settings->logRetentionDays) ? (int) $settings->logRetentionDays : 0;
+$cb_flash       = isset($flash) ? (string) $flash : '';
+$cb_term_policy = isset($term_policy) ? (string) $term_policy : 'nearest-term';
+$cb_term_addon  = isset($term_addon_policy) ? (string) $term_addon_policy : 'proportional';
+$cb_term_adjust = isset($term_adjust_pct_json) ? (string) $term_adjust_pct_json : '{}';
 ?>
 
 <!-- ───────────────────── Header ───────────────────── -->
@@ -72,7 +76,8 @@ $cb_log_ret     = isset($settings->logRetentionDays) ? (int) $settings->logReten
       <th>Apply 18% GST</th>
       <td>
         <?php if ($cb_apply_gst): ?>
-          <span class="cb-pill good"><span class="dot"></span>yes</span>
+          <span class="cb-pill warn"><span class="dot"></span>yes</span>
+          <div class="muted">Securiace is not GST registered. Set this to No under Setup → Addon Modules → Contabo Pricing Sync → Configure. The term-translation engine never adds GST.</div>
         <?php else: ?>
           <span class="cb-pill grey">no</span>
         <?php endif; ?>
@@ -119,6 +124,55 @@ $cb_log_ret     = isset($settings->logRetentionDays) ? (int) $settings->logReten
   <p data-cb-u="u-9e4546b1ac">
     Source: Frankfurter (cached) · markup of <span class="mono"><?= $esc(number_format($cb_fx_markup, 2)) ?>%</span> applied separately during sync.
   </p>
+</div>
+
+<?php if ($cb_flash !== ''): ?>
+<div class="cb-card">
+  <p><?= $esc($cb_flash) ?></p>
+</div>
+<?php endif; ?>
+
+<!-- ───────────────────── Term translation ───────────────────── -->
+<div class="cb-card">
+  <h3>Term translation</h3>
+  <p class="cb-card-sub">
+    Contabo publishes terms up to 12 months. Any other profile period N is priced
+    from the nearest published term at or below N (default) or proportionally from
+    the monthly list price. Defaults keep existing catalog prices. WHMCS can bill
+    only 1/3/6/12/24/36-month cycles; other N is for headline periods and quotes.
+  </p>
+  <form method="post" action="<?= $esc($module_link) ?>">
+    <input type="hidden" name="action" value="settings-save">
+    <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
+    <table class="cb-table">
+      <tr>
+        <th><label for="cb-term-policy">Base-plan policy</label></th>
+        <td>
+          <select id="cb-term-policy" name="term_policy">
+            <option value="nearest-term"<?= $cb_term_policy === 'nearest-term' ? ' selected' : '' ?>>nearest-term (default — use published rate at or below N)</option>
+            <option value="proportional"<?= $cb_term_policy === 'proportional' ? ' selected' : '' ?>>proportional (list monthly × N, no term discount)</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th><label for="cb-term-addon-policy">Add-on policy</label></th>
+        <td>
+          <select id="cb-term-addon-policy" name="term_addon_policy">
+            <option value="proportional"<?= $cb_term_addon === 'proportional' ? ' selected' : '' ?>>proportional (default — monthly × N unless a native term exists)</option>
+            <option value="nearest-term"<?= $cb_term_addon === 'nearest-term' ? ' selected' : '' ?>>nearest-term (use a native per-term add-on map when present)</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th><label for="cb-term-adjust">Extra derived-term adjustment %</label></th>
+        <td>
+          <input id="cb-term-adjust" name="term_adjust_pct_json" type="text" class="mono" size="40" value="<?= $esc($cb_term_adjust) ?>">
+          <div class="muted">JSON object of months → percent off the derived monthly rate, e.g. <span class="mono">{"36":5}</span>. 0–50. Native Contabo terms are never adjusted. Default <span class="mono">{}</span> changes no price.</div>
+        </td>
+      </tr>
+    </table>
+    <p><button type="submit" class="cb-btn primary">Save term policy</button></p>
+  </form>
 </div>
 
 </div>
