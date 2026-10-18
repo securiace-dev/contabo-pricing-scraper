@@ -11,6 +11,8 @@
 - A missing or failed FX rate for a non-EUR currency is a fatal sync error.
   The run no longer stores euro amounts as INR (`fx_rate = NULL`). The real
   error is written to `error_message`, the digest, and the Activity Log.
+  `ProfileVersionInput::toLocalMonthly` also refuses a missing/non-positive
+  rate for non-EUR, so a later caller cannot passthrough euros as local.
 
 ## 1.1.1 — 2026-10-16 (sync diagnostics + term translation)
 
