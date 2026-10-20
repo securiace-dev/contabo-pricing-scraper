@@ -7,10 +7,10 @@ namespace ContaboPricing;
  * Immutable bag of addon configuration values pulled from the WHMCS addon
  * Settings page (passed in $vars by WHMCS) plus the secrets table.
  *
- * Stays compatible with PHP 7.4 (the version FastPanel ships for older WHMCS
- * installs) as well as 8.x — so: no readonly, no constructor property
- * promotion, no str_starts_with, no named args. Typed properties (7.4 feature)
- * are kept to retain shape safety.
+ * Stays compatible with PHP 7.4 (polyglot floor for older WHMCS runtimes)
+ * as well as 8.x — so: no readonly, no constructor property promotion, no
+ * str_starts_with, no named args. Typed properties (7.4 feature) are kept to
+ * retain shape safety.
  */
 final class Settings
 {

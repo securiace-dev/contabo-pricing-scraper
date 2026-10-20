@@ -24,7 +24,7 @@ to extract many facts in one call over many small snapshots; only screenshot pag
   3. `https://my.securiace.com/modules/addons/contabo_pricing/assets/*`
   4. `https://my.securiace.com/shriram/login.php` + `…/logout.php` (session infra only; log out when done)
   **Forbidden on prod, always, even read-only:** orders, invoices, clients, products, configuration, hosting, any other `/shriram/*.php`, the client area, LocalAPI via curl, cron endpoints. If unsure whether a prod URL is in scope, DON'T fire it — ask.
-  - Prod sessions are IP/UA-bound; a curl/agent login may bounce. If so, fall back to the SSH server-side render (`ssh root@195.7.4.219` + a temp PHP file that requires `init.php` and calls `contabo_pricing_output()`) — read-only, no admin session, documented in MemPalace.
+  - Prod sessions are IP/UA-bound; a curl/agent login may bounce. Do **not** fall back to FastPanel SSH (`195.7.4.219` is retired). Prefer local `scripts/local-whmcs.sh render`; if prod must be inspected without a browser session, use a Dokploy WHMCS container exec only when the user explicitly authorises that host access.
 - **Read-only by default on prod.** Do not POST/mutate on prod unless the user explicitly authorises that specific action in the current task.
 - Code edits (only if explicitly asked) go ONLY to `/Users/kritananda/Projects/contabo-pricing-scraper/whmcs-module/modules/addons/contabo_pricing/`.
 
@@ -35,7 +35,7 @@ to extract many facts in one call over many small snapshots; only screenshot pag
 - Addon sync/migrate/activate helper: `/Users/kritananda/Projects/contabo-pricing-scraper/scripts/local-whmcs.sh` (sync | migrate 8|9 | activate 8|9 | render 8|9 <action> | status).
 - Contabo API for local dev: container `contabo-api` on host `:8080`; addon `api_base_url` should be `http://host.docker.internal:8080/api/v1` so the WHMCS container can reach it. If the dashboard shows "API down", check that container + the api_base_url.
 - Harness fixes already baked into snapshots: `$systemurl` hard-set in configuration.php, getting-started widget disabled, brute-force ban relaxed.
-- **Prod (only when explicitly asked):** base is `https://my.securiace.com/shriram/` (custom admin slug) — addon page `https://my.securiace.com/shriram/addonmodules.php?module=contabo_pricing&action=<X>`, standalone endpoint `https://my.securiace.com/modules/addons/contabo_pricing/ajax.php?action=<X>`. Host `root@195.7.4.219` (SSH key auth) for the server-side render fallback. PHP 7.4 (`/opt/php74/bin/php`), FastPanel2. Substitute these base URLs for the localhost ones in the walk below. Stay within the allowed addon URL patterns (see guardrails).
+- **Prod (only when explicitly asked):** base is `https://my.securiace.com/shriram/` (Dokploy WHMCS custom admin slug) — addon page `https://my.securiace.com/shriram/addonmodules.php?module=contabo_pricing&action=<X>`, standalone endpoint `https://my.securiace.com/modules/addons/contabo_pricing/ajax.php?action=<X>`. FastPanel / `root@195.7.4.219` are retired; modules ship via Dokploy / whmcs-prod-new (see `docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md`). Substitute these base URLs for the localhost ones in the walk below. Stay within the allowed addon URL patterns (see guardrails).
 
 ## Pre-flight
 1. `bash scripts/local-whmcs.sh status` (start stack if down: `cd ~/Projects/securiace-vps-platform && docker compose -f docker-compose.test-whmcs.yml up -d && make whmcs-test-license-install && make whmcs-test-reset`).

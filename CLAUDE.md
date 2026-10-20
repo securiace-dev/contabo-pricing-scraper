@@ -75,8 +75,8 @@ quarterly → the 1-mo rate (never a deeper longer-cycle discount). Implemented 
 - `lib/Installer.php`: `SCHEMA_VERSION` + one `migrateToN()` per bump. Every change is
   **additive + idempotent** (`hasColumn`/`hasTable`-guarded). `SchemaHealth::assertOrMigrate`
   runs on admin page load. Add new required columns to `SchemaHealth::REQUIRED_COLUMNS`.
-- LONGTEXT for JSON blobs — **never** the native JSON column type (FastPanel PHP 7.4 +
-  unknown MySQL/MariaDB JSON support).
+- LONGTEXT for JSON blobs — **never** the native JSON column type (PHP 7.4
+  polyglot floor + unknown MySQL/MariaDB JSON support on older hosts).
 
 ## Coding constraints
 
@@ -105,13 +105,21 @@ collision points — **serialize** edits to each (one change at a time), and onl
 parallelize work on genuinely disjoint files. `mappings.tpl` and `profiles.tpl` are
 disjoint.
 
-## Deploy (SSH is permission-gated; never deploy without an explicit go)
+## Deploy (Dokploy / whmcs-prod-new; never deploy without an explicit go)
+
+FastPanel and `root@195.7.4.219` rsync are **retired**. Production WHMCS lives
+on the Dokploy WHMCS prod server; module apply follows
+`whmcs-prod-new` / `securiace-whmcs-prod` (see
+`docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md`). This repo does not SSH or
+publish to prod by itself (`scripts/deploy.sh` exits 2).
 
 1. `bash scripts/predeploy-check.sh` must be **GREEN** (unit + PHP 7.4 lint +
    live-schema smoke 8.13/9.0 + integration smoke). Fail-closed; no deploy on red.
 2. Dev render: `scripts/local-whmcs.sh render 8 profiles|mappings` (dockerised WHMCS).
-3. Follow `docs/DEPLOY_RUNBOOK.md`: rsync to `root@195.7.4.219`, `--exclude '.claude-flow/'`,
-   chown, verify `AdminController::VERSION` + lint. Prod only on green gate + approval.
+3. `bash scripts/package-whmcs-suite.sh` → admit `dist/*.zip` via the Dokploy /
+   whmcs-prod-new module path; then follow
+   `whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md`
+   (upgrade page load, Observe before Apply). No Contabo pricing sidecar.
 
 ## Git
 

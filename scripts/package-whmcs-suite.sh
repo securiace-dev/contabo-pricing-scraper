@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Build reviewable WHMCS runtime archives. This script is local-only: it does
-# not access WHMCS, Contabo, the Rust API, SSH, or any deployment target.
+# Build reviewable WHMCS runtime archives for Dokploy / whmcs-prod-new module
+# admission (modules/addons|servers/... layout). Local-only: does not access
+# WHMCS, Contabo, SSH, FastPanel, or any deployment target.
 set -euo pipefail
 
 MODE="${1:---all}"
