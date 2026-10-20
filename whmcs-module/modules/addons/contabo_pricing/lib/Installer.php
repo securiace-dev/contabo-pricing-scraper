@@ -420,7 +420,7 @@ class Installer
      *
      * Every step is idempotent: re-running the migration is a no-op.
      *
-     * No native JSON column type is used (FastPanel PHP 7.4 + MySQL/MariaDB
+     * No native JSON column type is used (PHP 7.4 polyglot floor + MySQL/MariaDB
      * compatibility is unknown); `markup_overrides_json` and
      * `setup_fee_overrides_json` are LONGTEXT and validated in PHP.
      */
@@ -790,7 +790,7 @@ class Installer
      * by upgrade() after this method returns (mirrors migrateTo2/3/4).
      *
      * LONGTEXT is used for every structured-blob column — never the native JSON
-     * column type (FastPanel PHP 7.4 + unknown MySQL/MariaDB JSON support).
+     * column type (PHP 7.4 polyglot floor + unknown MySQL/MariaDB JSON support).
      */
     public function migrateTo5(): void
     {
