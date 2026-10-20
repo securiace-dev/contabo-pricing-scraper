@@ -4,7 +4,8 @@
 #
 # Runs the full LOCAL verification battery, fail-closed. It NEVER touches
 # production — only local files + the dockerised dev WHMCS (8.13 + 9.0). A prod
-# release MUST NOT proceed unless this script exits 0. See docs/DEPLOY_RUNBOOK.md.
+# release MUST NOT proceed unless this script exits 0 *without* smoke skips.
+# See docs/DEPLOY_RUNBOOK.md and docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md.
 #
 # Stages (all run; gate fails if ANY stage fails):
 #   1. Unit suite (PHPUnit, FakeCapsule) — addon.
@@ -15,8 +16,15 @@
 #   6. Real-WHMCS migration/integration smoke in dev.
 #   7. Read-only post-migration schema verification on WHMCS 8.13 + 9.0.
 #
+# Cloud / CI agents without a private whmcs-devbox checkout may set:
+#   PREDEPLOY_ALLOW_MISSING_DEVBOX=1
+# to SKIP stages 6–7 only when the checkout is absent. That yields a *partial*
+# gate (exit 0) suitable for packaging dry-runs — NOT a production green light.
+# Default remains fail-closed (missing devbox → GATE FAIL).
+#
 # Usage:  bash scripts/predeploy-check.sh
-# Exit:   0 = gate PASS; non-zero = gate FAIL.
+# Exit:   0 = gate PASS (or partial PASS with explicit skip flag);
+#         non-zero = gate FAIL.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -24,11 +32,18 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ADDON="$REPO_ROOT/whmcs-module/modules/addons/contabo_pricing"
 SERVER="$REPO_ROOT/whmcs-module/modules/servers/securiacevps"
 SHIM="$REPO_ROOT/whmcs-module/modules/servers/contabo_vps"
+RESOLVE="$SCRIPT_DIR/lib/resolve-whmcs-devbox.sh"
 
 fail=0
+skipped_smoke=0
 declare -a results
 record() { if [ "$2" -eq 0 ]; then results+=("[PASS] $1"); else results+=("[FAIL] $1"); fail=1; fi; }
+record_skip() { results+=("[SKIP] $1"); skipped_smoke=1; }
 stage()  { echo; echo "==================== $1 ===================="; }
+
+devbox_available() {
+  "$RESOLVE" >/dev/null 2>&1
+}
 
 # ── 1) addon unit suite ──────────────────────────────────────────────────────
 stage "1/7 addon unit suite (phpunit)"
@@ -98,20 +113,46 @@ ruby "$SCRIPT_DIR/hallmark-audit.rb"; record "Hallmark UI audit" $?
 stage "5/7 WHMCS changelog and installable package contract"
 bash "$SCRIPT_DIR/test-whmcs-release-contract.sh"; record "WHMCS release contract" $?
 
-# ── 6) real-WHMCS integration smoke (dev) ────────────────────────────────────
-stage "6/7 real-WHMCS migration and integration smoke"
-bash "$SCRIPT_DIR/whmcs-integration-smoke.sh"; record "integration smoke" $?
+# ── 6–7) real-WHMCS smokes (devbox) ──────────────────────────────────────────
+allow_missing="${PREDEPLOY_ALLOW_MISSING_DEVBOX:-0}"
+if ! devbox_available; then
+  if [ "$allow_missing" = "1" ]; then
+    stage "6/7 real-WHMCS migration and integration smoke"
+    echo "  SKIP: whmcs-devbox missing and PREDEPLOY_ALLOW_MISSING_DEVBOX=1"
+    echo "  Tradeoff: no live 8.13/9.0 migration/integration proof in this run."
+    record_skip "integration smoke (devbox missing; explicit allow)"
+    stage "7/7 post-migration schema smoke (dev 8.13 + 9.0)"
+    echo "  SKIP: whmcs-devbox missing and PREDEPLOY_ALLOW_MISSING_DEVBOX=1"
+    echo "  Tradeoff: no live information_schema proof on WHMCS 8.13/9.0."
+    record_skip "live-schema smoke 8.13+9.0 (devbox missing; explicit allow)"
+  else
+    stage "6/7 real-WHMCS migration and integration smoke"
+    "$RESOLVE" >/dev/null
+    record "integration smoke" 1
+    stage "7/7 post-migration schema smoke (dev 8.13 + 9.0)"
+    echo "  FAIL: whmcs-devbox required (set PREDEPLOY_ALLOW_MISSING_DEVBOX=1 only for packaging dry-runs)" >&2
+    record "live-schema smoke 8.13+9.0" 1
+  fi
+else
+  stage "6/7 real-WHMCS migration and integration smoke"
+  bash "$SCRIPT_DIR/whmcs-integration-smoke.sh"; record "integration smoke" $?
 
-# ── 7) live-schema smoke (dev 8.13 + 9.0) ────────────────────────────────────
-stage "7/7 post-migration schema smoke (dev 8.13 + 9.0)"
-CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 8; s8=$?
-CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 9; s9=$?
-if [ "$s8" -eq 0 ] && [ "$s9" -eq 0 ]; then record "live-schema smoke 8.13+9.0" 0; else record "live-schema smoke 8.13+9.0" 1; fi
+  stage "7/7 post-migration schema smoke (dev 8.13 + 9.0)"
+  CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 8; s8=$?
+  CONTABO_PRICING_LIVE_SCHEMA_SMOKE=1 bash "$SCRIPT_DIR/live-schema-smoke.sh" 9; s9=$?
+  if [ "$s8" -eq 0 ] && [ "$s9" -eq 0 ]; then record "live-schema smoke 8.13+9.0" 0; else record "live-schema smoke 8.13+9.0" 1; fi
+fi
 
 # ── summary ──────────────────────────────────────────────────────────────────
 echo; echo "==================== predeploy gate summary ===================="
 for r in "${results[@]}"; do echo "  $r"; done
 if [ "$fail" -eq 0 ]; then
+  if [ "$skipped_smoke" -eq 1 ]; then
+    echo "  GATE: PASS (PARTIAL) — stages 1–5 green; live WHMCS smoke SKIPPED"
+    echo "  NOT production-ready. Re-run without PREDEPLOY_ALLOW_MISSING_DEVBOX after"
+    echo "  mounting/cloning whmcs-devbox (see docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md)."
+    exit 0
+  fi
   echo "  GATE: PASS — safe to build a release artifact"
   exit 0
 fi

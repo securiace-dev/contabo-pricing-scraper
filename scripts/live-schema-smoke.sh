@@ -24,6 +24,20 @@ case "$v" in
 esac
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RESOLVE="$SCRIPT_DIR/lib/resolve-whmcs-devbox.sh"
+
+# Prefer explicit container/env overrides; otherwise insist the named devbox
+# container exists so failures are actionable.
+if [ -z "${CONTABO_WHMCS_ROOT:-}" ] && [ -z "${LIVE_DB_HOST:-}" ]; then
+  if ! "$RESOLVE" >/dev/null; then
+    exit 1
+  fi
+  if ! docker ps --format '{{.Names}}' | grep -qx "$ctr"; then
+    echo "WHMCS container not running: $ctr" >&2
+    echo "  Start with: bash scripts/whmcs-integration-smoke.sh (or docker compose up in WHMCS_DEVBOX_DIR)" >&2
+    exit 1
+  fi
+fi
 
 docker exec \
   -e CONTABO_PRICING_LIVE_SCHEMA_SMOKE="${CONTABO_PRICING_LIVE_SCHEMA_SMOKE:-}" \

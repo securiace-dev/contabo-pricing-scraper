@@ -66,7 +66,11 @@ The gate must prove:
 - the compatibility shim loads and delegates;
 - PHP syntax is valid on the supported matrix;
 - local WHMCS 8.13.x and 9.x schema/integration checks pass when those
-  environments are available;
+  environments are available (`WHMCS_DEVBOX_DIR` / sibling `whmcs-devbox`).
+  Cloud agents without the private checkout may set
+  `PREDEPLOY_ALLOW_MISSING_DEVBOX=1` for a **partial** gate (stages 1–5 only);
+  that is packaging-only and is **not** a production green light — see
+  [`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md);
 - the package contains runtime files only and no tests, caches, VCS state,
   development dependencies, credentials, or local tooling state.
 
