@@ -360,7 +360,8 @@ class SyncEngine
     /**
      * EUR is a passthrough (no rate required). Any other currency needs a
      * positive finite eurInr before we write prices — otherwise
-     * ProfileVersionInput::toLocalMonthly stores the euro amount as local.
+     * ProfileVersionInput::toLocalMonthly refuses the conversion (and used
+     * to passthrough euros as local, e.g. INR 3.6 for EUR 3.6).
      *
      * @param array<string,mixed> $fx
      * @return array{0:?float,1:?string}
