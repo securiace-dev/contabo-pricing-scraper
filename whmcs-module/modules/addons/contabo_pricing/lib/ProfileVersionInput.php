@@ -82,7 +82,7 @@ final class ProfileVersionInput
      * SyncEngine::computeCyclePrice (per-cycle source vector) never diverge.
      *
      * @param float      $eurMonthly  Monthly amount in EUR.
-     * @param float|null $fxRate      EUR→local rate (null / 'EUR' currency = passthrough).
+     * @param float|null $fxRate      EUR→local rate (null is allowed only for EUR).
      * @param float      $fxMarkupPct FX markup as PERCENT (e.g. 2.0).
      * @param float      $gstRatio    GST as a RATIO (e.g. 0.18), NOT a percent.
      * @param string     $currencyIso Target currency ISO.
@@ -105,8 +105,15 @@ final class ProfileVersionInput
         //
         // Kept on the cost basis for now per owner decision.
         $afterGst = $eurMonthly * (1.0 + $gstRatio);
-        if ($currencyIso === 'EUR' || $fxRate === null) {
+        $iso = strtoupper(trim($currencyIso));
+        if ($iso === 'EUR') {
             return round($afterGst, 4);
+        }
+        if ($fxRate === null || $fxRate <= 0.0 || !is_finite($fxRate)) {
+            throw new \RuntimeException(
+                'FX rate unavailable for ' . $iso
+                . '; refusing to store EUR amounts as ' . $iso . '.'
+            );
         }
         $effectiveFx = $fxRate * (1.0 + $fxMarkupPct / 100.0);
         return round($afterGst * $effectiveFx, 2);

@@ -225,6 +225,7 @@ $cb_rounding_modes = [
           <div data-cb-cycles-loading data-cb-u="u-f0c6b37bc8">
             Pick a product to load the current catalog state…
           </div>
+          <p class="muted">A <span class="cb-pill warn">derived</span> source rate is computed from a shorter published Contabo term (not an official Contabo price). WHMCS bills only 1/3/6/12/24/36-month cycles.</p>
         </div>
       </div>
 

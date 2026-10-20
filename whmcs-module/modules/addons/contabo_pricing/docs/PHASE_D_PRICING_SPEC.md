@@ -74,8 +74,11 @@ options. We therefore *project* them.
 These projected prices are **estimates of our purchase cost** (24/36) — clearly
 labelled as such in the UI so the admin knows they're derived, not scraped.
 
-Implemented: `SyncEngine::buildPeriodPriceVector()` + `nearestSourceRate()` produce
-the full six-cycle EUR vector; stored in `mod_contabo_profile_version.period_prices_json`.
+Implemented: `TermTranslator` (via `SyncEngine::periodPriceVectorFromPlan()`)
+produces the full six-cycle EUR vector; stored in
+`mod_contabo_profile_version.period_prices_json`. Default policy `nearest-term`
+with 0% adjustment is the owner rule above. See `docs/TERM_TRANSLATION.md`.
+WHMCS bills only 1/3/6/12/24/36; any other N is headline/quote only.
 
 ### 2.3 EUR → local → customer
 Per cycle: `Source(M)` (EUR/mo) → `ProfileVersionInput::toLocalMonthly()` (GST then

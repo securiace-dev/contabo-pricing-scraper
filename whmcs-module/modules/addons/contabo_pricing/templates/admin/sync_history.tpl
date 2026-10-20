@@ -132,6 +132,10 @@ $cb_source_version = static function ($summary) {
             $cb_snap_at = (string) $cb_summary_decoded['snapshot_generated_at'];
         }
         $cb_api_used = $cb_source_version($cb_summary_decoded);
+        $cb_derived_n = (is_array($cb_summary_decoded) && !empty($cb_summary_decoded['derived_terms']) && is_array($cb_summary_decoded['derived_terms']))
+            ? count($cb_summary_decoded['derived_terms']) : 0;
+        $cb_warn_n = (is_array($cb_summary_decoded) && !empty($cb_summary_decoded['warnings']) && is_array($cb_summary_decoded['warnings']))
+            ? count($cb_summary_decoded['warnings']) : 0;
         $cb_dur = $cb_duration($cb_started, $cb_finished);
       ?>
         <tr data-cb-log-row
@@ -182,6 +186,12 @@ $cb_source_version = static function ($summary) {
           <td class="right mono"><?= (int) $cb_products ?></td>
           <td class="mono" data-cb-u="u-685394115d"><?= $esc(substr($cb_snap_at, 0, 16)) ?></td>
           <td>
+            <?php if ($cb_derived_n > 0): ?>
+              <div><span class="cb-pill warn" title="Prices for terms Contabo does not publish were derived (policy <?= $esc((string) ($cb_summary_decoded['term_policy'] ?? '')) ?>). Not official Contabo prices."><?= (int) $cb_derived_n ?> profile(s) with derived terms</span></div>
+            <?php endif; ?>
+            <?php if ($cb_warn_n > 0): ?>
+              <div><span class="cb-pill grey" title="<?= $esc(implode(' | ', array_map('strval', array_slice((array) $cb_summary_decoded['warnings'], 0, 5)))) ?>"><?= (int) $cb_warn_n ?> warning(s)</span></div>
+            <?php endif; ?>
             <?php if ($cb_error_msg !== ''): ?>
               <code class="mono" data-cb-u="u-21e471ac42"
                     title="<?= $esc($cb_error_msg) ?>"><?= $esc($cb_trunc($cb_error_msg, 60)) ?></code>

@@ -53,7 +53,9 @@ final class ProposalMaker
     ) {
         $this->settings = $settings;
         $this->api = $api ?? PlanSourceFactory::fromSettings($settings);
-        $this->executor = $executor ?? new CurlRequestExecutor();
+        // Never follow redirects on the AI hop: a 302 would forward the Bearer
+        // token. Fx/scrape use the default (follow) executor instead.
+        $this->executor = $executor ?? new CurlRequestExecutor(false);
     }
 
     /**
@@ -306,6 +308,12 @@ final class ProposalMaker
         $internalNotes = $this->cleanText((string) ($req['internal_notes'] ?? ''), 4000);
 
         $warnings = [];
+        if (!empty($quote['term_derived'])) {
+            $warnings[] = TermTranslator::operatorNote([
+                'source_months' => (int) ($quote['term_source_months'] ?? 0),
+                'formula' => (string) ($quote['term_formula'] ?? ''),
+            ]);
+        }
         if ($selections !== []) {
             $warnings[] = 'Selected configuration deltas were certified by the quote service for this preview.';
         }
@@ -342,6 +350,9 @@ final class ProposalMaker
                 'region' => $this->cleanText((string) ($req['region'] ?? ''), 120),
                 'os' => $this->cleanText((string) ($req['os'] ?? ''), 120),
                 'selections' => $selections,
+                'term_derived' => !empty($quote['term_derived']),
+                'term_source_months' => (int) ($quote['term_source_months'] ?? 0),
+                'term_formula' => (string) ($quote['term_formula'] ?? ''),
             ],
             'visibility' => $visibility,
             'pricing' => [
@@ -1358,14 +1369,25 @@ final class ProposalMaker
         }
         $selection = $internal['selection'];
         if ($mode === 'total_only') {
-            return [
+            $totalOnly = [
                 'term' => (int) $selection['period_months'] . ' month(s)',
             ];
+            if (!empty($selection['term_derived'])) {
+                $totalOnly['term_note'] = TermTranslator::clientSafeNote([
+                    'source_months' => (int) ($selection['term_source_months'] ?? 0),
+                ]);
+            }
+            return $totalOnly;
         }
         $configuration = [
             'plan' => (string) $selection['plan_slug'],
             'term' => (int) $selection['period_months'] . ' month(s)',
         ];
+        if (!empty($selection['term_derived'])) {
+            $configuration['term_note'] = TermTranslator::clientSafeNote([
+                'source_months' => (int) ($selection['term_source_months'] ?? 0),
+            ]);
+        }
         if ($mode === 'show') {
             if ($selection['region'] !== '') {
                 $configuration['region'] = (string) $selection['region'];

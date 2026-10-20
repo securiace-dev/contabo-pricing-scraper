@@ -36,6 +36,9 @@ use WHMCS\Database\Capsule;
  */
 class SyncEngine
 {
+    /** Warn (do not fail) when the newest local catalog observation is older. */
+    public const CATALOG_STALE_DAYS = 14;
+
     /** @var Settings */          private $settings;
     /** @var PlanSource */        private $api;
     /** @var ProfileManager */    private $profiles;
@@ -145,12 +148,39 @@ class SyncEngine
             'observe_only'      => $observeOnly,
             'planned_writes'    => [],
             'errors'            => [],
+            'warnings'          => [],
+            'derived_terms'     => [],
+            'term_policy'       => '',
             'change_list'       => [],
         ];
 
         try {
             $meta = $this->api->meta();
             $sourceGeneratedAt = (string) ($meta['snapshot_meta']['generated_at'] ?? '');
+
+            // Preflight: fail FAST with a precise message instead of a silent
+            // "profiles checked 0". An empty local catalog means nothing can be
+            // priced; say so. (Replaces the old pricing-service /health probe,
+            // which no longer exists after PR #32.)
+            if (isset($meta['snapshot_meta']['plan_count']) && (int) $meta['snapshot_meta']['plan_count'] <= 0) {
+                throw new \RuntimeException(
+                    'Preflight failed: the local Contabo catalog is empty (no observed/published '
+                    . 'catalog version in mod_contabo_catalog_versions). Run a scrape/import first.'
+                );
+            }
+
+            $termPolicy  = TermPolicy::policy();
+            $termAdjust  = TermPolicy::adjustPct();
+            $summary['term_policy'] = $termPolicy;
+
+            if ($sourceGeneratedAt !== '') {
+                $observedTs = strtotime($sourceGeneratedAt);
+                if ($observedTs !== false && $observedTs > 0 && (time() - $observedTs) > self::CATALOG_STALE_DAYS * 86400) {
+                    $days = (int) floor((time() - $observedTs) / 86400);
+                    $summary['warnings'][] = 'Local Contabo catalog is ' . $days
+                        . ' days old (observed ' . $sourceGeneratedAt . '); scrape or import a fresher version.';
+                }
+            }
 
             $lastSuccess = Capsule::table('mod_contabo_sync_log')
                 ->where('status', 'succeeded')
@@ -169,13 +199,24 @@ class SyncEngine
             $summary['catalog_scraper_version'] = (string) ($meta['scraper_version'] ?? ($meta['snapshot_meta']['scraper_version'] ?? ''));
 
             // FX once per run — every profile uses the same rate snapshot.
+            // A missing rate for a non-EUR currency used to passthrough euros
+            // as local (e.g. EUR 3.6 stored as INR 3.6). That is never a
+            // successful sync: fail before any profile version or catalog write.
             $fx = [];
-            try { $fx = $this->api->fx(); } catch (\Throwable $e) { /* /fx still stub in API */ }
-            $fxRate   = isset($fx['eurInr']) ? (float) $fx['eurInr'] : null;
-            $fxSource = isset($fx['source']) ? (string) $fx['source'] : null;
+            $fxError = '';
+            try {
+                $fx = $this->api->fx();
+            } catch (\Throwable $e) {
+                $fxError = $e->getMessage();
+            }
+            [$fxRate, $fxSource] = $this->requireFxRateForLocalCurrency($fx, $fxError);
 
             $byPlanSlug = [];
-            foreach ($this->profiles->listProfiles(true) as $profile) {
+            $activeProfiles = $this->profiles->listProfiles(true);
+            if ($activeProfiles === []) {
+                $summary['warnings'][] = 'No active profiles to sync.';
+            }
+            foreach ($activeProfiles as $profile) {
                 $summary['profiles_checked']++;
                 try {
                     $planSlug = (string) $profile['plan_slug'];
@@ -183,10 +224,28 @@ class SyncEngine
                         $byPlanSlug[$planSlug] = $this->api->plan($planSlug);
                     }
                     $plan = $byPlanSlug[$planSlug];
-                    $period = $this->findPeriod($plan, (int) $profile['period_months']);
-                    if ($period === null) {
-                        $summary['errors'][] = "profile {$profile['slug']}: period {$profile['period_months']} mo not offered by Contabo for {$planSlug}";
+                    $published = TermTranslator::publishedTerms($plan);
+                    $listMonthly = isset($plan['base_monthly_price']) && is_numeric($plan['base_monthly_price'])
+                        ? (float) $plan['base_monthly_price'] : null;
+                    $resolved = TermTranslator::resolve(
+                        $published,
+                        (int) $profile['period_months'],
+                        $termPolicy,
+                        $listMonthly,
+                        $termAdjust
+                    );
+                    if ($resolved === null) {
+                        // A term that cannot be priced is a WARNING, never a failed sync.
+                        $summary['warnings'][] = "profile {$profile['slug']}: no published term can price {$profile['period_months']} mo for {$planSlug}; skipped";
                         continue;
+                    }
+                    $period = [
+                        'effective_monthly' => $resolved['monthly_eur'],
+                        'setup_fee'         => $resolved['setup_eur'],
+                    ];
+                    $termProvenance = [];
+                    if (!empty($resolved['derived'])) {
+                        $termProvenance[(int) $profile['period_months']] = TermTranslator::provenance($resolved);
                     }
 
                     $base       = (float) ($period['effective_monthly'] ?? 0);
@@ -197,13 +256,24 @@ class SyncEngine
                     // every published cycle prices off its own scraped discount
                     // tier, not the single profile period. Absent cycles (24/36)
                     // are pre-expanded to the longest available period's rate.
-                    $periodPricesEur = self::periodPriceVectorFromPlan($plan);
+                    $periodPricesEur = self::periodPriceVectorFromPlan($plan, $termPolicy, $termAdjust);
+                    foreach (self::derivedCycleProvenance($plan, $termPolicy, $termAdjust) as $m => $prov) {
+                        $termProvenance[$m] = $prov;
+                    }
+                    if ($termProvenance !== []) {
+                        ksort($termProvenance);
+                        $summary['derived_terms'][] = [
+                            'profile_slug' => (string) $profile['slug'],
+                            'plan_slug'    => $planSlug,
+                            'terms'        => array_values($termProvenance),
+                        ];
+                    }
 
                     $version = ProfileVersionInput::computed(
                         $base,
                         $configured,
                         $setup,
-                        [],
+                        $termProvenance === [] ? [] : ['_term_provenance' => array_values($termProvenance)],
                         is_array($plan['specs_parsed'] ?? null) ? $plan['specs_parsed'] : [],
                         $fxRate,
                         $fxSource,
@@ -280,10 +350,50 @@ class SyncEngine
             }
             return $this->finalise((int) $logId, $status, $summary, null);
         } catch (\Throwable $e) {
+            $summary['errors'][] = 'Fatal error: ' . $e->getMessage();
             return $observeOnly
                 ? $this->finishWithoutWrite('failed', $summary, $e->getMessage())
                 : $this->finalise((int) $logId, 'failed', $summary, $e->getMessage());
         }
+    }
+
+    /**
+     * EUR is a passthrough (no rate required). Any other currency needs a
+     * positive finite eurInr before we write prices — otherwise
+     * ProfileVersionInput::toLocalMonthly refuses the conversion (and used
+     * to passthrough euros as local, e.g. INR 3.6 for EUR 3.6).
+     *
+     * @param array<string,mixed> $fx
+     * @return array{0:?float,1:?string}
+     */
+    private function requireFxRateForLocalCurrency(array $fx, string $fxError): array
+    {
+        $currency = strtoupper(trim($this->settings->currencyIso));
+        $rate = null;
+        if (isset($fx['eurInr']) && is_numeric($fx['eurInr'])) {
+            $candidate = (float) $fx['eurInr'];
+            if ($candidate > 0.0 && is_finite($candidate)) {
+                $rate = $candidate;
+            }
+        }
+        $source = isset($fx['source']) && $fx['source'] !== ''
+            ? (string) $fx['source']
+            : null;
+
+        if ($currency === 'EUR') {
+            return [$rate, $source];
+        }
+        if ($rate === null) {
+            $detail = $fxError !== ''
+                ? $fxError
+                : 'no positive EUR→' . $currency . ' rate in the FX response';
+            throw new \RuntimeException(
+                'FX rate unavailable for ' . $currency
+                . '; refusing to store EUR amounts as ' . $currency . '. '
+                . $detail
+            );
+        }
+        return [$rate, $source];
     }
 
     /** @param array<string,mixed> $profile */
@@ -988,36 +1098,22 @@ class SyncEngine
     }
 
     /**
-     * @param array<string, mixed> $plan
-     * @return array<string, mixed>|null
-     */
-    private function findPeriod(array $plan, int $months): ?array
-    {
-        foreach (($plan['periods'] ?? []) as $p) {
-            if ((int) ($p['months'] ?? 0) === $months) {
-                return $p;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Build the per-period EUR SOURCE vector for a plan, keyed by the six
-     * canonical cycle month-counts (1/3/6/12/24/36). Scraped periods carry their
-     * real `effective_monthly`; cycles Contabo never exposes on the public site
-     * take the rate of the LONGEST available scraped period whose months do not
-     * EXCEED the target (owner rule):
+     * canonical WHMCS cycle month-counts (1/3/6/12/24/36). Delegates to
+     * {@see TermTranslator::resolve()} so the owner rule lives in one place:
      *
-     *   - 24/36 mo → 12-mo rate (Contabo only exposes ≤12mo publicly; 24/36 are
-     *     post-provision upgrade options, so we project from the deepest public
-     *     tier).
-     *   - a missing 3-mo (quarterly) → 1-mo rate (NOT a deeper longer-cycle
-     *     discount the customer never qualified for).
+     *   1. Contabo publishes exactly M → use that native effective_monthly.
+     *   2. Otherwise (default policy `nearest-term`) use the longest published
+     *      term whose months do NOT exceed M. A term shorter than every
+     *      published term uses the list monthly (never a deeper discount the
+     *      customer did not earn) and only falls to the shortest published
+     *      term when no list price exists.
+     *   3. `proportional` uses the list monthly with no term discount.
      *
-     * i.e. the source for target M months = effective_monthly of
-     * max(scraped months ≤ M). 1-mo is always present, so a basis always exists.
-     * Returns [] when the plan exposes no usable periods (caller leaves the
-     * version vector empty → legacy single-basis fallback downstream).
+     * Default policy + 0% adjustment reproduces the pre-translator vector
+     * exactly on typical Contabo plans (published 1/3/6/12). Returns [] when
+     * the plan exposes no usable periods (caller leaves the version vector
+     * empty → legacy single-basis fallback downstream).
      *
      * Public + static: a pure transformation (plan → vector) so it's unit-tested
      * directly without the run() plumbing.
@@ -1025,28 +1121,65 @@ class SyncEngine
      * @param array<string,mixed> $plan
      * @return array<int,float>
      */
-    public static function periodPriceVectorFromPlan(array $plan): array
+    public static function periodPriceVectorFromPlan(array $plan, ?string $policy = null, ?array $adjustPct = null): array
     {
-        $scraped = [];
-        foreach (($plan['periods'] ?? []) as $p) {
-            $m = (int) ($p['months'] ?? 0);
-            if ($m > 0 && isset($p['effective_monthly'])) {
-                $scraped[$m] = (float) $p['effective_monthly'];
-            }
-        }
-        if ($scraped === []) {
+        $published = TermTranslator::publishedTerms($plan);
+        if ($published === []) {
             return [];
         }
-
+        $listMonthly = isset($plan['base_monthly_price']) && is_numeric($plan['base_monthly_price'])
+            ? (float) $plan['base_monthly_price'] : null;
         $vector = [];
         foreach (CycleSet::allCycles() as $cycle) {
             $months = CycleNormalizer::monthsForCycle($cycle);
             if ($months === null) {
                 continue;
             }
-            $vector[$months] = self::nearestSourceRate($scraped, $months);
+            $r = TermTranslator::resolve(
+                $published,
+                $months,
+                $policy === null ? TermTranslator::POLICY_NEAREST_TERM : $policy,
+                $listMonthly,
+                $adjustPct === null ? [] : $adjustPct
+            );
+            if ($r !== null) {
+                $vector[$months] = (float) $r['monthly_eur'];
+            }
         }
         return $vector;
+    }
+
+    /**
+     * Provenance for every canonical WHMCS cycle that is DERIVED (not a
+     * published Contabo term). Native cycles are omitted.
+     *
+     * @param array<string,mixed> $plan
+     * @param array<int,float>|null $adjustPct
+     * @return array<int,array<string,mixed>> months => provenance
+     */
+    public static function derivedCycleProvenance(array $plan, ?string $policy = null, ?array $adjustPct = null): array
+    {
+        $published = TermTranslator::publishedTerms($plan);
+        $listMonthly = isset($plan['base_monthly_price']) && is_numeric($plan['base_monthly_price'])
+            ? (float) $plan['base_monthly_price'] : null;
+        $out = [];
+        foreach (CycleSet::allCycles() as $cycle) {
+            $months = CycleNormalizer::monthsForCycle($cycle);
+            if ($months === null) {
+                continue;
+            }
+            $r = TermTranslator::resolve(
+                $published,
+                $months,
+                $policy === null ? TermTranslator::POLICY_NEAREST_TERM : $policy,
+                $listMonthly,
+                $adjustPct === null ? [] : $adjustPct
+            );
+            if ($r !== null && !empty($r['derived'])) {
+                $out[$months] = TermTranslator::provenance($r);
+            }
+        }
+        return $out;
     }
 
     /**

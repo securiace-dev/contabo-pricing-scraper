@@ -7,8 +7,10 @@ use ContaboPricing\ConfigOptionPricingContext;
 use ContaboPricing\ConfigurableOptionsSyncer;
 use ContaboPricing\OptionAuditLog;
 use ContaboPricing\OptionTypeMapper;
+use ContaboPricing\TermPolicy;
 use ContaboPricing\WhmcsConfigOptionsAdapter;
 use PHPUnit\Framework\TestCase;
+use WHMCS\Database\Capsule;
 
 /**
  * Phase A.6.2 — ConfigurableOptionsSyncer (observe / preview).
@@ -207,5 +209,32 @@ final class ConfigurableOptionsSyncerTest extends TestCase
         $this->assertNotEmpty($this->audits);
         $this->assertSame('observed', $this->audits[0]['action']);
         $this->assertSame(7, $this->audits[0]['profile_id']);
+    }
+
+    public function testAddonTermMapUsesNativeThenNearestWhenConfigured(): void
+    {
+        Capsule::reset();
+        TermPolicy::save('nearest-term', 'nearest-term', '{}');
+        $specs = [[
+            'dimension_key' => 'Storage',
+            'optiontype'    => OptionTypeMapper::TYPE_DROPDOWN,
+            'values'        => [[
+                'value_key' => 'ssd-extra',
+                'label' => 'Extra storage',
+                'category' => 'Storage',
+                'monthly_eur_delta' => 2.40,
+                'setup_eur_delta' => 0.0,
+                'is_default' => false,
+                'sortorder' => 0,
+                'term_monthly' => [1 => 2.40, 12 => 2.00],
+            ]],
+        ]];
+        $report = $this->syncer()->observe(7, 'G', $specs, $this->ctx());
+        $row = $this->valueByLabel($report, 'Storage', 'Extra storage');
+        // landed monthly = EUR * 90; cost+15%.
+        $this->assertSame(248.40, $row['cycle_prices']['monthly']);      // 2.40 native
+        $this->assertSame(2484.00, $row['cycle_prices']['annually']);    // 2.00 native × 12
+        $this->assertSame(4968.00, $row['cycle_prices']['biennially']);  // nearest 12 → 2.00 × 24
+        $this->assertSame(7452.00, $row['cycle_prices']['triennially']); // nearest 12 → 2.00 × 36
     }
 }

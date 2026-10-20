@@ -86,6 +86,39 @@ final class ProfileVersionInputTest extends TestCase
         $this->assertEqualsWithDelta(5.0,  $vi->finalSetup,   1e-9);
     }
 
+    public function testInrWithoutRateRefusesEuroPassthrough(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('refusing to store EUR amounts as INR');
+        ProfileVersionInput::toLocalMonthly(3.60, null, 0.0, 0.0, 'INR');
+    }
+
+    public function testInrWithZeroRateRefusesEuroPassthrough(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('refusing to store EUR amounts as INR');
+        ProfileVersionInput::toLocalMonthly(3.60, 0.0, 0.0, 0.0, 'INR');
+    }
+
+    public function testComputedInrWithoutRateDoesNotStoreEurosAsRupees(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('refusing to store EUR amounts as INR');
+        ProfileVersionInput::computed(
+            3.60,
+            3.60,
+            0.0,
+            [],
+            [],
+            null,
+            'frankfurter',
+            0.0,
+            false,
+            'INR',
+            self::NOW
+        );
+    }
+
     public function testComputedStoresFxMarkupAndSource(): void
     {
         $vi = ProfileVersionInput::computed(

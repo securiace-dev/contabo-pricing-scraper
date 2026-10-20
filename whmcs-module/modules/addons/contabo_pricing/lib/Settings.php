@@ -125,7 +125,7 @@ final class Settings
         return new self(
             (string) ($vars['default_sync_strategy'] ?? 'notify'),
             strtoupper((string) ($vars['currency_iso'] ?? 'INR')),
-            ((string) ($vars['apply_gst_18'] ?? 'yes')) === 'yes',
+            ((string) ($vars['apply_gst_18'] ?? 'no')) === 'yes',
             (float) ($vars['fx_markup_pct'] ?? 3.5),
             (int) ($vars['log_retention_days'] ?? 365),
             (string) ($vars['modulelink'] ?? 'addonmodules.php?module=contabo_pricing'),

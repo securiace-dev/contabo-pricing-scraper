@@ -110,6 +110,12 @@ add_hook('DailyCronJob', 10, static function (): void {
         );
 
         $summary = $engine->run('cron');
+        if (($summary['status'] ?? '') === 'failed') {
+            // Surface the real cause in the WHMCS Activity Log (previously only
+            // the numeric counters survived, e.g. "profiles checked 0").
+            logActivity('Contabo Pricing sync failed: ' . (string) ($summary['error_message'] ?? 'see sync history')
+                . ' | errors: ' . substr(implode(' ; ', array_map('strval', (array) ($summary['errors'] ?? []))), 0, 500));
+        }
         $observeSummary = class_exists('\\ContaboPricing\\CronDriver')
             ? (new \ContaboPricing\CronDriver())->runObserveSweep()
             : [

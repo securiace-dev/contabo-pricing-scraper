@@ -74,8 +74,8 @@ function contabo_pricing_config(): array
             'apply_gst_18' => [
                 'FriendlyName' => 'Legacy sync: apply 18% GST',
                 'Type'         => 'yesno',
-                'Default'      => 'yes',
-                'Description'  => 'Legacy catalog-sync behavior only. Proposal Studio uses its separate fail-closed output-tax controls below.',
+                'Default'      => 'no',
+                'Description'  => 'Off by default — Securiace is not GST registered. The term-translation engine never adds GST. Leave this No unless a later registration decision requires folding 18% into the catalog cost basis. Proposal Studio uses its separate fail-closed output-tax controls below.',
             ],
             'fx_markup_pct' => [
                 'FriendlyName' => 'FX markup %',
