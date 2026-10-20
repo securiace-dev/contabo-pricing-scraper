@@ -6,12 +6,16 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-DEVBOX_DIR="${WHMCS_DEVBOX_DIR:-$(cd "$REPO_ROOT/../whmcs-devbox" && pwd)}"
+RESOLVE="$SCRIPT_DIR/lib/resolve-whmcs-devbox.sh"
 
 case "${1:-status}" in
   status)
-    echo "WHMCS devbox: $DEVBOX_DIR"
+    if DEVBOX_DIR="$("$RESOLVE")"; then
+      echo "WHMCS devbox: $DEVBOX_DIR"
+    else
+      echo "WHMCS devbox: MISSING (see resolve-whmcs-devbox.sh hints above)"
+      exit 1
+    fi
     docker ps --format '{{.Names}} {{.Status}}' |
       grep -E '^whmcs-devbox-(whmcs8|whmcs9|mariadb8|mariadb9)-1 ' || true
     ;;

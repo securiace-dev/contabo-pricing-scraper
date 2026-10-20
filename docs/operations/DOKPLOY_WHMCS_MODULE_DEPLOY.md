@@ -151,3 +151,109 @@ concrete script names and compose stubs in this repo:
 
 Until then, this repo’s safe automation stops at **gate + package**. Production
 apply stays operator-controlled inside whmcs-prod-new / Dokploy.
+
+---
+
+## Cloud-agent gate without whmcs-devbox (explicit partial)
+
+Full `predeploy-check.sh` still requires live WHMCS 8.13 + 9.0 smokes (stages
+6–7). Those need a private `whmcs-devbox` checkout that is **not** cloneable with
+the current cloud-agent GitHub token (`securiace-dev/whmcs-devbox` and related
+names 404; no `WHMCS_DEVBOX_DIR` in the environment; no docker compose for it).
+
+For **packaging dry-runs only** (not production green):
+
+```bash
+PREDEPLOY_ALLOW_MISSING_DEVBOX=1 bash scripts/predeploy-check.sh
+bash scripts/package-whmcs-suite.sh --all
+```
+
+Tradeoff: exit 0 means stages 1–5 passed and stages 6–7 were **SKIP**ped. Summary
+prints `GATE: PASS (PARTIAL)`. Do **not** treat that as authorization to admit
+modules into Dokploy prod. Re-run without the flag once `WHMCS_DEVBOX_DIR` points
+at a real checkout.
+
+A “slim WHMCS substitute” image is **not** vendored here: WHMCS is proprietary
+and the smoke asserts real `configuration.php` + `information_schema` against
+licensed 8.13/9.0 containers. Faking that would greenwash the gate.
+
+---
+
+## Operator unblock checklist (paste / share into the next agent env)
+
+Do these on a machine that already has the private trees (typically the Mac with
+`/Users/kritananda/Projects/…`), then share artifacts into Cursor Cloud.
+
+### A. Unblock live WHMCS smoke (predeploy stages 6–7 → full exit 0)
+
+1. Locate the checkout that provides containers
+   `whmcs-devbox-whmcs8-1` and `whmcs-devbox-whmcs9-1` (compose project
+   `whmcs-devbox`, services `mariadb8 whmcs8 mariadb9 whmcs9`).
+   - Preferred: `~/Projects/whmcs-devbox` or sibling `../whmcs-devbox` next to
+     this repo.
+   - Historical alternate (visual-tester notes, different container names):
+     `~/Projects/securiace-vps-platform` + `docker-compose.test-whmcs.yml` —
+     **only** usable if you adapt names or symlink a compose tree that matches
+     the smoke scripts.
+2. Confirm compose exists:
+   ```bash
+   test -f "$WHMCS_DEVBOX_DIR/docker-compose.yml" && echo ok
+   ```
+3. Either mount that directory into the cloud VM, or run smoke on the Mac and
+   paste the log:
+   ```bash
+   export WHMCS_DEVBOX_DIR=/absolute/path/to/whmcs-devbox
+   bash scripts/local-whmcs.sh status
+   bash scripts/predeploy-check.sh   # no ALLOW_MISSING flag
+   ```
+4. If the repo is private GitHub: grant the cloud agent token (or a deploy key)
+   read access to that repo and tell the agent the clone URL + `WHMCS_DEVBOX_DIR`.
+
+### B. Unblock Dokploy / whmcs-prod-new module admit (apply path)
+
+Private repos exist (Gmail/GitHub notifications) but 404 for this agent token:
+
+| Repo | Proven fragments (from PR review mail, Aug 2026) |
+|---|---|
+| `yashodhank/whmcs-prod` | `is_supported_module_file` admits `modules/addons/*/*`, `modules/servers/*/*`, gateways/registrars/reports/widgets; vendor archive SHA gates; persistent vendor overrides under `vendor/whmcs`. |
+| `securiace-dev/securiace-whmcs-prod` | `instance.yaml` → PHP major.minor, document root `/var/www/html`, admin path **`/shriram`**; `scripts/finalize-dokploy-first-publication.sh` polls Dokploy deployment status then gates on `PRIVATE_VOLUME` / `DATABASE_VOLUME` consumers; `scripts/lib/common.sh` HTTP route helpers. |
+
+Share **one** of:
+
+1. Tarball or clone of `/Users/kritananda/Projects/whmcs-prod-new` (README + the
+   exact “admit module zip” script name).
+2. Read access + clone URL for `securiace-dev/securiace-whmcs-prod` and
+   `yashodhank/whmcs-prod`.
+3. Dokploy credentials usable in-env (API token + project/service IDs), **or**
+   SSH deploy key that can `docker exec` into `whmcs-production-*-app-1` — never
+   FastPanel `root@195.7.4.219`.
+
+Exact paste template for the next agent:
+
+```text
+WHMCS_DEVBOX_DIR=<absolute path or mount>
+WHMCS_DEVBOX_GIT_URL=<optional private clone URL>
+DOKPLOY_API_URL=<https://…>
+DOKPLOY_API_TOKEN=<token>
+DOKPLOY_WHMCS_PROJECT_ID=<…>
+DOKPLOY_WHMCS_SERVICE_ID=<…>
+MODULE_ADMIT_COMMAND=<exact shell from whmcs-prod-new README>
+```
+
+### C. After secrets are present — dry-run then (only with explicit go) apply
+
+```bash
+# In this repo (cloud or Mac):
+bash scripts/predeploy-check.sh          # must be full PASS, no SKIP
+bash scripts/package-whmcs-suite.sh --all
+ls -la dist/contabo_pricing-v*.zip dist/*.sha256 dist/*.manifest
+git rev-parse HEAD
+
+# Hand archives to whmcs-prod-new / Dokploy admission (operator):
+#   $MODULE_ADMIT_COMMAND dist/contabo_pricing-v1.1.2.zip
+# Then open:
+#   https://my.securiace.com/shriram/addonmodules.php?module=contabo_pricing
+# Confirm AdminController::VERSION + schema_version, observe-only sync preview.
+```
+
+`scripts/deploy.sh` remains a no-op connector (prints instructions only).
