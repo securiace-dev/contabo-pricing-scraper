@@ -5,6 +5,37 @@ automatic production deployment. Applying an artifact to production is a
 separate operator-controlled change with explicit authorization, target
 resolution, maintenance/rollback ownership, and evidence capture.
 
+## Production apply
+
+This runbook does not automatically deploy. Production apply still needs
+explicit operator authorization. `scripts/deploy.sh` already refuses to
+connect. The FastPanel host is retired.
+
+Production WHMCS is the Dokploy compose project `whmcs-production-jvjwfo` on
+ded1 (`195.7.4.219`). The public site is `https://my.securiace.com`. The app
+image is `ghcr.io/securiace-dev/whmcs-prod-new` pinned by digest (`@sha256:…`),
+running Apache mod_php with an immutable app tree. The panel is
+`https://dokploy.securiace.com`.
+
+The durable path starts from a sibling checkout of `whmcs-prod-new`. Package
+this addon with that repo's `scripts/sync-overlay-package.sh`, open a pull
+request, and land it on `main` through Validate and `release-identity`. Then
+bump the `WHMCS_IMAGE` digest and apply it with Dokploy `compose.deploy`. Back
+up the Dokploy environment first. Change only the image identity keys.
+
+In `whmcs-prod-new`, `overlays/catalog.json` id `contabo_pricing` is enabled and
+owns `modules/addons/contabo_pricing/`. It has no `sync.sourceRepo`, unlike
+`banktransferpro`, so a platform rebuild can keep an old addon tree.
+`securiacevps` and `contabo_vps` are not catalog entries. An older ops note
+quarantined `modules/servers/contabo_vps/`. Do not invent a server-module apply
+path. Wiring a catalog sync entry for this addon is a follow-up in
+`whmcs-prod-new`.
+
+The scraper API is a separate container named `contabo-pricing` on the WHMCS
+Docker network, reached at `http://contabo-pricing:8080`. It is not this PHP
+tree. A file copy into the running container does not survive the next image
+recreate.
+
 The release contains three independently versioned artifacts:
 
 1. Rust pricing/catalog API.

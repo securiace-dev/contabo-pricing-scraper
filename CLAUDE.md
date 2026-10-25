@@ -75,23 +75,26 @@ quarterly → the 1-mo rate (never a deeper longer-cycle discount). Implemented 
 - `lib/Installer.php`: `SCHEMA_VERSION` + one `migrateToN()` per bump. Every change is
   **additive + idempotent** (`hasColumn`/`hasTable`-guarded). `SchemaHealth::assertOrMigrate`
   runs on admin page load. Add new required columns to `SchemaHealth::REQUIRED_COLUMNS`.
-- LONGTEXT for JSON blobs — **never** the native JSON column type (FastPanel PHP 7.4 +
-  unknown MySQL/MariaDB JSON support).
+- Store JSON blobs in LONGTEXT. Do not use the native MySQL `JSON` column type; the
+  reason is MariaDB portability. The FastPanel host is retired.
 
 ## Coding constraints
 
-- **PHP 7.4 polyglot floor.** No `match`, no enums, no `readonly`, no constructor
-  promotion, no union types, no `str_starts_with`. Typed properties are fine.
-  `composer lint` (`php -l` over lib + templates) enforces parse-level; the gate lints
-  under php:7.4-cli.
+- **PHP 7.4 parse floor.** Source stays parseable on PHP 7.4: no `match`, no enums,
+  no `readonly`, no constructor promotion, no union types, no `str_starts_with`.
+  Typed properties are fine. `composer lint` (`php -l` over lib + templates) enforces
+  that parse floor; the syntax gate still uses a 7.4 CLI image for the lint only.
+  Supported runtimes are the patched lines 8.2.35, 8.3.36, 8.4.27, and 8.5.12.
+  There is no activate-time die on older PHP. PHP 7.4 and 8.1 are not safe
+  production runtimes.
 - Templates are plain PHP (`<?= $esc(...) ?>`), start with `require _layout_open.tpl`,
   end by closing the `.cb-wrap` div. There is **no** `_layout_close.tpl`.
 - `assets/app.js` is ES5-ish vanilla JS (no modules); keep `node --check` clean.
 
 ## Tests
 
-- `cd whmcs-module/modules/addons/contabo_pricing && vendor/bin/phpunit` (PHPUnit 10,
-  runs on PHP 8.x but code must stay 7.4-compatible).
+- `cd whmcs-module/modules/addons/contabo_pricing && vendor/bin/phpunit` (PHPUnit 10
+  runs on a patched PHP 8 line; source must stay 7.4-parseable).
 - `tests/FakeCapsule.php` is an in-memory `Capsule` stub: seed `Capsule::$tables[...]`,
   assert via `Capsule::$calls` / `Capsule::$inserts`. It supports `whereNull`/
   `whereNotNull` (NULL semantics matter — real `where('col', null)` is `= NULL`, which
@@ -105,13 +108,40 @@ collision points — **serialize** edits to each (one change at a time), and onl
 parallelize work on genuinely disjoint files. `mappings.tpl` and `profiles.tpl` are
 disjoint.
 
-## Deploy (SSH is permission-gated; never deploy without an explicit go)
+## Deploy
 
-1. `bash scripts/predeploy-check.sh` must be **GREEN** (unit + PHP 7.4 lint +
-   live-schema smoke 8.13/9.0 + integration smoke). Fail-closed; no deploy on red.
-2. Dev render: `scripts/local-whmcs.sh render 8 profiles|mappings` (dockerised WHMCS).
-3. Follow `docs/DEPLOY_RUNBOOK.md`: rsync to `root@195.7.4.219`, `--exclude '.claude-flow/'`,
-   chown, verify `AdminController::VERSION` + lint. Prod only on green gate + approval.
+Production apply still needs explicit operator authorization. Writing this down
+does not deploy anything. `scripts/deploy.sh` already refuses to connect. The
+FastPanel host is retired.
+
+Production WHMCS is the Dokploy compose project `whmcs-production-jvjwfo` on
+ded1 (`195.7.4.219`). The public site is `https://my.securiace.com`. The app
+image is `ghcr.io/securiace-dev/whmcs-prod-new` pinned by digest (`@sha256:…`),
+running Apache mod_php with an immutable app tree. The panel is
+`https://dokploy.securiace.com`.
+
+The durable path starts from a sibling checkout of `whmcs-prod-new`. Package
+this addon with that repo's `scripts/sync-overlay-package.sh`, open a pull
+request, and land it on `main` through Validate and `release-identity`. Then
+bump the `WHMCS_IMAGE` digest and apply it with Dokploy `compose.deploy`. Back
+up the Dokploy environment first. Change only the image identity keys.
+
+In `whmcs-prod-new`, `overlays/catalog.json` id `contabo_pricing` is enabled and
+owns `modules/addons/contabo_pricing/`. It has no `sync.sourceRepo`, unlike
+`banktransferpro`, so a platform rebuild can keep an old addon tree.
+`securiacevps` and `contabo_vps` are not catalog entries. An older ops note
+quarantined `modules/servers/contabo_vps/`. Do not invent a server-module apply
+path. Wiring a catalog sync entry for this addon is a follow-up in
+`whmcs-prod-new`.
+
+The scraper API is a separate container named `contabo-pricing` on the WHMCS
+Docker network, reached at `http://contabo-pricing:8080`. It is not this PHP
+tree. A file copy into the running container does not survive the next image
+recreate.
+
+Before a release, `scripts/predeploy-check.sh` must be green and fail-closed.
+Local UI checks use `scripts/local-whmcs.sh` for the profiles and mappings
+screens. Those checks are not a production deploy. See `docs/DEPLOY_RUNBOOK.md`.
 
 ## Git
 
