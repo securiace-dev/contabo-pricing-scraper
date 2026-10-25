@@ -229,6 +229,30 @@ final class SapperLiteralDecoderTest extends TestCase
 
     // ── Limits ──────────────────────────────────────────────────────────────
 
+    public function testBothHtmlFixturesStillDecodeUnderTokenCap(): void
+    {
+        foreach (['cloud_vps_10.html', 'round1_treg_anyapi.html'] as $name) {
+            $html = (string) file_get_contents(__DIR__ . '/../fixtures/scrape/' . $name);
+            $payload = (new SapperLiteralDecoder())->decodeFromHtml($html);
+            $this->assertArrayHasKey('preloaded', $payload, $name);
+            $this->assertNotEmpty($payload['preloaded'][0]['products'], $name);
+        }
+    }
+
+    public function testTokenBombThrowsDecoderException(): void
+    {
+        // One number per token, plus the wrapping object and array. The text
+        // stays under the 4 MiB input cap so this fails on the token budget.
+        $literal = '{a:[' . str_repeat('0,', SapperLiteralDecoder::MAX_TOKENS) . '0]}';
+        $this->assertLessThan(SapperLiteralDecoder::MAX_INPUT_BYTES, strlen('__SAPPER__=' . $literal));
+        try {
+            $this->decode($literal);
+            $this->fail('expected DecoderException');
+        } catch (DecoderException $e) {
+            $this->assertStringContainsString('token budget', $e->getMessage());
+        }
+    }
+
     public function testInputOver4MbIsRejected(): void
     {
         $big = '{a:"' . str_repeat('x', SapperLiteralDecoder::MAX_INPUT_BYTES) . '"}';

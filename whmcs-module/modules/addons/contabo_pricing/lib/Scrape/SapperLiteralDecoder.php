@@ -23,7 +23,9 @@ namespace ContaboPricing\Scrape;
  * literals, any other call, member access outside pre-return assignments,
  * comments, nested functions, unbound identifiers, arity mismatches) throws
  * DecoderException. String contents are inert data: `require('x')` inside a
- * string is just a string. Limits: 4 MB input, nesting depth 64, 20 M tokens.
+ * string is just a string. Limits: 4 MB input, nesting depth 64, and a token
+ * cap of 4× the larger checked-in HTML fixture (round1_treg_anyapi.html,
+ * 180533 tokens; cloud_vps_10.html is 137832).
  *
  * Reference semantics: an object/array ARGUMENT is shared by identity (JS
  * semantics), so `Va.metadata = ...` is visible wherever `Va` is used. This is
@@ -35,7 +37,8 @@ final class SapperLiteralDecoder
 {
     public const MAX_INPUT_BYTES = 4194304;
     public const MAX_DEPTH = 64;
-    public const MAX_TOKENS = 20000000;
+    /** 4 × 180533 tokens measured on tests/fixtures/scrape/round1_treg_anyapi.html. */
+    public const MAX_TOKENS = 722132;
 
     private const END_MARKERS = [
         '};(function(){try{eval("async function x(){}")',

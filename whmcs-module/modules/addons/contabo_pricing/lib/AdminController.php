@@ -917,9 +917,14 @@ class AdminController
     {
         if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
+        try {
+            $optionsPayload = $this->decodeOptionsPayload($req['options'] ?? null);
+        } catch (JsonPayloadTooLarge $e) {
+            $this->renderPayloadTooLarge('profiles', $e);
+            return;
+        }
         if (!$this->guardSchema()) { return; }
 
-        $optionsPayload = $this->decodeOptionsPayload($req['options'] ?? null);
         // OS / Region are derived from the configurator selection when present;
         // fall back to the (now hidden) free-text overrides for legacy posts.
         $os     = (string) ($req['os'] ?? '');
@@ -1019,10 +1024,15 @@ class AdminController
     {
         if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
+        try {
+            $optionsPayload = $this->decodeOptionsPayload($req['options'] ?? null);
+        } catch (JsonPayloadTooLarge $e) {
+            $this->renderPayloadTooLarge('profiles', $e);
+            return;
+        }
         if (!$this->guardSchema()) { return; }
         $pm = new ProfileManager($this->settings);
         $id = (int) ($req['id'] ?? 0);
-        $optionsPayload = $this->decodeOptionsPayload($req['options'] ?? null);
         $os     = isset($req['os']) ? (string) $req['os'] : null;
         $region = isset($req['region']) ? (string) $req['region'] : null;
         if ($optionsPayload !== null) {
@@ -1179,6 +1189,9 @@ class AdminController
     private function decodeOptionsPayload($raw): ?array
     {
         if ($raw === null) return null;
+        if (JsonPayloadCap::exceeds($raw)) {
+            throw new JsonPayloadTooLarge('Options payload exceeds the size limit.');
+        }
         if (is_array($raw)) return $raw;
         if (!is_string($raw) || $raw === '') return null;
         $decoded = json_decode($raw, true);
@@ -2040,6 +2053,14 @@ class AdminController
     {
         if (!$this->requirePost()) { return; }
         if (!$this->verifyToken()) { return; }
+        try {
+            $markupOverrides = $this->coerceJsonObject($req['markup_overrides_json'] ?? null);
+            $setupOverrides  = $this->coerceJsonObject($req['setup_fee_overrides_json'] ?? null);
+            $sourceOverrides = $this->coerceJsonObject($req['source_overrides_json'] ?? null);
+        } catch (JsonPayloadTooLarge $e) {
+            $this->renderPayloadTooLarge('mappings', $e);
+            return;
+        }
         if (!$this->guardSchema()) { return; }
 
         $profileId = (int) ($req['profile_id'] ?? 0);
@@ -2047,10 +2068,6 @@ class AdminController
 
         $catalogMask = $this->coerceMask($req['catalog_cycles_mask'] ?? null);
         $renewalMask = $this->coerceMask($req['renewal_cycles_mask'] ?? null);
-
-        $markupOverrides = $this->coerceJsonObject($req['markup_overrides_json'] ?? null);
-        $setupOverrides  = $this->coerceJsonObject($req['setup_fee_overrides_json'] ?? null);
-        $sourceOverrides = $this->coerceJsonObject($req['source_overrides_json'] ?? null);
 
         $respectDisabled = array_key_exists('respect_disabled_cycles', $req)
             ? !empty($req['respect_disabled_cycles'])
@@ -2179,6 +2196,9 @@ class AdminController
      */
     private function coerceJsonObject($raw): array
     {
+        if (JsonPayloadCap::exceeds($raw)) {
+            throw new JsonPayloadTooLarge('Override JSON exceeds the size limit.');
+        }
         if (!is_string($raw) || $raw === '') return [];
         $decoded = json_decode($raw, true);
         if (!is_array($decoded)) return [];
@@ -3077,6 +3097,21 @@ class AdminController
             . ' Visit <a href="' . htmlspecialchars($this->settings->moduleLink, ENT_QUOTES, 'UTF-8')
             . '&action=maintenance">Maintenance</a> to run migrations manually.</div>';
         return false;
+    }
+
+    /**
+     * Oversize posted JSON must fail the save before any profile or mapping
+     * write. Returning null or [] would drop an edit or wipe overrides.
+     */
+    private function renderPayloadTooLarge(string $backAction, JsonPayloadTooLarge $e): void
+    {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing save rejected (' . $backAction . '): ' . $e->getMessage());
+        }
+        $back = htmlspecialchars($this->settings->moduleLink . '&action=' . $backAction, ENT_QUOTES, 'UTF-8');
+        echo '<div class="errorbox"><strong>Could not save.</strong> '
+            . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8')
+            . ' Nothing was written. <a href="' . $back . '">Go back</a></div>';
     }
 
     /**

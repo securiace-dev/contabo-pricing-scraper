@@ -227,12 +227,19 @@ add_hook('AdminHomeWidgets', 1, static function () {
 
         public function getData(): array
         {
-            $last = Capsule::table('mod_contabo_sync_log')->orderByDesc('id')->first();
-            $active = (int) Capsule::table('mod_contabo_profile')->where('active', true)->count();
-            return [
-                'last'   => $last ? (array) $last : null,
-                'active' => $active,
-            ];
+            try {
+                $last = Capsule::table('mod_contabo_sync_log')->orderByDesc('id')->first();
+                $active = (int) Capsule::table('mod_contabo_profile')->where('active', true)->count();
+                return [
+                    'last'   => $last ? (array) $last : null,
+                    'active' => $active,
+                ];
+            } catch (\Throwable $e) {
+                if (function_exists('logActivity')) {
+                    logActivity('Contabo Pricing admin home widget failed: ' . $e->getMessage());
+                }
+                return ['last' => null, 'active' => 0];
+            }
         }
 
         public function generateOutput($data): string

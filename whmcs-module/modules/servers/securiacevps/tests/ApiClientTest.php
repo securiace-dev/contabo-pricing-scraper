@@ -4,6 +4,7 @@ declare(strict_types=1);
 use SecuriAceVps\ContaboApiClient;
 use SecuriAceVps\ContaboAuth;
 use SecuriAceVps\ContaboProvisioningException;
+use SecuriAceVps\ResponseBodyCap;
 use SecuriAceVps\Tests\FakeHttpExecutor;
 use PHPUnit\Framework\TestCase;
 
@@ -139,9 +140,60 @@ final class ApiClientTest extends TestCase
     public function testTransportErrorThrows(): void
     {
         $this->http->queue('GET api.contabo.com', 0, '', 28, 'Connection timed out');
-        $this->expectException(ContaboProvisioningException::class);
-        $this->expectExceptionMessage('transport error');
-        $this->client()->get('/v1/compute/instances');
+        try {
+            $this->client()->get('/v1/compute/instances');
+            $this->fail('expected transport exception');
+        } catch (ContaboProvisioningException $e) {
+            $this->assertStringContainsString('transport error', $e->getMessage());
+            $this->assertSame('transient', $e->retryClassification());
+        }
+    }
+
+    public function testBodyCapIsTerminalAndNotRetried(): void
+    {
+        $this->http->queue(
+            'GET api.contabo.com',
+            200,
+            ['data' => ['ok' => true]],
+            ResponseBodyCap::ERRNO,
+            ResponseBodyCap::ERROR
+        );
+        $this->http->queue('GET api.contabo.com', 200, ['data' => ['retried' => true]]);
+
+        try {
+            $this->client()->get('/v1/compute/instances');
+            $this->fail('expected body-cap exception');
+        } catch (ContaboProvisioningException $e) {
+            $this->assertSame('terminal', $e->retryClassification());
+            $this->assertFalse($e->hasAmbiguousOutcome());
+            $this->assertStringContainsString('4 MiB', $e->getMessage());
+        }
+
+        $this->assertSame([], $this->sleeps);
+        $this->assertCount(1, $this->http->callsMatching('GET https://api.contabo.com'));
+    }
+
+    public function testBodyCapOnMutationIsTerminalAndNotAmbiguous(): void
+    {
+        $this->http->queue(
+            'POST api.contabo.com',
+            0,
+            '',
+            ResponseBodyCap::ERRNO,
+            ResponseBodyCap::ERROR
+        );
+        $this->http->queue('POST api.contabo.com', 201, ['data' => [['instanceId' => 1]]]);
+
+        try {
+            $this->client()->post('/v1/compute/instances', ['productId' => 'V1']);
+            $this->fail('expected body-cap exception');
+        } catch (ContaboProvisioningException $e) {
+            $this->assertSame('terminal', $e->retryClassification());
+            $this->assertFalse($e->hasAmbiguousOutcome());
+        }
+
+        $this->assertSame([], $this->sleeps);
+        $this->assertCount(1, $this->http->callsMatching('POST https://api.contabo.com/v1/compute/instances'));
     }
 
     public function testPutAndDeleteUseCorrectVerbs(): void
