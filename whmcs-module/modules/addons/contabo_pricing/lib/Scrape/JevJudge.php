@@ -87,7 +87,12 @@ final class JevJudge
      */
     public function judge(string $html, ?string $secondHtml = null): array
     {
-        $key = $this->settings->jevApiKey();
+        try {
+            $key = $this->settings->jevApiKey();
+        } catch (\ContaboPricing\SecretUnreadableException $e) {
+            // already logged by SecretStore; flagged so the run cannot auto-import unreviewed
+            return ['status' => 'skipped', 'reason' => 'api key unreadable (WHMCS encryption key changed); re-enter it', 'key_unreadable' => true];
+        }
         if ($key === '') {
             return ['status' => 'skipped', 'reason' => 'no api key configured'];
         }

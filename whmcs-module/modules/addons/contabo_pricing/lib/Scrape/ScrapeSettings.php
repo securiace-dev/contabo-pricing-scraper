@@ -24,6 +24,8 @@ final class ScrapeSettings
             'scrape.rank_mode' => 'auto',
             'scrape.monthly_budget_micro' => '500000',
             'scrape.per_run_cap_micro' => '50000',
+            // wall-clock budget for the fetch phase of one run (seconds); also capped below PHP max_execution_time
+            'scrape.time_budget_seconds' => '240',
             'scrape.min_plans_cloud_vps' => '6',
             'scrape.min_plans_storage_vps' => '5',
             'scrape.min_plans_cloud_vds' => '5',
@@ -90,6 +92,22 @@ final class ScrapeSettings
     public function perRunCapMicro(): int
     {
         return (int) $this->get('scrape.per_run_cap_micro');
+    }
+
+    /**
+     * Wall-clock budget (seconds) for the fetch phase of a run: the configured
+     * value clamped to 30..3000, and never more than PHP's max_execution_time
+     * minus a 60 s reserve for validation and import (floor 20 s). max_execution_time
+     * 0 (CLI cron, unlimited) leaves only the configured value.
+     */
+    public function timeBudgetSeconds(): int
+    {
+        $budget = max(30, min(3000, (int) $this->get('scrape.time_budget_seconds')));
+        $max = (int) ini_get('max_execution_time');
+        if ($max > 0) {
+            $budget = min($budget, max(20, $max - 60));
+        }
+        return $budget;
     }
 
     /** @return array<string,int> family display name => minimum plan count */

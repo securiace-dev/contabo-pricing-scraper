@@ -1572,14 +1572,8 @@ class Installer
             ['state', 'created_at']
         );
 
-        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
-            ['key' => 'schema_version'],
-            ['value' => '1', 'updated_at' => date('Y-m-d H:i:s')]
-        );
-        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
-            ['key' => 'installed_by'],
-            ['value' => 'contabo_pricing', 'updated_at' => date('Y-m-d H:i:s')]
-        );
+        $this->stampSuiteMonotonic('schema_version', 1);
+        $this->stampInstalledBy('contabo_pricing');
     }
 
     /**
@@ -1851,10 +1845,7 @@ class Installer
             }
         }
 
-        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
-            ['key' => 'schema_version'],
-            ['value' => '2', 'updated_at' => $now]
-        );
+        $this->stampSuiteMonotonic('schema_version', 2);
     }
 
     /**
@@ -1882,14 +1873,8 @@ class Installer
         }
 
         $now = date('Y-m-d H:i:s');
-        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
-            ['key' => 'suite_schema_version'],
-            ['value' => '3', 'updated_at' => $now]
-        );
-        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
-            ['key' => 'schema_version'],
-            ['value' => '3', 'updated_at' => $now]
-        );
+        $this->stampSuiteMonotonic('suite_schema_version', 3);
+        $this->stampSuiteMonotonic('schema_version', 3);
     }
 
     /**
@@ -1954,14 +1939,8 @@ class Installer
         );
 
         $now = date('Y-m-d H:i:s');
-        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
-            ['key' => 'suite_schema_version'],
-            ['value' => '4', 'updated_at' => $now]
-        );
-        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
-            ['key' => 'schema_version'],
-            ['value' => '4', 'updated_at' => $now]
-        );
+        $this->stampSuiteMonotonic('suite_schema_version', 4);
+        $this->stampSuiteMonotonic('schema_version', 4);
     }
 
     /**
@@ -2014,14 +1993,8 @@ class Installer
                     ->update(['value' => $value, 'updated_at' => $now]);
             }
         }
-        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
-            ['key' => 'suite_schema_version'],
-            ['value' => '5', 'updated_at' => $now]
-        );
-        Capsule::table('mod_securiacevps_schema')->updateOrInsert(
-            ['key' => 'schema_version'],
-            ['value' => '5', 'updated_at' => $now]
-        );
+        $this->stampSuiteMonotonic('suite_schema_version', 5);
+        $this->stampSuiteMonotonic('schema_version', 5);
     }
 
     /**
@@ -2227,6 +2200,84 @@ class Installer
                     ->update(['value' => '[]', 'updated_at' => date('Y-m-d H:i:s')]);
             }
         }
+
+        // Orders placed before this point cannot carry a sealed snapshot (the
+        // draft/seal flow needs the v16 publication contract). Pin the cutoff
+        // that lets ProvisioningGate grandfather exactly those paid orders.
+        $this->ensureGrandfatherCutoff();
+    }
+
+    /**
+     * Stamp a numeric version key in the SHARED mod_securiacevps_schema table
+     * without ever lowering it. The table is shared with the securiacevps
+     * server module; a later (or newer-suite) writer may already have recorded
+     * a higher value, and an older migration step that is re-run must not
+     * downgrade it. A missing or non-numeric value is replaced.
+     */
+    private function stampSuiteMonotonic(string $key, int $value): void
+    {
+        $now = date('Y-m-d H:i:s');
+        $current = Capsule::table('mod_securiacevps_schema')->where('key', $key)->value('value');
+        if ($current === null) {
+            Capsule::table('mod_securiacevps_schema')->insert([
+                'key' => $key,
+                'value' => (string) $value,
+                'updated_at' => $now,
+            ]);
+            return;
+        }
+        $recorded = trim((string) $current);
+        if (ctype_digit($recorded) && (int) $recorded >= $value) {
+            return;
+        }
+        Capsule::table('mod_securiacevps_schema')
+            ->where('key', $key)
+            ->update(['value' => (string) $value, 'updated_at' => $now]);
+    }
+
+    /**
+     * Record who first installed the shared schema. First writer wins: an
+     * existing installed_by (for example the securiacevps module) is never
+     * overwritten by a later migration.
+     */
+    private function stampInstalledBy(string $by): void
+    {
+        $current = Capsule::table('mod_securiacevps_schema')->where('key', 'installed_by')->value('value');
+        if ($current !== null && trim((string) $current) !== '') {
+            return;
+        }
+        if ($current === null) {
+            Capsule::table('mod_securiacevps_schema')->insert([
+                'key' => 'installed_by',
+                'value' => $by,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+            return;
+        }
+        Capsule::table('mod_securiacevps_schema')
+            ->where('key', 'installed_by')
+            ->update(['value' => $by, 'updated_at' => date('Y-m-d H:i:s')]);
+    }
+
+    /**
+     * Pin the paid-order grandfather cutoff (see ProvisioningGate): the moment
+     * the sealed-snapshot contract starts being enforced on this installation.
+     * Insert-if-absent, so re-running an upgrade never moves it forward and
+     * quietly grandfathers newer, unsealed orders. Returns true when stamped now.
+     */
+    public function ensureGrandfatherCutoff(): bool
+    {
+        $existing = Capsule::table('mod_contabo_settings')
+            ->where('key', ProvisioningGate::SETTING_CUTOFF)
+            ->value('value');
+        if ($existing !== null && trim((string) $existing) !== '') {
+            return false;
+        }
+        Capsule::table('mod_contabo_settings')->updateOrInsert(
+            ['key' => ProvisioningGate::SETTING_CUTOFF],
+            ['value' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')]
+        );
+        return true;
     }
 
     /**

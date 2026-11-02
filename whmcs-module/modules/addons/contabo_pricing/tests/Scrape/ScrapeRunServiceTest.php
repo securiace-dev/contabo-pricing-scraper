@@ -31,6 +31,7 @@ final class ScriptedSource implements SourceInterface
     /** @var bool */ private $manual;
     /** @var int */ public $calls = 0;
     /** @var list<string> */ public $urls = [];
+    /** @var callable|null runs on every fetch (tests use it to advance a fake clock) */ public $onFetch;
 
     /** @param string $mode ok|throw|garbage */
     public function __construct(string $id, int $price, string $mode, bool $manual = false)
@@ -47,6 +48,9 @@ final class ScriptedSource implements SourceInterface
     {
         $this->calls++;
         $this->urls[] = $url;
+        if ($this->onFetch !== null) {
+            ($this->onFetch)();
+        }
         if ($this->mode === 'garbage_once' && $this->calls === 1) {
             return new FetchResult($this->id, null, '<html><body>captcha wall</body></html>', null, $this->price, 40, 200);
         }
@@ -472,6 +476,64 @@ final class ScrapeRunServiceTest extends TestCase
         $this->assertSame(['family_count_deviation'], array_values(array_unique(array_column($flags, 'kind'))));
         $this->assertCount(1, $flags);
         $this->assertSame('Cloud VDS', $flags[0]['family']['label']);
+    }
+
+    public function testTimeBudgetStopsFetchingAndNeverAutoImportsAPartialRun(): void
+    {
+        $reg = $this->primeRegistry();
+        foreach ($reg->all() as $row) {
+            if ($row['slug'] === 'vps') {
+                Capsule::table('mod_contabo_scrape_families')->where('id', $row['id'])->update(['typical_plan_count' => 7]);
+            }
+        }
+        $now = 1000.0;
+        $svc = new ScrapeRunService($this->s, $this->http, new CostLedger(), new CatalogImportService(), null, static function () use (&$now): float {
+            return $now;
+        });
+        $a = new ScriptedSource('s', 0, 'ok');
+        $a->onFetch = static function () use (&$now): void {
+            $now += 500.0; // the first page "takes" far longer than the budget
+        };
+        $r = $svc->run('cron', 0, ['sources' => [$a]]);
+
+        $this->assertSame(1, $a->calls, 'only the first page is fetched; the rest are skipped, not hammered');
+        $this->assertNotSame('succeeded', $r['state'], 'a partial run must not be imported unattended');
+        $this->assertSame(0, Capsule::table('mod_contabo_catalog_versions')->count());
+        $pages = (new RunRepository())->find($r['run_id'])['families_json']['pages'];
+        $this->assertGreaterThan(1, count($pages));
+        $this->assertStringContainsString('time budget', json_encode($pages));
+    }
+
+    public function testTimeBudgetExhaustedBeforeAnyFetchIsARecordedRejection(): void
+    {
+        $this->s->set('scrape.time_budget_seconds', '30');
+        $ticks = 0.0;
+        $svc = new ScrapeRunService($this->s, $this->http, new CostLedger(), new CatalogImportService(), null, static function () use (&$ticks): float {
+            $ticks += 100.0; // every clock read is 100 s later
+            return $ticks;
+        });
+        $a = new ScriptedSource('s', 0, 'ok');
+        $r = $svc->run('cron', 0, ['sources' => [$a]]);
+        $this->assertSame(0, $a->calls);
+        $this->assertSame('rejected', $r['state']);
+        $this->assertSame('time_budget_exhausted', $r['reason']);
+    }
+
+    public function testAnUnreadableSourceKeyIsSkippedAndLoggedNotSilentlyEmpty(): void
+    {
+        $GLOBALS['contabo_pricing_test_activity_log'] = [];
+        Capsule::table('mod_contabo_scrape_sources')->insert([
+            'source_id' => 'alterlab', 'display_name' => 'AlterLab', 'enabled' => 1, 'base_url' => 'https://example.invalid',
+            'api_key_enc' => 'ENC:!!!corrupt!!!', 'priority' => 1,
+        ]);
+        $r = $this->svc()->run('cron', 0, []);
+        $this->assertSame('rejected', $r['state']);
+        $this->assertSame('no_usable_source', $r['reason']);
+        $decision = Capsule::table('mod_contabo_decisions')->where('run_id', $r['run_id'])->first();
+        $this->assertStringContainsString('alterlab', json_encode($decision));
+        $this->assertNotEmpty(array_filter($GLOBALS['contabo_pricing_test_activity_log'], static function (string $m): bool {
+            return strpos($m, 'cannot be decrypted') !== false;
+        }));
     }
 
     public function testAFailedPaidManualRunIsNeverRepeatedOnAnotherPageAndKeepsItsRunId(): void

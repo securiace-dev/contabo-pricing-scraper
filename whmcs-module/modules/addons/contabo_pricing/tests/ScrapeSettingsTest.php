@@ -22,6 +22,8 @@ final class ScrapeSettingsTest extends TestCase
         $this->assertSame('auto', $s->rankMode());
         $this->assertSame(500000, $s->monthlyBudgetMicro());
         $this->assertSame(50000, $s->perRunCapMicro());
+        $this->assertGreaterThanOrEqual(20, $s->timeBudgetSeconds());
+        $this->assertLessThanOrEqual(240, $s->timeBudgetSeconds());
         $this->assertSame(
             ['Cloud VPS' => 6, 'Storage VPS' => 5, 'Cloud VDS' => 5],
             $s->minPlansByFamily()
@@ -36,6 +38,25 @@ final class ScrapeSettingsTest extends TestCase
         $this->assertSame([], $s->planUrls(), 'no explicit override: targets come from the family registry');
         $this->assertSame([], $s->legacyAllowlist());
         $this->assertSame([PlanUrlList::DEFAULT_PRODUCT_URL], (new PlanUrlList($s->planUrls()))->fetchTargets());
+    }
+
+    public function testTimeBudgetIsClampedAndBoundedByMaxExecutionTime(): void
+    {
+        $s = new ScrapeSettings();
+        $s->set('scrape.time_budget_seconds', '5');
+        $this->assertGreaterThanOrEqual(20, $s->timeBudgetSeconds(), 'floor');
+        $s->set('scrape.time_budget_seconds', '999999');
+        $max = (int) ini_get('max_execution_time');
+        $this->assertSame($max > 0 ? max(20, min(3000, $max - 60)) : 3000, $s->timeBudgetSeconds(), 'ceiling');
+        $old = ini_set('max_execution_time', '90');
+        try {
+            $s->set('scrape.time_budget_seconds', '240');
+            $this->assertSame(30, $s->timeBudgetSeconds(), 'max_execution_time 90 leaves 30 s after the 60 s reserve');
+            ini_set('max_execution_time', '30');
+            $this->assertSame(20, $s->timeBudgetSeconds());
+        } finally {
+            ini_set('max_execution_time', (string) $old);
+        }
     }
 
     public function testSetPersistsAndUpserts(): void

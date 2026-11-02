@@ -13,6 +13,13 @@ if (!function_exists('logActivity')) {
     }
 }
 
+if (!function_exists('logModuleCall')) {
+    function logModuleCall(string $module, string $action, $request, $response, $data = '', $secrets = []): void
+    {
+        $GLOBALS['contabo_pricing_test_module_log'][] = [$module, $action, $request, $response];
+    }
+}
+
 if (!function_exists('sendAdminNotification')) {
     function sendAdminNotification(...$_args): void
     {

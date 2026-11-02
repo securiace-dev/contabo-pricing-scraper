@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ContaboPricing\Tests;
 
 use ContaboPricing\SecretStore;
+use ContaboPricing\SecretUnreadableException;
 use PHPUnit\Framework\TestCase;
 
 final class SecretStoreTest extends TestCase
@@ -17,9 +18,28 @@ final class SecretStoreTest extends TestCase
         $this->assertSame('tf-secret-value-1234', SecretStore::open($sealed));
     }
 
-    public function testOpenReturnsEmptyOnDecryptFailure(): void
+    public function testOpenThrowsAndLogsOnDecryptFailureInsteadOfReturningEmpty(): void
     {
-        $this->assertSame('', SecretStore::open('ENC:!!!not-valid!!!'));
+        $GLOBALS['contabo_pricing_test_activity_log'] = [];
+        try {
+            SecretStore::open('ENC:!!!not-valid!!!');
+            $this->fail('an undecryptable sealed value must not look like "no key configured"');
+        } catch (SecretUnreadableException $e) {
+            $this->assertStringContainsString('SECRET_RESEAL.md', $e->getMessage());
+            $this->assertStringNotContainsString('not-valid', $e->getMessage(), 'the stored value is never echoed');
+        }
+        $this->assertCount(1, $GLOBALS['contabo_pricing_test_activity_log']);
+        $this->assertStringContainsString('cannot be decrypted', $GLOBALS['contabo_pricing_test_activity_log'][0]);
+        $this->assertStringNotContainsString('not-valid', $GLOBALS['contabo_pricing_test_activity_log'][0]);
+    }
+
+    public function testTryOpenReportsUnreadableAsNullAndStillLogs(): void
+    {
+        $GLOBALS['contabo_pricing_test_activity_log'] = [];
+        $this->assertNull(SecretStore::tryOpen('ENC:!!!not-valid!!!'));
+        $this->assertCount(1, $GLOBALS['contabo_pricing_test_activity_log']);
+        $this->assertSame('', SecretStore::tryOpen(''));
+        $this->assertSame('k', SecretStore::tryOpen(SecretStore::seal('k')));
     }
 
     public function testOpenPassesThroughLegacyPlaintextAndEmpty(): void
