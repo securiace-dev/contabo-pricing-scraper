@@ -48,13 +48,13 @@ jobs:
           test "$(/usr/bin/php8.2 -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')" = "8.2"
           /usr/bin/php8.2 /usr/local/bin/composer --version
 
-      # composer.json requires the patched PHP floor (>=8.2.35). contabo-ci-pr
-      # has no Docker and its host PHP patch level is not guaranteed, so the
-      # platform check is skipped here only. The patched floor is enforced on
-      # main and on manual dispatch by release-validation-patched-php.yml.
+      # composer.json requires the patched PHP floor (>=8.2.35). The
+      # contabo-ci-pr host (securiace-zoss) runs PHP 8.2.35, so Composer's
+      # platform check runs here unmodified. If the host regresses below the
+      # floor this step fails on purpose; do not add --ignore-platform-req.
       - name: Install test dependencies
         working-directory: whmcs-module/modules/addons/contabo_pricing
-        run: /usr/bin/php8.2 /usr/local/bin/composer install --no-interaction --prefer-dist --no-progress --ignore-platform-req=php
+        run: /usr/bin/php8.2 /usr/local/bin/composer install --no-interaction --prefer-dist --no-progress
 
       - name: Run addon and provisioning suites (host PHP 8.2, minor level only)
         run: |
