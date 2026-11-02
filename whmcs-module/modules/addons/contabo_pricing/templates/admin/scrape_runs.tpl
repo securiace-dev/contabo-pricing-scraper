@@ -70,19 +70,19 @@ $cb_flash = isset($flash) ? (string) $flash : '';
 
 <div class="cb-card">
   <h3>Run now</h3>
-  <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+  <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
     <input type="hidden" name="action" value="scrape-run">
     <input type="hidden" name="mode" value="dry">
     <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
     <button type="submit" class="cb-btn subtle">Dry run (never imports)</button>
   </form>
-  <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+  <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
     <input type="hidden" name="action" value="scrape-run">
     <input type="hidden" name="mode" value="live">
     <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
     <button type="submit" class="cb-btn">Live run</button>
   </form>
-  <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+  <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
     <input type="hidden" name="action" value="scrape-agent-run">
     <input type="hidden" name="mode" value="dry">
     <?php if (function_exists('generate_token')) { echo generate_token(); } ?>

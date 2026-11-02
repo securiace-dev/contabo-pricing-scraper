@@ -336,7 +336,9 @@ if (!empty($cb_profile_conflict) && is_array($cb_profile_conflict)):
             <div class="muted mono" data-cb-u="u-ab736dfd55"><?= $esc($slug) ?></div>
           </td>
           <td class="mono"><?= $esc($plan) ?></td>
-          <td><?= $period ?> mo</td>
+          <td><?= $period ?> mo<?php if (!empty($p['derived_term'])): ?>
+            <span class="cb-pill warn" title="<?= $esc('Derived, not an official Contabo price: ' . (string) ($p['derived_term']['formula'] ?? '')) ?>">derived</span>
+          <?php endif; ?></td>
           <td>
             <?= $region !== '' ? $esc($region) : '<span class="muted">—</span>' ?>
             <?php if ($os !== ''): ?>

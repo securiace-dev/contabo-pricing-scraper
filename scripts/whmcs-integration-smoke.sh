@@ -8,19 +8,19 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-DEVBOX_DIR="${WHMCS_DEVBOX_DIR:-$(cd "$REPO_ROOT/../whmcs-devbox" && pwd)}"
-BASE_COMPOSE="$DEVBOX_DIR/docker-compose.yml"
-OVERRIDE_COMPOSE="$DEVBOX_DIR/docker-compose.override.yml"
+RESOLVE="$SCRIPT_DIR/lib/resolve-whmcs-devbox.sh"
 ADDON_DIR="$REPO_ROOT/whmcs-module/modules/addons/contabo_pricing"
 MODULE_DIR="$REPO_ROOT/whmcs-module/modules/servers/securiacevps"
 SHIM_DIR="$REPO_ROOT/whmcs-module/modules/servers/contabo_vps"
 ADDON_SMOKE="$ADDON_DIR/tests/integration/whmcs_smoke.php"
 NATIVE_SMOKE="$MODULE_DIR/tests/integration/native_whmcs_smoke.php"
 
-[ -f "$BASE_COMPOSE" ] || {
-  echo "WHMCS devbox not found at $DEVBOX_DIR" >&2
+if ! DEVBOX_DIR="$("$RESOLVE")"; then
   exit 1
-}
+fi
+
+BASE_COMPOSE="$DEVBOX_DIR/docker-compose.yml"
+OVERRIDE_COMPOSE="$DEVBOX_DIR/docker-compose.override.yml"
 
 compose_args=(-p whmcs-devbox -f "$BASE_COMPOSE")
 [ -f "$OVERRIDE_COMPOSE" ] && compose_args+=(-f "$OVERRIDE_COMPOSE")

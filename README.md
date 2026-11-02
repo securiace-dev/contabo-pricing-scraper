@@ -48,6 +48,8 @@ zips plus `.sha256` and `.manifest` files in `dist/`. CI lives in
 `release-contabo-pricing.yml` / `release-contabo-vps.yml` (tagged releases),
 `whmcs-release-contract.yml` (changelog, package and runner-trust contracts) and
 `fork-policy.yml`. Operator procedure: [`DEPLOY_RUNBOOK.md`](whmcs-module/modules/addons/contabo_pricing/docs/DEPLOY_RUNBOOK.md).
+Production apply is Dokploy / `whmcs-prod-new` (FastPanel rsync retired):
+[`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
 
 ## Schemas
 

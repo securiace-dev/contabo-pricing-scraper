@@ -1207,7 +1207,8 @@
     return parseFloat(sourceEur[best]);
   }
 
-  function renderCycleTableRows(scope, cycles, respectDisabled, sourceEur) {
+  function renderCycleTableRows(scope, cycles, respectDisabled, sourceEur, sourceDerived) {
+    sourceDerived = sourceDerived || {};
     cycles.forEach(function (c) {
       var sel = '[data-cb-cycle-row="' + cssAttrEscape(c.cycle) + '"]';
       var tr = scope.querySelector(sel);
@@ -1218,9 +1219,13 @@
       if (srcCell) {
         var months = parseInt(tr.getAttribute('data-cb-cycle-months'), 10) || 0;
         var rate = sourceRateForMonths(sourceEur || {}, months);
+        var derived = !!(sourceDerived[months] || sourceDerived[String(months)]);
         srcCell.innerHTML = (rate === null)
           ? '<span class="muted cb-text-xs">—</span>'
           : '<span class="mono" title="source cost / mo × ' + months + ' mo">€' + rate.toFixed(2) + '/mo · €' + (rate * months).toFixed(2) + '</span>';
+        if (derived) {
+          srcCell.innerHTML += ' <span class="cb-pill warn" title="Derived, not an official Contabo price">derived</span>';
+        }
       }
 
       var priceCell = tr.querySelector('[data-cb-cycle-current-price]');
@@ -1295,7 +1300,7 @@
       if (loading) {
         loading.hidden = true;
       }
-      renderCycleTableRows(scope, j.cycles || [], respectDisabled, j.source_eur || {});
+      renderCycleTableRows(scope, j.cycles || [], respectDisabled, j.source_eur || {}, j.source_derived || {});
       if (opts.mappingState) {
         applySavedMappingState(scope, opts.mappingState);
       } else {

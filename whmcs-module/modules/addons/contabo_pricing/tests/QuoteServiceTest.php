@@ -5,9 +5,15 @@ namespace ContaboPricing\Tests;
 
 use ContaboPricing\Quote\QuoteService;
 use PHPUnit\Framework\TestCase;
+use WHMCS\Database\Capsule;
 
 final class QuoteServiceTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Capsule::reset();
+    }
+
     /** @return array<string,mixed> */
     private function fixture(string $n): array
     {
@@ -34,7 +40,11 @@ final class QuoteServiceTest extends TestCase
         $this->assertSame($golden['period_months'], $got['period_months']);
         $this->assertSame($golden['currency'], $got['currency']);
         $this->assertSame($golden['breakdown'], $got['breakdown']);
-        $this->assertSame(array_keys($golden), array_keys($got));
+        foreach (array_keys($golden) as $k) {
+            $this->assertArrayHasKey($k, $got);
+        }
+        $this->assertFalse($got['term_derived']);
+        $this->assertSame('native', $got['term_source']);
     }
 
     public function testEurWithoutGstHasNoFxRate(): void
@@ -65,18 +75,23 @@ final class QuoteServiceTest extends TestCase
         (new QuoteService())->quote($this->fixture('plans')[0], ['cycle' => 'fortnightly']);
     }
 
-    public function testUnsupportedOrUnofferedPeriodRejected(): void
+    public function testZeroPeriodRejectedAndUnpublishedTermsAreDerived(): void
     {
         $svc = new QuoteService();
         $plan = $this->fixture('plans')[0];
-        foreach ([0, 5, 1] as $m) { // 5 unsupported, 1 supported-but-not-offered, 0 missing
-            try {
-                $svc->quote($plan, ['period_months' => $m]);
-                $this->fail("period {$m} should be rejected");
-            } catch (\InvalidArgumentException $e) {
-                $this->addToAssertionCount(1);
-            }
+        try {
+            $svc->quote($plan, ['period_months' => 0]);
+            $this->fail('period 0 should be rejected');
+        } catch (\InvalidArgumentException $e) {
+            $this->addToAssertionCount(1);
         }
+        $five = $svc->quote($plan, ['period_months' => 5]);
+        $this->assertTrue($five['term_derived']);
+        $this->assertSame(5, $five['period_months']);
+        $thirtySix = $svc->quote($plan, ['period_months' => 36]);
+        $this->assertTrue($thirtySix['term_derived']);
+        $this->assertSame(12, $thirtySix['term_source_months']);
+        $this->assertSame(3.6, $thirtySix['base_monthly_eur']);
     }
 
     public function testInrRequiresRate(): void

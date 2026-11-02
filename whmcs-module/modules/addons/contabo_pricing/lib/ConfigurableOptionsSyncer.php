@@ -138,7 +138,11 @@ final class ConfigurableOptionsSyncer
                 $sortOrder  = (int) ($value['sortorder'] ?? $i);
                 $sub = $this->adapter->upsertSubOption($optionId, $label, $sortOrder, false);
 
-                $cyclePrices = $this->priceCycles((float) ($value['monthly_eur_delta'] ?? 0.0), $ctx);
+                $cyclePrices = $this->priceCycles(
+                    (float) ($value['monthly_eur_delta'] ?? 0.0),
+                    $ctx,
+                    $this->addonTermMonthly($value)
+                );
                 $setupFees   = $this->priceSetup((float) ($value['setup_eur_delta'] ?? 0.0), $ctx);
 
                 $subId  = (int) ($sub['id'] ?? 0);
@@ -418,7 +422,7 @@ final class ConfigurableOptionsSyncer
                 $pricing = $this->adapter->upsertConfigOptionPricing(
                     $subId,
                     $ctx->currencyId,
-                    $this->priceCycles($eurDelta, $ctx),
+                    $this->priceCycles($eurDelta, $ctx, $this->addonTermMonthly($value)),
                     $this->priceSetup((float) ($value['setup_eur_delta'] ?? 0.0), $ctx)
                 );
 
@@ -595,22 +599,50 @@ final class ConfigurableOptionsSyncer
     }
 
     /**
+     * Optional native per-term add-on monthly map from a spec value.
+     *
+     * @param array<string,mixed> $value
+     * @return array<int,float>
+     */
+    private function addonTermMonthly(array $value): array
+    {
+        $raw = $value['term_monthly'] ?? ($value['term_monthly_json'] ?? null);
+        if (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            $raw = is_array($decoded) ? $decoded : [];
+        }
+        if (!is_array($raw)) {
+            return [];
+        }
+        $out = [];
+        foreach ($raw as $m => $v) {
+            if ((int) $m > 0 && is_numeric($v)) {
+                $out[(int) $m] = (float) $v;
+            }
+        }
+        return $out;
+    }
+
+    /**
      * Per-cycle sell price for one option value's monthly EUR delta.
      *
-     * The EUR delta is clamped to >= 0 (amendment #1), converted to local
-     * landed monthly via the context multiplier, then run through the same
-     * MarginCalculator path as the base plan. A zero (or clamped) delta prices
-     * to 0.00 in every cycle — exactly what a default / no-cost value should be.
+     * Routes the EUR delta through {@see TermTranslator::resolveAddon()} so a
+     * native per-term add-on map (when present) can replace the monthly×N
+     * default. With no map the monthly rate is unchanged, so landed prices
+     * match the pre-translator output.
      *
+     * @param array<int,float> $termMonthly
      * @return array<string,float> keyed by cycle name
      */
-    private function priceCycles(float $monthlyEurDelta, ConfigOptionPricingContext $ctx): array
+    private function priceCycles(float $monthlyEurDelta, ConfigOptionPricingContext $ctx, array $termMonthly = []): array
     {
         $eur = max(0.0, $monthlyEurDelta);
-        $landedMonthly = $eur * $ctx->landedMultiplier;
+        $policy = TermPolicy::addonPolicy();
 
         $prices = [];
         foreach (self::CYCLE_MONTHS as $cycle => $months) {
+            $resolved = TermTranslator::resolveAddon($eur, $months, $termMonthly, $policy);
+            $landedMonthly = (float) $resolved['monthly_eur'] * $ctx->landedMultiplier;
             // A zero (or negative-clamped) marginal cost is FREE — never apply
             // the markup to it. This matters for cost_plus_amount, where a flat
             // amount would otherwise be charged on a default/no-cost value; the

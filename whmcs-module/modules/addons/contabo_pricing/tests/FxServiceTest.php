@@ -40,7 +40,8 @@ final class FxServiceTest extends TestCase
         $e = $this->exec([[200, $this->body(), 0, '']]);
         $now = 1785406830;
         $r = (new FxService($e, static function () use ($now) { return $now; }))->rates();
-        $this->assertSame('https://api.frankfurter.app/latest?base=EUR&symbols=INR', $e->calls[0]);
+        $this->assertSame(FxService::URL, $e->calls[0]);
+        $this->assertSame('https://api.frankfurter.dev/v1/latest?base=EUR&symbols=INR', $e->calls[0]);
         $this->assertSame(112.317, $r['eurInr']);
         $this->assertSame(112.317, $r['rate']);
         $this->assertSame(112.317, $r['mid']);
@@ -96,6 +97,22 @@ final class FxServiceTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
         (new FxService($this->exec([[500, 'x', 0, '']])))->rates();
+    }
+
+    public function testRedirectStatusWithoutFollowThrowsWhenNoCache(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('HTTP 301');
+        (new FxService($this->exec([[301, '', 0, '']])))->rates();
+    }
+
+    public function testFollowedRedirectReturningOkIsAccepted(): void
+    {
+        // Production CurlRequestExecutor follows the 301 and presents 200.
+        $e = $this->exec([[200, $this->body(), 0, '']]);
+        $r = (new FxService($e, static function () { return 5000; }))->rates();
+        $this->assertSame(112.317, $r['eurInr']);
+        $this->assertSame(FxService::URL, $e->calls[0]);
     }
 
     public function testGarbageBodyIsNotCached(): void

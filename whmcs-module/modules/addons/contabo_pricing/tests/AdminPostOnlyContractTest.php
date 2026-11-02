@@ -42,6 +42,7 @@ final class AdminPostOnlyContractTest extends TestCase
             'maintenanceMigrate',
             'maintenancePurge',
             'taxSettingsSave',
+            'termSettingsSave',
         ];
     }
 }

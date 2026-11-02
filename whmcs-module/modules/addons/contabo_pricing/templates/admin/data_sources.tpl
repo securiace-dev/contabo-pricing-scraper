@@ -325,19 +325,19 @@ $cb_fam_tone = static function ($s) {
         <td class="mono cb-card-sub"><?= $esc((string) ($cb_f['first_seen_at'] ?? '')) ?><br><?= $esc((string) ($cb_f['last_seen_at'] ?? '')) ?></td>
         <td>
           <?php if ((int) $cb_f['approved'] !== 1): ?>
-          <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+          <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
             <input type="hidden" name="action" value="family-approve"><input type="hidden" name="id" value="<?= $cb_fid ?>">
             <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
             <button type="submit" class="cb-btn subtle">Approve</button>
           </form>
           <?php endif; ?>
-          <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+          <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
             <input type="hidden" name="action" value="family-hide"><input type="hidden" name="id" value="<?= $cb_fid ?>">
             <?php if ((int) $cb_f['admin_hidden'] === 1): ?><input type="hidden" name="undo" value="1"><?php endif; ?>
             <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
             <button type="submit" class="cb-btn subtle"><?= (int) $cb_f['admin_hidden'] === 1 ? 'Unhide' : 'Hide' ?></button>
           </form>
-          <form method="post" action="<?= $esc($module_link) ?>" style="display:inline">
+          <form method="post" action="<?= $esc($module_link) ?>" data-cb-u="u-6b8b63d565">
             <input type="hidden" name="action" value="family-rename-display"><input type="hidden" name="id" value="<?= $cb_fid ?>">
             <?php if (function_exists('generate_token')) { echo generate_token(); } ?>
             <input type="text" name="display_name" maxlength="160" placeholder="display name" value="<?= $esc((string) ($cb_f['display_name'] ?? '')) ?>" aria-label="Display name for <?= $esc((string) $cb_f['slug']) ?>">

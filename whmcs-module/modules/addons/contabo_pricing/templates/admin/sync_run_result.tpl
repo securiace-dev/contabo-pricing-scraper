@@ -85,6 +85,25 @@ if ($cb_started !== '' && $cb_finished !== '') {
   </div>
 </div>
 
+<?php
+$cb_derived = isset($cb_s['derived_terms']) && is_array($cb_s['derived_terms']) ? $cb_s['derived_terms'] : array();
+$cb_warnings = isset($cb_s['warnings']) && is_array($cb_s['warnings']) ? $cb_s['warnings'] : array();
+?>
+<?php if ($cb_derived !== array() || $cb_warnings !== array()): ?>
+<div class="cb-card">
+  <h3 class="cb-card-title display">Derived terms and warnings</h3>
+  <p class="cb-card-sub">Derived prices are computed from the nearest published Contabo term (policy: <?= $esc((string) ($cb_s['term_policy'] ?? '')) ?>). They are NOT official Contabo prices.</p>
+  <ul>
+    <?php foreach ($cb_derived as $cb_d): foreach ((array) ($cb_d['terms'] ?? array()) as $cb_t): ?>
+      <li><span class="mono"><?= $esc((string) ($cb_d['profile_slug'] ?? '')) ?></span> &middot; <?= (int) ($cb_t['months'] ?? 0) ?> mo &middot; <span class="cb-pill warn">derived</span> <?= $esc((string) ($cb_t['formula'] ?? '')) ?> (source: <?= (int) ($cb_t['source_months'] ?? 0) ?> mo)</li>
+    <?php endforeach; endforeach; ?>
+    <?php foreach ($cb_warnings as $cb_w): ?>
+      <li><span class="cb-pill grey">warning</span> <?= $esc((string) $cb_w) ?></li>
+    <?php endforeach; ?>
+  </ul>
+</div>
+<?php endif; ?>
+
 <!-- ───────────────────── KPI strip ───────────────────── -->
 <div class="cb-strip">
   <div class="cb-stat">

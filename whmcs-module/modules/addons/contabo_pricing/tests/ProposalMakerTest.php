@@ -586,4 +586,34 @@ final class ProposalMakerTest extends TestCase
         $this->expectExceptionMessage('Delivery is disabled');
         $maker->assertDeliveryAllowed('version-1', 'email', 42, 'client@example.test');
     }
+
+    public function testDerivedTermIsFlaggedInternallyAndClientSafe(): void
+    {
+        $apiExecutor = new ProposalPlanSourceSpy();
+        $apiExecutor->queue[] = [200, json_encode([
+            'plan_slug' => 'cloud-vps-10',
+            'period_months' => 36,
+            'currency' => 'EUR',
+            'configured_monthly_eur' => 3.6,
+            'setup_fee_eur' => 0,
+            'gst_amount_eur' => 0,
+            'fx_markup' => 0,
+            'term_derived' => true,
+            'term_source_months' => 12,
+            'term_formula' => 'monthly(36-mo) = monthly(12-mo)',
+        ]), 0, ''];
+        $maker = new ProposalMaker($this->settings(), $apiExecutor, new ProposalRequestExecutor());
+        $result = $maker->build($this->request([
+            'period_months' => 36,
+            'currency' => 'EUR',
+        ]));
+
+        $this->assertTrue($result['internal']['selection']['term_derived']);
+        $this->assertStringContainsString('Contabo', implode("\n", $result['internal']['warnings']));
+        $this->assertSame(
+            'This term uses an estimated rate derived from a 12-month published term.',
+            $result['client']['configuration']['term_note']
+        );
+        $this->assertStringNotContainsString('Contabo', $result['client_html']);
+    }
 }

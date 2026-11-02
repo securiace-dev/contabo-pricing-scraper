@@ -5,49 +5,39 @@ automatic production deployment. Applying an artifact to production is a
 separate operator-controlled change with explicit authorization, target
 resolution, maintenance/rollback ownership, and evidence capture.
 
-## Production apply
+## Production topology (Dokploy — FastPanel retired)
 
-This runbook does not automatically deploy. Production apply still needs
-explicit operator authorization. `scripts/deploy.sh` already refuses to
-connect. The FastPanel host is retired.
+- **Authoritative ship path:** Dokploy-hosted WHMCS on the WHMCS prod server,
+  via the `whmcs-prod-new` / `securiace-whmcs-prod` deployment type. Operator
+  detail and known gaps:
+  [`docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
+- **Retired:** FastPanel2 and `rsync` to `root@195.7.4.219`. Do not document or
+  script that host as the module apply target.
+- **No Contabo pricing sidecar:** after PR #32 the addon scrapes/imports
+  in-process. Do not redeploy a Dokploy `contabo-pricing` API container for
+  catalog sync.
+- **This repo stops at package:** `scripts/predeploy-check.sh` +
+  `scripts/package-whmcs-suite.sh` → `dist/*.zip`. `scripts/deploy.sh` never
+  connects to a host.
 
-Production WHMCS is the Dokploy compose project `whmcs-production-jvjwfo` on
-ded1 (`195.7.4.219`). The public site is `https://my.securiace.com`. The app
-image is `ghcr.io/securiace-dev/whmcs-prod-new` pinned by digest (`@sha256:…`),
-running Apache mod_php with an immutable app tree. The panel is
-`https://dokploy.securiace.com`.
+## Release artifacts (modules only)
 
-The durable path starts from a sibling checkout of `whmcs-prod-new`. Package
-this addon with that repo's `scripts/sync-overlay-package.sh`, open a pull
-request, and land it on `main` through Validate and `release-identity`. Then
-bump the `WHMCS_IMAGE` digest and apply it with Dokploy `compose.deploy`. Back
-up the Dokploy environment first. Change only the image identity keys.
+The release contains two independently versioned artifacts:
 
-In `whmcs-prod-new`, `overlays/catalog.json` id `contabo_pricing` is enabled and
-owns `modules/addons/contabo_pricing/`. It has no `sync.sourceRepo`, unlike
-`banktransferpro`, so a platform rebuild can keep an old addon tree.
-`securiacevps` and `contabo_vps` are not catalog entries. An older ops note
-quarantined `modules/servers/contabo_vps/`. Do not invent a server-module apply
-path. Wiring a catalog sync entry for this addon is a follow-up in
-`whmcs-prod-new`.
+1. `contabo_pricing` WHMCS addon (`dist/contabo_pricing-v*.zip` →
+   `modules/addons/contabo_pricing/`).
+2. SecuriAce VPS suite: canonical `securiacevps` module, `contabo_vps`
+   compatibility shim, and `securiace-vps` Standard Cart child order form
+   (`dist/securiacevps-v*.zip`).
 
-The scraper API is a separate container named `contabo-pricing` on the WHMCS
-Docker network, reached at `http://contabo-pricing:8080`. It is not this PHP
-tree. A file copy into the running container does not survive the next image
-recreate.
-
-The release contains three independently versioned artifacts:
-
-1. Rust pricing/catalog API.
-2. `contabo_pricing` WHMCS addon.
-3. SecuriAce VPS suite: canonical `securiacevps` module, `contabo_vps`
-   compatibility shim, and `securiace-vps` Standard Cart child order form.
+The historical Rust pricing/catalog API is removed from this repository
+(PR #32). Do not treat a Rust binary as a release prerequisite.
 
 ## Gate 0: establish repository and deployment truth
 
 Before migration:
 
-- identify the exact deployed Rust binary, addon tree, server-module tree,
+- identify the exact deployed addon tree, server-module tree,
   hooks, order-form templates, cron entrypoints, and database schema version;
 - hash deployed and candidate files without reading secret values;
 - diff tracked source against the deployment;
@@ -76,8 +66,11 @@ The gate must prove:
 - the compatibility shim loads and delegates;
 - PHP syntax is valid on the supported matrix;
 - local WHMCS 8.13.x and 9.x schema/integration checks pass when those
-  environments are available;
-- the Rust service passes format, tests, check, and Clippy;
+  environments are available (`WHMCS_DEVBOX_DIR` / sibling `whmcs-devbox`).
+  Cloud agents without the private checkout may set
+  `PREDEPLOY_ALLOW_MISSING_DEVBOX=1` for a **partial** gate (stages 1–5 only);
+  that is packaging-only and is **not** a production green light — see
+  [`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md);
 - the package contains runtime files only and no tests, caches, VCS state,
   development dependencies, credentials, or local tooling state.
 
@@ -103,7 +96,7 @@ No provider write is permitted in this gate.
 
 ## Gate 3: import catalog and publish mappings
 
-- Import a versioned Rust catalog and verify payload hashes.
+- Import or scrape a versioned local Contabo catalog and verify payload hashes.
 - Validate stable plan/profile, provider SKU, dimension, and value identities.
 - Preview product/configurable-option changes before publication.
 - Publish a staging mapping version under the named publication lock.
@@ -207,7 +200,7 @@ The evidence pack must contain:
 - commit SHA, artifact versions, manifests, and SHA-256 checksums;
 - repository status and source/deployment hashes;
 - migration install/upgrade/repeat/rollback results;
-- PHP, WHMCS, Rust, unit, integration, security, and accessibility results;
+- PHP, WHMCS, unit, integration, security, and accessibility results;
 - capability certification and write-switch snapshot;
 - service adoption, conflict, drift, and orphan counts;
 - operation concurrency/unknown-outcome proofs;
@@ -245,12 +238,75 @@ it owns the shared schema. Runtime packages exclude tests, `vendor/`, internal
 deployment documents, caches, Composer development files, `.git`, graph data,
 and local agent/tool state.
 
+## Dokploy apply checklist (after package)
+
+Only with an explicit production go, and only through whmcs-prod-new / Dokploy
+(not FastPanel):
+
+1. Admit `dist/contabo_pricing-v*.zip` (and suite zip if shipping) via the
+   verified module-artifact path used by that deployment type.
+2. Confirm files under the WHMCS document root
+   (`/var/www/html/modules/addons/contabo_pricing/…`).
+3. Open the addon admin page under `/shriram/` so upgrade/migrate runs.
+4. Run Sync → Observe before Apply; keep a hashed copy of the previous tree.
+
+Exact Dokploy service IDs and script names remain blocked until
+`whmcs-prod-new` / `securiace-whmcs-prod` are shared — see
+[`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
+
+## Addon 1.1.2 — FX fetch and fail-closed missing rate
+
+No schema bump (`Installer::SCHEMA_VERSION` stays 16). `AdminController::VERSION`
+is `1.1.2`. Open the add-on admin page after file copy so WHMCS records the
+version. Do not deploy from this document without an explicit go.
+
+Extra verify after copy:
+
+1. Settings currency is INR. Run **Sync → Observe** first. A live Frankfurter
+   fetch must produce a positive `fx_rate` on any previewed version (EUR 3.6
+   lands near INR 400, never INR 3.6). If Frankfurter is down, the run must
+   be `failed` with `FX rate unavailable for INR` in `error_message` / digest /
+   Activity Log — never `succeeded` with `fx_rate` NULL.
+2. The 1.1.1 traps below still apply (GST No, catalog imported, schema 16,
+   hashed backup).
+
+## Addon 1.1.1 — term translation and sync diagnostics
+
+This release does **not** add a schema version. `Installer::SCHEMA_VERSION`
+stays at 16. Do not deploy from this document without an explicit go.
+
+Deploy traps:
+
+1. **Open the add-on admin page after file copy.** `AdminController::VERSION`
+   is now `1.1.1`, so WHMCS will call `contabo_pricing_upgrade()` on the next
+   admin load of the module. Schema v15/v16 still only migrate when
+   `SchemaHealth::assertOrMigrate()` runs (first add-on admin page view). Do
+   not wait for cron.
+2. **Set `apply_gst_18` to No** (Setup → Addon Modules → Contabo Pricing Sync
+   → Configure). Securiace is not GST registered. New installs default No;
+   an existing `yes` row stays until someone saves No.
+3. **Local catalog must already hold a version** before cron relies on it.
+   After PR #32 there is no pricing-service HTTP hop. Run one manual scrape
+   or import from Data sources and review it (`scrape.require_human_review=1`).
+   Do not enable `scrape.enabled` until that review. An empty catalog now fails
+   the sync with `Preflight failed: the local Contabo catalog is empty`.
+4. Confirm `schema_version = 16` after opening the admin page.
+5. Run **Sync → Observe (preview)** first (no writes). 24/36-month profiles
+   should list derived terms, not `period N mo not offered`. Then one manual
+   **Apply**. Newest `mod_contabo_sync_log` row should be `succeeded` or
+   `no-change` with `error_message` NULL. Default term policy changes no
+   existing native-term prices.
+6. Keep a hashed copy of the previous add-on tree and `mod_contabo_*` /
+   `tblpricing` backup before copy. Code rollback is the copied tree; the
+   new `term.*` settings rows are inert without this code.
+
 ## Rollback boundaries
 
-- **Rust catalog outage:** keep last verified imported catalog; pause refresh
-  and new quotation. Existing service lifecycle remains available.
-- **Addon UI/catalog regression:** restore prior addon code; pause publication.
-  Provisioning uses sealed snapshots and existing service projections.
+- **Local catalog / scrape outage:** keep last verified imported catalog; pause
+  refresh and new quotation. Existing service lifecycle remains available.
+- **Addon UI/catalog regression:** restore prior addon artifact via the same
+  Dokploy/module-admission path; pause publication. Provisioning uses sealed
+  snapshots and existing service projections.
 - **Provisioning regression:** disable global provider writes, let inspection
   and workbench remain available, restore the previous server-suite artifact,
   and reconcile submitted operations before accepting new ones.
