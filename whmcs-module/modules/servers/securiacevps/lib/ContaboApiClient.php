@@ -148,12 +148,14 @@ class ContaboApiClient
 
             if ($errno !== 0) {
                 // A capped body already failed closed. Retrying would fetch it again.
+                // The request was already sent and may have been processed, so a mutation
+                // stays ambiguous even though it is terminal.
                 $capped = ($err === ResponseBodyCap::ERROR);
                 throw new ContaboProvisioningException(
                     'API transport error: ' . ($err !== '' ? $err : ('curl errno ' . $errno)),
                     'provider_transport_error',
                     $capped ? 'terminal' : 'transient',
-                    $capped ? false : $isMutation
+                    $isMutation
                 );
             }
 

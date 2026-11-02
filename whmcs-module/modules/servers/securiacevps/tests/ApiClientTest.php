@@ -173,7 +173,7 @@ final class ApiClientTest extends TestCase
         $this->assertCount(1, $this->http->callsMatching('GET https://api.contabo.com'));
     }
 
-    public function testBodyCapOnMutationIsTerminalAndNotAmbiguous(): void
+    public function testBodyCapOnMutationIsTerminalButStaysAmbiguous(): void
     {
         $this->http->queue(
             'POST api.contabo.com',
@@ -189,7 +189,7 @@ final class ApiClientTest extends TestCase
             $this->fail('expected body-cap exception');
         } catch (ContaboProvisioningException $e) {
             $this->assertSame('terminal', $e->retryClassification());
-            $this->assertFalse($e->hasAmbiguousOutcome());
+            $this->assertTrue($e->hasAmbiguousOutcome());
         }
 
         $this->assertSame([], $this->sleeps);
