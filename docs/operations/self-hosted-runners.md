@@ -9,7 +9,13 @@ jobs are routed to repository-scoped runners on the disposable
 | Label | Unix identity | Docker | Allowed workload |
 |---|---|---:|---|
 | `contabo-ci-pr` | `contabo-ci-pr` | No | Same-repository pull-request and read-only contract validation |
-| `contabo-ci-release` | `contabo-ci-release` | Yes | Main-branch packaging, tagged releases, GHCR publication, and scheduled scraping |
+| `contabo-ci-release` | `contabo-ci-release` | Yes | Main-branch packaging, tagged releases, GHCR publication, patched-PHP Docker suites on main (`release-validation-patched-php.yml`), and scheduled jobs |
+
+A workflow with a `pull_request` or `pull_request_target` trigger must not name
+`contabo-ci-release` in any job, including reusable workflows it calls.
+`scripts/check-workflow-trust.rb` enforces this in the WHMCS Release Contract
+check. Work that needs Docker therefore lives in a separate workflow that is
+triggered only by `push` to `main` or `workflow_dispatch`.
 
 The runners were registered with `--no-default-labels`. Generic
 `self-hosted`, `Linux`, or `X64` jobs cannot claim them.
