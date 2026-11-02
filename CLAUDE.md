@@ -80,18 +80,21 @@ quarterly → the 1-mo rate (never a deeper longer-cycle discount). Implemented 
 
 ## Coding constraints
 
-- **PHP 7.4 polyglot floor.** No `match`, no enums, no `readonly`, no constructor
-  promotion, no union types, no `str_starts_with`. Typed properties are fine.
-  `composer lint` (`php -l` over lib + templates) enforces parse-level; the gate lints
-  under php:7.4-cli.
+- **PHP 7.4 parse floor.** Source stays parseable on PHP 7.4: no `match`, no enums,
+  no `readonly`, no constructor promotion, no union types, no `str_starts_with`.
+  Typed properties are fine. `composer lint` (`php -l` over lib + templates) enforces
+  that parse floor; the syntax gate still uses a 7.4 CLI image for the lint only.
+  Supported runtimes are the patched lines 8.2.35, 8.3.36, 8.4.27, and 8.5.12.
+  There is no activate-time die on older PHP. PHP 7.4 and 8.1 are not safe
+  production runtimes.
 - Templates are plain PHP (`<?= $esc(...) ?>`), start with `require _layout_open.tpl`,
   end by closing the `.cb-wrap` div. There is **no** `_layout_close.tpl`.
 - `assets/app.js` is ES5-ish vanilla JS (no modules); keep `node --check` clean.
 
 ## Tests
 
-- `cd whmcs-module/modules/addons/contabo_pricing && vendor/bin/phpunit` (PHPUnit 10,
-  runs on PHP 8.x but code must stay 7.4-compatible).
+- `cd whmcs-module/modules/addons/contabo_pricing && vendor/bin/phpunit` (PHPUnit 10
+  runs on a patched PHP 8 line; source must stay 7.4-parseable).
 - `tests/FakeCapsule.php` is an in-memory `Capsule` stub: seed `Capsule::$tables[...]`,
   assert via `Capsule::$calls` / `Capsule::$inserts`. It supports `whereNull`/
   `whereNotNull` (NULL semantics matter — real `where('col', null)` is `= NULL`, which

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace SecuriAceVps;
 
+require_once __DIR__ . '/ResponseBodyCap.php';
+
 /**
  * Thin client for the Contabo REST API over the HttpExecutor seam (no Guzzle,
  * to avoid a dependency clash with whatever WHMCS bundles). SSL verification
@@ -145,10 +147,14 @@ class ContaboApiClient
             list($code, $raw, $errno, $err) = $this->executor->execute($method, $url, $headers, $encoded, $this->timeoutSec);
 
             if ($errno !== 0) {
+                // A capped body already failed closed. Retrying would fetch it again.
+                // The request was already sent and may have been processed, so a mutation
+                // stays ambiguous even though it is terminal.
+                $capped = ($err === ResponseBodyCap::ERROR);
                 throw new ContaboProvisioningException(
                     'API transport error: ' . ($err !== '' ? $err : ('curl errno ' . $errno)),
                     'provider_transport_error',
-                    'transient',
+                    $capped ? 'terminal' : 'transient',
                     $isMutation
                 );
             }

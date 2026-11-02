@@ -14,10 +14,16 @@ use ContaboPricing\Scrape\HeaderAwareExecutor;
  * AI Bearer tokens) MUST construct with $followRedirects = false so a 302
  * cannot forward the key. Redirects are HTTPS-only so a 301 cannot downgrade
  * the channel.
+ *
+ * The response body is accumulated in a write callback with RETURNTRANSFER
+ * off, so libcurl does not keep a second full buffer. Bodies over 4 MiB
+ * come back empty with a non-zero errno.
  */
 final class CurlRequestExecutor implements RequestExecutor, HeaderAwareExecutor
 {
     public const MAX_REDIRECTS = 5;
+
+    private const USER_AGENT = 'whmcs-contabo-pricing/0.1';
 
     /** @var bool */
     private $followRedirects;
@@ -34,7 +40,9 @@ final class CurlRequestExecutor implements RequestExecutor, HeaderAwareExecutor
 
     /**
      * Curl options that implement the redirect + TLS policy. Split out so
-     * tests can assert FOLLOWLOCATION without opening a socket.
+     * tests can assert FOLLOWLOCATION without opening a socket. The body
+     * capture (RETURNTRANSFER off plus a write callback) is layered on top in
+     * applyTransport().
      *
      * @return array<int, mixed>
      */
@@ -44,7 +52,7 @@ final class CurlRequestExecutor implements RequestExecutor, HeaderAwareExecutor
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => $timeoutSec,
             CURLOPT_CONNECTTIMEOUT => $timeoutSec,
-            CURLOPT_USERAGENT      => 'whmcs-contabo-pricing/0.1',
+            CURLOPT_USERAGENT      => self::USER_AGENT,
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_FOLLOWLOCATION => $this->followRedirects,
@@ -65,22 +73,14 @@ final class CurlRequestExecutor implements RequestExecutor, HeaderAwareExecutor
             return [0, '', -1, 'curl init failed'];
         }
 
-        curl_setopt_array($ch, $this->transportOptions($timeoutSec) + [
-            CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_HTTPHEADER    => $headers,
-        ]);
+        $cap = new ResponseBodyCap();
+        $this->applyTransport($ch, $method, $headers, $timeoutSec, $cap, null);
         if ($body !== null) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         }
 
-        $resp  = curl_exec($ch);
-        $errno = curl_errno($ch);
-        $err   = (string) curl_error($ch);
-        $code  = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-        curl_close($ch);
-
-        $bodyStr = $resp === false ? '' : (string) $resp;
-        return [$code, $bodyStr, $errno, $err];
+        $done = $this->finish($ch, $cap);
+        return [$done['code'], $done['body'], $done['errno'], $done['error']];
     }
 
     /**
@@ -99,36 +99,88 @@ final class CurlRequestExecutor implements RequestExecutor, HeaderAwareExecutor
 
         /** @var array<string,string> $respHeaders */
         $respHeaders = [];
-        curl_setopt_array($ch, $this->transportOptions($timeoutSec) + [
-            CURLOPT_CUSTOMREQUEST  => $method,
-            CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_HEADERFUNCTION => static function ($_ch, string $line) use (&$respHeaders): int {
-                $len = strlen($line);
-                $trim = trim($line);
-                if (stripos($trim, 'HTTP/') === 0) {
-                    $respHeaders = [];
-                } elseif (($pos = strpos($trim, ':')) !== false) {
-                    $respHeaders[strtolower(trim(substr($trim, 0, $pos)))] = trim(substr($trim, $pos + 1));
-                }
-                return $len;
-            },
-        ]);
+        $cap = new ResponseBodyCap();
+        $this->applyTransport($ch, $method, $headers, $timeoutSec, $cap, static function ($_ch, string $line) use (&$respHeaders): int {
+            $len = strlen($line);
+            $trim = trim($line);
+            if (stripos($trim, 'HTTP/') === 0) {
+                $respHeaders = [];
+            } elseif (($pos = strpos($trim, ':')) !== false) {
+                $respHeaders[strtolower(trim(substr($trim, 0, $pos)))] = trim(substr($trim, $pos + 1));
+            }
+            return $len;
+        });
         if ($body !== null) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         }
 
-        $resp  = curl_exec($ch);
-        $errno = curl_errno($ch);
-        $err   = (string) curl_error($ch);
-        $code  = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $done = $this->finish($ch, $cap);
+        return [
+            'status'  => $done['code'],
+            'body'    => $done['body'],
+            'errno'   => $done['errno'],
+            'error'   => $done['error'],
+            'headers' => $respHeaders,
+        ];
+    }
+
+    /**
+     * @param resource|\CurlHandle $ch
+     * @param callable|null $onHeader
+     */
+    private function applyTransport($ch, string $method, array $headers, int $timeoutSec, ResponseBodyCap $cap, $onHeader): void
+    {
+        $opts = [
+            CURLOPT_CUSTOMREQUEST  => $method,
+            // Off on purpose: a write callback plus RETURNTRANSFER keeps a second buffer.
+            CURLOPT_RETURNTRANSFER => false,
+            CURLOPT_HTTPHEADER     => $headers,
+            // Received bytes only. Content-Length is not read and is not trusted.
+            CURLOPT_WRITEFUNCTION  => static function ($_ch, string $data) use ($cap): int {
+                return $cap->write($data);
+            },
+        ] + $this->transportOptions($timeoutSec);
+        if ($onHeader !== null) {
+            $opts[CURLOPT_HEADERFUNCTION] = $onHeader;
+        }
+        curl_setopt_array($ch, $opts);
+    }
+
+    /**
+     * curl_exec's return is success or failure only. The body lives in $cap.
+     *
+     * @param resource|\CurlHandle $ch
+     * @return array{code:int, body:string, errno:int, error:string}
+     */
+    private function finish($ch, ResponseBodyCap $cap): array
+    {
+        $ok = curl_exec($ch);
+        $errno = (int) curl_errno($ch);
+        $err = (string) curl_error($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         curl_close($ch);
 
+        if ($cap->overflowed()) {
+            return [
+                'code'  => $code,
+                'body'  => '',
+                'errno' => $errno !== 0 ? $errno : ResponseBodyCap::ERRNO,
+                'error' => ResponseBodyCap::ERROR,
+            ];
+        }
+        if ($ok !== true) {
+            return [
+                'code'  => $code,
+                'body'  => '',
+                'errno' => $errno !== 0 ? $errno : -1,
+                'error' => $err !== '' ? $err : 'curl exec failed',
+            ];
+        }
         return [
-            'status'  => $code,
-            'body'    => $resp === false ? '' : (string) $resp,
-            'errno'   => $errno,
-            'error'   => $err,
-            'headers' => $respHeaders,
+            'code'  => $code,
+            'body'  => $cap->body(),
+            'errno' => $errno,
+            'error' => $err,
         ];
     }
 }

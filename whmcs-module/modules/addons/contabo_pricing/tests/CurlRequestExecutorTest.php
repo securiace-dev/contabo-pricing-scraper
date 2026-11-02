@@ -39,4 +39,16 @@ final class CurlRequestExecutorTest extends TestCase
             'AI Bearer tokens must not be forwarded across a 302'
         );
     }
+
+    public function testAppliedOptionsLetTheCappedWriterOverrideReturnTransfer(): void
+    {
+        // curl handles cannot be read back, so pin the layering in source. The left
+        // operand of the union wins, which keeps RETURNTRANSFER off while the redirect
+        // policy still comes from transportOptions().
+        $src = (string) file_get_contents(dirname(__DIR__) . '/lib/CurlRequestExecutor.php');
+        $this->assertMatchesRegularExpression('/CURLOPT_RETURNTRANSFER\s*=>\s*false/', $src);
+        $this->assertMatchesRegularExpression('/\]\s*\+\s*\$this->transportOptions\(\$timeoutSec\)\s*;/', $src);
+        $this->assertDoesNotMatchRegularExpression('/\$this->transportOptions\(\$timeoutSec\)\s*\+\s*\[/', $src);
+        $this->assertTrue((new CurlRequestExecutor())->transportOptions(8)[CURLOPT_RETURNTRANSFER]);
+    }
 }
