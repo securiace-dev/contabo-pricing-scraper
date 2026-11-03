@@ -200,8 +200,13 @@ final class LatePaymentFlowTest extends TestCase
                 $this->assertNotSame($payload, $edit['payload_json']);
                 break;
             case 'provider_image':
-                $edit = ['payload_json' => str_replace('"image_id":"image-1"', '"image_id":"image-9"', $payload)];
-                $this->assertNotSame($payload, $edit['payload_json']);
+                // Only provider.image_id: the hashed configuration keeps image-1,
+                // so this must be caught by the provider/configuration mirror check.
+                $decoded = json_decode($payload, true);
+                $this->assertSame('image-1', $decoded['provider']['image_id']);
+                $this->assertSame('image-1', $decoded['configuration']['image_id']);
+                $decoded['provider']['image_id'] = 'image-9';
+                $edit = ['payload_json' => (string) json_encode($decoded)];
                 break;
             case 'provider_sku':
                 $edit = ['payload_json' => str_replace('"sku_id":"V45"', '"sku_id":""', $payload)];
