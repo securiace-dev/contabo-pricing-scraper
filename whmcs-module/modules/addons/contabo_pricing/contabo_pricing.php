@@ -276,7 +276,15 @@ function contabo_pricing_deactivate(): array
  */
 function contabo_pricing_upgrade(array $vars): void
 {
-    (new Installer())->upgrade((string) ($vars['version'] ?? '0.0.0'));
+    $installer = new Installer();
+    $installer->upgrade((string) ($vars['version'] ?? '0.0.0'));
+    // 1.1.3: pin the paid-order grandfather cutoff on installations that already
+    // sit at schema 16 (insert-if-absent; see docs/UPGRADE_1_1_3.md).
+    try {
+        $installer->ensureGrandfatherCutoff();
+    } catch (\Throwable $e) {
+        logActivity('Contabo Pricing: could not pin snapshot.grandfather_before: ' . substr($e->getMessage(), 0, 200));
+    }
 }
 
 /**

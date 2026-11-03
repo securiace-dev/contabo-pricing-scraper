@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '1.1.2';
+    public const VERSION = '1.1.3';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -4007,7 +4007,9 @@ class AdminController
         $sources = [];
         foreach ($repo->all() as $row) {
             $id = (string) $row['source_id'];
-            $key = SecretStore::open((string) ($row['api_key_enc'] ?? ''));
+            $key = SecretStore::tryOpen((string) ($row['api_key_enc'] ?? ''));
+            $keyUnreadable = $key === null;
+            $key = $key ?? '';
             $opts = json_decode((string) ($row['options_json'] ?? ''), true);
             $prior = \ContaboPricing\Scrape\SourceRanker::prior($id);
             $maxSteps = is_array($opts) && isset($opts['max_steps']) ? max(1, (int) $opts['max_steps']) : 40;
@@ -4015,6 +4017,7 @@ class AdminController
             $sources[] = [
                 'row' => $row,
                 'key_set' => $key !== '',
+                'key_unreadable' => $keyUnreadable,
                 // the plaintext never leaves this method: only a pill flag and a masked tail
                 'key_mask' => SecretStore::mask($key),
                 'month_spend_micro' => $spend[$id] ?? 0,
@@ -4026,12 +4029,15 @@ class AdminController
             ];
             unset($key);
         }
-        $jevKey = $s->jevApiKey();
+        $jevKey = SecretStore::tryOpen($s->get(\ContaboPricing\Scrape\ScrapeSettings::KEY_JEV_API_KEY));
+        $jevUnreadable = $jevKey === null;
+        $jevKey = $jevKey ?? '';
         $data = [
             'sources' => $sources,
             'scrape' => $s->all(),
             'jev_key_set' => $s->hasJevApiKey(),
             'jev_key_mask' => SecretStore::mask($jevKey),
+            'jev_key_unreadable' => $jevUnreadable,
             'families' => (new \ContaboPricing\Scrape\FamilyRegistry())->all(),
             'month_spend_micro' => $ledger->monthSpendMicro(),
             'flash' => (string) ($req['flash'] ?? ''),
@@ -4122,10 +4128,16 @@ class AdminController
                 $this->jsonFail('Unknown data source', 404);
                 return;
             }
-            if (SecretStore::open((string) ($row['api_key_enc'] ?? '')) === '') {
+            $storedKey = SecretStore::tryOpen((string) ($row['api_key_enc'] ?? ''));
+            if ($storedKey === null) {
+                $this->jsonOk(['ok' => false, 'error' => 'The stored API key cannot be decrypted (the WHMCS encryption key changed). Re-enter the key to re-seal it.']);
+                return;
+            }
+            if ($storedKey === '') {
                 $this->jsonOk(['ok' => false, 'error' => 'No API key configured for this source.']);
                 return;
             }
+            unset($storedKey);
             $source = (new \ContaboPricing\Scrape\SourceFactory($this->scrapeExecutor(), $repo))->build($row);
 
             if ($source->manualOnly()) {

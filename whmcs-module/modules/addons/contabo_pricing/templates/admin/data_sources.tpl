@@ -16,6 +16,7 @@
  * @var list<array<string,mixed>> $families
  * @var bool     $jev_key_set
  * @var string   $jev_key_mask
+ * @var bool     $jev_key_unreadable
  * @var int      $month_spend_micro
  * @var string   $flash
  */
@@ -89,7 +90,10 @@ $cb_g = static function ($k, $d = '') use ($scrape) {
       <tr>
         <th>API key</th>
         <td>
-          <?php if (!empty($cb_s['key_set'])): ?>
+          <?php if (!empty($cb_s['key_unreadable'])): ?>
+            <span class="cb-pill bad"><span class="dot"></span>unreadable &middot; re-enter key</span>
+            <span class="mono">WHMCS encryption key changed; saving a new key re-seals it.</span>
+          <?php elseif (!empty($cb_s['key_set'])): ?>
             <span class="cb-pill good"><span class="dot"></span>set &middot; ENC</span>
             <span class="mono"><?= $esc((string) $cb_s['key_mask']) ?></span>
           <?php else: ?>
@@ -254,7 +258,9 @@ $cb_g = static function ($k, $d = '') use ($scrape) {
       <tr>
         <th>API key</th>
         <td>
-          <?php if ($jev_key_set): ?>
+          <?php if (!empty($jev_key_unreadable)): ?>
+            <span class="cb-pill bad"><span class="dot"></span>unreadable &middot; re-enter key</span>
+          <?php elseif ($jev_key_set): ?>
             <span class="cb-pill good"><span class="dot"></span>set &middot; ENC</span>
             <span class="mono"><?= $esc($jev_key_mask) ?></span>
           <?php else: ?>

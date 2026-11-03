@@ -254,6 +254,13 @@ Exact Dokploy service IDs and script names remain blocked until
 `whmcs-prod-new` / `securiace-whmcs-prod` are shared — see
 [`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
 
+## Addon 1.1.3 — provisioning gate, monotonic schema stamp, secrets, scrape budget
+
+Follow [`UPGRADE_1_1_3.md`](UPGRADE_1_1_3.md): apply schema 16, publish the mapping, then
+enable. Pre-existing paid orders are grandfathered with a logged warning; new orders stay
+fail-closed. Unreadable sealed keys are handled per [`SECRET_RESEAL.md`](SECRET_RESEAL.md).
+`scrape.time_budget_seconds` (default 240) bounds the daily scrape fetch phase.
+
 ## Addon 1.1.2 — FX fetch and fail-closed missing rate
 
 No schema bump (`Installer::SCHEMA_VERSION` stays 16). `AdminController::VERSION`

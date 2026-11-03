@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.1.3 — 2026-11-02 (provisioning gate, shared-schema stamp, secrets, scrape time budget)
+
+Behaviour change on deploy: read `docs/UPGRADE_1_1_3.md` before copying files.
+
+- **Shared schema stamp is monotonic.** `mod_securiacevps_schema.schema_version` /
+  `suite_schema_version` are never lowered by a re-run or older migration step, and
+  `installed_by` keeps its first writer instead of being overwritten.
+- **PreModuleCreate aborts are no longer silent.** `ProvisioningGate` writes the WHMCS
+  module log and the admin Activity Log with the service id, a reason code and detail
+  for every abort (no sealed snapshot, lookup failure, missing gate class).
+- **Grandfathering for the upgrade window.** A *paid* order placed before
+  `snapshot.grandfather_before` (pinned once by the schema 16 migration or the 1.1.3
+  upgrade hook) that has no snapshot row of any state may provision once, with a
+  `WARNING:` Activity Log line. New orders stay fail-closed. Switch the exception off with
+  `snapshot.grandfather_enabled = 0`.
+- **Daily scrape has a time budget** (`scrape.time_budget_seconds`, default 240, also capped
+  at `max_execution_time - 60`). Pages not reached are recorded as skipped; a run cut short
+  is never auto-imported (`needs_review`), and a run that fetched nothing ends as
+  `time_budget_exhausted`. The next daily run starts fresh.
+- **Unreadable sealed secrets fail loudly.** `SecretStore::open()` now logs and throws
+  `SecretUnreadableException` instead of returning `''` when the WHMCS encryption key changed.
+  The Data sources page shows "unreadable - re-enter key", the scrape skips that source with
+  a log line, and an unreadable Jev key sends the run to review. Re-seal steps:
+  `docs/SECRET_RESEAL.md`.
+
 ## 1.1.2 — 2026-10-16 (FX fetch + fail-closed missing rate)
 
 - Frankfurter URL is now `https://api.frankfurter.dev/v1/latest?base=EUR&symbols=INR`

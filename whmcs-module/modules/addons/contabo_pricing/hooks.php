@@ -358,22 +358,28 @@ add_hook('OrderPaid', 40, static function ($vars): void {
 /**
  * Belt-and-braces guard: only the canonical module and legacy compatibility
  * entrypoint are in scope, and both require a sealed snapshot before create.
+ * New orders are fail-closed; the single logged exception for paid orders that
+ * predate the snapshot contract lives in ProvisioningGate. Every abort writes
+ * the module log and the admin activity log with a reason.
  */
 add_hook('PreModuleCreate', 5, static function ($vars): array {
+    $vars = is_array($vars) ? $vars : [];
+    $params = isset($vars['params']) && is_array($vars['params']) ? $vars['params'] : [];
+    if (!in_array((string) ($params['moduletype'] ?? ''), ['securiacevps', 'contabo_vps'], true)) {
+        return [];
+    }
     try {
-        $params = isset($vars['params']) && is_array($vars['params']) ? $vars['params'] : [];
-        $module = (string) ($params['moduletype'] ?? '');
-        if (!in_array($module, ['securiacevps', 'contabo_vps'], true)) {
-            return [];
+        if (!class_exists('\\ContaboPricing\\ProvisioningGate')) {
+            if (function_exists('logActivity')) {
+                logActivity('Contabo provisioning gate ABORTED module create: ProvisioningGate class is missing from this deployment (incomplete file copy)');
+            }
+            return ['abortcmd' => true];
         }
-        $serviceId = (int) ($params['serviceid'] ?? 0);
-        $row = Capsule::table('mod_securiacevps_order_snapshots')
-            ->where('service_id', $serviceId)
-            ->where('state', 'sealed')
-            ->orderByDesc('id')
-            ->first();
-        return $row === null ? ['abortcmd' => true] : [];
+        return (new \ContaboPricing\ProvisioningGate())->handle($vars);
     } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo provisioning gate ABORTED module create: gate raised ' . get_class($e) . ': ' . substr($e->getMessage(), 0, 200));
+        }
         return ['abortcmd' => true];
     }
 });

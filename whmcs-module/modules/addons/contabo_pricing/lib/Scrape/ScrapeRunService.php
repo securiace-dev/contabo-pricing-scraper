@@ -46,14 +46,23 @@ final class ScrapeRunService
     private $lock;
     /** @var DecisionRecorder */
     private $decisions;
+    /** @var callable():float */
+    private $clock;
+    /** @var list<string> source ids skipped because their sealed key could not be decrypted */
+    private $unreadableSources = [];
 
+    /** @param (callable():float)|null $clock monotonic-ish seconds; injectable for tests */
     public function __construct(
         ?ScrapeSettings $settings = null,
         ?HeaderAwareExecutor $executor = null,
         ?CostLedger $ledger = null,
         ?CatalogImportService $importer = null,
-        ?Lock $lock = null
+        ?Lock $lock = null,
+        ?callable $clock = null
     ) {
+        $this->clock = $clock ?? static function (): float {
+            return microtime(true);
+        };
         $this->settings = $settings ?? new ScrapeSettings();
         $this->sourceRepo = new SourceConfigRepository();
         $this->executor = $executor ?? new CurlRequestExecutor();
@@ -132,7 +141,7 @@ final class ScrapeRunService
             $includeManual
         );
         if ($ordered === []) {
-            return $this->finishRejected($runId, 'no_usable_source', ['reason' => 'no enabled, keyed, sapper-capable source (manual-only sources never run on cron)'], $dry, $adminId);
+            return $this->finishRejected($runId, 'no_usable_source', ['reason' => 'no enabled, keyed, sapper-capable source (manual-only sources never run on cron)', 'unreadable_key_sources' => $this->unreadableSources], $dry, $adminId);
         }
         $ordered = array_values(array_filter($ordered, function (array $r) use ($adapters, $includeManual): bool {
             $a = $adapters[(string) $r['source_id']] ?? null;
@@ -142,7 +151,7 @@ final class ScrapeRunService
             return $includeManual || (!$a->manualOnly() && $a->supportsSapper());
         }));
         if ($ordered === []) {
-            return $this->finishRejected($runId, 'no_usable_source', ['reason' => 'no sapper-capable, non-manual source'], $dry, $adminId);
+            return $this->finishRejected($runId, 'no_usable_source', ['reason' => 'no sapper-capable, non-manual source', 'unreadable_key_sources' => $this->unreadableSources], $dry, $adminId);
         }
         $perSourceMonth = $this->ledger->perSourceMonthSpend();
         $ordered = array_values(array_filter($ordered, static function (array $r) use ($perSourceMonth): bool {
@@ -172,6 +181,12 @@ final class ScrapeRunService
         $anyFetchOk = false;
         $gotBlob = false;
         $triedPaidManual = false;
+        // Fetch-phase wall-clock budget: a slow provider must end the run cleanly
+        // (recorded, never auto-imported) instead of hitting max_execution_time
+        // mid-write and taking the rest of the daily cron with it.
+        $fetchStart = ($this->clock)();
+        $budgetSeconds = $s->timeBudgetSeconds();
+        $timeBudgetHit = false;
 
         foreach ($targets as $url) {
             if ($triedPaidManual) {
@@ -179,6 +194,11 @@ final class ScrapeRunService
             }
             if ($gotBlob && !$this->anyFamilyShort($merged, $typicalById)) {
                 break; // every family is at or above its learned count: the first page was enough
+            }
+            if ((($this->clock)() - $fetchStart) >= $budgetSeconds) {
+                $timeBudgetHit = true;
+                $pages[] = ['url' => $url, 'served_by' => null, 'ok' => false, 'skipped' => ['time budget of ' . $budgetSeconds . 's exhausted']];
+                continue;
             }
             $page = ['url' => $url, 'served_by' => null, 'ok' => false, 'skipped' => []];
             foreach ($ordered as $row) {
@@ -192,6 +212,12 @@ final class ScrapeRunService
                 if ($why !== null) {
                     $page['skipped'][] = $id . ': ' . $why;
                     continue;
+                }
+
+                if ((($this->clock)() - $fetchStart) >= $budgetSeconds) {
+                    $timeBudgetHit = true;
+                    $page['skipped'][] = $id . ': time budget of ' . $budgetSeconds . 's exhausted';
+                    break;
                 }
 
                 $attempt = $this->fetchOne($runId, 'catalog', $url, $adapter, $extractor);
@@ -231,6 +257,9 @@ final class ScrapeRunService
 
         $cost = $runSpend;
 
+        if ($attempts === [] && $timeBudgetHit) {
+            return $this->finishRejected($runId, 'time_budget_exhausted', ['budget_seconds' => $budgetSeconds, 'pages' => $pages], $dry, $adminId);
+        }
         if ($attempts === []) {
             return $this->finishRejected($runId, 'budget_exhausted', ['reason' => 'per-run or per-source cap prevented every fetch', 'pages' => $pages], $dry, $adminId);
         }
@@ -268,12 +297,22 @@ final class ScrapeRunService
             $outcome = 'auto_import';
         }
 
+        // A run cut short by the time budget is partial: it may be queued for
+        // review but is never imported automatically.
+        if ($timeBudgetHit && $outcome === 'auto_import') {
+            $outcome = 'needs_review';
+            $validation['warnings'][] = 'fetch phase hit the ' . $budgetSeconds . 's time budget; run is partial and needs review';
+        }
+
         // ── Jev (advisory; may only downgrade auto_import) ──────────────────
         $jev = null;
         $decidedBy = DecisionRecorder::BY_RULES;
         if ($outcome === 'auto_import' && $s->jevEnabled() && $s->hasJevApiKey() && $jevHtml !== null) {
             $jev = (new JevJudge($s, $this->executor))->judge($jevHtml);
             $after = JevJudge::apply($outcome, $jev);
+            if (!empty($jev['key_unreadable'])) {
+                $after = 'needs_review'; // the advisory check could not run: do not import unreviewed
+            }
             if ($after !== $outcome) {
                 $outcome = $after;
                 $decidedBy = DecisionRecorder::BY_JEV;
@@ -431,6 +470,9 @@ final class ScrapeRunService
                 $rows[] = $row;
             } catch (\InvalidArgumentException $e) {
                 // unknown source id: ignore
+            } catch (\ContaboPricing\SecretUnreadableException $e) {
+                // SecretStore already logged it; the source is unusable until its key is re-entered
+                $this->unreadableSources[] = $id;
             }
         }
         return [$rows, $adapters];
