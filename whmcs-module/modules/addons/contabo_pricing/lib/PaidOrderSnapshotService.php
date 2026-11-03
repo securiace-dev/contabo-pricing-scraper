@@ -617,7 +617,31 @@ final class PaidOrderSnapshotService
         $verified = $row !== null && $this->integrityFault((array) $row, $orderId) === null;
         $bound = $verified ? $this->draftInvoiceId((array) $row) : null;
         $quote = $verified ? $this->quoteTerms((array) $row) : null;
-        return $this->payingInvoice($orderId, $serviceId, 0, $bound, $quote)['refusal'];
+        return $this->payingInvoice(
+            $orderId,
+            $serviceId,
+            0,
+            $bound,
+            $quote,
+            false,
+            $verified ? $this->grossConfirmable((array) $row) : null
+        )['refusal'];
+    }
+
+    /**
+     * Whether Maintenance could confirm a gross shortfall for this verified
+     * draft: only when a recorded quote can really be replayed (its diff is
+     * then shown). Shared by the seal path and the gate note so the log never
+     * promises a recovery that refuses.
+     *
+     * @param array<string,mixed> $row
+     */
+    private function grossConfirmable(array $row): \Closure
+    {
+        return function () use ($row): bool {
+            $why = '';
+            return $this->recordedSource($row, $why) !== null;
+        };
     }
 
     /**
@@ -660,10 +684,7 @@ final class PaidOrderSnapshotService
                 $fault === null ? $this->draftInvoiceId($row) : null,
                 $fault === null ? $this->quoteTerms($row) : null,
                 $confirmedUuid !== '' && $uuid === $confirmedUuid && $fault === null,
-                $fault === null ? function () use ($row): bool {
-                    $why = '';
-                    return $this->recordedSource($row, $why) !== null;
-                } : null
+                $fault === null ? $this->grossConfirmable($row) : null
             );
             if ($paying['invoice_id'] <= 0) {
                 if ($paying['refusal'] !== '') {

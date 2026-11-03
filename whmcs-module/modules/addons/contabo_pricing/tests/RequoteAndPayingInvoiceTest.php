@@ -1833,6 +1833,10 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertStringContainsString('no verified recorded quote', $this->log(), 'no recovery is promised that refuses');
         $this->assertStringNotContainsString('Re-quote service #30 from Maintenance', $this->log());
 
+        $note = $service->unsealedNote(30);
+        $this->assertStringContainsString('no verified recorded quote', $note, 'the gate note promises no recovery that refuses');
+        $this->assertStringNotContainsString('Re-quote service #30 from Maintenance', $note);
+
         $plan = $service->requotePlan(30);
         $this->assertFalse($plan['ready'], 'the current-mapping override cannot settle a smaller invoice');
         $this->assertSame('paying_invoice_refused', $plan['code']);
