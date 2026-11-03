@@ -1095,13 +1095,28 @@ final class PaidOrderSnapshotService
             return 'only took effect after the draft was created';
         }
         if ($created !== null) {
-            $successor = Capsule::table('mod_contabo_mapping_publications')
-                ->where('supersedes_mapping_version', (string) ($publication['mapping_version'] ?? ''))
+            // Any approved publication of the product that took effect after
+            // this one (or names it as its predecessor) and at or before the
+            // draft's creation had already replaced it. Abandoned previews
+            // (state draft, no effective_at) never count.
+            $version = (string) ($publication['mapping_version'] ?? '');
+            $others = Capsule::table('mod_contabo_mapping_publications')
                 ->where('product_id', $productId)
-                ->first();
-            $successorAt = $successor !== null ? $this->timestamp(((array) $successor)['effective_at'] ?? null) : null;
-            if ($successorAt !== null && $successorAt <= $created) {
-                return 'had already been superseded when the draft was created';
+                ->whereIn('state', ['published', 'superseded'])
+                ->get();
+            foreach ($others as $other) {
+                $other = (array) $other;
+                if ((string) ($other['mapping_version'] ?? '') === $version) {
+                    continue;
+                }
+                $otherAt = $this->timestamp($other['effective_at'] ?? null);
+                if ($otherAt === null || $otherAt > $created) {
+                    continue;
+                }
+                if ((string) ($other['supersedes_mapping_version'] ?? '') === $version
+                    || ($effective !== null && $otherAt > $effective)) {
+                    return 'had already been superseded when the draft was created';
+                }
             }
         }
         return '';

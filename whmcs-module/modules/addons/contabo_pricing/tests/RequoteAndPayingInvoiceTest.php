@@ -360,6 +360,29 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertStringContainsString('already been superseded', $plan['reason']);
     }
 
+    public function testAnAbandonedPreviewDoesNotHideTheApprovedSuccessor(): void
+    {
+        $this->pointRowAtPublication('map-old', 'V999');
+        Capsule::table('mod_securiacevps_order_snapshots')->update(['created_at' => '2026-06-01 00:00:00']);
+        $body = json_encode(['provider' => ['sku_id' => 'V1', 'region_id' => 'EU', 'image_id' => 'image-1'], 'management_code' => 'self_managed']);
+        Capsule::$tables['mod_contabo_mapping_publications'][] = [
+            'id' => 92, 'mapping_version' => 'map-old', 'product_id' => 50, 'state' => 'superseded', 'effective_at' => '2026-01-01 00:00:00',
+            'payload_json' => json_encode(['provider' => ['sku_id' => 'V999', 'region_id' => 'EU', 'image_id' => 'image-1'], 'management_code' => 'self_managed']),
+        ];
+        Capsule::$tables['mod_contabo_mapping_publications'][] = [
+            'id' => 93, 'mapping_version' => 'map-abandoned', 'product_id' => 50, 'state' => 'draft', 'effective_at' => null,
+            'supersedes_mapping_version' => 'map-old', 'payload_json' => $body,
+        ];
+        Capsule::$tables['mod_contabo_mapping_publications'][] = [
+            'id' => 94, 'mapping_version' => 'map-approved', 'product_id' => 50, 'state' => 'published', 'effective_at' => '2026-03-01 00:00:00',
+            'supersedes_mapping_version' => 'map-old', 'payload_json' => $body,
+        ];
+        $this->hashPublications();
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertTrue($plan['needs_override']);
+        $this->assertStringContainsString('already been superseded', $plan['reason']);
+    }
+
     public function testAPublicationThatWasInEffectForTheDraftIsStillTrusted(): void
     {
         $this->draft();
