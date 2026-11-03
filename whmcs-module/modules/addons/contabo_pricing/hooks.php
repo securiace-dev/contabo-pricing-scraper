@@ -373,6 +373,25 @@ add_hook('OrderPaid', 40, static function ($vars): void {
 });
 
 /**
+ * A customer may pay a different invoice than the order's own: a Mass Pay
+ * invoice, a merged invoice or a re-invoice for the same hosting. WHMCS fires
+ * OrderPaid only for the order's own invoice, so seal from InvoicePaid too.
+ * The linked orders are found through tblinvoiceitems (type Invoice/Hosting/
+ * Setup + relid) and every draft is still fully verified before it seals.
+ */
+add_hook('InvoicePaid', 40, static function ($vars): void {
+    try {
+        (new \ContaboPricing\PaidOrderSnapshotService())->sealForPaidInvoice(
+            (int) ($vars['invoiceid'] ?? ($vars['invoiceId'] ?? 0))
+        );
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing paid-invoice snapshot seal failed: ' . $e->getMessage());
+        }
+    }
+});
+
+/**
  * Belt-and-braces guard: only the canonical module and legacy compatibility
  * entrypoint are in scope, and both require a sealed snapshot before create.
  * New orders are fail-closed; the single logged exception for paid orders that

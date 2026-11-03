@@ -349,7 +349,19 @@ final class LatePaymentFlowTest extends TestCase
         $service = new PaidOrderSnapshotService();
 
         $stuck = $service->stuckPaidServices();
-        $this->assertSame([['service_id' => 30, 'order_id' => 10, 'invoice_id' => 20, 'states' => 'invalid']], $stuck);
+        $this->assertSame([[
+            'service_id' => 30,
+            'order_id' => 10,
+            'invoice_id' => 20,
+            'states' => 'invalid',
+            'via' => 'order',
+            'status' => 'ready',
+            'source' => 'recorded_mapping',
+            'reason' => '',
+            'diff' => [],
+            'diff_token' => '',
+            'override_kind' => '',
+        ]], $stuck);
 
         $r = $service->requote(30, 7);
         $this->assertTrue($r['ok'], $r['message']);
@@ -396,7 +408,7 @@ final class LatePaymentFlowTest extends TestCase
         $this->assertSame('draft', $this->snapshots()[0]['state']);
     }
 
-    public function testRequoteFailsClosedWhenThereIsNoPublishedMapping(): void
+    public function testRequoteUsesTheRecordedQuoteEvenWhenTheCurrentMappingIsGone(): void
     {
         $this->draft();
         Capsule::table('mod_securiacevps_order_snapshots')->update(['state' => 'invalid']);
@@ -404,9 +416,20 @@ final class LatePaymentFlowTest extends TestCase
         Capsule::$tables['mod_contabo_mapping'] = [];
 
         $r = (new PaidOrderSnapshotService())->requote(30, 7);
+        $this->assertTrue($r['ok'], $r['message']);
+        $this->assertSame('requoted', $r['code']);
+        $this->assertSame(['superseded', 'sealed'], array_column($this->snapshots(), 'state'));
+    }
+
+    public function testRequoteFailsClosedWhenThereIsNeitherARecordedQuoteNorAPublishedMapping(): void
+    {
+        Capsule::$tables['mod_contabo_mapping'] = [];
+        $this->pay();
+
+        $r = (new PaidOrderSnapshotService())->requote(30, 7);
         $this->assertFalse($r['ok']);
         $this->assertSame('draft_failed', $r['code']);
-        $this->assertSame(['invalid'], array_column($this->snapshots(), 'state'));
+        $this->assertSame([], $this->snapshots());
         $this->assertSame(['abortcmd' => true], $this->create());
     }
 

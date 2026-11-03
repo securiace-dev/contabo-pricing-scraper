@@ -167,7 +167,9 @@ final class PaidOrderSnapshotServiceTest extends TestCase
         Capsule::$tables['mod_contabo_mapping_publications'] = [[
             'id' => 90,
             'mapping_version' => 'mapping-v1',
+            'product_id' => 50,
             'state' => 'published',
+            'payload_hash' => '',
             'payload_json' => json_encode([
                 'provider' => [
                     'sku_id' => 'V45',
@@ -181,6 +183,10 @@ final class PaidOrderSnapshotServiceTest extends TestCase
                 'renewal_amount' => '2199.00',
             ]),
         ]];
+        Capsule::$tables['mod_contabo_mapping_publications'][0]['payload_hash'] = hash(
+            'sha256',
+            (string) Capsule::$tables['mod_contabo_mapping_publications'][0]['payload_json']
+        );
         Capsule::$tables['tblhostingconfigoptions'] = [[
             'relid' => 30,
             'configid' => 100,

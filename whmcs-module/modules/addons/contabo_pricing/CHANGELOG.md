@@ -1,5 +1,51 @@
 # Changelog
 
+## 1.1.5 — 2026-11-03 (re-quote keeps the customer's quote; any paying invoice recovers the order)
+
+No schema change. No new setting. Read `docs/UPGRADE_1_1_5.md`.
+
+- **Re-quote no longer silently uses a republished mapping.** The admin re-quote rebuilds the
+  contract from the customer's OWN recorded quote: the mapping publication named by the draft
+  row's `mapping_version` (`recorded_mapping`). That publication must verify (its stored sha256
+  payload hash, as at checkout), belong to the draft's product and management code, have been
+  in effect when the draft was created (not already superseded, not effective later), and agree
+  with the row on SKU, Region and Image (and on renewal when the publication records
+  `renewal_amount`); otherwise it is not trusted. If the publication is gone, the verified draft's own fields are
+  offered as `recorded_snapshot`, but because `provider.sku_id` is not covered by any snapshot
+  hash and nothing corroborates it, this needs an explicit logged confirmation that shows the
+  exact SKU, Region, Image and Renewal that will be sealed. When nothing verifiable was
+  recorded, re-quote refuses (`needs_override`) and the admin may confirm an override onto the
+  current mapping (itself hash-verified). Both confirmations show the diff, the confirm POST
+  carries a token bound to that diff, the order, the paying invoice and the mapping versions, a
+  change makes it refuse (`diff_changed`), and the action is written to the Activity Log with
+  the admin id as a WARNING.
+- **The paying invoice is resolved through WHMCS links.** The customer may pay an invoice other
+  than the order's own. A Paid invoice now settles the order when it is: the order's or
+  draft's own invoice (`order`); a Mass Pay invoice with a `tblinvoiceitems` row of type
+  `Invoice` whose `relid` is that invoice (`mass_pay`); a merged invoice with a `Hosting` or
+  `Setup` item for the service when the draft's invoice no longer exists (`merged`); or a
+  re-issued invoice with such an item while the draft's invoice still exists (`reinvoice`).
+  Every link must belong to the service owner (the order's own invoice may also belong to the ordering client, because Move Product/Service changes only the service), and the draft is still fully verified
+  before it seals. A Paid invoice that is not linked, or belongs to another client, never
+  seals; it is refused, named in the Activity Log and in the stuck list, and cannot be
+  overridden.
+- **New `InvoicePaid` hook** (priority 40) seals the orders a paid invoice settles, because
+  WHMCS fires `OrderPaid` for the order's own invoice only. `OrderPaid`, the
+  AfterShoppingCartCheckout hook, the PreModuleCreate gate (self-heal and grandfather check)
+  and the admin re-quote all use the same resolution.
+- **`InvoiceCancelled` keeps a draft that has a live replacement invoice** for the same
+  service (a re-invoice), so the replacement can still seal when it is paid. Orders are found
+  through the order's invoice and the cancelled invoice's `Invoice`, `Hosting` and `Setup`
+  items, so cancelling the last live replacement also invalidates the draft, and cancelling a
+  replacement or Mass Pay invoice keeps a draft whose own invoice is still live.
+- **Price drift at seal** skips the invoice-total comparison for a linked (non-own) invoice
+  and logs the paid and quoted totals instead.
+- **Maintenance panel** lists the paying invoice and how it links, a status (`Ready`,
+  `Needs confirmation`, `Needs override`, `Refused`) with the reason, and a diff-and-confirm card for overrides.
+- API: `createDraft()` takes an optional 5th `$recordedSource`; `requote()` takes
+  `$override`, `$diffToken`; new `requotePlan()`, `payingInvoice()`, `sealForPaidInvoice()`;
+  `stuckPaidServices()` rows carry `via`, `status`, `source`, `reason`, `diff`, `diff_token`.
+
 ## 1.1.4 — 2026-11-03 (paid invoices never strand provisioning)
 
 No schema change. No new setting is required. Read `docs/UPGRADE_1_1_4.md`.

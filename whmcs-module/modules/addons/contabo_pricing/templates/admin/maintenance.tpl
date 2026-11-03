@@ -66,6 +66,7 @@ $cb_optional_missing = isset($cb_health['optional_missing']) && is_array($cb_hea
 
 $cb_stuck = isset($cb_stuck_services) && is_array($cb_stuck_services) ? $cb_stuck_services : [];
 $cb_ttl   = isset($cb_quote_ttl) ? (int) $cb_quote_ttl : 1800;
+$cb_preview = isset($cb_requote_preview) && is_array($cb_requote_preview) ? $cb_requote_preview : null;
 
 $cb_flash = isset($_REQUEST['flash']) ? (string) $_REQUEST['flash'] : '';
 $cb_err   = isset($_REQUEST['error']) ? (string) $_REQUEST['error'] : '';
@@ -184,29 +185,75 @@ require __DIR__ . '/_layout_open.tpl';
   <p class="cb-card-sub">
     A paid VPS service with no sealed snapshot is refused at Create (Activity Log:
     <code class="mono">Contabo provisioning gate ABORTED</code>). Re-quoting rebuilds
-    the snapshot from the paid invoice and the current published mapping, seals it,
-    and keeps the old row as superseded. It refuses unless the invoice is Paid.
-    Unpaid checkouts stay quotable for <code class="mono"><?= (int) $cb_ttl ?></code>
+    the snapshot from the customer's <strong>own recorded quote</strong> (their mapping
+    version; if that publication is gone, the recorded snapshot after an explicit
+    confirmation, because its SKU cannot be checked against anything), binds it to the
+    Paid invoice that settled the order (the order's invoice, or a mass-pay, merged or
+    re-issued invoice linked to it), seals it, and keeps the old row as superseded.
+    If no verifiable recorded quote exists it refuses; the only way forward is an
+    explicit override that shows what the current mapping would change (SKU, region,
+    image, renewal) and is written to the Activity Log. It refuses unless a linked
+    invoice is Paid. Unpaid checkouts stay quotable for
+    <code class="mono"><?= (int) $cb_ttl ?></code>
     seconds or until the invoice due date, whichever is later
     (<code class="mono">snapshot.quote_ttl_seconds</code>).
   </p>
+  <?php if ($cb_preview !== null): ?>
+    <div class="cb-card">
+      <h4>Service #<?= (int) $cb_preview['service_id'] ?>: <?= $esc((string) $cb_preview['code']) ?></h4>
+      <p class="cb-card-sub"><?= $esc((string) $cb_preview['message']) ?></p>
+      <?php if (!empty($cb_preview['needs_override'])): ?>
+        <table class="cb-table">
+          <thead><tr><th>Field</th><th>Customer's recorded quote<?= ($cb_preview['override_kind'] ?? '') === 'recorded_snapshot' ? ' (will be sealed)' : '' ?></th><th>Current mapping<?= ($cb_preview['override_kind'] ?? '') === 'recorded_snapshot' ? '' : ' ' . $esc((string) $cb_preview['mapping_version']) ?></th></tr></thead>
+          <tbody>
+          <?php foreach ((array) $cb_preview['diff'] as $cb_d): ?>
+            <tr>
+              <td><?= $esc((string) $cb_d['field']) ?></td>
+              <td class="mono"><?= $esc((string) $cb_d['old']) ?></td>
+              <td class="mono"><?= !empty($cb_d['changed']) ? '<strong>' : '' ?><?= $esc((string) $cb_d['new']) ?><?= !empty($cb_d['changed']) ? '</strong>' : '' ?></td>
+            </tr>
+          <?php endforeach; ?>
+          </tbody>
+        </table>
+        <form method="post" action="<?= $esc($module_link) ?>">
+          <input type="hidden" name="action" value="maintenance-requote">
+          <input type="hidden" name="service_id" value="<?= (int) $cb_preview['service_id'] ?>">
+          <input type="hidden" name="override" value="1">
+          <input type="hidden" name="diff_token" value="<?= $esc((string) $cb_preview['diff_token']) ?>">
+          <?= generate_token() ?>
+          <button class="cb-btn" type="submit"><?= ($cb_preview['override_kind'] ?? '') === 'recorded_snapshot' ? 'Confirm: seal the recorded quote' : 'Confirm override with the current mapping' ?></button>
+        </form>
+      <?php endif; ?>
+    </div>
+  <?php endif; ?>
   <?php if ($cb_stuck !== []): ?>
     <table class="cb-table">
-      <thead><tr><th>Service</th><th>Order</th><th>Invoice</th><th>Snapshot rows</th><th></th></tr></thead>
+      <thead><tr><th>Service</th><th>Order</th><th>Paid invoice</th><th>Snapshot rows</th><th>Status</th><th></th></tr></thead>
       <tbody>
       <?php foreach ($cb_stuck as $cb_row): ?>
         <tr>
           <td class="mono">#<?= (int) $cb_row['service_id'] ?></td>
           <td class="mono">#<?= (int) $cb_row['order_id'] ?></td>
-          <td class="mono">#<?= (int) $cb_row['invoice_id'] ?></td>
+          <td class="mono">#<?= (int) $cb_row['invoice_id'] ?><?= (string) ($cb_row['via'] ?? '') !== '' && $cb_row['via'] !== 'order' ? ' (' . $esc((string) $cb_row['via']) . ')' : '' ?></td>
           <td><?= $esc((string) $cb_row['states']) ?></td>
           <td>
+            <?php if (($cb_row['status'] ?? '') === 'refused'): ?>
+              <strong>Refused:</strong> <?= $esc((string) ($cb_row['reason'] ?? '')) ?>
+            <?php elseif (($cb_row['status'] ?? '') === 'override'): ?>
+              <?= ($cb_row['override_kind'] ?? '') === 'recorded_snapshot' ? 'Needs confirmation' : 'Needs override' ?>: <?= $esc((string) ($cb_row['reason'] ?? '')) ?>
+            <?php else: ?>
+              Ready (<?= $esc((string) ($cb_row['source'] ?? '')) ?>)
+            <?php endif; ?>
+          </td>
+          <td>
+            <?php if (($cb_row['status'] ?? '') !== 'refused'): ?>
             <form method="post" action="<?= $esc($module_link) ?>">
               <input type="hidden" name="action" value="maintenance-requote">
               <input type="hidden" name="service_id" value="<?= (int) $cb_row['service_id'] ?>">
               <?= generate_token() ?>
-              <button class="cb-btn" type="submit">Re-quote</button>
+              <button class="cb-btn" type="submit"><?= ($cb_row['status'] ?? '') === 'override' ? 'Review' : 'Re-quote' ?></button>
             </form>
+            <?php endif; ?>
           </td>
         </tr>
       <?php endforeach; ?>

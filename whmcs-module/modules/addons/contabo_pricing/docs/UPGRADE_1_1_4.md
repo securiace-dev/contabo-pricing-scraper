@@ -42,7 +42,9 @@ refused Create, and nothing ever made a new draft, so a paying customer was stra
 Maintenance, Re-quote a paid order, press Re-quote on the service (or enter its ID). The new
 snapshot uses what WHMCS billed on the paid invoice and the currently published mapping. If the
 mapping was changed since checkout, the Activity Log line names the new mapping version; check
-it before running Create. Re-quote refuses an unpaid invoice and a Fraud or Cancelled order.
+it before running Create. (Superseded by 1.1.5: re-quote now uses the draft's own recorded
+mapping or snapshot, and the current mapping only through a logged override. See
+`UPGRADE_1_1_5.md`.) Re-quote refuses an unpaid invoice and a Fraud or Cancelled order.
 
 ## Rollback
 
