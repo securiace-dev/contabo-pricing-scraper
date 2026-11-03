@@ -66,15 +66,17 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->activeOrder();
     }
 
-    /** @param list<array{0:string,1:int}> $items [type, relid] */
+    /** @param list<array{0:string,1:int}|array{0:string,1:int,2:string}> $items [type, relid, amount (default the quoted 1999.00)] */
     private function invoice(int $id, string $status, int $userId, array $items, string $total = '1999.00'): void
     {
         Capsule::$tables['tblinvoices'][] = [
             'id' => $id, 'userid' => $userId, 'status' => $status,
             'subtotal' => $total, 'tax' => '0.00', 'tax2' => '0.00', 'credit' => '0.00', 'total' => $total,
         ];
-        foreach ($items as [$type, $relid]) {
-            Capsule::$tables['tblinvoiceitems'][] = ['invoiceid' => $id, 'type' => $type, 'relid' => $relid];
+        foreach ($items as $item) {
+            Capsule::$tables['tblinvoiceitems'][] = [
+                'invoiceid' => $id, 'type' => $item[0], 'relid' => $item[1], 'amount' => $item[2] ?? '1999.00',
+            ];
         }
         $this->activeOrder();
     }
@@ -556,6 +558,135 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $service = new PaidOrderSnapshotService();
         $this->assertSame('invoice_not_paid', $service->requote(30, 7, true, 'x')['code']);
         $this->assertSame(['invalid'], $this->states());
+    }
+
+    // ── 1.1.6 B1: a paid linked invoice must really settle THIS quote ───────
+
+    public function testB1APaidHostingInvoiceDoesNotSettleAnOrderInvoiceThatIsStillUnpaid(): void
+    {
+        $this->draft();
+        // Same client, a Hosting line for the service, fully paid, while the
+        // order's own invoice #20 is still Unpaid: this used to seal.
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30]]);
+
+        ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
+
+        $this->assertSame(['draft'], $this->states(), 'the order invoice is unpaid, so the other payment settles nothing');
+        $this->assertSame(['abortcmd' => true], $this->create());
+        $this->assertStringContainsString('still Unpaid', $this->log());
+        $this->assertStringNotContainsString('sealed via a linked invoice', $this->log());
+    }
+
+    public function testB1ATinyPaidInvoiceWithAHostingLineCannotUnlockTheService(): void
+    {
+        $this->draft();
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1.00']], '1.00');
+        ($this->hook('OrderPaid'))(['orderId' => 10, 'invoiceId' => 23]);
+        $this->assertSame(['draft'], $this->states());
+        $this->assertSame(['abortcmd' => true], $this->create());
+    }
+
+    public function testB1TheGrandfatherPathDoesNotAcceptAnUnrelatedPaidHostingInvoiceEither(): void
+    {
+        Capsule::table('mod_contabo_settings')->updateOrInsert(
+            ['key' => ProvisioningGate::SETTING_CUTOFF],
+            ['value' => '2026-11-01 00:00:00']
+        );
+        Capsule::table('tblorders')->where('id', 10)->update(['date' => '2026-10-20 10:00:00']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1.00']], '1.00');
+
+        $this->assertSame(['abortcmd' => true], $this->create(), 'order invoice #20 is Unpaid');
+        $this->assertStringNotContainsString(ProvisioningGate::REASON_GRANDFATHERED, $this->log());
+    }
+
+    public function testB1RequoteRefusesTheSameBypassAndItIsNotOverridable(): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1.00']], '1.00');
+        $service = new PaidOrderSnapshotService();
+
+        $plan = $service->requotePlan(30);
+        $this->assertSame('paying_invoice_refused', $plan['code']);
+        $r = $service->requote(30, 7, true, 'anything');
+        $this->assertSame('paying_invoice_refused', $r['code']);
+        $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testB1MassPayThatDoesNotCoverTheQuotedTotalIsRefused(): void
+    {
+        $this->draft();
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20, '10.00']], '10.00');
+        ($this->hook('InvoicePaid'))(['invoiceid' => 21]);
+        $this->assertSame(['draft'], $this->states());
+        $this->assertStringContainsString('shortfall', $this->log());
+        $this->assertSame(['abortcmd' => true], $this->create());
+    }
+
+    public function testB1MassPayCoveringTheQuotedTotalAcrossTwoItemsOfTheSameInvoiceStillSeals(): void
+    {
+        $this->draft();
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20, '1000.00'], ['Invoice', 20, '999.00']], '1999.00');
+        ($this->hook('InvoicePaid'))(['invoiceid' => 21]);
+        $this->assertSame(['sealed'], $this->states());
+    }
+
+    public function testB1MassPayAHostingLineAloneDoesNotMakeItAMassPay(): void
+    {
+        $this->draft();
+        $this->invoice(21, 'Paid', 40, [['Invoice', 99], ['Hosting', 30]]);
+        ($this->hook('InvoicePaid'))(['invoiceid' => 21]);
+        $this->assertSame(['draft'], $this->states(), 'the Hosting line is a re-issue and the original is still Unpaid');
+    }
+
+    public function testB1AReissuedInvoiceMustCoverTheQuotedFirstPayment(): void
+    {
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '999.00']], '999.00');
+        ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
+        $this->assertSame(['draft'], $this->states());
+        $this->assertStringContainsString('shortfall', $this->log());
+    }
+
+    public function testB1AReissuedInvoiceSumsItsHostingSetupAndPromoLines(): void
+    {
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1899.00'], ['Setup', 30, '200.00'], ['PromoHosting', 30, '-100.00']], '1999.00');
+        ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
+        $this->assertSame(['sealed'], $this->states());
+    }
+
+    public function testB1AMergedInvoiceMustCoverTheQuotedFirstPayment(): void
+    {
+        $this->draft();
+        $this->deleteInvoice(20);
+        $this->invoice(22, 'Paid', 40, [['Hosting', 30, '5.00']], '5.00');
+        $this->assertSame(['abortcmd' => true], $this->create());
+        $this->assertSame(['draft'], $this->states());
+    }
+
+    public function testB1AReissueWhileTheOriginalIsInAnyOtherStateIsRefused(): void
+    {
+        foreach (['Unpaid', 'Payment Pending', 'Collections', 'Refunded', 'Draft'] as $status) {
+            $this->setUp();
+            $this->draft();
+            Capsule::table('tblinvoices')->where('id', 20)->update(['status' => $status]);
+            $this->invoice(23, 'Paid', 40, [['Hosting', 30]]);
+            (new PaidOrderSnapshotService())->sealOrder(10, 23);
+            $this->assertSame(['draft'], $this->states(), 'original invoice ' . $status);
+        }
+    }
+
+    public function testB1TheOriginalOwnersMassPayOfAMovedServiceIsAccepted(): void
+    {
+        Capsule::table('tblorders')->where('id', 10)->update(['userid' => 40]);
+        Capsule::table('tblhosting')->where('id', 30)->update(['userid' => 41]);
+        $this->draft();
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20]]);
+        ($this->hook('InvoicePaid'))(['invoiceid' => 21]);
+        $this->assertSame(['sealed'], $this->states(), 'invoice #21 belongs to the ordering client #40');
     }
 
     // ── (b) paying invoice ───────────────────────────────────────────────────

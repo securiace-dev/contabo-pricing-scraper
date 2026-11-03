@@ -206,27 +206,39 @@ final class PaidOrderSnapshotService
      * customer pays. The recognised, verifiable links are:
      *
      *  - `order`     the invoice the draft was quoted on (normal case);
-     *  - `mass_pay`  a Mass Pay invoice whose `tblinvoiceitems` row has type
-     *                `Invoice` and `relid` = the quoted/order invoice;
-     *  - `merged`    a Merge Invoices result: a Paid invoice carrying a
-     *                `Hosting`/`Setup` item for this service while the quoted
+     *  - `mass_pay`  a Mass Pay invoice whose `tblinvoiceitems` rows have type
+     *                `Invoice` and `relid` = the quoted/order invoice, and
+     *                whose lines for it add up to at least the quoted total
+     *                (less the credit applied);
+     *  - `merged`    a Merge Invoices result: a Paid invoice carrying
+     *                `Hosting`/`Setup` items for this service while the quoted
      *                invoice no longer exists;
-     *  - `reinvoice` a replacement invoice for the same hosting (type
-     *                `Hosting`/`Setup`, `relid` = service id) while the quoted
-     *                invoice still exists.
+     *  - `reinvoice` a replacement invoice for the same hosting while the
+     *                quoted invoice is Cancelled.
      *
-     * A non-direct invoice must be Paid and belong to the service owner;
-     * otherwise it is ignored (and reported as a refusal when it was
-     * discovered through a link). `$hintInvoiceId` (the hook's invoice) only
-     * adds a candidate; it is never trusted without a link.
+     * `merged` and `reinvoice` also need their Hosting/Setup/PromoHosting
+     * lines for this service to cover the quoted first payment. A Paid invoice
+     * that settles something else (a different invoice, or a shortfall) never
+     * stands in for the order's own invoice: the order's invoice must be
+     * Cancelled or gone before another invoice can replace it.
      *
+     * A non-direct invoice must be Paid and belong to the service owner or the
+     * ordering client; otherwise it is ignored (and reported as a refusal when
+     * it was discovered through a link). `$hintInvoiceId` (the hook's invoice)
+     * only adds a candidate; it is never trusted without a link.
+     *
+     * `$quote` is what the verified draft was quoted at (see quoteTerms());
+     * without one the live service and order invoice stand in for it.
+     *
+     * @param array{total:string, first:string}|null $quote
      * @return array{invoice_id:int, via:string, bound_invoice_id:int, refusal:string}
      */
     public function payingInvoice(
         int $orderId,
         int $serviceId,
         int $hintInvoiceId = 0,
-        ?int $draftInvoiceId = null
+        ?int $draftInvoiceId = null,
+        ?array $quote = null
     ): array {
         $result = ['invoice_id' => 0, 'via' => '', 'bound_invoice_id' => 0, 'refusal' => ''];
         $service = $this->row('tblhosting', 'id', $serviceId);
@@ -259,6 +271,7 @@ final class PaidOrderSnapshotService
             static fn (int $id): bool => $id > 0
         )));
 
+        $terms = $quote ?? $this->liveQuoteTerms($service, $this->row('tblinvoices', 'id', $bound));
         $rank = ['order' => 0, 'mass_pay' => 1, 'merged' => 2, 'reinvoice' => 3];
         $best = null;
         foreach ($candidates as $id) {
@@ -266,7 +279,7 @@ final class PaidOrderSnapshotService
             if ($invoice === null || strcasecmp((string) ($invoice['status'] ?? ''), 'Paid') !== 0) {
                 continue;
             }
-            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId, (int) ($order['userid'] ?? 0));
+            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId, (int) ($order['userid'] ?? 0), $terms);
             if ($via === '') {
                 if ($why !== '' && ($id !== $hintInvoiceId || in_array($id, $own, true) || in_array($id, $discovered, true))) {
                     $result['refusal'] = $why;
@@ -288,13 +301,14 @@ final class PaidOrderSnapshotService
     /**
      * @param array<string,mixed> $invoice
      * @param list<int> $own
+     * @param array{total:string, first:string} $terms
      * @return array{0:string,1:string} [via, refusal reason]
      */
-    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId, int $orderUserId = 0): array
+    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId, int $orderUserId, array $terms): array
     {
         $id = (int) ($invoice['id'] ?? 0);
+        $owner = (int) ($invoice['userid'] ?? 0);
         if ($id === $bound) {
-            $owner = (int) ($invoice['userid'] ?? 0);
             // "Move Product/Service" changes tblhosting.userid but not the
             // order's invoice, so the order's own invoice may belong to the
             // service owner or to the client who placed the order.
@@ -309,34 +323,75 @@ final class PaidOrderSnapshotService
             }
             return ['order', ''];
         }
-        if ($userId <= 0 || (int) ($invoice['userid'] ?? 0) !== $userId) {
+        // The same two clients may pay a linked invoice: the owner, or the
+        // client who placed the order (the service may have been moved since).
+        if ($owner <= 0 || ($owner !== $userId && $owner !== $orderUserId)) {
             return ['', sprintf(
-                'Paid invoice #%d is linked to service #%d but belongs to client #%d, not the service owner #%d',
+                'Paid invoice #%d is linked to service #%d but belongs to client #%d, not the service owner #%d%s',
                 $id,
                 $serviceId,
-                (int) ($invoice['userid'] ?? 0),
-                $userId
+                $owner,
+                $userId,
+                $orderUserId > 0 && $orderUserId !== $userId ? ' or the ordering client #' . $orderUserId : ''
             )];
         }
         $mass = false;
         $hosting = false;
+        $massCents = 0;
+        $lineCents = 0;
         $items = Capsule::table('tblinvoiceitems')->where('invoiceid', $id)->get();
         foreach ($items as $item) {
             $item = (array) $item;
             $type = (string) ($item['type'] ?? '');
             $relid = (int) ($item['relid'] ?? 0);
+            $cents = $this->cents($item['amount'] ?? '0');
             if ($type === 'Invoice' && in_array($relid, $own, true)) {
                 $mass = true;
+                $massCents += $cents;
             }
-            if (($type === 'Hosting' || $type === 'Setup') && $relid === $serviceId) {
-                $hosting = true;
+            if ($relid === $serviceId && in_array($type, ['Hosting', 'Setup', 'PromoHosting'], true)) {
+                $hosting = $hosting || $type !== 'PromoHosting';
+                $lineCents += $cents;
             }
         }
         if ($mass) {
+            $need = $this->cents($terms['total']);
+            if ($massCents < $need) {
+                return ['', sprintf(
+                    'Paid Mass Pay invoice #%d covers %s of the quoted invoice #%d but the quote needs %s (shortfall %s); it cannot settle this order',
+                    $id,
+                    $this->centsText($massCents),
+                    $bound,
+                    $this->centsText($need),
+                    $this->centsText($need - $massCents)
+                )];
+            }
             return ['mass_pay', ''];
         }
         if ($hosting) {
-            return [$this->row('tblinvoices', 'id', $bound) === null ? 'merged' : 'reinvoice', ''];
+            $original = $bound > 0 ? $this->row('tblinvoices', 'id', $bound) : null;
+            if ($original !== null && strcasecmp((string) ($original['status'] ?? ''), 'Cancelled') !== 0) {
+                return ['', sprintf(
+                    'Paid invoice #%d has a line for service #%d but the order\'s own invoice #%d is still %s: another invoice cannot settle it. Pay or cancel invoice #%d in WHMCS first',
+                    $id,
+                    $serviceId,
+                    $bound,
+                    (string) ($original['status'] ?? 'unknown'),
+                    $bound
+                )];
+            }
+            $need = $this->cents($terms['first']);
+            if ($lineCents < $need) {
+                return ['', sprintf(
+                    'Paid invoice #%d bills %s for service #%d but the quote needs %s (shortfall %s); it cannot settle this order',
+                    $id,
+                    $this->centsText($lineCents),
+                    $serviceId,
+                    $this->centsText($need),
+                    $this->centsText($need - $lineCents)
+                )];
+            }
+            return [$original === null ? 'merged' : 'reinvoice', ''];
         }
         return ['', sprintf(
             'Paid invoice #%d is not linked to the draft\'s invoice #%d or to service #%d by any invoice item, so it cannot settle this order',
@@ -344,6 +399,54 @@ final class PaidOrderSnapshotService
             $bound,
             $serviceId
         )];
+    }
+
+    /**
+     * What a linked invoice has to cover, from the VERIFIED draft: the quoted
+     * total less the credit applied (Mass Pay), and the quoted first payment
+     * before tax (the service's own lines on a merged/re-issued invoice).
+     *
+     * @param array<string,mixed> $row a row that already passed integrityFault()
+     * @return array{total:string, first:string}|null
+     */
+    private function quoteTerms(array $row): ?array
+    {
+        $payload = json_decode((string) ($row['payload_json'] ?? ''), true);
+        if (!is_array($payload) || !isset($payload['whmcs'], $payload['pricing']) || !is_array($payload['whmcs']) || !is_array($payload['pricing'])) {
+            return null;
+        }
+        $total = max(0, $this->cents($payload['whmcs']['total_due'] ?? '0') - $this->cents($payload['whmcs']['credit'] ?? '0'));
+        return ['total' => $this->centsText($total), 'first' => $this->money($payload['pricing']['setup'] ?? '0')];
+    }
+
+    /**
+     * Stand-in terms when no verified draft exists (orders placed before the
+     * snapshot flow): the service's first payment and the order invoice, when
+     * it still exists.
+     *
+     * @param array<string,mixed> $service
+     * @param array<string,mixed>|null $invoice
+     * @return array{total:string, first:string}
+     */
+    private function liveQuoteTerms(array $service, ?array $invoice): array
+    {
+        $first = $this->money($service['firstpaymentamount'] ?? '0');
+        if ($invoice === null) {
+            return ['total' => $first, 'first' => $first];
+        }
+        $total = max(0, $this->cents($invoice['total'] ?? '0') - $this->cents($invoice['credit'] ?? '0'));
+        return ['total' => $this->centsText($total), 'first' => $first];
+    }
+
+    /** @param mixed $value */
+    private function cents($value): int
+    {
+        return (int) round(((float) $value) * 100);
+    }
+
+    private function centsText(int $cents): string
+    {
+        return number_format($cents / 100, 2, '.', '');
     }
 
     /**
@@ -362,8 +465,10 @@ final class PaidOrderSnapshotService
             ->whereIn('state', ['draft', 'invalid'])
             ->orderByDesc('id')
             ->first();
-        $bound = $row !== null ? $this->draftInvoiceId((array) $row) : null;
-        return $this->payingInvoice($orderId, $serviceId, 0, $bound)['refusal'];
+        $verified = $row !== null && $this->integrityFault((array) $row, $orderId) === null;
+        $bound = $verified ? $this->draftInvoiceId((array) $row) : null;
+        $quote = $verified ? $this->quoteTerms((array) $row) : null;
+        return $this->payingInvoice($orderId, $serviceId, 0, $bound, $quote)['refusal'];
     }
 
     /**
@@ -403,7 +508,8 @@ final class PaidOrderSnapshotService
                 $orderId,
                 $serviceId,
                 $invoiceId,
-                $fault === null ? $this->draftInvoiceId($row) : null
+                $fault === null ? $this->draftInvoiceId($row) : null,
+                $fault === null ? $this->quoteTerms($row) : null
             );
             if ($paying['invoice_id'] <= 0) {
                 if ($paying['refusal'] !== '') {
@@ -728,7 +834,7 @@ final class PaidOrderSnapshotService
             }
         }
         $boundHint = $trusted !== null ? $this->draftInvoiceId($trusted) : null;
-        $paying = $this->payingInvoice($orderId, $serviceId, 0, $boundHint);
+        $paying = $this->payingInvoice($orderId, $serviceId, 0, $boundHint, $trusted !== null ? $this->quoteTerms($trusted) : null);
         $plan['invoice_id'] = $paying['invoice_id'];
         $plan['bound_invoice_id'] = $paying['bound_invoice_id'];
         $plan['via'] = $paying['via'];
