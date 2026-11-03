@@ -67,6 +67,7 @@ $cb_optional_missing = isset($cb_health['optional_missing']) && is_array($cb_hea
 $cb_stuck = isset($cb_stuck_services) && is_array($cb_stuck_services) ? $cb_stuck_services : [];
 $cb_ttl   = isset($cb_quote_ttl) ? (int) $cb_quote_ttl : 1800;
 $cb_preview = isset($cb_requote_preview) && is_array($cb_requote_preview) ? $cb_requote_preview : null;
+$cb_key = isset($cb_key_status) && is_array($cb_key_status) ? $cb_key_status : ['available' => false, 'source' => 'unknown', 'can_sign' => false];
 
 $cb_flash = isset($_REQUEST['flash']) ? (string) $_REQUEST['flash'] : '';
 $cb_err   = isset($_REQUEST['error']) ? (string) $_REQUEST['error'] : '';
@@ -201,6 +202,19 @@ require __DIR__ . '/_layout_open.tpl';
     <code class="mono"><?= (int) $cb_ttl ?></code>
     seconds or until the invoice due date, whichever is later
     (<code class="mono">snapshot.quote_ttl_seconds</code>).
+    Every re-quote, including one that matches the recorded quote exactly, is
+    sealed only after the diff has been shown and confirmed. The manual box
+    below only opens that diff.
+  </p>
+  <p class="cb-card-sub" data-cb-key-check="1">
+    <strong>Confirmation key check:</strong>
+    <?php if (!empty($cb_key['available']) && !empty($cb_key['can_sign'])): ?>
+      key resolves: <strong>yes</strong>, source: <code class="mono"><?= $esc((string) $cb_key['source']) ?></code>
+      (the key itself is never shown).
+    <?php else: ?>
+      key resolves: <strong>NO</strong>. Re-quote confirmations cannot be issued until
+      the WHMCS <code class="mono">cc_encryption_hash</code> is readable by this module.
+    <?php endif; ?>
   </p>
   <?php if ($cb_preview !== null): ?>
     <div class="cb-card">
@@ -246,12 +260,19 @@ require __DIR__ . '/_layout_open.tpl';
           Ask a Full Administrator (or a role listed in <code class="mono">snapshot.requote_role_ids</code>).</p>
         <?php endif; ?>
       <?php elseif (in_array((string) $cb_preview['code'], ['ready'], true)): ?>
+        <?php if (!empty($cb_preview['may_confirm'])): ?>
         <form method="post" action="<?= $esc($module_link) ?>">
           <input type="hidden" name="action" value="maintenance-requote">
           <input type="hidden" name="service_id" value="<?= (int) $cb_preview['service_id'] ?>">
+          <input type="hidden" name="override" value="1">
+          <input type="hidden" name="diff_token" value="<?= $esc((string) $cb_preview['diff_token']) ?>">
           <?= generate_token() ?>
-          <button class="cb-btn" type="submit">Re-quote: seal exactly this quote</button>
+          <button class="cb-btn" type="submit">Confirm: seal exactly this quote</button>
         </form>
+        <?php else: ?>
+        <p class="cb-card-sub"><strong>Your admin role may not confirm this.</strong>
+          Ask a Full Administrator (or a role listed in <code class="mono">snapshot.requote_role_ids</code>).</p>
+        <?php endif; ?>
       <?php endif; ?>
     </div>
   <?php endif; ?>
@@ -290,8 +311,9 @@ require __DIR__ . '/_layout_open.tpl';
     <input type="hidden" name="action" value="maintenance-requote">
     <?= generate_token() ?>
     <label>Service ID <input type="number" min="1" name="service_id" class="mono" required></label>
-    <button class="cb-btn" type="submit">Re-quote service</button>
+    <button class="cb-btn" type="submit">Review re-quote</button>
   </form>
+  <p class="cb-card-sub">Opens the diff for the service; nothing is sealed until you confirm it there.</p>
 </div>
 
 <?php /* ── Panel 3: Purge / reset module data ─────────────────────────────── */ ?>

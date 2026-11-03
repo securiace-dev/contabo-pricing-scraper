@@ -145,6 +145,14 @@ lines for the service covering the quoted first payment. Re-quote seals the veri
 quote (options, amounts, tax, total); a divergence in WHMCS needs a confirmation by a permitted
 role with an HMAC token over the full diff.
 
+Paying invoice rules (1.1.7): a recorded quote is replayed only under the product it was made on
+(`product_changed` otherwise, not overridable). A linked invoice must be in the quoted currency
+(a mismatch or unknown currency refuses). A merged or re-issued invoice must also cover the quoted
+gross total (total plus credit); a smaller one never seals automatically and, on the admin
+re-quote, is shown as a Total due deviation that needs confirmation. A no-draft Mass Pay is
+compared net against net. Every seal made through re-quote, an exact match included, is confirmed
+by a permitted role with the keyed token.
+
 ## 5. Operation identity, idempotency, and concurrency
 
 Deterministic command identity is derived from:

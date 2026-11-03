@@ -18,6 +18,17 @@ trait SnapshotFixture
         }
     }
 
+    /**
+     * The admin flow since 1.1.7: look at the plan, then confirm exactly it.
+     *
+     * @return array{ok:bool, code:string, message:string, snapshot_uuid:string}
+     */
+    private function confirmedRequote(\ContaboPricing\PaidOrderSnapshotService $service, int $serviceId, int $adminId = 7): array
+    {
+        $plan = $service->requotePlan($serviceId);
+        return $service->requote($serviceId, $adminId, true, (string) $plan['diff_token']);
+    }
+
     private function bootFixture(): void
     {
         Capsule::reset();

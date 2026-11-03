@@ -254,6 +254,14 @@ Exact Dokploy service IDs and script names remain blocked until
 `whmcs-prod-new` / `securiace-whmcs-prod` are shared — see
 [`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
 
+## Addon 1.1.7 — product-bound re-quote, confirmed seals, currency and gross checks
+
+Follow [`UPGRADE_1_1_7.md`](UPGRADE_1_1_7.md). No schema change, no new secret, no new setting.
+Re-quote refuses a service that moved to another product; every seal (Ready included) is confirmed
+with the diff and the keyed token; linked invoices must be in the quoted currency and, for a merge
+or re-issue, cover the quoted gross. Staging must read the Maintenance "Confirmation key check"
+(yes plus the source) on WHMCS 8.13.7 before production.
+
 ## Addon 1.1.6 — a linked invoice must settle the quote; re-quote seals the recorded quote
 
 Follow [`UPGRADE_1_1_6.md`](UPGRADE_1_1_6.md). No schema change, no new secret. Mass Pay, merged and
