@@ -57,6 +57,9 @@ secret. No new setting. Do not deploy without an explicit go.
     cannot override. The refusal log says so ("no verified recorded quote ... fix the invoice in
     WHMCS (re-issue it at the quoted amount) or have the client pay the difference") instead of
     pointing at Maintenance.
+  - **A draft exists but its recorded mapping is rejected** (for example the mapping was
+    republished and no longer matches): the same strict rule applies. Lenient confirmation exists
+    only when a recorded quote is really replayed and its diff is shown.
 - A higher gross (a merge with other services) is not a shortfall.
 
 ## Key diagnostic

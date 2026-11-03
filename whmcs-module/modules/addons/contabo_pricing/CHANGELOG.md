@@ -30,6 +30,9 @@ WHMCS-Prod review of 1.1.6.
   verified recorded quote the refusal no longer points at a re-quote that refuses. A combined
   (Mass Pay or merged) invoice no longer shows false Tax/Subtotal deviations. The malformed-role
   WARNING is logged once per request.
+- **Round-3 review fix.** The lenient gross confirmation is granted only when a recorded quote
+  is actually replayed with the diff shown. A verified draft whose recorded mapping is rejected is
+  treated like the no-draft case (strict, refused, message names the WHMCS remedy).
 - **"WHMCS now"** reads the invoice that paid (re-issue, merge, Mass Pay line), not the cancelled
   original.
 - **Key diagnostic.** Maintenance shows "Confirmation key check: key resolves: yes/NO, source: ..."

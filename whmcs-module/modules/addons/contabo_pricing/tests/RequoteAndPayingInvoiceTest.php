@@ -1819,4 +1819,24 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertSame([], $plan['deviations'], 'a legitimate Mass Pay of a taxed quote is not a deviation');
         $this->assertSame('ready', $plan['code']);
     }
+
+    public function testAVerifiedDraftWhoseRecordedMappingIsRejectedStaysStrictOnTheGrossCheck(): void
+    {
+        $service = $this->taxedQuoteThenTaxExemptReissue();
+        // The publication the draft recorded now belongs to another product, so no recorded
+        // source can be replayed and the re-quote can only be the current-mapping override.
+        Capsule::table('mod_contabo_mapping_publications')->where('mapping_version', 'mapping-v1')->update(['product_id' => 51]);
+        $this->hashPublications();
+        ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
+        $this->assertSame(['draft'], $this->states());
+        $this->assertStringContainsString('totals 1999.00 but the quote was 2179.00', $this->log());
+        $this->assertStringContainsString('no verified recorded quote', $this->log(), 'no recovery is promised that refuses');
+        $this->assertStringNotContainsString('Re-quote service #30 from Maintenance', $this->log());
+
+        $plan = $service->requotePlan(30);
+        $this->assertFalse($plan['ready'], 'the current-mapping override cannot settle a smaller invoice');
+        $this->assertSame('paying_invoice_refused', $plan['code']);
+        $this->assertFalse($service->requote(30, 7, true, (string) ($plan['diff_token'] ?? 'x'))['ok']);
+        $this->assertNotContains('sealed', $this->states());
+    }
 }

@@ -272,6 +272,10 @@ final class PaidOrderSnapshotService
      * Total due deviation. The automatic paths (InvoicePaid/OrderPaid hooks,
      * cron) never settle a quote with a smaller invoice.
      *
+     * `$canConfirm` says whether Maintenance could confirm a gross refusal (it
+     * can only when a recorded quote the admin is shown exists); it only picks
+     * the wording of the refusal.
+     *
      * @param array{total:string, gross:string, first:string, currency:string}|null $quote
      * @return array{invoice_id:int, via:string, bound_invoice_id:int, refusal:string}
      */
@@ -281,7 +285,8 @@ final class PaidOrderSnapshotService
         int $hintInvoiceId = 0,
         ?int $draftInvoiceId = null,
         ?array $quote = null,
-        bool $adminConfirmed = false
+        bool $adminConfirmed = false,
+        ?\Closure $canConfirm = null
     ): array {
         $result = ['invoice_id' => 0, 'via' => '', 'bound_invoice_id' => 0, 'refusal' => ''];
         $service = $this->row('tblhosting', 'id', $serviceId);
@@ -322,7 +327,7 @@ final class PaidOrderSnapshotService
             if ($invoice === null || strcasecmp((string) ($invoice['status'] ?? ''), 'Paid') !== 0) {
                 continue;
             }
-            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId, (int) ($order['userid'] ?? 0), $terms, !$adminConfirmed, $quote !== null);
+            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId, (int) ($order['userid'] ?? 0), $terms, !$adminConfirmed, $quote === null ? null : ($canConfirm ?? static fn (): bool => true));
             if ($via === '') {
                 if ($why !== '' && ($id !== $hintInvoiceId || in_array($id, $own, true) || in_array($id, $discovered, true))) {
                     $result['refusal'] = $why;
@@ -397,7 +402,7 @@ final class PaidOrderSnapshotService
      * @param array{total:string, gross:string, first:string, currency:string} $terms
      * @return array{0:string,1:string} [via, refusal reason]
      */
-    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId, int $orderUserId, array $terms, bool $strictGross = true, bool $confirmable = false): array
+    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId, int $orderUserId, array $terms, bool $strictGross = true, ?\Closure $confirmable = null): array
     {
         $id = (int) ($invoice['id'] ?? 0);
         $owner = (int) ($invoice['userid'] ?? 0);
@@ -512,7 +517,7 @@ final class PaidOrderSnapshotService
                     $id,
                     $this->centsText($gross),
                     $this->centsText($needGross),
-                    $confirmable
+                    $confirmable !== null && $confirmable()
                         ? sprintf('Re-quote service #%d from Maintenance: the difference is shown and an admin must confirm it', $serviceId)
                         : 'There is no verified recorded quote to confirm it against, so Maintenance cannot override it: fix the invoice in WHMCS (re-issue it at the quoted amount) or have the client pay the difference'
                 )];
@@ -654,7 +659,11 @@ final class PaidOrderSnapshotService
                 $invoiceId,
                 $fault === null ? $this->draftInvoiceId($row) : null,
                 $fault === null ? $this->quoteTerms($row) : null,
-                $confirmedUuid !== '' && $uuid === $confirmedUuid && $fault === null
+                $confirmedUuid !== '' && $uuid === $confirmedUuid && $fault === null,
+                $fault === null ? function () use ($row): bool {
+                    $why = '';
+                    return $this->recordedSource($row, $why) !== null;
+                } : null
             );
             if ($paying['invoice_id'] <= 0) {
                 if ($paying['refusal'] !== '') {
@@ -979,10 +988,21 @@ final class PaidOrderSnapshotService
             }
         }
         $boundHint = $trusted !== null ? $this->draftInvoiceId($trusted) : null;
-        // With a verified recorded quote the diff below shows any gross
-        // shortfall as a Total due deviation, so the admin sees it before
-        // confirming; without one nothing would show it, so it stays strict.
-        $paying = $this->payingInvoice($orderId, $serviceId, 0, $boundHint, $trusted !== null ? $this->quoteTerms($trusted) : null, $trusted !== null);
+        $recorded = $trusted !== null ? $this->recordedSource($trusted, $whyNot) : null;
+        // Only a RECORDED quote (a mapping or snapshot source the diff below
+        // replays) shows a gross shortfall as a Total due deviation before the
+        // admin confirms. A verified draft whose recorded source is rejected
+        // falls through to the current-mapping override, which would show
+        // nothing, so it stays strict like the no-draft case.
+        $paying = $this->payingInvoice(
+            $orderId,
+            $serviceId,
+            0,
+            $boundHint,
+            $trusted !== null ? $this->quoteTerms($trusted) : null,
+            $recorded !== null,
+            $recorded !== null ? null : static fn (): bool => false
+        );
         $plan['invoice_id'] = $paying['invoice_id'];
         $plan['bound_invoice_id'] = $paying['bound_invoice_id'];
         $plan['via'] = $paying['via'];
@@ -1009,7 +1029,6 @@ final class PaidOrderSnapshotService
             }
         }
 
-        $recorded = $trusted !== null ? $this->recordedSource($trusted, $whyNot) : null;
         $replayLive = null;
         if ($trusted !== null) {
             // The invoice that PAID is what WHMCS holds for this order now
@@ -1508,7 +1527,7 @@ final class PaidOrderSnapshotService
         // The lenient gross check applies to the rebuilt draft ONLY (the one the
         // admin was shown and confirmed), never to other services' drafts on
         // the same order.
-        $count = $this->sealOrder($orderId, (int) $plan['invoice_id'], $plan['source'] !== 'current_mapping' ? $uuid : '');
+        $count = $this->sealOrder($orderId, (int) $plan['invoice_id'], $recorded !== null ? $uuid : '');
         $sealedNow = Capsule::table('mod_securiacevps_order_snapshots')
             ->where('snapshot_uuid', $uuid)
             ->where('state', 'sealed')
