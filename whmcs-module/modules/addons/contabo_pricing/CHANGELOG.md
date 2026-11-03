@@ -17,7 +17,9 @@ No schema change. No new setting is required. Read `docs/UPGRADE_1_1_4.md`.
   quoted ones.
 - **Fail-closed protections kept, and made explicit.** Before sealing, the draft's three hashes
   (configuration, price, cart total) are recomputed from its payload and its order, invoice
-  and service binding is checked. A draft that fails is marked `invalid`, logged as
+  and service binding is checked, and the provider region and image must agree with the hashed
+  configuration and carry a SKU (the provider section has no hash of its own; adding one needs
+  a schema change and is left for a later release). A draft that fails is marked `invalid`, logged as
   `REFUSED to seal`, and still blocks provisioning. Unpaid, Fraud and Cancelled orders never seal.
 - **Gate safety net.** `ProvisioningGate` seals a verified draft whose invoice is Paid
   (`sealed_at_gate_paid_invoice`, logged as a `WARNING`) instead of aborting when OrderPaid

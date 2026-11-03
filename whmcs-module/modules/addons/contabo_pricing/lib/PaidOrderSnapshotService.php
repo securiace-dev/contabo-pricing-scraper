@@ -427,7 +427,7 @@ final class PaidOrderSnapshotService
         $newRow = Capsule::table('mod_securiacevps_order_snapshots')->where('snapshot_uuid', $uuid)->first();
         $mapping = $newRow !== null ? (string) (((array) $newRow)['mapping_version'] ?? '?') : '?';
         $this->activity(sprintf(
-            'Contabo snapshot re-quoted by admin #%d: service #%d order #%d invoice #%d sealed as %s on mapping %s (%s). Amounts are those billed on the paid invoice.',
+            'Contabo snapshot re-quoted by admin #%d: service #%d order #%d invoice #%d sealed as %s on mapping %s (%s). Setup, recurring and total are those billed on the paid invoice; SKU, region, image and renewal come from the mapping named here.',
             $adminId,
             $serviceId,
             $orderId,
@@ -530,6 +530,18 @@ final class PaidOrderSnapshotService
         }
         if ((int) ($whmcs['service_id'] ?? 0) !== (int) ($row['service_id'] ?? 0)) {
             return 'draft is bound to a different service';
+        }
+        // The provider section is not covered by a stored hash (no schema
+        // change in 1.1.4), so tie the fields that are mirrored into the
+        // hashed configuration back to it and require a SKU to be present.
+        $provider = $payload['provider'];
+        $configuration = $payload['configuration'];
+        if (trim((string) ($provider['sku_id'] ?? '')) === '') {
+            return 'provider section has no sku_id';
+        }
+        if ((string) ($provider['region_id'] ?? '') !== (string) ($configuration['region'] ?? '')
+            || (string) ($provider['image_id'] ?? '') !== (string) ($configuration['image_id'] ?? '')) {
+            return 'provider section disagrees with the hashed configuration';
         }
         return null;
     }

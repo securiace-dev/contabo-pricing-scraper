@@ -162,6 +162,9 @@ final class LatePaymentFlowTest extends TestCase
             'payload not json' => ['garbage'],
             'bound to another invoice' => ['invoice'],
             'bound to another service' => ['service'],
+            'provider region swapped' => ['provider_region'],
+            'provider image swapped' => ['provider_image'],
+            'provider sku removed' => ['provider_sku'],
         ];
     }
 
@@ -191,6 +194,18 @@ final class LatePaymentFlowTest extends TestCase
                 break;
             case 'service':
                 $edit = ['payload_json' => str_replace('"service_id":30', '"service_id":31', $payload)];
+                break;
+            case 'provider_region':
+                $edit = ['payload_json' => str_replace('"region_id":"EU"', '"region_id":"US-east"', $payload)];
+                $this->assertNotSame($payload, $edit['payload_json']);
+                break;
+            case 'provider_image':
+                $edit = ['payload_json' => str_replace('"image_id":"image-1"', '"image_id":"image-9"', $payload)];
+                $this->assertNotSame($payload, $edit['payload_json']);
+                break;
+            case 'provider_sku':
+                $edit = ['payload_json' => str_replace('"sku_id":"V45"', '"sku_id":""', $payload)];
+                $this->assertNotSame($payload, $edit['payload_json']);
                 break;
         }
         Capsule::table('mod_securiacevps_order_snapshots')->update($edit);
