@@ -1367,4 +1367,54 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertSame('recorded_mapping', $plan['source'], $plan['message']);
         $this->assertFalse($plan['needs_override']);
     }
+
+    // ── credit is already netted out of tblinvoices.total ────────────────────
+
+    public function testB1MassPayMustCoverTheQuotedTotalDueEvenWhenCreditWasAppliedAtCheckout(): void
+    {
+        Capsule::table('tblinvoices')->where('id', 20)->update(['credit' => '500.00']);
+        $this->draft();
+        $this->assertSame('500.00', $this->payload(0)['whmcs']['credit']);
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20, '1499.00']], '1499.00');
+        ($this->hook('InvoicePaid'))(['invoiceid' => 21]);
+        $this->assertSame(['draft'], $this->states(), 'the quoted total is already net of the credit; it is not subtracted twice');
+        $this->assertStringContainsString('shortfall', $this->log());
+        $this->invoice(22, 'Paid', 40, [['Invoice', 20, '1999.00']], '1999.00');
+        ($this->hook('InvoicePaid'))(['invoiceid' => 22]);
+        $this->assertSame(['sealed'], $this->states());
+    }
+
+    public function testB2CreditAppliedAfterCheckoutIsNotADeviationButAChangedGrossIs(): void
+    {
+        $service = $this->readyToRequote();
+        // Mass Pay / "apply credit": the money moves from total to credit.
+        Capsule::table('tblinvoices')->where('id', 20)->update(['total' => '0.00', 'credit' => '1999.00']);
+        $plan = $service->requotePlan(30);
+        $this->assertSame('ready', $plan['code']);
+        $this->assertSame([], (array) ($plan['deviations'] ?? []));
+        $this->assertTrue($service->requote(30, 7)['ok']);
+    }
+
+    public function testB2ATotalThatReallyChangedStillDeviates(): void
+    {
+        $service = $this->readyToRequote();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['total' => '1500.00', 'credit' => '0.00']);
+        $plan = $service->requotePlan(30);
+        $this->assertNotSame([], $plan['deviations']);
+        $this->assertStringContainsString('Total due', implode('|', $plan['deviations']));
+    }
+
+    public function testB1TheGrandfatherPathUsesTheGrossLiveTotalToo(): void
+    {
+        Capsule::table('mod_contabo_settings')->updateOrInsert(
+            ['key' => ProvisioningGate::SETTING_CUTOFF],
+            ['value' => '2026-11-01 00:00:00']
+        );
+        Capsule::table('tblorders')->where('id', 10)->update(['date' => '2026-10-20 10:00:00']);
+        Capsule::table('tblinvoices')->where('id', 20)->update(['total' => '1499.00', 'credit' => '500.00']);
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20, '1499.00']], '1499.00');
+        $this->assertSame(['abortcmd' => true], $this->create(), 'invoice #20 was 1999.00 gross; 1499.00 is a shortfall');
+        $this->invoice(22, 'Paid', 40, [['Invoice', 20, '1999.00']], '1999.00');
+        $this->assertNotSame(['abortcmd' => true], $this->create());
+    }
 }

@@ -17,8 +17,8 @@ No new secret. One optional setting. Do not deploy without an explicit go.
 
 | Link | Accepted only when | Must cover |
 |---|---|---|
-| `order` | the draft's (else the order's) own invoice is Paid | the existing price-drift check |
-| `mass_pay` | Paid invoice has `Invoice` items whose `relid` is the original invoice (bound or the order's) | those items sum to at least the quoted total due less credit |
+| `order` | the draft's (else the order's) own invoice is Paid | the existing seal-time price-drift check, which only logs a WARNING |
+| `mass_pay` | Paid invoice has `Invoice` items whose `relid` is the original invoice (bound or the order's) | those items sum to at least the quoted total due (`tblinvoices.total` is already net of credit; it is not subtracted again) |
 | `reinvoice` | the original invoice is Cancelled | Hosting + Setup + promo lines for the service sum to at least the quoted first payment |
 | `merged` | the original invoice no longer exists | same as `reinvoice` |
 
@@ -43,8 +43,14 @@ invoice will be refused rather than accepted: safe, but it blocks recovery until
 
 A confirmation needs a permitted role (below) and a token that matches the diff exactly. A change in
 the service, the invoices, the draft row, the mapping or WHMCS values after the diff was shown
-refuses with `diff_changed`. If the invoice total itself has drifted from the quote, sealing is
-still refused by the price-drift check.
+refuses with `diff_changed`. If the invoice total itself has drifted from the quote, the Total
+due row shows it as a deviation (credit applied after checkout moves money from total to credit
+and is not a deviation; the gross is compared). The seal-time price-drift check only logs a
+WARNING, so the admin's confirmation is the control. A renamed option label also shows as a
+deviation; this is conservative (a confirmation, never a silent seal).
+
+Credit applied to the original invoice before a Mass Pay, so that the Mass Pay's `Invoice` items
+fall short of the quoted total due, is refused (safe); the order stays on the Maintenance list.
 
 ## Confirm token and key
 

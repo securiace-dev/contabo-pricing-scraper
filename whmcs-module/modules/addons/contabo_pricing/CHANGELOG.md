@@ -11,7 +11,7 @@ No schema change. One OPTIONAL setting (`snapshot.requote_role_ids`). No new sec
   a re-issued or merged invoice is accepted only when the order's original invoice is Cancelled
   (`reinvoice`) or no longer exists (`merged`); any other original status refuses. Mass Pay is
   accepted only through `Invoice` items whose `relid` is the original invoice (the bound or the
-  order's invoice), and only when their amounts cover the quoted total due less credit. Merged
+  order's invoice), and only when their amounts cover the quoted total due (`tblinvoices.total` is already net of credit, so credit is not subtracted again). Merged
   and re-issued invoices must carry Hosting, Setup and promo lines for the service that cover the
   quoted first payment. A shortfall refuses (listed on Maintenance, never sealed). The gate, the
   grandfather path and re-quote share this check. The original owner's Mass Pay of a service that

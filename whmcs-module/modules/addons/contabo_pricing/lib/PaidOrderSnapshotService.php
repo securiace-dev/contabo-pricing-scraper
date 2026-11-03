@@ -465,7 +465,7 @@ final class PaidOrderSnapshotService
 
     /**
      * What a linked invoice has to cover, from the VERIFIED draft: the quoted
-     * total less the credit applied (Mass Pay), and the quoted first payment
+     * total due (Mass Pay), and the quoted first payment
      * before tax (the service's own lines on a merged/re-issued invoice).
      *
      * @param array<string,mixed> $row a row that already passed integrityFault()
@@ -477,7 +477,10 @@ final class PaidOrderSnapshotService
         if (!is_array($payload) || !isset($payload['whmcs'], $payload['pricing']) || !is_array($payload['whmcs']) || !is_array($payload['pricing'])) {
             return null;
         }
-        $total = max(0, $this->cents($payload['whmcs']['total_due'] ?? '0') - $this->cents($payload['whmcs']['credit'] ?? '0'));
+        // tblinvoices.total is already NET of the credit applied, so the quoted
+        // total due is what the linked lines must cover; credit is not
+        // subtracted a second time.
+        $total = max(0, $this->cents($payload['whmcs']['total_due'] ?? '0'));
         return ['total' => $this->centsText($total), 'first' => $this->money($payload['pricing']['setup'] ?? '0')];
     }
 
@@ -496,7 +499,9 @@ final class PaidOrderSnapshotService
         if ($invoice === null) {
             return ['total' => $first, 'first' => $first];
         }
-        $total = max(0, $this->cents($invoice['total'] ?? '0') - $this->cents($invoice['credit'] ?? '0'));
+        // Applying credit (Mass Pay does it to the original invoice) lowers
+        // tblinvoices.total, so the gross amount is total + credit.
+        $total = max(0, $this->cents($invoice['total'] ?? '0') + $this->cents($invoice['credit'] ?? '0'));
         return ['total' => $this->centsText($total), 'first' => $first];
     }
 
@@ -1100,6 +1105,15 @@ final class PaidOrderSnapshotService
             }
             if ($replay) {
                 $differs = $was !== null && ($unavailable ? ($type === 'options') : !$same($was, $now));
+                if (!$unavailable && $field === 'Credit') {
+                    // Applying credit (Mass Pay, "apply credit") moves money from
+                    // total to credit without changing what was quoted; the gross
+                    // is compared on the Total due row, so credit alone is only shown.
+                    $differs = false;
+                } elseif (!$unavailable && $field === 'Total due' && $was !== null) {
+                    $differs = $this->cents($was) + $this->cents($whmcs['credit'] ?? '0')
+                        !== $this->cents($now) + $this->cents($live['credit'] ?? '0');
+                }
                 $rows[] = [
                     'field' => $field, 'old' => $oldText, 'new' => $oldText, 'live' => $liveText,
                     'changed' => false, 'live_differs' => $differs, 'quote' => true,
@@ -1154,9 +1168,16 @@ final class PaidOrderSnapshotService
             return $secret;
         }
         try {
-            if (class_exists('\\DI') && method_exists('\\DI', 'make')) {
+            // As WHMCS core does (includes/ccfunctions.php): DI is a facade, so
+            // make() is reached through __callStatic and method_exists() is false.
+            if (class_exists('\\DI')) {
                 $config = \DI::make('config');
-                $secret = is_object($config) ? ($config->cc_encryption_hash ?? '') : '';
+                $secret = '';
+                if (is_array($config) || $config instanceof \ArrayAccess) {
+                    $secret = $config['cc_encryption_hash'] ?? '';
+                } elseif (is_object($config)) {
+                    $secret = $config->cc_encryption_hash ?? '';
+                }
                 if (is_string($secret) && $secret !== '') {
                     return $secret;
                 }
