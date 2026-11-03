@@ -41,6 +41,7 @@ final class AdminPostOnlyContractTest extends TestCase
             'approvalReject',
             'maintenanceMigrate',
             'maintenancePurge',
+            'maintenanceRequote',
             'taxSettingsSave',
             'termSettingsSave',
         ];

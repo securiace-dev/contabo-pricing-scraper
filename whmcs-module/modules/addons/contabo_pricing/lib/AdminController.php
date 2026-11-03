@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '1.1.3';
+    public const VERSION = '1.1.4';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -91,6 +91,7 @@ class AdminController
             case 'maintenance':          $this->maintenance(); return;
             case 'maintenance-migrate':  $this->maintenanceMigrate(); return;
             case 'maintenance-purge':    $this->maintenancePurge($req); return;
+            case 'maintenance-requote':  $this->maintenanceRequote($req); return;
             case 'currency-report':      $this->currencyReport(); return;
             case 'currency-report-csv':  $this->currencyReportCsv(); return;
             // ── Phase C — approval queue ─────────────────────────────────────
@@ -3239,7 +3240,38 @@ class AdminController
             'cb_schema_health' => SchemaHealth::requiredColumnsPresent(),
             'cb_schema_target' => Installer::SCHEMA_VERSION,
             'cb_purge_phrase'  => SchemaHealth::PURGE_CONFIRMATION_PHRASE,
+            'cb_stuck_services' => $this->stuckPaidServices(),
+            'cb_quote_ttl'     => $this->quoteTtlForDisplay(),
         ]);
+    }
+
+    /** @return list<array{service_id:int, order_id:int, invoice_id:int, states:string}> */
+    private function stuckPaidServices(): array
+    {
+        try {
+            return (new PaidOrderSnapshotService())->stuckPaidServices();
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    private function quoteTtlForDisplay(): int
+    {
+        return (new PaidOrderSnapshotService())->configuredQuoteTtl();
+    }
+
+    private function maintenanceRequote(array $req): void
+    {
+        if (!$this->requirePost()) { return; }
+        if (!$this->verifyToken()) { return; }
+        $serviceId = (int) ($req['service_id'] ?? 0);
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        if ($serviceId <= 0) {
+            $this->redirect('maintenance', ['flash' => 'Re-quote: enter a service ID.']);
+            return;
+        }
+        $r = (new PaidOrderSnapshotService())->requote($serviceId, $adminId);
+        $this->redirect('maintenance', ['flash' => $r['message']]);
     }
 
     private function maintenanceMigrate(): void

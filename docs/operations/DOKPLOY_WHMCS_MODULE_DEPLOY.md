@@ -250,7 +250,7 @@ ls -la dist/contabo_pricing-v*.zip dist/*.sha256 dist/*.manifest
 git rev-parse HEAD
 
 # Hand archives to whmcs-prod-new / Dokploy admission (operator):
-#   $MODULE_ADMIT_COMMAND dist/contabo_pricing-v1.1.3.zip
+#   $MODULE_ADMIT_COMMAND dist/contabo_pricing-v1.1.4.zip
 # Then open:
 #   https://my.securiace.com/shriram/addonmodules.php?module=contabo_pricing
 # Confirm AdminController::VERSION + schema_version, observe-only sync preview.

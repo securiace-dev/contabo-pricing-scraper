@@ -121,6 +121,16 @@ Sealed rows are immutable. Corrections create a superseding snapshot. The same
 snapshot UUID is part of deterministic operation identity; a current mapping
 change cannot alter a paid order.
 
+Quote lifetime (1.1.4): a draft is bound to its invoice and stays sealable until
+that invoice is paid or cancelled. `quote_expires_at` (the later of
+`snapshot.quote_ttl_seconds` after checkout and the invoice due date) only marks
+a payment as late; a late payment seals at the quoted terms with a logged
+warning, and any quoted-versus-billed price difference is logged, never charged.
+Sealing always re-verifies the three hashes and the order/invoice/service
+binding; a draft that fails is `invalid` and blocks provisioning. A cancelled
+invoice invalidates its drafts. The admin re-quote (Maintenance) rebuilds and
+seals a snapshot for a Paid order that has none, superseding old rows.
+
 ## 5. Operation identity, idempotency, and concurrency
 
 Deterministic command identity is derived from:

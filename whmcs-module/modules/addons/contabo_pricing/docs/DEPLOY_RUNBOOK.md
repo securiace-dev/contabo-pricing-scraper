@@ -254,6 +254,13 @@ Exact Dokploy service IDs and script names remain blocked until
 `whmcs-prod-new` / `securiace-whmcs-prod` are shared — see
 [`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
 
+## Addon 1.1.4 — late payment no longer strands provisioning
+
+Follow [`UPGRADE_1_1_4.md`](UPGRADE_1_1_4.md). No schema change. A draft stays sealable until its
+invoice is paid or cancelled; late payments seal at the quoted terms with a logged warning;
+tampered drafts are still refused. Use Maintenance, Re-quote a paid order, for services stuck
+under 1.1.3. Optional `snapshot.quote_ttl_seconds` (default 1800).
+
 ## Addon 1.1.3 — provisioning gate, monotonic schema stamp, secrets, scrape budget
 
 Follow [`UPGRADE_1_1_3.md`](UPGRADE_1_1_3.md): apply schema 16, publish the mapping, then

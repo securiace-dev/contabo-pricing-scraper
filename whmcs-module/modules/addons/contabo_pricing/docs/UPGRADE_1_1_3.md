@@ -35,6 +35,9 @@ would fail closed on module create.
 
 ## Behaviour of the gate
 
+Superseded in part by 1.1.4: a verified draft whose invoice is Paid now seals instead of
+failing, see [`UPGRADE_1_1_4.md`](UPGRADE_1_1_4.md). The table below is the 1.1.3 behaviour.
+
 | Service state | Result |
 |---|---|
 | Sealed snapshot exists | allowed |
