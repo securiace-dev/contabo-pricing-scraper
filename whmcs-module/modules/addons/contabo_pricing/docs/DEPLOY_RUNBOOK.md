@@ -254,6 +254,14 @@ Exact Dokploy service IDs and script names remain blocked until
 `whmcs-prod-new` / `securiace-whmcs-prod` are shared — see
 [`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
 
+## Addon 1.1.6 — a linked invoice must settle the quote; re-quote seals the recorded quote
+
+Follow [`UPGRADE_1_1_6.md`](UPGRADE_1_1_6.md). No schema change, no new secret. Mass Pay, merged and
+re-issued invoices now settle an order only when the original invoice is gone or Cancelled (Mass
+Pay: linked by `Invoice` items) and their lines cover the quote. Re-quote seals the recorded quote
+and shows a full diff; deviations and overrides need a confirm token (HMAC keyed from WHMCS's
+`$cc_encryption_hash`) and a permitted admin role (optional `snapshot.requote_role_ids`).
+
 ## Addon 1.1.5 — re-quote keeps the quote; any paying invoice recovers the order
 
 Follow [`UPGRADE_1_1_5.md`](UPGRADE_1_1_5.md). No schema change, no new setting. Re-quote uses the

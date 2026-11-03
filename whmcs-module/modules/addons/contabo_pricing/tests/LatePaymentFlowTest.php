@@ -349,6 +349,12 @@ final class LatePaymentFlowTest extends TestCase
         $service = new PaidOrderSnapshotService();
 
         $stuck = $service->stuckPaidServices();
+        $this->assertCount(1, $stuck);
+        // 1.1.6: the Ready path shows what will be sealed too (nothing differs).
+        $diff = $stuck[0]['diff'];
+        $this->assertNotSame([], $diff);
+        $this->assertSame([], array_filter($diff, static fn (array $d): bool => !empty($d['changed']) || !empty($d['live_differs'])));
+        unset($stuck[0]['diff']);
         $this->assertSame([[
             'service_id' => 30,
             'order_id' => 10,
@@ -358,9 +364,9 @@ final class LatePaymentFlowTest extends TestCase
             'status' => 'ready',
             'source' => 'recorded_mapping',
             'reason' => '',
-            'diff' => [],
             'diff_token' => '',
             'override_kind' => '',
+            'deviations' => [],
         ]], $stuck);
 
         $r = $service->requote(30, 7);

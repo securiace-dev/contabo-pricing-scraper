@@ -1,5 +1,39 @@
 # Changelog
 
+## 1.1.6 — 2026-11-03 (a linked invoice must settle the quote; re-quote seals the recorded quote)
+
+No schema change. One OPTIONAL setting (`snapshot.requote_role_ids`). No new secret. Read
+`docs/UPGRADE_1_1_6.md`. Fixes the two blockers from the WHMCS-Prod review of 1.1.5.
+
+- **B1, payment bypass closed.** A Paid invoice used to settle an order when it merely carried a
+  Hosting or Setup line for the service (even while the order's own invoice was still Unpaid), and
+  Mass Pay, merged and re-issued links only logged a WARNING when the amount did not match. Now:
+  a re-issued or merged invoice is accepted only when the order's original invoice is Cancelled
+  (`reinvoice`) or no longer exists (`merged`); any other original status refuses. Mass Pay is
+  accepted only through `Invoice` items whose `relid` is the original invoice (the bound or the
+  order's invoice), and only when their amounts cover the quoted total due (`tblinvoices.total` is already net of credit, so credit is not subtracted again). Merged
+  and re-issued invoices must carry Hosting, Setup and promo lines for the service that cover the
+  quoted first payment. A shortfall refuses (listed on Maintenance, never sealed). The gate, the
+  grandfather path and re-quote share this check. The original owner's Mass Pay of a service that
+  was since moved to another client is accepted.
+- **B2, re-quote seals the recorded quote.** The sealed row now takes options, setup, recurring,
+  tax, subtotal, credit, total and discount code from the verified draft, never from the live
+  service or invoice records (only ids and the order status are refreshed). Every re-quote path,
+  including Ready, shows a diff of every one of those fields, plus a "WHMCS now" column. If WHMCS
+  has diverged from the recorded quote, the plan becomes `recorded_deviation`: the admin must
+  confirm, the deviations are listed, and the token covers them.
+- **Confirm token is an HMAC-SHA256** keyed with a key derived from WHMCS's own
+  `$cc_encryption_hash` (no new secret). It also covers the replayed draft row's payload hash and
+  uuid, the mapping versions and the live values. No key means the confirmation is unavailable
+  (`token_unavailable`), never an unkeyed fallback.
+- **The override and every confirmation need a permitted admin role.** Default: role 1 (Full
+  Administrator); optional `snapshot.requote_role_ids` (comma-separated role ids) replaces it. A
+  disabled or unknown admin is refused (`not_permitted`, logged). The plain Ready re-quote is not
+  gated.
+- **Quote anchor.** A retry draft no longer moves the time at which the recorded publication must
+  have been in effect; the first draft of that order and service anchors it.
+- Tests: the B1 bypass tests fail on 1.1.5 and pass now.
+
 ## 1.1.5 — 2026-11-03 (re-quote keeps the customer's quote; any paying invoice recovers the order)
 
 No schema change. No new setting. Read `docs/UPGRADE_1_1_5.md`.

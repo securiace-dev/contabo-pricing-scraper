@@ -21,6 +21,7 @@ use WHMCS\Database\Capsule;
 final class PaidOrderSnapshotService
 {
     public const SETTING_QUOTE_TTL = 'snapshot.quote_ttl_seconds';
+    private const SETTING_REQUOTE_ROLES = 'snapshot.requote_role_ids';
     public const DEFAULT_QUOTE_TTL = 1800;
     public const MIN_QUOTE_TTL = 60;
     public const MAX_QUOTE_TTL = 2592000;
@@ -103,43 +104,63 @@ final class PaidOrderSnapshotService
 
         $order = $this->row('tblorders', 'id', $orderId);
         $invoice = $this->row('tblinvoices', 'id', $invoiceId);
-        $client = $this->row('tblclients', 'id', (int) ($service['userid'] ?? 0));
-        $currency = $client !== null
-            ? $this->row('tblcurrencies', 'id', (int) ($client['currency'] ?? 0))
-            : null;
-        $configuration = [
-            'billing_cycle' => (string) ($service['billingcycle'] ?? ''),
-            'domain' => (string) ($service['domain'] ?? ''),
-            'image_id' => (string) $provider['image_id'],
-            'region' => (string) $provider['region_id'],
-            'options' => $this->selectedOptions($serviceId),
-            'compatibility_version' => (string) ($publicationPayload['compatibility_version'] ?? ''),
-            'management_code' => (string) ($publicationPayload['management_code'] ?? 'self_managed'),
-        ];
-        $pricing = [
-            'billing_cycle' => (string) ($service['billingcycle'] ?? ''),
-            'currency' => (string) ($currency['code'] ?? ''),
-            'setup' => $this->money($service['firstpaymentamount'] ?? '0'),
-            'recurring' => $this->money($service['amount'] ?? '0'),
-            'renewal' => $this->money($publicationPayload['renewal_amount'] ?? ($service['amount'] ?? '0')),
-            'discount_code' => (string) ($order['promocode'] ?? ''),
-            'tax_policy' => (string) ($publicationPayload['tax_policy'] ?? 'whmcs'),
-            'tax_1' => $this->money($invoice['tax'] ?? '0'),
-            'tax_2' => $this->money($invoice['tax2'] ?? '0'),
-        ];
-        $whmcs = [
-            'installation_id' => $this->installationId(),
-            'order_id' => $orderId,
-            'invoice_id' => $invoiceId,
-            'service_id' => $serviceId,
-            'product_id' => $productId,
-            'product_group_id' => (int) ($product['gid'] ?? 0),
-            'service_label' => (string) ($service['domain'] ?? ''),
-            'subtotal' => $this->money($invoice['subtotal'] ?? '0'),
-            'credit' => $this->money($invoice['credit'] ?? '0'),
-            'total_due' => $this->money($invoice['total'] ?? ($order['amount'] ?? '0')),
-            'order_status' => (string) ($order['status'] ?? ''),
-        ];
+        $quote = isset($recordedSource['quote']) && is_array($recordedSource['quote']) ? $recordedSource['quote'] : null;
+        if ($quote !== null) {
+            // 1.1.6: a re-quote replays what the verified draft recorded
+            // (options, amounts, tax, total). Only the provider fields come
+            // from the corroborated publication, and only the identity of
+            // the order, invoice, service, product and status is refreshed.
+            $configuration = (array) $quote['configuration'];
+            $configuration['image_id'] = (string) $provider['image_id'];
+            $configuration['region'] = (string) $provider['region_id'];
+            $pricing = (array) $quote['pricing'];
+            $whmcs = (array) $quote['whmcs'];
+            $whmcs['installation_id'] = $this->installationId();
+            $whmcs['order_id'] = $orderId;
+            $whmcs['invoice_id'] = $invoiceId;
+            $whmcs['service_id'] = $serviceId;
+            $whmcs['product_id'] = $productId;
+            $whmcs['product_group_id'] = (int) ($product['gid'] ?? 0);
+            $whmcs['order_status'] = (string) ($order['status'] ?? '');
+        } else {
+            $live = $this->liveValues($serviceId, $orderId, $invoiceId);
+            if ($live['options'] === null) {
+                throw new \RuntimeException((string) $live['options_error']);
+            }
+            $configuration = [
+                'billing_cycle' => (string) $live['billing_cycle'],
+                'domain' => (string) $live['domain'],
+                'image_id' => (string) $provider['image_id'],
+                'region' => (string) $provider['region_id'],
+                'options' => $live['options'],
+                'compatibility_version' => (string) ($publicationPayload['compatibility_version'] ?? ''),
+                'management_code' => (string) ($publicationPayload['management_code'] ?? 'self_managed'),
+            ];
+            $pricing = [
+                'billing_cycle' => (string) $live['billing_cycle'],
+                'currency' => (string) $live['currency'],
+                'setup' => $this->money($live['setup'] ?? '0'),
+                'recurring' => $this->money($live['recurring'] ?? '0'),
+                'renewal' => $this->money($publicationPayload['renewal_amount'] ?? ($live['recurring'] ?? '0')),
+                'discount_code' => (string) $live['discount_code'],
+                'tax_policy' => (string) ($publicationPayload['tax_policy'] ?? 'whmcs'),
+                'tax_1' => $this->money($live['tax_1'] ?? '0'),
+                'tax_2' => $this->money($live['tax_2'] ?? '0'),
+            ];
+            $whmcs = [
+                'installation_id' => $this->installationId(),
+                'order_id' => $orderId,
+                'invoice_id' => $invoiceId,
+                'service_id' => $serviceId,
+                'product_id' => $productId,
+                'product_group_id' => (int) ($product['gid'] ?? 0),
+                'service_label' => (string) $live['domain'],
+                'subtotal' => $this->money($live['subtotal'] ?? '0'),
+                'credit' => $this->money($live['credit'] ?? '0'),
+                'total_due' => $this->money($live['total_due'] ?? ($order['amount'] ?? '0')),
+                'order_status' => (string) ($order['status'] ?? ''),
+            ];
+        }
         $payload = [
             'provider' => $provider,
             'configuration' => $configuration,
@@ -206,27 +227,39 @@ final class PaidOrderSnapshotService
      * customer pays. The recognised, verifiable links are:
      *
      *  - `order`     the invoice the draft was quoted on (normal case);
-     *  - `mass_pay`  a Mass Pay invoice whose `tblinvoiceitems` row has type
-     *                `Invoice` and `relid` = the quoted/order invoice;
-     *  - `merged`    a Merge Invoices result: a Paid invoice carrying a
-     *                `Hosting`/`Setup` item for this service while the quoted
+     *  - `mass_pay`  a Mass Pay invoice whose `tblinvoiceitems` rows have type
+     *                `Invoice` and `relid` = the quoted/order invoice, and
+     *                whose lines for it add up to at least the quoted total
+     *                (less the credit applied);
+     *  - `merged`    a Merge Invoices result: a Paid invoice carrying
+     *                `Hosting`/`Setup` items for this service while the quoted
      *                invoice no longer exists;
-     *  - `reinvoice` a replacement invoice for the same hosting (type
-     *                `Hosting`/`Setup`, `relid` = service id) while the quoted
-     *                invoice still exists.
+     *  - `reinvoice` a replacement invoice for the same hosting while the
+     *                quoted invoice is Cancelled.
      *
-     * A non-direct invoice must be Paid and belong to the service owner;
-     * otherwise it is ignored (and reported as a refusal when it was
-     * discovered through a link). `$hintInvoiceId` (the hook's invoice) only
-     * adds a candidate; it is never trusted without a link.
+     * `merged` and `reinvoice` also need their Hosting/Setup/PromoHosting
+     * lines for this service to cover the quoted first payment. A Paid invoice
+     * that settles something else (a different invoice, or a shortfall) never
+     * stands in for the order's own invoice: the order's invoice must be
+     * Cancelled or gone before another invoice can replace it.
      *
+     * A non-direct invoice must be Paid and belong to the service owner or the
+     * ordering client; otherwise it is ignored (and reported as a refusal when
+     * it was discovered through a link). `$hintInvoiceId` (the hook's invoice)
+     * only adds a candidate; it is never trusted without a link.
+     *
+     * `$quote` is what the verified draft was quoted at (see quoteTerms());
+     * without one the live service and order invoice stand in for it.
+     *
+     * @param array{total:string, first:string}|null $quote
      * @return array{invoice_id:int, via:string, bound_invoice_id:int, refusal:string}
      */
     public function payingInvoice(
         int $orderId,
         int $serviceId,
         int $hintInvoiceId = 0,
-        ?int $draftInvoiceId = null
+        ?int $draftInvoiceId = null,
+        ?array $quote = null
     ): array {
         $result = ['invoice_id' => 0, 'via' => '', 'bound_invoice_id' => 0, 'refusal' => ''];
         $service = $this->row('tblhosting', 'id', $serviceId);
@@ -259,6 +292,7 @@ final class PaidOrderSnapshotService
             static fn (int $id): bool => $id > 0
         )));
 
+        $terms = $quote ?? $this->liveQuoteTerms($service, $this->row('tblinvoices', 'id', $bound));
         $rank = ['order' => 0, 'mass_pay' => 1, 'merged' => 2, 'reinvoice' => 3];
         $best = null;
         foreach ($candidates as $id) {
@@ -266,7 +300,7 @@ final class PaidOrderSnapshotService
             if ($invoice === null || strcasecmp((string) ($invoice['status'] ?? ''), 'Paid') !== 0) {
                 continue;
             }
-            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId, (int) ($order['userid'] ?? 0));
+            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId, (int) ($order['userid'] ?? 0), $terms);
             if ($via === '') {
                 if ($why !== '' && ($id !== $hintInvoiceId || in_array($id, $own, true) || in_array($id, $discovered, true))) {
                     $result['refusal'] = $why;
@@ -286,15 +320,57 @@ final class PaidOrderSnapshotService
     }
 
     /**
+     * What WHMCS holds right now for the fields a quote records. `options` is
+     * null (with `options_error`) when a selected option has no canonical
+     * mapping any more; the invoice-derived fields are null when the quoted
+     * invoice no longer exists (merged).
+     *
+     * @return array<string,mixed>
+     */
+    private function liveValues(int $serviceId, int $orderId, int $invoiceId): array
+    {
+        $service = $this->row('tblhosting', 'id', $serviceId) ?? [];
+        $order = $this->row('tblorders', 'id', $orderId);
+        $invoice = $invoiceId > 0 ? $this->row('tblinvoices', 'id', $invoiceId) : null;
+        $client = $this->row('tblclients', 'id', (int) ($service['userid'] ?? 0));
+        $currency = $client !== null ? $this->row('tblcurrencies', 'id', (int) ($client['currency'] ?? 0)) : null;
+        $options = null;
+        $optionsError = '';
+        try {
+            $options = $this->selectedOptions($serviceId);
+        } catch (\Throwable $e) {
+            $optionsError = $e->getMessage();
+        }
+        return [
+            'product_id' => (int) ($service['packageid'] ?? 0),
+            'billing_cycle' => (string) ($service['billingcycle'] ?? ''),
+            'domain' => (string) ($service['domain'] ?? ''),
+            'options' => $options,
+            'options_error' => $optionsError,
+            'currency' => (string) ($currency['code'] ?? ''),
+            'setup' => $service['firstpaymentamount'] ?? null,
+            'recurring' => $service['amount'] ?? null,
+            'discount_code' => (string) ($order['promocode'] ?? ''),
+            'invoice_present' => $invoice !== null,
+            'tax_1' => $invoice['tax'] ?? null,
+            'tax_2' => $invoice['tax2'] ?? null,
+            'subtotal' => $invoice['subtotal'] ?? null,
+            'credit' => $invoice['credit'] ?? null,
+            'total_due' => $invoice['total'] ?? null,
+        ];
+    }
+
+    /**
      * @param array<string,mixed> $invoice
      * @param list<int> $own
+     * @param array{total:string, first:string} $terms
      * @return array{0:string,1:string} [via, refusal reason]
      */
-    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId, int $orderUserId = 0): array
+    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId, int $orderUserId, array $terms): array
     {
         $id = (int) ($invoice['id'] ?? 0);
+        $owner = (int) ($invoice['userid'] ?? 0);
         if ($id === $bound) {
-            $owner = (int) ($invoice['userid'] ?? 0);
             // "Move Product/Service" changes tblhosting.userid but not the
             // order's invoice, so the order's own invoice may belong to the
             // service owner or to the client who placed the order.
@@ -309,34 +385,75 @@ final class PaidOrderSnapshotService
             }
             return ['order', ''];
         }
-        if ($userId <= 0 || (int) ($invoice['userid'] ?? 0) !== $userId) {
+        // The same two clients may pay a linked invoice: the owner, or the
+        // client who placed the order (the service may have been moved since).
+        if ($owner <= 0 || ($owner !== $userId && $owner !== $orderUserId)) {
             return ['', sprintf(
-                'Paid invoice #%d is linked to service #%d but belongs to client #%d, not the service owner #%d',
+                'Paid invoice #%d is linked to service #%d but belongs to client #%d, not the service owner #%d%s',
                 $id,
                 $serviceId,
-                (int) ($invoice['userid'] ?? 0),
-                $userId
+                $owner,
+                $userId,
+                $orderUserId > 0 && $orderUserId !== $userId ? ' or the ordering client #' . $orderUserId : ''
             )];
         }
         $mass = false;
         $hosting = false;
+        $massCents = 0;
+        $lineCents = 0;
         $items = Capsule::table('tblinvoiceitems')->where('invoiceid', $id)->get();
         foreach ($items as $item) {
             $item = (array) $item;
             $type = (string) ($item['type'] ?? '');
             $relid = (int) ($item['relid'] ?? 0);
+            $cents = $this->cents($item['amount'] ?? '0');
             if ($type === 'Invoice' && in_array($relid, $own, true)) {
                 $mass = true;
+                $massCents += $cents;
             }
-            if (($type === 'Hosting' || $type === 'Setup') && $relid === $serviceId) {
-                $hosting = true;
+            if ($relid === $serviceId && in_array($type, ['Hosting', 'Setup', 'PromoHosting'], true)) {
+                $hosting = $hosting || $type !== 'PromoHosting';
+                $lineCents += $cents;
             }
         }
         if ($mass) {
+            $need = $this->cents($terms['total']);
+            if ($massCents < $need) {
+                return ['', sprintf(
+                    'Paid Mass Pay invoice #%d covers %s of the quoted invoice #%d but the quote needs %s (shortfall %s); it cannot settle this order',
+                    $id,
+                    $this->centsText($massCents),
+                    $bound,
+                    $this->centsText($need),
+                    $this->centsText($need - $massCents)
+                )];
+            }
             return ['mass_pay', ''];
         }
         if ($hosting) {
-            return [$this->row('tblinvoices', 'id', $bound) === null ? 'merged' : 'reinvoice', ''];
+            $original = $bound > 0 ? $this->row('tblinvoices', 'id', $bound) : null;
+            if ($original !== null && strcasecmp((string) ($original['status'] ?? ''), 'Cancelled') !== 0) {
+                return ['', sprintf(
+                    'Paid invoice #%d has a line for service #%d but the order\'s own invoice #%d is still %s: another invoice cannot settle it. Pay or cancel invoice #%d in WHMCS first',
+                    $id,
+                    $serviceId,
+                    $bound,
+                    (string) ($original['status'] ?? 'unknown'),
+                    $bound
+                )];
+            }
+            $need = $this->cents($terms['first']);
+            if ($lineCents < $need) {
+                return ['', sprintf(
+                    'Paid invoice #%d bills %s for service #%d but the quote needs %s (shortfall %s); it cannot settle this order',
+                    $id,
+                    $this->centsText($lineCents),
+                    $serviceId,
+                    $this->centsText($need),
+                    $this->centsText($need - $lineCents)
+                )];
+            }
+            return [$original === null ? 'merged' : 'reinvoice', ''];
         }
         return ['', sprintf(
             'Paid invoice #%d is not linked to the draft\'s invoice #%d or to service #%d by any invoice item, so it cannot settle this order',
@@ -344,6 +461,59 @@ final class PaidOrderSnapshotService
             $bound,
             $serviceId
         )];
+    }
+
+    /**
+     * What a linked invoice has to cover, from the VERIFIED draft: the quoted
+     * total due (Mass Pay), and the quoted first payment
+     * before tax (the service's own lines on a merged/re-issued invoice).
+     *
+     * @param array<string,mixed> $row a row that already passed integrityFault()
+     * @return array{total:string, first:string}|null
+     */
+    private function quoteTerms(array $row): ?array
+    {
+        $payload = json_decode((string) ($row['payload_json'] ?? ''), true);
+        if (!is_array($payload) || !isset($payload['whmcs'], $payload['pricing']) || !is_array($payload['whmcs']) || !is_array($payload['pricing'])) {
+            return null;
+        }
+        // tblinvoices.total is already NET of the credit applied, so the quoted
+        // total due is what the linked lines must cover; credit is not
+        // subtracted a second time.
+        $total = max(0, $this->cents($payload['whmcs']['total_due'] ?? '0'));
+        return ['total' => $this->centsText($total), 'first' => $this->money($payload['pricing']['setup'] ?? '0')];
+    }
+
+    /**
+     * Stand-in terms when no verified draft exists (orders placed before the
+     * snapshot flow): the service's first payment and the order invoice, when
+     * it still exists.
+     *
+     * @param array<string,mixed> $service
+     * @param array<string,mixed>|null $invoice
+     * @return array{total:string, first:string}
+     */
+    private function liveQuoteTerms(array $service, ?array $invoice): array
+    {
+        $first = $this->money($service['firstpaymentamount'] ?? '0');
+        if ($invoice === null) {
+            return ['total' => $first, 'first' => $first];
+        }
+        // Applying credit (Mass Pay does it to the original invoice) lowers
+        // tblinvoices.total, so the gross amount is total + credit.
+        $total = max(0, $this->cents($invoice['total'] ?? '0') + $this->cents($invoice['credit'] ?? '0'));
+        return ['total' => $this->centsText($total), 'first' => $first];
+    }
+
+    /** @param mixed $value */
+    private function cents($value): int
+    {
+        return (int) round(((float) $value) * 100);
+    }
+
+    private function centsText(int $cents): string
+    {
+        return number_format($cents / 100, 2, '.', '');
     }
 
     /**
@@ -362,8 +532,10 @@ final class PaidOrderSnapshotService
             ->whereIn('state', ['draft', 'invalid'])
             ->orderByDesc('id')
             ->first();
-        $bound = $row !== null ? $this->draftInvoiceId((array) $row) : null;
-        return $this->payingInvoice($orderId, $serviceId, 0, $bound)['refusal'];
+        $verified = $row !== null && $this->integrityFault((array) $row, $orderId) === null;
+        $bound = $verified ? $this->draftInvoiceId((array) $row) : null;
+        $quote = $verified ? $this->quoteTerms((array) $row) : null;
+        return $this->payingInvoice($orderId, $serviceId, 0, $bound, $quote)['refusal'];
     }
 
     /**
@@ -403,7 +575,8 @@ final class PaidOrderSnapshotService
                 $orderId,
                 $serviceId,
                 $invoiceId,
-                $fault === null ? $this->draftInvoiceId($row) : null
+                $fault === null ? $this->draftInvoiceId($row) : null,
+                $fault === null ? $this->quoteTerms($row) : null
             );
             if ($paying['invoice_id'] <= 0) {
                 if ($paying['refusal'] !== '') {
@@ -728,7 +901,7 @@ final class PaidOrderSnapshotService
             }
         }
         $boundHint = $trusted !== null ? $this->draftInvoiceId($trusted) : null;
-        $paying = $this->payingInvoice($orderId, $serviceId, 0, $boundHint);
+        $paying = $this->payingInvoice($orderId, $serviceId, 0, $boundHint, $trusted !== null ? $this->quoteTerms($trusted) : null);
         $plan['invoice_id'] = $paying['invoice_id'];
         $plan['bound_invoice_id'] = $paying['bound_invoice_id'];
         $plan['via'] = $paying['via'];
@@ -741,16 +914,28 @@ final class PaidOrderSnapshotService
         }
 
         $recorded = $trusted !== null ? $this->recordedSource($trusted, $whyNot) : null;
-        $kind = 'current_mapping';
+        $live = $this->liveValues($serviceId, $orderId, (int) $paying['bound_invoice_id']);
         if ($recorded !== null && $recorded['source'] === 'recorded_mapping') {
+            $quoteRows = $this->quoteRows($trusted, $live, true);
+            $diff = array_merge($this->quoteDiff($trusted, $recorded['payload'], $service), $quoteRows);
+            $deviations = $this->deviations($quoteRows);
             $plan['ready'] = true;
             $plan['source'] = 'recorded_mapping';
             $plan['mapping_version'] = (string) $recorded['mapping_version'];
             $plan['recorded'] = $recorded;
+            $plan['diff'] = $diff;
             $plan['ok'] = true;
-            $plan['code'] = 'ready';
-            $plan['message'] = 'Ready to re-quote from the recorded mapping ' . $recorded['mapping_version'];
-            return $plan;
+            if ($deviations === []) {
+                $plan['code'] = 'ready';
+                $plan['message'] = 'Ready to re-quote from the recorded mapping ' . $recorded['mapping_version']
+                    . '. The sealed quote is exactly what the customer was shown (' . $this->describeDiff($quoteRows, true) . ').';
+                return $plan;
+            }
+            // WHMCS no longer matches the recorded quote (the service or its
+            // invoice was edited after checkout): sealing the recorded quote
+            // would not describe what is being provisioned, so confirm.
+            $plan['reason'] = 'WHMCS no longer matches the recorded quote: ' . implode('; ', $deviations);
+            return $this->needsConfirmation($plan, 'recorded_deviation', $trusted, $recorded, $recorded['mapping_version'], $diff, $service, $whyNot, $deviations);
         }
         $plan['reason'] = $whyNot;
 
@@ -764,46 +949,273 @@ final class PaidOrderSnapshotService
         if ($recorded !== null) {
             // The draft verifies but no publication corroborates its unhashed
             // SKU: the admin must see and confirm exactly what will be sealed.
-            $kind = 'recorded_snapshot';
-            $diff = $this->quoteDiff($trusted, $current['payload'] ?? [], $service);
+            $quoteRows = $this->quoteRows($trusted, $live, true);
+            $diff = array_merge($this->quoteDiff($trusted, $current['payload'] ?? [], $service), $quoteRows);
             $plan['source'] = 'recorded_snapshot';
             $plan['recorded'] = $recorded;
             $plan['mapping_version'] = (string) $recorded['mapping_version'];
-        } else {
-            if ($current === null) {
-                return $fail($plan, 'draft_failed', 'Cannot re-quote: ' . $whyNot . ', and the current mapping is unusable (' . $currentError . ').');
-            }
-            $diff = $this->quoteDiff($newest, $current['payload'], $service);
-            $plan['mapping_version'] = (string) $current['mapping_version'];
+            return $this->needsConfirmation($plan, 'recorded_snapshot', $trusted, $recorded, $current['mapping_version'] ?? '', $diff, $service, $whyNot, $this->deviations($quoteRows));
         }
+        if ($current === null) {
+            return $fail($plan, 'draft_failed', 'Cannot re-quote: ' . $whyNot . ', and the current mapping is unusable (' . $currentError . ').');
+        }
+        $diff = array_merge($this->quoteDiff($newest, $current['payload'], $service), $this->quoteRows($newest, $live, false));
+        $plan['mapping_version'] = (string) $current['mapping_version'];
+        return $this->needsConfirmation($plan, 'current_mapping', $newest, null, $current['mapping_version'], $diff, $service, $whyNot, []);
+    }
+
+    /**
+     * Fills in the plan for a re-quote that needs the admin's confirmation and
+     * binds it to a keyed token over everything the admin is shown plus the
+     * recorded row it replays.
+     *
+     * @param array<string,mixed> $plan
+     * @param array<string,mixed>|null $row the row whose quote is shown/replayed
+     * @param array<string,mixed>|null $recorded
+     * @param array<int,array<string,mixed>> $diff
+     * @param array<string,mixed> $service
+     * @param list<string> $deviations
+     * @return array<string,mixed>
+     */
+    private function needsConfirmation(array $plan, string $kind, ?array $row, ?array $recorded, string $mappingVersion, array $diff, array $service, string $whyNot, array $deviations): array
+    {
+        $serviceId = (int) ($service['id'] ?? 0);
         $plan['ready'] = true;
+        $plan['ok'] = false;
         $plan['needs_override'] = true;
         $plan['override_kind'] = $kind;
         $plan['diff'] = $diff;
-        $plan['diff_token'] = hash('sha256', $this->canonicalJson([
-            $serviceId, $orderId, $paying['invoice_id'], $paying['bound_invoice_id'], $kind,
-            $kind === 'recorded_snapshot' ? $recorded['payload'] : $current['mapping_version'],
-            $current['mapping_version'] ?? '', $diff,
-        ]));
+        $plan['deviations'] = $deviations;
+        $token = $this->diffToken([
+            $serviceId, (int) $plan['order_id'], (int) $plan['invoice_id'], (int) $plan['bound_invoice_id'], $kind,
+            $row !== null ? hash('sha256', (string) ($row['payload_json'] ?? '')) : '',
+            $row !== null ? (string) ($row['snapshot_uuid'] ?? '') : '',
+            $kind === 'recorded_snapshot' ? ($recorded['payload'] ?? []) : $mappingVersion,
+            $mappingVersion, $diff,
+        ]);
+        if ($token === '') {
+            $plan['ready'] = false;
+            $plan['needs_override'] = false;
+            $plan['ok'] = false;
+            $plan['code'] = 'token_unavailable';
+            $plan['message'] = 'Cannot issue a confirmation: the WHMCS encryption key that keys the confirmation token is not available to this module. Nothing was changed.';
+            return $plan;
+        }
+        $plan['diff_token'] = $token;
         $plan['code'] = 'needs_override';
-        if ($kind === 'recorded_snapshot') {
+        if ($kind === 'recorded_deviation') {
             $plan['message'] = sprintf(
-                'Service #%d: the customer\'s recorded quote is intact, but %s. Confirm to seal exactly the recorded quote (%s). The current mapping %s is NOT used.',
+                'Service #%d: the recorded quote and mapping are intact, but WHMCS no longer matches the recorded quote: %s. Confirm to seal exactly the recorded quote, not what WHMCS holds now.',
+                $serviceId,
+                implode('; ', $deviations)
+            );
+        } elseif ($kind === 'recorded_snapshot') {
+            $plan['message'] = sprintf(
+                'Service #%d: the customer\'s recorded quote is intact, but %s. Confirm to seal exactly the recorded quote (%s)%s. The current mapping %s is NOT used.',
                 $serviceId,
                 $whyNot,
-                $this->describeDiff($diff, true),
-                $current['mapping_version'] ?? '(unavailable)'
+                $this->describeDiff(array_values(array_filter($diff, static fn (array $d): bool => empty($d['quote']))), true),
+                $deviations === [] ? '' : '; WHMCS no longer matches it: ' . implode('; ', $deviations),
+                $mappingVersion !== '' ? $mappingVersion : '(unavailable)'
             );
         } else {
             $plan['message'] = sprintf(
-                'Service #%d cannot be re-quoted on its own recorded quote (%s). The current mapping %s would be used instead: %s. Confirm the override to proceed.',
+                'Service #%d cannot be re-quoted on its own recorded quote (%s). The current mapping %s and the values WHMCS holds now would be used instead: %s. Confirm the override to proceed.',
                 $serviceId,
                 $whyNot,
-                $current['mapping_version'],
+                $mappingVersion,
                 $this->describeDiff($diff)
             );
         }
         return $plan;
+    }
+
+    /**
+     * The quote fields: what the draft row recorded against what WHMCS holds.
+     * When `$replay` the recorded value is what gets sealed and `live` shows
+     * where WHMCS has since diverged; otherwise the live value is what a
+     * rebuild would seal.
+     *
+     * @param array<string,mixed>|null $row
+     * @param array<string,mixed> $live
+     * @return list<array<string,mixed>>
+     */
+    private function quoteRows(?array $row, array $live, bool $replay): array
+    {
+        $payload = $row !== null ? json_decode((string) ($row['payload_json'] ?? ''), true) : null;
+        $payload = is_array($payload) ? $payload : [];
+        $configuration = isset($payload['configuration']) && is_array($payload['configuration']) ? $payload['configuration'] : [];
+        $pricing = isset($payload['pricing']) && is_array($payload['pricing']) ? $payload['pricing'] : [];
+        $whmcs = isset($payload['whmcs']) && is_array($payload['whmcs']) ? $payload['whmcs'] : [];
+        $invoice = !empty($live['invoice_present']);
+        $optionsText = static function ($options): string {
+            if (!is_array($options) || $options === []) {
+                return '(none)';
+            }
+            $parts = [];
+            foreach ($options as $option) {
+                $option = (array) $option;
+                $parts[] = (string) ($option['dimension'] ?? '') . '=' . (string) ($option['machine_code'] ?? '') . ' x' . (string) ($option['quantity'] ?? '');
+            }
+            return implode(', ', $parts);
+        };
+        // field, recorded, live, kind (text|money|options), needs the invoice
+        $fields = [
+            ['Product', $whmcs['product_id'] ?? null, $live['product_id'], 'text', false],
+            ['Billing cycle', $configuration['billing_cycle'] ?? null, $live['billing_cycle'], 'text', false],
+            ['Domain', $configuration['domain'] ?? null, $live['domain'], 'text', false],
+            ['Options', array_key_exists('options', $configuration) ? $configuration['options'] : null, $live['options'], 'options', false],
+            ['Currency', $pricing['currency'] ?? null, $live['currency'], 'text', false],
+            ['First payment', $pricing['setup'] ?? null, $live['setup'], 'money', false],
+            ['Recurring', $pricing['recurring'] ?? null, $live['recurring'], 'money', false],
+            ['Discount code', $pricing['discount_code'] ?? null, $live['discount_code'], 'text', false],
+            ['Tax 1', $pricing['tax_1'] ?? null, $live['tax_1'], 'money', true],
+            ['Tax 2', $pricing['tax_2'] ?? null, $live['tax_2'], 'money', true],
+            ['Subtotal', $whmcs['subtotal'] ?? null, $live['subtotal'], 'money', true],
+            ['Credit', $whmcs['credit'] ?? null, $live['credit'], 'money', true],
+            ['Total due', $whmcs['total_due'] ?? null, $live['total_due'], 'money', true],
+        ];
+        $rows = [];
+        foreach ($fields as [$field, $was, $now, $type, $needsInvoice]) {
+            $text = function ($value) use ($type, $optionsText): string {
+                if ($value === null) {
+                    return '';
+                }
+                if ($type === 'options') {
+                    return $optionsText($value);
+                }
+                return $type === 'money' ? $this->money($value) : (string) $value;
+            };
+            $same = function ($a, $b) use ($type): bool {
+                if ($type === 'options') {
+                    return $this->canonicalJson($a) === $this->canonicalJson($b);
+                }
+                return $type === 'money' ? $this->cents($a) === $this->cents($b) : (string) $a === (string) $b;
+            };
+            $oldText = $was === null || $text($was) === '' ? '(not recorded)' : $text($was);
+            if ($type === 'options' && $now === null) {
+                $liveText = '(unreadable: ' . substr((string) $live['options_error'], 0, 120) . ')';
+                $unavailable = true;
+            } elseif ($needsInvoice && !$invoice) {
+                $liveText = '(invoice no longer exists)';
+                $unavailable = true;
+            } else {
+                $liveText = $text($now) === '' ? '(none)' : $text($now);
+                $unavailable = false;
+            }
+            if ($replay) {
+                $differs = $was !== null && ($unavailable ? ($type === 'options') : !$same($was, $now));
+                if (!$unavailable && $field === 'Credit') {
+                    // Applying credit (Mass Pay, "apply credit") moves money from
+                    // total to credit without changing what was quoted; the gross
+                    // is compared on the Total due row, so credit alone is only shown.
+                    $differs = false;
+                } elseif (!$unavailable && $field === 'Total due' && $was !== null) {
+                    $differs = $this->cents($was) + $this->cents($whmcs['credit'] ?? '0')
+                        !== $this->cents($now) + $this->cents($live['credit'] ?? '0');
+                }
+                $rows[] = [
+                    'field' => $field, 'old' => $oldText, 'new' => $oldText, 'live' => $liveText,
+                    'changed' => false, 'live_differs' => $differs, 'quote' => true,
+                ];
+                continue;
+            }
+            $rows[] = [
+                'field' => $field, 'old' => $oldText, 'new' => $liveText, 'live' => $liveText,
+                'changed' => $was === null || $unavailable ? $oldText !== $liveText : !$same($was, $now),
+                'live_differs' => false, 'quote' => true,
+            ];
+        }
+        return $rows;
+    }
+
+    /**
+     * @param list<array<string,mixed>> $rows
+     * @return list<string>
+     */
+    private function deviations(array $rows): array
+    {
+        $out = [];
+        foreach ($rows as $row) {
+            if (!empty($row['live_differs'])) {
+                $out[] = (string) $row['field'] . ' recorded ' . (string) $row['old'] . ', WHMCS now ' . (string) $row['live'];
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * HMAC of the confirmation payload, keyed from the WHMCS encryption key
+     * (no secret of this module's own). '' when the key is not available, so
+     * a confirmation is never issued unkeyed.
+     *
+     * @param array<int,mixed> $parts
+     */
+    private function diffToken(array $parts): string
+    {
+        $secret = $this->serverSecret();
+        if ($secret === '') {
+            return '';
+        }
+        $key = hash_hmac('sha256', 'contabo_pricing.requote.v2|' . $this->installationId(), $secret, true);
+        return hash_hmac('sha256', $this->canonicalJson($parts), $key);
+    }
+
+    private function serverSecret(): string
+    {
+        $secret = $GLOBALS['cc_encryption_hash'] ?? '';
+        if (is_string($secret) && $secret !== '') {
+            return $secret;
+        }
+        try {
+            // As WHMCS core does (includes/ccfunctions.php): DI is a facade, so
+            // make() is reached through __callStatic and method_exists() is false.
+            if (class_exists('\\DI')) {
+                $config = \DI::make('config');
+                $secret = '';
+                if (is_array($config) || $config instanceof \ArrayAccess) {
+                    $secret = $config['cc_encryption_hash'] ?? '';
+                } elseif (is_object($config)) {
+                    $secret = $config->cc_encryption_hash ?? '';
+                }
+                if (is_string($secret) && $secret !== '') {
+                    return $secret;
+                }
+            }
+        } catch (\Throwable $e) {
+            // fall through: fail closed
+        }
+        return '';
+    }
+
+    /**
+     * Whether this admin may confirm an override or a recorded-quote
+     * confirmation. Full Administrator (role 1) by default; the optional
+     * setting `snapshot.requote_role_ids` (mod_contabo_settings) (comma-separated tbladmins.roleid
+     * values) replaces that list. A disabled or unknown admin never may.
+     */
+    public function adminMayConfirm(int $adminId): bool
+    {
+        if ($adminId <= 0) {
+            return false;
+        }
+        $admin = $this->row('tbladmins', 'id', $adminId);
+        if ($admin === null || (int) ($admin['disabled'] ?? 0) === 1) {
+            return false;
+        }
+        $allowed = [1];
+        try {
+            $configured = trim((string) Capsule::table('mod_contabo_settings')->where('key', self::SETTING_REQUOTE_ROLES)->value('value'));
+        } catch (\Throwable $e) {
+            $configured = '';
+        }
+        if ($configured !== '') {
+            $allowed = array_values(array_filter(
+                array_map('intval', explode(',', $configured)),
+                static fn (int $id): bool => $id > 0
+            ));
+        }
+        return in_array((int) ($admin['roleid'] ?? 0), $allowed, true);
     }
 
     /**
@@ -837,19 +1249,25 @@ final class PaidOrderSnapshotService
             ];
         }
         $orderId = (int) $plan['order_id'];
-        $recorded = null;
+        $recorded = $plan['recorded'];
         if ($plan['needs_override']) {
             if (!$override) {
                 return $fail('needs_override', (string) $plan['message']);
             }
+            if (!$this->adminMayConfirm($adminId)) {
+                $this->activity(sprintf(
+                    'WARNING: Contabo re-quote confirmation REFUSED for service #%d: admin #%d does not have the role required to confirm an override.',
+                    $serviceId,
+                    $adminId
+                ));
+                return $fail('not_permitted', 'Your admin role is not allowed to confirm a re-quote override. Ask a Full Administrator.');
+            }
             if ($diffToken === '' || !hash_equals((string) $plan['diff_token'], $diffToken)) {
-                return $fail('diff_changed', 'The order, invoice or current mapping changed since the diff was shown. Review the new diff and confirm again.');
+                return $fail('diff_changed', 'The order, invoice, recorded quote or current mapping changed since the diff was shown. Review the new diff and confirm again.');
             }
-            if ($plan['override_kind'] === 'recorded_snapshot') {
-                $recorded = $plan['recorded'];
+            if ($plan['override_kind'] === 'current_mapping') {
+                $recorded = null;
             }
-        } else {
-            $recorded = $plan['recorded'];
         }
         $boundInvoiceId = (int) $plan['bound_invoice_id'];
         if ($boundInvoiceId <= 0) {
@@ -892,9 +1310,10 @@ final class PaidOrderSnapshotService
         $mapping = $newRow !== null ? (string) (((array) $newRow)['mapping_version'] ?? '?') : '?';
         $source = $plan['override_kind'] === 'current_mapping'
             ? 'ADMIN OVERRIDE onto the current mapping'
-            : ($plan['override_kind'] === 'recorded_snapshot' ? 'ADMIN-CONFIRMED recorded snapshot' : (string) $plan['source']);
+            : ($plan['override_kind'] === 'recorded_snapshot' ? 'ADMIN-CONFIRMED recorded snapshot'
+                : ($plan['override_kind'] === 'recorded_deviation' ? 'ADMIN-CONFIRMED recorded quote (WHMCS had diverged)' : (string) $plan['source']));
         $this->activity(sprintf(
-            'Contabo snapshot re-quoted by admin #%d: service #%d order #%d quoted on invoice #%d, paid on invoice #%d (%s), sealed as %s on mapping %s from %s (%s). Setup, recurring and total are those billed on the order; SKU, region, image and renewal come from the source named here.',
+            'Contabo snapshot re-quoted by admin #%d: service #%d order #%d quoted on invoice #%d, paid on invoice #%d (%s), sealed as %s on mapping %s from %s (%s). Options, setup, recurring, tax and total are taken from %s; SKU, region, image and renewal come from the source named here.',
             $adminId,
             $serviceId,
             $orderId,
@@ -904,7 +1323,8 @@ final class PaidOrderSnapshotService
             $uuid,
             $mapping,
             $source,
-            $note
+            $note,
+            $recorded !== null ? 'the verified recorded quote' : 'the live WHMCS service and invoice records'
         ));
         if ($plan['override_kind'] === 'current_mapping') {
             $this->activity(sprintf(
@@ -914,9 +1334,9 @@ final class PaidOrderSnapshotService
                 $this->describeDiff((array) $plan['diff']),
                 (string) $plan['reason']
             ));
-        } elseif ($plan['override_kind'] === 'recorded_snapshot') {
+        } elseif ($plan['override_kind'] === 'recorded_snapshot' || $plan['override_kind'] === 'recorded_deviation') {
             $this->activity(sprintf(
-                'WARNING: Contabo re-quote CONFIRMED by admin #%d for service #%d on the recorded snapshot (%s): %s',
+                'WARNING: Contabo re-quote CONFIRMED by admin #%d for service #%d on the recorded quote (%s): %s',
                 $adminId,
                 $serviceId,
                 (string) $plan['reason'],
@@ -976,6 +1396,7 @@ final class PaidOrderSnapshotService
                 'diff' => $plan['diff'],
                 'diff_token' => (string) $plan['diff_token'],
                 'override_kind' => (string) $plan['override_kind'],
+                'deviations' => (array) ($plan['deviations'] ?? []),
             ];
         }
         return $out;
@@ -986,7 +1407,7 @@ final class PaidOrderSnapshotService
      * from, or null when the recorded mapping contradicts the row.
      *
      * @param array<string,mixed> $row a row that already passed integrityFault()
-     * @return array{source:string, mapping_version:string, catalog_version:string, payload:array<string,mixed>}|null
+     * @return array{source:string, mapping_version:string, catalog_version:string, payload:array<string,mixed>, quote:array<string,array<string,mixed>>}|null
      */
     private function recordedSource(array $row, string &$why): ?array
     {
@@ -1035,6 +1456,7 @@ final class PaidOrderSnapshotService
                     'mapping_version' => $version,
                     'catalog_version' => (string) ($row['catalog_version'] ?? ''),
                     'payload' => $publicationPayload,
+                    'quote' => $this->recordedQuote($payload),
                 ];
             }
         }
@@ -1054,6 +1476,22 @@ final class PaidOrderSnapshotService
                 'renewal_amount' => (string) ($pricing['renewal'] ?? '0.00'),
                 'labels' => isset($payload['labels']) && is_array($payload['labels']) ? $payload['labels'] : [],
             ],
+            'quote' => $this->recordedQuote($payload),
+        ];
+    }
+
+    /**
+     * The hashed sections of a verified draft, as sealed at checkout.
+     *
+     * @param array<string,mixed> $payload
+     * @return array{configuration:array<string,mixed>, pricing:array<string,mixed>, whmcs:array<string,mixed>}
+     */
+    private function recordedQuote(array $payload): array
+    {
+        return [
+            'configuration' => (array) $payload['configuration'],
+            'pricing' => (array) $payload['pricing'],
+            'whmcs' => (array) $payload['whmcs'],
         ];
     }
 
@@ -1089,7 +1527,7 @@ final class PaidOrderSnapshotService
             }
         }
         // The publication must have been in effect when the draft was made.
-        $created = $this->timestamp($row['created_at'] ?? null);
+        $created = $this->quoteAnchor($row);
         $effective = $this->timestamp($publication['effective_at'] ?? null);
         if ($created !== null && $effective !== null && $effective > $created) {
             return 'only took effect after the draft was created';
@@ -1120,6 +1558,29 @@ final class PaidOrderSnapshotService
             }
         }
         return '';
+    }
+
+    /**
+     * When the customer's quote was first made: the earliest snapshot row of
+     * this order and service, so a later retry draft (or a re-quote) cannot
+     * move the checkpoint the recorded mapping is judged against.
+     *
+     * @param array<string,mixed> $row
+     */
+    private function quoteAnchor(array $row): ?int
+    {
+        $anchor = $this->timestamp($row['created_at'] ?? null);
+        $earlier = Capsule::table('mod_securiacevps_order_snapshots')
+            ->where('order_id', (int) ($row['order_id'] ?? 0))
+            ->where('service_id', (int) ($row['service_id'] ?? 0))
+            ->get();
+        foreach ($earlier as $item) {
+            $at = $this->timestamp(((array) $item)['created_at'] ?? null);
+            if ($at !== null && ($anchor === null || $at < $anchor)) {
+                $anchor = $at;
+            }
+        }
+        return $anchor;
     }
 
     private function timestamp(mixed $value): ?int

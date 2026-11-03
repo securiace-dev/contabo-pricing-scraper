@@ -192,7 +192,11 @@ require __DIR__ . '/_layout_open.tpl';
     re-issued invoice linked to it), seals it, and keeps the old row as superseded.
     If no verifiable recorded quote exists it refuses; the only way forward is an
     explicit override that shows what the current mapping would change (SKU, region,
-    image, renewal) and is written to the Activity Log. It refuses unless a linked
+    image, renewal) and is written to the Activity Log. Every re-quote shows the full diff
+    first (options, first payment, recurring, tax, total as well), also against what WHMCS
+    holds now; if WHMCS has drifted from the recorded quote the confirmation is required.
+    Confirming needs a Full Administrator (or a role listed in
+    <code class="mono">snapshot.requote_role_ids</code>). It refuses unless a linked
     invoice is Paid. Unpaid checkouts stay quotable for
     <code class="mono"><?= (int) $cb_ttl ?></code>
     seconds or until the invoice due date, whichever is later
@@ -202,26 +206,51 @@ require __DIR__ . '/_layout_open.tpl';
     <div class="cb-card">
       <h4>Service #<?= (int) $cb_preview['service_id'] ?>: <?= $esc((string) $cb_preview['code']) ?></h4>
       <p class="cb-card-sub"><?= $esc((string) $cb_preview['message']) ?></p>
-      <?php if (!empty($cb_preview['needs_override'])): ?>
+      <?php $cb_kind = (string) ($cb_preview['override_kind'] ?? ''); ?>
+      <?php if (!empty($cb_preview['deviations'])): ?>
+        <p class="cb-card-sub"><strong>WHMCS no longer matches the customer's recorded quote:</strong>
+          <?= $esc(implode('; ', array_map('strval', (array) $cb_preview['deviations']))) ?>.
+          The quote that will be sealed is the recorded one, not the live service or invoice.</p>
+      <?php endif; ?>
+      <?php if ((array) ($cb_preview['diff'] ?? []) !== []): ?>
         <table class="cb-table">
-          <thead><tr><th>Field</th><th>Customer's recorded quote<?= ($cb_preview['override_kind'] ?? '') === 'recorded_snapshot' ? ' (will be sealed)' : '' ?></th><th>Current mapping<?= ($cb_preview['override_kind'] ?? '') === 'recorded_snapshot' ? '' : ' ' . $esc((string) $cb_preview['mapping_version']) ?></th></tr></thead>
+          <thead><tr><th>Field</th><th>Customer's recorded quote<?= in_array($cb_kind, ['recorded_snapshot', 'recorded_deviation', ''], true) ? ' (will be sealed)' : '' ?></th><th><?= $cb_kind === 'current_mapping' ? 'Current mapping ' . $esc((string) $cb_preview['mapping_version']) . ' (will be sealed)' : 'Current mapping' ?></th><th>WHMCS now</th></tr></thead>
           <tbody>
           <?php foreach ((array) $cb_preview['diff'] as $cb_d): ?>
             <tr>
               <td><?= $esc((string) $cb_d['field']) ?></td>
               <td class="mono"><?= $esc((string) $cb_d['old']) ?></td>
               <td class="mono"><?= !empty($cb_d['changed']) ? '<strong>' : '' ?><?= $esc((string) $cb_d['new']) ?><?= !empty($cb_d['changed']) ? '</strong>' : '' ?></td>
+              <td class="mono"><?= array_key_exists('live', $cb_d) ? (!empty($cb_d['live_differs']) ? '<strong>' : '') . $esc((string) $cb_d['live']) . (!empty($cb_d['live_differs']) ? '</strong>' : '') : '' ?></td>
             </tr>
           <?php endforeach; ?>
           </tbody>
         </table>
+      <?php endif; ?>
+      <?php if (!empty($cb_preview['needs_override'])): ?>
+        <?php if (!empty($cb_preview['may_confirm'])): ?>
         <form method="post" action="<?= $esc($module_link) ?>">
           <input type="hidden" name="action" value="maintenance-requote">
           <input type="hidden" name="service_id" value="<?= (int) $cb_preview['service_id'] ?>">
           <input type="hidden" name="override" value="1">
           <input type="hidden" name="diff_token" value="<?= $esc((string) $cb_preview['diff_token']) ?>">
           <?= generate_token() ?>
-          <button class="cb-btn" type="submit"><?= ($cb_preview['override_kind'] ?? '') === 'recorded_snapshot' ? 'Confirm: seal the recorded quote' : 'Confirm override with the current mapping' ?></button>
+          <button class="cb-btn" type="submit"><?php
+            echo $cb_kind === 'recorded_snapshot' ? 'Confirm: seal the recorded quote'
+                : ($cb_kind === 'recorded_deviation' ? 'Confirm: seal the recorded quote although WHMCS differs'
+                : 'Confirm override with the current mapping');
+          ?></button>
+        </form>
+        <?php else: ?>
+        <p class="cb-card-sub"><strong>Your admin role may not confirm this.</strong>
+          Ask a Full Administrator (or a role listed in <code class="mono">snapshot.requote_role_ids</code>).</p>
+        <?php endif; ?>
+      <?php elseif (in_array((string) $cb_preview['code'], ['ready'], true)): ?>
+        <form method="post" action="<?= $esc($module_link) ?>">
+          <input type="hidden" name="action" value="maintenance-requote">
+          <input type="hidden" name="service_id" value="<?= (int) $cb_preview['service_id'] ?>">
+          <?= generate_token() ?>
+          <button class="cb-btn" type="submit">Re-quote: seal exactly this quote</button>
         </form>
       <?php endif; ?>
     </div>
@@ -240,19 +269,14 @@ require __DIR__ . '/_layout_open.tpl';
             <?php if (($cb_row['status'] ?? '') === 'refused'): ?>
               <strong>Refused:</strong> <?= $esc((string) ($cb_row['reason'] ?? '')) ?>
             <?php elseif (($cb_row['status'] ?? '') === 'override'): ?>
-              <?= ($cb_row['override_kind'] ?? '') === 'recorded_snapshot' ? 'Needs confirmation' : 'Needs override' ?>: <?= $esc((string) ($cb_row['reason'] ?? '')) ?>
+              <?= in_array(($cb_row['override_kind'] ?? ''), ['recorded_snapshot', 'recorded_deviation'], true) ? 'Needs confirmation' : 'Needs override' ?>: <?= $esc((string) ($cb_row['reason'] ?? '')) ?>
             <?php else: ?>
               Ready (<?= $esc((string) ($cb_row['source'] ?? '')) ?>)
             <?php endif; ?>
           </td>
           <td>
             <?php if (($cb_row['status'] ?? '') !== 'refused'): ?>
-            <form method="post" action="<?= $esc($module_link) ?>">
-              <input type="hidden" name="action" value="maintenance-requote">
-              <input type="hidden" name="service_id" value="<?= (int) $cb_row['service_id'] ?>">
-              <?= generate_token() ?>
-              <button class="cb-btn" type="submit"><?= ($cb_row['status'] ?? '') === 'override' ? 'Review' : 'Re-quote' ?></button>
-            </form>
+            <a class="cb-btn" href="<?= $esc($module_link) ?>&amp;action=maintenance&amp;preview_service=<?= (int) $cb_row['service_id'] ?>">Review</a>
             <?php endif; ?>
           </td>
         </tr>

@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '1.1.5';
+    public const VERSION = '1.1.6';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -3258,6 +3258,8 @@ class AdminController
             return null;
         }
         $plan['service_id'] = $serviceId;
+        $adminId = isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : 0;
+        $plan['may_confirm'] = (new PaidOrderSnapshotService())->adminMayConfirm($adminId);
         return $plan;
     }
 
@@ -3290,7 +3292,7 @@ class AdminController
         $token = (string) ($req['diff_token'] ?? '');
         $r = (new PaidOrderSnapshotService())->requote($serviceId, $adminId, $override, $token);
         $extra = ['flash' => $r['message']];
-        if (in_array($r['code'], ['needs_override', 'diff_changed'], true)) {
+        if (in_array($r['code'], ['needs_override', 'diff_changed', 'not_permitted'], true)) {
             // Show the diff and the confirm form for this service.
             $extra['preview_service'] = $serviceId;
         }
