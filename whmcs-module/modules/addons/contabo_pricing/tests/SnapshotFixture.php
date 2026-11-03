@@ -60,6 +60,7 @@ trait SnapshotFixture
         ]];
         Capsule::$tables['tblinvoices'] = [[
             'id' => 20,
+            'userid' => 40,
             'status' => 'Unpaid',
             'subtotal' => '1999.00',
             'tax' => '0.00',

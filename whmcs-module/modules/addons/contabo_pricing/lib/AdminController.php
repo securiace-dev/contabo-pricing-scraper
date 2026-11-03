@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '1.1.4';
+    public const VERSION = '1.1.5';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -3242,10 +3242,26 @@ class AdminController
             'cb_purge_phrase'  => SchemaHealth::PURGE_CONFIRMATION_PHRASE,
             'cb_stuck_services' => $this->stuckPaidServices(),
             'cb_quote_ttl'     => $this->quoteTtlForDisplay(),
+            'cb_requote_preview' => $this->requotePreview((int) ($_REQUEST['preview_service'] ?? 0)),
         ]);
     }
 
-    /** @return list<array{service_id:int, order_id:int, invoice_id:int, states:string}> */
+    /** @return array<string,mixed>|null */
+    private function requotePreview(int $serviceId): ?array
+    {
+        if ($serviceId <= 0) {
+            return null;
+        }
+        try {
+            $plan = (new PaidOrderSnapshotService())->requotePlan($serviceId);
+        } catch (\Throwable $e) {
+            return null;
+        }
+        $plan['service_id'] = $serviceId;
+        return $plan;
+    }
+
+    /** @return list<array<string,mixed>> */
     private function stuckPaidServices(): array
     {
         try {
@@ -3270,8 +3286,15 @@ class AdminController
             $this->redirect('maintenance', ['flash' => 'Re-quote: enter a service ID.']);
             return;
         }
-        $r = (new PaidOrderSnapshotService())->requote($serviceId, $adminId);
-        $this->redirect('maintenance', ['flash' => $r['message']]);
+        $override = !empty($req['override']);
+        $token = (string) ($req['diff_token'] ?? '');
+        $r = (new PaidOrderSnapshotService())->requote($serviceId, $adminId, $override, $token);
+        $extra = ['flash' => $r['message']];
+        if (in_array($r['code'], ['needs_override', 'diff_changed'], true)) {
+            // Show the diff and the confirm form for this service.
+            $extra['preview_service'] = $serviceId;
+        }
+        $this->redirect('maintenance', $extra);
     }
 
     private function maintenanceMigrate(): void

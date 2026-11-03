@@ -138,7 +138,7 @@ final class ProvisioningGate
         return [
             'allow' => false,
             'code' => self::REASON_NO_SNAPSHOT,
-            'detail' => 'no sealed snapshot for this service and not grandfathered: ' . $why,
+            'detail' => 'no sealed snapshot for this service and not grandfathered: ' . $why . $this->linkNote($serviceId),
         ];
     }
 
@@ -177,15 +177,27 @@ final class ProvisioningGate
         if ($orderedAt >= $cutoffTs) {
             return 'order #' . $orderId . ' was placed at or after the cutoff';
         }
-        $invoiceId = (int) ($order['invoiceid'] ?? 0);
-        $invoice = $invoiceId > 0 ? Capsule::table('tblinvoices')->where('id', $invoiceId)->first() : null;
-        if ($invoice === null || strcasecmp((string) (((array) $invoice)['status'] ?? ''), 'Paid') !== 0) {
-            return 'order #' . $orderId . ' has no paid invoice';
+        // The order's own invoice, or the invoice linked to it that was
+        // actually paid (mass pay, merged, re-invoice).
+        $paying = (new PaidOrderSnapshotService())->payingInvoice($orderId, $serviceId);
+        if ($paying['invoice_id'] <= 0) {
+            return 'order #' . $orderId . ' has no paid invoice'
+                . ($paying['refusal'] !== '' ? ' (' . $paying['refusal'] . ')' : '');
         }
         if (in_array(strtolower((string) ($order['status'] ?? '')), ['fraud', 'cancelled'], true)) {
             return 'order #' . $orderId . ' is ' . strtolower((string) $order['status']);
         }
         return null;
+    }
+
+    private function linkNote(int $serviceId): string
+    {
+        try {
+            $note = (new PaidOrderSnapshotService())->unsealedNote($serviceId);
+        } catch (\Throwable $e) {
+            return '';
+        }
+        return $note === '' ? '' : ' [' . $this->clip($note) . ']';
     }
 
     private function setting(string $key, string $default = ''): string

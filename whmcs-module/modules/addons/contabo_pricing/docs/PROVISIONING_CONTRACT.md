@@ -131,6 +131,13 @@ binding; a draft that fails is `invalid` and blocks provisioning. A cancelled
 invoice invalidates its drafts. The admin re-quote (Maintenance) rebuilds and
 seals a snapshot for a Paid order that has none, superseding old rows.
 
+Paying invoice and re-quote source (1.1.5): the invoice that settles an order is the
+draft's own invoice, or a Paid invoice of the same client linked by `tblinvoiceitems`
+(type `Invoice` + `relid` for Mass Pay; type `Hosting`/`Setup` + `relid` for merged and
+re-issued invoices). Unlinked or other-client Paid invoices never seal. The admin re-quote
+rebuilds from the draft's own recorded mapping version or recorded snapshot; the current
+mapping is used only through a logged override bound to the displayed diff.
+
 ## 5. Operation identity, idempotency, and concurrency
 
 Deterministic command identity is derived from:

@@ -254,6 +254,14 @@ Exact Dokploy service IDs and script names remain blocked until
 `whmcs-prod-new` / `securiace-whmcs-prod` are shared — see
 [`DOKPLOY_WHMCS_MODULE_DEPLOY.md`](../../../../../docs/operations/DOKPLOY_WHMCS_MODULE_DEPLOY.md).
 
+## Addon 1.1.5 — re-quote keeps the quote; any paying invoice recovers the order
+
+Follow [`UPGRADE_1_1_5.md`](UPGRADE_1_1_5.md). No schema change, no new setting. Re-quote uses the
+draft's own recorded mapping or snapshot; the current mapping needs an explicit, logged
+override with a diff. A Paid Mass Pay, merged or re-issued invoice now settles the order
+through `tblinvoiceitems` links (new `InvoicePaid` hook); unlinked or other-client invoices are
+refused and listed on Maintenance.
+
 ## Addon 1.1.4 — late payment no longer strands provisioning
 
 Follow [`UPGRADE_1_1_4.md`](UPGRADE_1_1_4.md). No schema change. A draft stays sealable until its
