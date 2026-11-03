@@ -94,6 +94,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         Capsule::$tables['mod_contabo_mapping_publications'][] = [
             'id' => 91,
             'mapping_version' => $version,
+            'product_id' => 50,
             'state' => 'published',
             'payload_json' => json_encode([
                 'provider' => ['sku_id' => $sku, 'region_id' => 'US', 'image_id' => 'image-9'],
@@ -281,6 +282,115 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertSame('current_mapping', $plan['override_kind']);
         $this->assertStringContainsString('disagrees with the draft row on provider.sku_id', $plan['reason']);
         $this->assertContains('SKU', array_column($plan['diff'], 'field'));
+    }
+
+    /** A hash-correct publication of ANOTHER product must not be treated as the recorded mapping. */
+    private function pointRowAtPublication(string $version, string $sku): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->payOwn();
+        $row = $this->snapshots()[0];
+        $payload = json_decode((string) $row['payload_json'], true);
+        $payload['provider']['sku_id'] = $sku;
+        Capsule::table('mod_securiacevps_order_snapshots')->where('id', $row['id'])
+            ->update(['payload_json' => json_encode($payload), 'mapping_version' => $version]);
+    }
+
+    public function testAPublicationOfAnotherProductIsNotTheRecordedMapping(): void
+    {
+        $this->pointRowAtPublication('map-p77-other', 'V999');
+        Capsule::$tables['mod_contabo_mapping_publications'][] = [
+            'id' => 92, 'mapping_version' => 'map-p77-other', 'product_id' => 77, 'state' => 'published',
+            'payload_json' => json_encode(['provider' => ['sku_id' => 'V999', 'region_id' => 'EU', 'image_id' => 'image-1'], 'management_code' => 'self_managed']),
+        ];
+        $this->hashPublications();
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertNotSame('recorded_mapping', $plan['source']);
+        $this->assertTrue($plan['needs_override']);
+        $this->assertStringContainsString('belongs to another product', $plan['reason']);
+        $r = (new PaidOrderSnapshotService())->requote(30, 7);
+        $this->assertFalse($r['ok']);
+        $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testASameProductPublicationWithADifferentManagementCodeIsNotTrusted(): void
+    {
+        $this->pointRowAtPublication('map-managed', 'V999');
+        Capsule::$tables['mod_contabo_mapping_publications'][] = [
+            'id' => 92, 'mapping_version' => 'map-managed', 'product_id' => 50, 'state' => 'superseded',
+            'payload_json' => json_encode(['provider' => ['sku_id' => 'V999', 'region_id' => 'EU', 'image_id' => 'image-1'], 'management_code' => 'managed']),
+        ];
+        $this->hashPublications();
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertTrue($plan['needs_override']);
+        $this->assertStringContainsString('different management code', $plan['reason']);
+    }
+
+    public function testAPublicationThatTookEffectAfterTheDraftWasMadeIsNotTrusted(): void
+    {
+        $this->pointRowAtPublication('map-later', 'V999');
+        Capsule::table('mod_securiacevps_order_snapshots')->update(['created_at' => '2026-01-01 00:00:00']);
+        Capsule::$tables['mod_contabo_mapping_publications'][] = [
+            'id' => 92, 'mapping_version' => 'map-later', 'product_id' => 50, 'state' => 'superseded', 'effective_at' => '2026-06-01 00:00:00',
+            'payload_json' => json_encode(['provider' => ['sku_id' => 'V999', 'region_id' => 'EU', 'image_id' => 'image-1'], 'management_code' => 'self_managed']),
+        ];
+        $this->hashPublications();
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertTrue($plan['needs_override']);
+        $this->assertStringContainsString('only took effect after the draft was created', $plan['reason']);
+    }
+
+    public function testAPublicationAlreadySupersededWhenTheDraftWasMadeIsNotTrusted(): void
+    {
+        $this->pointRowAtPublication('map-old', 'V999');
+        Capsule::table('mod_securiacevps_order_snapshots')->update(['created_at' => '2026-06-01 00:00:00']);
+        Capsule::$tables['mod_contabo_mapping_publications'][] = [
+            'id' => 92, 'mapping_version' => 'map-old', 'product_id' => 50, 'state' => 'superseded', 'effective_at' => '2026-01-01 00:00:00',
+            'payload_json' => json_encode(['provider' => ['sku_id' => 'V999', 'region_id' => 'EU', 'image_id' => 'image-1'], 'management_code' => 'self_managed']),
+        ];
+        Capsule::$tables['mod_contabo_mapping_publications'][] = [
+            'id' => 93, 'mapping_version' => 'map-newer', 'product_id' => 50, 'state' => 'published', 'effective_at' => '2026-03-01 00:00:00',
+            'supersedes_mapping_version' => 'map-old',
+            'payload_json' => json_encode(['provider' => ['sku_id' => 'V1', 'region_id' => 'EU', 'image_id' => 'image-1'], 'management_code' => 'self_managed']),
+        ];
+        $this->hashPublications();
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertTrue($plan['needs_override']);
+        $this->assertStringContainsString('already been superseded', $plan['reason']);
+    }
+
+    public function testAPublicationThatWasInEffectForTheDraftIsStillTrusted(): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->payOwn();
+        Capsule::table('mod_securiacevps_order_snapshots')->update(['created_at' => '2026-02-01 00:00:00']);
+        Capsule::table('mod_contabo_mapping_publications')->where('mapping_version', 'mapping-v1')
+            ->update(['state' => 'superseded', 'effective_at' => '2026-01-01 00:00:00']);
+        Capsule::$tables['mod_contabo_mapping_publications'][] = [
+            'id' => 93, 'mapping_version' => 'mapping-v2', 'product_id' => 50, 'state' => 'published', 'effective_at' => '2026-03-01 00:00:00',
+            'supersedes_mapping_version' => 'mapping-v1',
+            'payload_json' => json_encode(['provider' => ['sku_id' => 'V99', 'region_id' => 'US', 'image_id' => 'image-9'], 'management_code' => 'self_managed']),
+        ];
+        Capsule::table('mod_contabo_mapping')->where('id', 70)->update(['published_mapping_version' => 'mapping-v2']);
+        $this->hashPublications();
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertSame('recorded_mapping', $plan['source']);
+        $this->assertFalse($plan['needs_override']);
+    }
+
+    public function testAServiceMovedToAnotherClientStillSealsOnTheOrdersOwnInvoice(): void
+    {
+        $this->draft();
+        Capsule::table('tblorders')->where('id', 10)->update(['userid' => 40]);
+        Capsule::table('tblhosting')->where('id', 30)->update(['userid' => 41]);
+        $this->payOwn();
+        $this->activeOrder();
+        $plan = (new PaidOrderSnapshotService())->payingInvoice(10, 30);
+        $this->assertSame(20, $plan['invoice_id']);
+        $this->assertSame('order', $plan['via']);
+        $this->assertSame([], $this->create());
     }
 
     public function testARecordedPublicationWhoseRenewalDisagreesWithTheHashedPricingIsNotTrusted(): void

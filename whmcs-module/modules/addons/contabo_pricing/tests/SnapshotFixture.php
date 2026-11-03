@@ -92,6 +92,7 @@ trait SnapshotFixture
         Capsule::$tables['mod_contabo_mapping_publications'] = [[
             'id' => 90,
             'mapping_version' => 'mapping-v1',
+            'product_id' => 50,
             'state' => 'published',
             'payload_json' => json_encode([
                 'provider' => [

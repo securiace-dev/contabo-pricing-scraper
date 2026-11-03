@@ -7,8 +7,10 @@ No schema change. No new setting. Read `docs/UPGRADE_1_1_5.md`.
 - **Re-quote no longer silently uses a republished mapping.** The admin re-quote rebuilds the
   contract from the customer's OWN recorded quote: the mapping publication named by the draft
   row's `mapping_version` (`recorded_mapping`). That publication must verify (its stored sha256
-  payload hash, as at checkout) and agree with the row on SKU, Region, Image and renewal;
-  otherwise it is not trusted. If the publication is gone, the verified draft's own fields are
+  payload hash, as at checkout), belong to the draft's product and management code, have been
+  in effect when the draft was created (not already superseded, not effective later), and agree
+  with the row on SKU, Region and Image (and on renewal when the publication records
+  `renewal_amount`); otherwise it is not trusted. If the publication is gone, the verified draft's own fields are
   offered as `recorded_snapshot`, but because `provider.sku_id` is not covered by any snapshot
   hash and nothing corroborates it, this needs an explicit logged confirmation that shows the
   exact SKU, Region, Image and Renewal that will be sealed. When nothing verifiable was
@@ -23,7 +25,7 @@ No schema change. No new setting. Read `docs/UPGRADE_1_1_5.md`.
   `Invoice` whose `relid` is that invoice (`mass_pay`); a merged invoice with a `Hosting` or
   `Setup` item for the service when the draft's invoice no longer exists (`merged`); or a
   re-issued invoice with such an item while the draft's invoice still exists (`reinvoice`).
-  Every link, including the order's own invoice, must belong to the service owner, and the draft is still fully verified
+  Every link must belong to the service owner (the order's own invoice may also belong to the ordering client, because Move Product/Service changes only the service), and the draft is still fully verified
   before it seals. A Paid invoice that is not linked, or belongs to another client, never
   seals; it is refused, named in the Activity Log and in the stuck list, and cannot be
   overridden.

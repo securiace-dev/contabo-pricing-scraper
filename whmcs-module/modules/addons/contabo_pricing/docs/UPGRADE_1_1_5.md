@@ -41,7 +41,7 @@ invoice settled the order and how it links (`order`, `mass_pay`, `merged`, `rein
 | `merged` | Paid invoice has an item type `Hosting` or `Setup` with `relid` = the service id, and the draft's invoice no longer exists | Merge Invoices moves line items into the higher invoice and deletes the other |
 | `reinvoice` | same item, and the draft's invoice still exists | a new invoice raised for the same service |
 
-Every link, including `order`, also requires the invoice to belong to the service owner. The check was
+Every link requires the invoice to belong to the service owner; the order's own invoice may also belong to the client who placed the order (WHMCS Move Product/Service changes `tblhosting.userid` only). The check was
 designed from the WHMCS documentation and tested against a fake database; it has not been run
 against a live WHMCS. Verify on staging (below) before relying on it.
 
@@ -71,8 +71,12 @@ against a live WHMCS. Verify on staging (below) before relying on it.
 ## Known limit
 
 `provider.sku_id` is not covered by a snapshot hash (a schema change would be needed). The
-recorded-mapping source cross-checks it against the draft's hash-verified mapping publication;
-when that publication is gone, the row's own value is used only after the admin confirms the
+recorded-mapping source cross-checks it against the draft's hash-verified mapping publication,
+which must belong to the same product and management code and have been in effect when the draft
+was created (`effective_at` and the `supersedes_mapping_version` chain). The renewal amount is
+cross-checked only when the publication payload records `renewal_amount` (current publications
+may not). Someone who can edit both the draft row and `mapping_version` AND the publication
+timeline is outside this protection. When that publication is gone, the row's own value is used only after the admin confirms the
 exact SKU, Region, Image and Renewal shown.
 
 ## Rollback

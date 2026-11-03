@@ -266,7 +266,7 @@ final class PaidOrderSnapshotService
             if ($invoice === null || strcasecmp((string) ($invoice['status'] ?? ''), 'Paid') !== 0) {
                 continue;
             }
-            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId);
+            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId, (int) ($order['userid'] ?? 0));
             if ($via === '') {
                 if ($why !== '' && ($id !== $hintInvoiceId || in_array($id, $own, true) || in_array($id, $discovered, true))) {
                     $result['refusal'] = $why;
@@ -290,17 +290,21 @@ final class PaidOrderSnapshotService
      * @param list<int> $own
      * @return array{0:string,1:string} [via, refusal reason]
      */
-    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId): array
+    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId, int $orderUserId = 0): array
     {
         $id = (int) ($invoice['id'] ?? 0);
         if ($id === $bound) {
             $owner = (int) ($invoice['userid'] ?? 0);
-            if ($userId > 0 && $owner > 0 && $owner !== $userId) {
+            // "Move Product/Service" changes tblhosting.userid but not the
+            // order's invoice, so the order's own invoice may belong to the
+            // service owner or to the client who placed the order.
+            if ($owner > 0 && $userId > 0 && $owner !== $userId && $owner !== $orderUserId) {
                 return ['', sprintf(
-                    'Paid invoice #%d is the order\'s invoice but belongs to client #%d, not the service owner #%d',
+                    'Paid invoice #%d is the order\'s invoice but belongs to client #%d, not the service owner #%d%s',
                     $id,
                     $owner,
-                    $userId
+                    $userId,
+                    $orderUserId > 0 && $orderUserId !== $userId ? ' or the ordering client #' . $orderUserId : ''
                 )];
             }
             return ['order', ''];
@@ -998,6 +1002,11 @@ final class PaidOrderSnapshotService
                 ->whereIn('state', ['published', 'superseded'])
                 ->first();
             if ($publication !== null) {
+                $scope = $this->publicationScopeFault((array) $publication, $row, $payload);
+                if ($scope !== '') {
+                    $why = 'the recorded mapping ' . $version . ' ' . $scope;
+                    return null;
+                }
                 // The publication exists, so it must verify and agree with the
                 // row; a publication that does not is a tamper signal and is
                 // never papered over with the row's own (unhashed) SKU.
@@ -1046,6 +1055,66 @@ final class PaidOrderSnapshotService
                 'labels' => isset($payload['labels']) && is_array($payload['labels']) ? $payload['labels'] : [],
             ],
         ];
+    }
+
+    /**
+     * Why a publication found by the draft row's (unhashed) mapping_version
+     * cannot be the one that was in effect for this draft; '' when it can.
+     *
+     * @param array<string,mixed> $publication
+     * @param array<string,mixed> $row
+     * @param array<string,mixed> $payload the draft row's decoded payload
+     */
+    private function publicationScopeFault(array $publication, array $row, array $payload): string
+    {
+        $productId = (int) ($row['product_id'] ?? 0);
+        if ((int) ($publication['product_id'] ?? 0) !== $productId) {
+            return 'belongs to another product';
+        }
+        $service = $this->row('tblhosting', 'id', (int) ($row['service_id'] ?? 0));
+        if ($service !== null && (int) ($service['packageid'] ?? 0) > 0 && (int) $service['packageid'] !== $productId) {
+            return 'does not belong to the service\'s product';
+        }
+        $publicationPayload = json_decode((string) ($publication['payload_json'] ?? ''), true);
+        if (is_array($publicationPayload)) {
+            $management = (string) ($publicationPayload['management_code'] ?? '');
+            $recordedManagement = (string) (((array) $payload['configuration'])['management_code'] ?? '');
+            if ($management !== '' && $recordedManagement !== '' && $management !== $recordedManagement) {
+                return 'has a different management code than the draft';
+            }
+            $sku = (string) (((array) ($publicationPayload['provider'] ?? []))['sku_id'] ?? '');
+            $column = trim((string) ($publication['provider_sku_id'] ?? ''));
+            if ($column !== '' && $sku !== '' && $column !== $sku) {
+                return 'has a provider_sku_id column that disagrees with its payload';
+            }
+        }
+        // The publication must have been in effect when the draft was made.
+        $created = $this->timestamp($row['created_at'] ?? null);
+        $effective = $this->timestamp($publication['effective_at'] ?? null);
+        if ($created !== null && $effective !== null && $effective > $created) {
+            return 'only took effect after the draft was created';
+        }
+        if ($created !== null) {
+            $successor = Capsule::table('mod_contabo_mapping_publications')
+                ->where('supersedes_mapping_version', (string) ($publication['mapping_version'] ?? ''))
+                ->where('product_id', $productId)
+                ->first();
+            $successorAt = $successor !== null ? $this->timestamp(((array) $successor)['effective_at'] ?? null) : null;
+            if ($successorAt !== null && $successorAt <= $created) {
+                return 'had already been superseded when the draft was created';
+            }
+        }
+        return '';
+    }
+
+    private function timestamp(mixed $value): ?int
+    {
+        $text = trim((string) ($value ?? ''));
+        if ($text === '' || str_starts_with($text, '0000')) {
+            return null;
+        }
+        $time = strtotime($text);
+        return $time === false ? null : $time;
     }
 
     /**
