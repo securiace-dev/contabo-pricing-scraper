@@ -138,6 +138,13 @@ re-issued invoices). Unlinked or other-client Paid invoices never seal. The admi
 rebuilds from the draft's own recorded mapping version or recorded snapshot; the current
 mapping is used only through a logged override bound to the displayed diff.
 
+Paying invoice rules (1.1.6): a linked invoice settles an order only when it covers the quoted
+amount. Mass Pay is linked through `Invoice` items whose `relid` is the original invoice; merged
+and re-issued invoices require the original to be gone or Cancelled and Hosting, Setup and promo
+lines for the service covering the quoted first payment. Re-quote seals the verified recorded
+quote (options, amounts, tax, total); a divergence in WHMCS needs a confirmation by a permitted
+role with an HMAC token over the full diff.
+
 ## 5. Operation identity, idempotency, and concurrency
 
 Deterministic command identity is derived from:

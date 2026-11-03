@@ -79,6 +79,13 @@ trait SnapshotFixture
             'total' => '1999.00',
         ]];
         Capsule::$tables['tblclients'] = [['id' => 40, 'currency' => 1]];
+        // Admin 7 is a Full Administrator (role 1), 8 a Support Operator (role 3), 9 a disabled Full Administrator.
+        Capsule::$tables['tbladmins'] = [
+            ['id' => 7, 'roleid' => 1, 'disabled' => 0],
+            ['id' => 8, 'roleid' => 3, 'disabled' => 0],
+            ['id' => 9, 'roleid' => 1, 'disabled' => 1],
+        ];
+        $GLOBALS['cc_encryption_hash'] = 'test-encryption-hash-not-a-secret';
         Capsule::$tables['tblcurrencies'] = [['id' => 1, 'code' => 'INR']];
         Capsule::$tables['mod_contabo_mapping'] = [[
             'id' => 70,

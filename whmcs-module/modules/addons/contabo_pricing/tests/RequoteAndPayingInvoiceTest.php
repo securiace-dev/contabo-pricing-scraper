@@ -780,7 +780,10 @@ final class RequoteAndPayingInvoiceTest extends TestCase
 
         ($this->hook('InvoiceCancelled'))(['invoiceid' => 20]);
         $this->assertSame(['draft'], $this->states());
-        $this->assertStringContainsString('replacement', $this->log());
+        $this->assertStringContainsString(
+            'invoice #20 was cancelled but service #30 has a replacement invoice; the draft stays open',
+            $this->log()
+        );
 
         Capsule::table('tblinvoices')->where('id', 23)->update(['status' => 'Paid']);
         ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
@@ -1065,5 +1068,303 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         ($this->hook('InvoicePaid'))(['invoiceid' => 27]);
         ($this->hook('InvoicePaid'))([]);
         $this->assertSame(['draft'], $this->states());
+    }
+
+    // ── 1.1.6 B2: a re-quote replays the verified draft ─────────────────────
+
+    /** Draft, invalidated, order invoice paid: the Ready situation. */
+    private function readyToRequote(): PaidOrderSnapshotService
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->payOwn();
+        return new PaidOrderSnapshotService();
+    }
+
+    /** WHMCS edited after checkout: cheaper first payment and renewal, doubled quantity. */
+    private function editLiveService(): void
+    {
+        Capsule::table('tblhosting')->where('id', 30)->update(['firstpaymentamount' => '1.00', 'amount' => '1.00']);
+        Capsule::table('tblhostingconfigoptions')->where('relid', 30)->update(['qty' => 2]);
+    }
+
+    /** @return array<string,array<string,mixed>> */
+    private function rows(array $plan): array
+    {
+        return array_column($plan['diff'], null, 'field');
+    }
+
+    public function testB2ReadyPathShowsTheDiffAndSealsExactlyTheRecordedQuote(): void
+    {
+        $service = $this->readyToRequote();
+        $recorded = $this->payload(0);
+
+        $plan = $service->requotePlan(30);
+        $this->assertSame('ready', $plan['code']);
+        $this->assertFalse($plan['needs_override']);
+        $rows = $this->rows($plan);
+        foreach (['Options', 'First payment', 'Recurring', 'Tax 1', 'Tax 2', 'Total due', 'Currency', 'Domain', 'Billing cycle', 'Product'] as $field) {
+            $this->assertArrayHasKey($field, $rows, $field);
+            $this->assertFalse($rows[$field]['live_differs'], $field);
+        }
+        $this->assertSame('1999.00', $rows['First payment']['old']);
+        $this->assertSame('1999.00', $rows['First payment']['new']);
+        $this->assertStringContainsString('Image=ubuntu-24-04 x1', $rows['Options']['old']);
+        $this->assertStringContainsString('1999.00', $plan['message']);
+
+        $r = $service->requote(30, 7);
+        $this->assertTrue($r['ok'], $r['message']);
+        $sealed = $this->payload(1);
+        $this->assertSame($recorded['configuration'], $sealed['configuration']);
+        $this->assertSame($recorded['pricing'], $sealed['pricing']);
+        $this->assertSame('Pending', $recorded['whmcs']['order_status']);
+        $this->assertSame('Active', $sealed['whmcs']['order_status'], 'only the order status is refreshed');
+        unset($recorded['whmcs']['order_status'], $sealed['whmcs']['order_status']);
+        $this->assertSame($recorded['whmcs'], $sealed['whmcs']);
+    }
+
+    public function testB2LiveServiceEditsAfterCheckoutAreNotSealedAndNeedAConfirmation(): void
+    {
+        $service = $this->readyToRequote();
+        $this->editLiveService();
+
+        $plan = $service->requotePlan(30);
+        $this->assertSame('needs_override', $plan['code']);
+        $this->assertSame('recorded_deviation', $plan['override_kind']);
+        $this->assertSame('recorded_mapping', $plan['source']);
+        $rows = $this->rows($plan);
+        $this->assertTrue($rows['First payment']['live_differs']);
+        $this->assertSame('1999.00', $rows['First payment']['new'], 'what gets sealed is the recorded value');
+        $this->assertSame('1.00', $rows['First payment']['live']);
+        $this->assertTrue($rows['Recurring']['live_differs']);
+        $this->assertTrue($rows['Options']['live_differs']);
+        $this->assertStringContainsString('x2', $rows['Options']['live']);
+        $this->assertFalse($rows['Domain']['live_differs']);
+        $this->assertNotSame('', $plan['diff_token']);
+        $this->assertStringContainsString('First payment recorded 1999.00, WHMCS now 1.00', $plan['message']);
+
+        $refused = $service->requote(30, 7);
+        $this->assertSame('needs_override', $refused['code']);
+        $this->assertSame(['invalid'], $this->states(), 'nothing is sealed without the confirmation');
+
+        $r = $service->requote(30, 7, true, $plan['diff_token']);
+        $this->assertTrue($r['ok'], $r['message']);
+        $sealed = $this->payload(1);
+        $this->assertSame('1999.00', $sealed['pricing']['setup']);
+        $this->assertSame('1999.00', $sealed['pricing']['recurring']);
+        $this->assertSame(1, $sealed['configuration']['options'][0]['quantity']);
+        $this->assertStringContainsString('CONFIRMED by admin #7', $this->log());
+        $this->assertStringContainsString('WHMCS now 1.00', $this->log());
+        $this->assertStringContainsString('taken from the verified recorded quote', $this->log());
+    }
+
+    public function testB2ALiveEditMadeAfterThePlanWasShownInvalidatesTheToken(): void
+    {
+        $service = $this->readyToRequote();
+        Capsule::table('tblhosting')->where('id', 30)->update(['firstpaymentamount' => '1.00']);
+        $token = $service->requotePlan(30)['diff_token'];
+        Capsule::table('tblhosting')->where('id', 30)->update(['firstpaymentamount' => '2.00']);
+        $this->assertSame('diff_changed', $service->requote(30, 7, true, $token)['code']);
+        $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testB2AnInvoiceEditedAfterCheckoutIsShownAndNeverSealedAsTheTotal(): void
+    {
+        $service = $this->readyToRequote();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['subtotal' => '1.00', 'total' => '1.00', 'tax' => '0.50']);
+        $plan = $service->requotePlan(30);
+        $rows = $this->rows($plan);
+        $this->assertSame('recorded_deviation', $plan['override_kind']);
+        $this->assertTrue($rows['Total due']['live_differs']);
+        $this->assertSame('1999.00', $rows['Total due']['new']);
+        $this->assertTrue($rows['Tax 1']['live_differs']);
+        $r = $service->requote(30, 7, true, $plan['diff_token']);
+        if ($r['ok']) {
+            $this->assertSame('1999.00', $this->payload(1)['whmcs']['total_due']);
+            $this->assertSame('0.00', $this->payload(1)['pricing']['tax_1']);
+        } else {
+            $this->assertNotContains('sealed', $this->states(), 'a drifted invoice total still cannot seal');
+        }
+    }
+
+    public function testB2AMergedAwayInvoiceIsShownAsGoneNotAsADeviation(): void
+    {
+        $service = $this->readyToRequote();
+        $this->deleteInvoice(20);
+        $this->invoice(24, 'Paid', 40, [['Hosting', 30]]);
+        $plan = $service->requotePlan(30);
+        $rows = $this->rows($plan);
+        $this->assertSame('merged', $plan['via']);
+        $this->assertSame('(invoice no longer exists)', $rows['Total due']['live']);
+        $this->assertFalse($rows['Total due']['live_differs']);
+    }
+
+    public function testB2UnreadableLiveOptionsAreADeviationButTheRecordedOptionsStillSeal(): void
+    {
+        $service = $this->readyToRequote();
+        Capsule::$tables['mod_contabo_config_option_value_link'] = [];
+        Capsule::$tables['mod_contabo_config_option_link'] = [];
+        $plan = $service->requotePlan(30);
+        $rows = $this->rows($plan);
+        $this->assertTrue($rows['Options']['live_differs']);
+        $this->assertStringStartsWith('(unreadable:', $rows['Options']['live']);
+        $r = $service->requote(30, 7, true, $plan['diff_token']);
+        $this->assertTrue($r['ok'], $r['message']);
+        $this->assertSame('ubuntu-24-04', $this->payload(1)['configuration']['options'][0]['machine_code']);
+    }
+
+    public function testB2TheRecordedSnapshotKindAlsoReplaysTheRecordedQuoteAndShowsLiveDeviations(): void
+    {
+        $service = $this->readyToRequote();
+        $this->editLiveService();
+        Capsule::$tables['mod_contabo_mapping_publications'] = [];
+        $plan = $service->requotePlan(30);
+        $this->assertSame('recorded_snapshot', $plan['override_kind']);
+        $this->assertTrue($this->rows($plan)['First payment']['live_differs']);
+        $this->assertStringContainsString('First payment recorded 1999.00, WHMCS now 1.00', $plan['message']);
+        $r = $service->requote(30, 7, true, $plan['diff_token']);
+        $this->assertTrue($r['ok'], $r['message']);
+        $this->assertSame('1999.00', $this->payload(1)['pricing']['setup']);
+    }
+
+    public function testB2TheCurrentMappingOverrideShowsAndBindsTheLiveQuoteFields(): void
+    {
+        $this->payOwn();
+        $service = new PaidOrderSnapshotService();
+        $plan = $service->requotePlan(30);
+        $this->assertSame('current_mapping', $plan['override_kind']);
+        $rows = $this->rows($plan);
+        $this->assertSame('(not recorded)', $rows['First payment']['old']);
+        $this->assertSame('1999.00', $rows['First payment']['new']);
+        $this->assertTrue($rows['First payment']['changed']);
+        Capsule::table('tblhosting')->where('id', 30)->update(['firstpaymentamount' => '5.00']);
+        $this->assertSame('diff_changed', $service->requote(30, 7, true, $plan['diff_token'])['code']);
+        $this->assertSame([], $this->snapshots());
+    }
+
+    // ── 1.1.6: keyed confirmation token ──────────────────────────────────────
+
+    public function testTheConfirmationTokenIsAnHmacKeyedFromTheWhmcsEncryptionKey(): void
+    {
+        $service = $this->readyToRequote();
+        $this->editLiveService();
+        $plan = $service->requotePlan(30);
+        $token = $plan['diff_token'];
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $token);
+        $this->assertSame($token, $service->requotePlan(30)['diff_token'], 'deterministic for the same state');
+        // not the unkeyed sha256 of the shown content
+        $this->assertNotSame(hash('sha256', json_encode($plan['diff'])), $token);
+
+        $GLOBALS['cc_encryption_hash'] = 'a-different-install-key';
+        $other = $service->requotePlan(30)['diff_token'];
+        $this->assertNotSame($token, $other);
+        $this->assertSame('diff_changed', $service->requote(30, 7, true, $token)['code'], 'a token minted without the key is worthless');
+        $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testWithoutTheEncryptionKeyNoConfirmationIsIssuedAndNothingSeals(): void
+    {
+        $service = $this->readyToRequote();
+        $this->editLiveService();
+        unset($GLOBALS['cc_encryption_hash']);
+        $plan = $service->requotePlan(30);
+        $this->assertSame('token_unavailable', $plan['code']);
+        $this->assertFalse($plan['ready']);
+        $this->assertSame('', $plan['diff_token']);
+        $r = $service->requote(30, 7, true, '');
+        $this->assertFalse($r['ok']);
+        $this->assertSame('token_unavailable', $r['code']);
+        $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testTheNoConfirmationReadyPathDoesNotNeedTheKey(): void
+    {
+        $service = $this->readyToRequote();
+        unset($GLOBALS['cc_encryption_hash']);
+        $this->assertTrue($service->requote(30, 7)['ok']);
+    }
+
+    public function testTheTokenCoversTheRecordedRowItReplays(): void
+    {
+        $service = $this->readyToRequote();
+        $this->editLiveService();
+        $token = $service->requotePlan(30)['diff_token'];
+        $this->mutatePayload(static function (array &$p): void {
+            $p['labels'] = ['changed' => 'x'];
+        });
+        $after = $service->requotePlan(30);
+        $this->assertNotSame($token, $after['diff_token'] ?? '');
+    }
+
+    // ── 1.1.6: only a permitted admin may confirm ───────────────────────────
+
+    public function testAnAdminWithoutTheRoleCannotConfirmAnOverrideOrAConfirmation(): void
+    {
+        $service = $this->readyToRequote();
+        $this->editLiveService();
+        $token = $service->requotePlan(30)['diff_token'];
+        foreach ([8, 9, 99, 0] as $adminId) {
+            $r = $service->requote(30, $adminId, true, $token);
+            $this->assertFalse($r['ok'], 'admin ' . $adminId);
+            $this->assertSame('not_permitted', $r['code'], 'admin ' . $adminId);
+        }
+        $this->assertSame(['invalid'], $this->states());
+        $this->assertStringContainsString('confirmation REFUSED for service #30: admin #8', $this->log());
+        $this->assertTrue($service->requote(30, 7, true, $token)['ok']);
+    }
+
+    public function testTheOverrideToTheCurrentMappingIsAlsoRoleGated(): void
+    {
+        $this->payOwn();
+        $service = new PaidOrderSnapshotService();
+        $token = $service->requotePlan(30)['diff_token'];
+        $this->assertSame('not_permitted', $service->requote(30, 8, true, $token)['code']);
+        $this->assertSame([], $this->snapshots());
+        $this->assertTrue($service->requote(30, 7, true, $token)['ok']);
+    }
+
+    public function testTheRoleListIsConfigurableAndReplacesTheDefault(): void
+    {
+        $service = $this->readyToRequote();
+        $this->editLiveService();
+        $token = $service->requotePlan(30)['diff_token'];
+        Capsule::$tables['mod_contabo_settings'] = [['key' => 'snapshot.requote_role_ids', 'value' => '3, x, 0']];
+        $this->assertFalse($service->adminMayConfirm(7));
+        $this->assertTrue($service->adminMayConfirm(8));
+        $this->assertFalse($service->adminMayConfirm(9), 'a disabled admin never may');
+        $this->assertSame('not_permitted', $service->requote(30, 7, true, $token)['code']);
+        $this->assertTrue($service->requote(30, 8, true, $token)['ok']);
+    }
+
+    public function testTheRoleGateDoesNotBlockTheNoConfirmationReadyPath(): void
+    {
+        $service = $this->readyToRequote();
+        $this->assertTrue($service->requote(30, 8)['ok']);
+    }
+
+    // ── 1.1.6: edge cases from the 1.1.5 review ─────────────────────────────
+
+    public function testALaterRetryDraftDoesNotMoveTheCheckpointTheRecordedMappingIsJudgedAgainst(): void
+    {
+        $this->draft();
+        // The checkout draft was made on 2026-01-01, while mapping-v1 was current.
+        Capsule::table('mod_securiacevps_order_snapshots')->update(['state' => 'invalid', 'created_at' => '2026-01-01 00:00:00']);
+        $this->republish();
+        Capsule::table('mod_contabo_mapping_publications')->where('mapping_version', 'mapping-v1')->update(['effective_at' => '2025-12-01 00:00:00']);
+        Capsule::table('mod_contabo_mapping_publications')->where('mapping_version', 'mapping-v2')->update([
+            'effective_at' => '2026-02-01 00:00:00', 'supersedes_mapping_version' => 'mapping-v1',
+        ]);
+        $this->hashPublications();
+        // A failed re-quote left a newer row that still records mapping-v1.
+        $retry = $this->snapshots()[0];
+        $retry['id'] = 2;
+        $retry['snapshot_uuid'] = 'retry-uuid';
+        $retry['created_at'] = '2026-03-01 00:00:00';
+        Capsule::$tables['mod_securiacevps_order_snapshots'][] = $retry;
+        $this->payOwn();
+
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertSame('recorded_mapping', $plan['source'], $plan['message']);
+        $this->assertFalse($plan['needs_override']);
     }
 }
