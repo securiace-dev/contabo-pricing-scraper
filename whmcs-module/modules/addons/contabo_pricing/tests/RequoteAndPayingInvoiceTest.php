@@ -105,6 +105,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
             ]),
         ];
         Capsule::table('mod_contabo_mapping')->where('id', 70)->update(['published_mapping_version' => $version]);
+        $this->hashPublications();
     }
 
     private function mutatePayload(callable $change): void
@@ -165,43 +166,149 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertSame([], $this->create());
     }
 
-    public function testRequoteFallsBackToTheRecordedSnapshotWhenThePublicationIsGone(): void
+    private function dropPublication(string $version): void
+    {
+        Capsule::$tables['mod_contabo_mapping_publications'] = array_values(array_filter(
+            Capsule::$tables['mod_contabo_mapping_publications'],
+            static fn ($r): bool => ((array) $r)['mapping_version'] !== $version
+        ));
+    }
+
+    public function testARecordedSnapshotWhoseSkuNothingCorroboratesNeedsAnExplicitConfirmation(): void
     {
         $this->draft();
         $this->invalidate();
         $this->payOwn();
         $this->republish();
-        Capsule::$tables['mod_contabo_mapping_publications'] = array_values(array_filter(
-            Capsule::$tables['mod_contabo_mapping_publications'],
-            static fn ($r): bool => ((array) $r)['mapping_version'] !== 'mapping-v1'
-        ));
+        $this->dropPublication('mapping-v1');
+        $service = new PaidOrderSnapshotService();
 
-        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $plan = $service->requotePlan(30);
+        $this->assertSame('needs_override', $plan['code']);
+        $this->assertSame('recorded_snapshot', $plan['override_kind']);
         $this->assertSame('recorded_snapshot', $plan['source']);
-        $r = (new PaidOrderSnapshotService())->requote(30, 7);
+        $this->assertStringContainsString('SKU V45', $plan['message']);
+        $this->assertStringContainsString('cannot be checked', $plan['message']);
+
+        $r = $service->requote(30, 7);
+        $this->assertFalse($r['ok']);
+        $this->assertSame('needs_override', $r['code']);
+        $this->assertSame(['invalid'], $this->states(), 'an unconfirmed snapshot is never sealed');
+
+        $r = $service->requote(30, 7, true, $plan['diff_token']);
         $this->assertTrue($r['ok'], $r['message']);
         $sealed = $this->payload(1);
         $this->assertSame('V45', $sealed['provider']['sku_id']);
         $this->assertSame('EU', $sealed['provider']['region_id']);
         $this->assertSame('image-1', $sealed['provider']['image_id']);
         $this->assertSame('2199.00', $sealed['pricing']['renewal']);
+        $this->assertStringContainsString('CONFIRMED by admin #7', $this->log());
+        $this->assertStringContainsString('SKU V45', $this->log());
     }
 
-    public function testARecordedPublicationThatDisagreesWithTheRowIsNotTrusted(): void
+    public function testTheSnapshotConfirmationIsBoundToTheValuesTheAdminSaw(): void
     {
         $this->draft();
         $this->invalidate();
         $this->payOwn();
+        $this->dropPublication('mapping-v1');
+        $service = new PaidOrderSnapshotService();
+        $token = $service->requotePlan(30)['diff_token'];
+        $this->mutatePayload(static function (array &$p): void {
+            $p['provider']['sku_id'] = 'V99';
+        });
+        $r = $service->requote(30, 7, true, $token);
+        $this->assertFalse($r['ok']);
+        $this->assertSame('diff_changed', $r['code']);
+        $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testTheOverrideFlagWithAWrongTokenNeverSeals(): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->payOwn();
+        $this->dropPublication('mapping-v1');
+        $r = (new PaidOrderSnapshotService())->requote(30, 7, true, 'nope');
+        $this->assertFalse($r['ok']);
+        $this->assertSame('diff_changed', $r['code']);
+    }
+
+    public function testARecordedPublicationThatFailsItsHashIsNotTrusted(): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->payOwn();
+        $this->republish();
+        // Edited after publication, hash left stale: the tamper signal must not
+        // fall back to the row's own (unhashed) SKU.
         Capsule::table('mod_contabo_mapping_publications')->where('mapping_version', 'mapping-v1')->update([
             'payload_json' => json_encode(['provider' => ['sku_id' => 'EDITED', 'region_id' => 'EU', 'image_id' => 'image-1'], 'renewal_amount' => '2199.00']),
         ]);
 
         $plan = (new PaidOrderSnapshotService())->requotePlan(30);
-        $this->assertSame('needs_override', $plan['code'], 'the SKU is not hashed, so a disagreeing publication cannot be reconciled silently');
-        $this->assertContains('SKU', array_column($plan['diff'], 'field'));
+        $this->assertSame('needs_override', $plan['code']);
+        $this->assertSame('current_mapping', $plan['override_kind']);
+        $this->assertStringContainsString('failed verification', $plan['reason']);
         $r = (new PaidOrderSnapshotService())->requote(30, 7);
         $this->assertFalse($r['ok']);
-        $this->assertSame('needs_override', $r['code']);
+        $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testARecordedPublicationWithAHashButNoHashColumnValueIsNotTrusted(): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->payOwn();
+        $this->republish();
+        Capsule::table('mod_contabo_mapping_publications')->where('mapping_version', 'mapping-v1')->update(['payload_hash' => '']);
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertSame('current_mapping', $plan['override_kind']);
+        $this->assertStringContainsString('no usable payload hash', $plan['reason']);
+    }
+
+    public function testARecordedPublicationThatDisagreesWithTheRowEvenWithAValidHashIsNotTrusted(): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->payOwn();
+        $this->republish();
+        Capsule::table('mod_contabo_mapping_publications')->where('mapping_version', 'mapping-v1')->update([
+            'payload_json' => json_encode(['provider' => ['sku_id' => 'EDITED', 'region_id' => 'EU', 'image_id' => 'image-1'], 'renewal_amount' => '2199.00']),
+        ]);
+        $this->hashPublications();
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertSame('current_mapping', $plan['override_kind']);
+        $this->assertStringContainsString('disagrees with the draft row on provider.sku_id', $plan['reason']);
+        $this->assertContains('SKU', array_column($plan['diff'], 'field'));
+    }
+
+    public function testARecordedPublicationWhoseRenewalDisagreesWithTheHashedPricingIsNotTrusted(): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->payOwn();
+        $this->republish();
+        Capsule::table('mod_contabo_mapping_publications')->where('mapping_version', 'mapping-v1')->update([
+            'payload_json' => json_encode(['provider' => ['sku_id' => 'V45', 'region_id' => 'EU', 'image_id' => 'image-1'], 'renewal_amount' => '1.00']),
+        ]);
+        $this->hashPublications();
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertSame('current_mapping', $plan['override_kind']);
+        $this->assertStringContainsString('renewal amount', $plan['reason']);
+    }
+
+    public function testATamperedCurrentPublicationCannotBeUsedForAnOverrideEither(): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $this->payOwn();
+        $this->mutatePayload(static function (array &$p): void {
+            $p['pricing']['recurring'] = '1.00';
+        });
+        Capsule::table('mod_contabo_mapping_publications')->where('mapping_version', 'mapping-v1')->update(['payload_hash' => str_repeat('a', 64)]);
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertSame('draft_failed', $plan['code']);
         $this->assertSame(['invalid'], $this->states());
     }
 
@@ -431,6 +538,66 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
         ($this->hook('InvoiceCancelled'))(['invoiceid' => 20]);
         $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testCancellingTheReplacementInvoiceInvalidatesTheDraftOnceNothingLiveRemains(): void
+    {
+        $this->draft();
+        $this->invoice(23, 'Unpaid', 40, [['Hosting', 30]]);
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        ($this->hook('InvoiceCancelled'))(['invoiceid' => 20]);
+        $this->assertSame(['draft'], $this->states());
+
+        Capsule::table('tblinvoices')->where('id', 23)->update(['status' => 'Cancelled']);
+        ($this->hook('InvoiceCancelled'))(['invoiceid' => 23]);
+        $this->assertSame(['invalid'], $this->states(), 'the replacement was the last live invoice');
+    }
+
+    public function testCancellingAReplacementKeepsTheDraftWhileTheBoundInvoiceIsStillLive(): void
+    {
+        $this->draft();
+        $this->invoice(23, 'Cancelled', 40, [['Hosting', 30]]);
+        ($this->hook('InvoiceCancelled'))(['invoiceid' => 23]);
+        $this->assertSame(['draft'], $this->states(), 'the order invoice #20 is still Unpaid');
+    }
+
+    public function testCancellingAMassPayInvoiceDoesNotInvalidateTheLiveOriginal(): void
+    {
+        $this->draft();
+        $this->invoice(21, 'Cancelled', 40, [['Invoice', 20]]);
+        ($this->hook('InvoiceCancelled'))(['invoiceid' => 21]);
+        $this->assertSame(['draft'], $this->states());
+    }
+
+    public function testMassPayThatAlsoMarksTheOriginalPaidResolvesThroughTheOrdersOwnInvoice(): void
+    {
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Paid']);
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20]]);
+
+        ($this->hook('InvoicePaid'))(['invoiceid' => 21]);
+        $this->assertSame(['sealed'], $this->states());
+        $this->assertStringNotContainsString('mass_pay', $this->log(), 'the order link wins over the item link');
+        $this->assertSame([], $this->create());
+    }
+
+    public function testMassPayInvoiceCarryingAHostingItemForTheServiceSeals(): void
+    {
+        $this->draft();
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20], ['Hosting', 30]]);
+        ($this->hook('InvoicePaid'))(['invoiceid' => 21]);
+        $this->assertSame(['sealed'], $this->states());
+    }
+
+    public function testThePaidOrderInvoiceOfAnotherClientIsRefused(): void
+    {
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Paid', 'userid' => 41]);
+        $this->activeOrder();
+        $this->assertSame(['abortcmd' => true], $this->create());
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertSame('paying_invoice_refused', $plan['code']);
+        $this->assertStringContainsString('belongs to client #41', $plan['message']);
     }
 
     public function testAnUnpaidLinkedInvoiceDoesNotSeal(): void

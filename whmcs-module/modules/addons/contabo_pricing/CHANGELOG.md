@@ -6,22 +6,24 @@ No schema change. No new setting. Read `docs/UPGRADE_1_1_5.md`.
 
 - **Re-quote no longer silently uses a republished mapping.** The admin re-quote rebuilds the
   contract from the customer's OWN recorded quote: the mapping publication named by the draft
-  row's `mapping_version` (`recorded_mapping`), or the verified draft's own provider and price
-  fields when that publication is gone (`recorded_snapshot`). The row must still pass the
-  hash, binding and provider checks, and a publication that disagrees with the row on SKU,
-  region or image is not trusted. When nothing verifiable was recorded, re-quote refuses with
-  an admin message (`needs_override`). The admin may then confirm an explicit override: the
-  panel shows the old versus new SKU, Region, Image and Renewal, the confirm POST carries a
-  token bound to exactly that diff (and to the order, paying invoice and mapping version), and
-  a changed order, invoice or mapping makes it refuse (`diff_changed`). The override and its
-  diff are written to the Activity Log with the admin id.
+  row's `mapping_version` (`recorded_mapping`). That publication must verify (its stored sha256
+  payload hash, as at checkout) and agree with the row on SKU, Region, Image and renewal;
+  otherwise it is not trusted. If the publication is gone, the verified draft's own fields are
+  offered as `recorded_snapshot`, but because `provider.sku_id` is not covered by any snapshot
+  hash and nothing corroborates it, this needs an explicit logged confirmation that shows the
+  exact SKU, Region, Image and Renewal that will be sealed. When nothing verifiable was
+  recorded, re-quote refuses (`needs_override`) and the admin may confirm an override onto the
+  current mapping (itself hash-verified). Both confirmations show the diff, the confirm POST
+  carries a token bound to that diff, the order, the paying invoice and the mapping versions, a
+  change makes it refuse (`diff_changed`), and the action is written to the Activity Log with
+  the admin id as a WARNING.
 - **The paying invoice is resolved through WHMCS links.** The customer may pay an invoice other
   than the order's own. A Paid invoice now settles the order when it is: the order's or
   draft's own invoice (`order`); a Mass Pay invoice with a `tblinvoiceitems` row of type
   `Invoice` whose `relid` is that invoice (`mass_pay`); a merged invoice with a `Hosting` or
   `Setup` item for the service when the draft's invoice no longer exists (`merged`); or a
   re-issued invoice with such an item while the draft's invoice still exists (`reinvoice`).
-  Linked invoices must belong to the service owner, and the draft is still fully verified
+  Every link, including the order's own invoice, must belong to the service owner, and the draft is still fully verified
   before it seals. A Paid invoice that is not linked, or belongs to another client, never
   seals; it is refused, named in the Activity Log and in the stuck list, and cannot be
   overridden.
@@ -30,12 +32,14 @@ No schema change. No new setting. Read `docs/UPGRADE_1_1_5.md`.
   AfterShoppingCartCheckout hook, the PreModuleCreate gate (self-heal and grandfather check)
   and the admin re-quote all use the same resolution.
 - **`InvoiceCancelled` keeps a draft that has a live replacement invoice** for the same
-  service (a re-invoice), so the replacement can still seal when it is paid. With no live
-  replacement the draft is invalidated as before.
+  service (a re-invoice), so the replacement can still seal when it is paid. Orders are found
+  through the order's invoice and the cancelled invoice's `Invoice`, `Hosting` and `Setup`
+  items, so cancelling the last live replacement also invalidates the draft, and cancelling a
+  replacement or Mass Pay invoice keeps a draft whose own invoice is still live.
 - **Price drift at seal** skips the invoice-total comparison for a linked (non-own) invoice
   and logs the paid and quoted totals instead.
 - **Maintenance panel** lists the paying invoice and how it links, a status (`Ready`,
-  `Needs override`, `Refused`) with the reason, and a diff-and-confirm card for overrides.
+  `Needs confirmation`, `Needs override`, `Refused`) with the reason, and a diff-and-confirm card for overrides.
 - API: `createDraft()` takes an optional 5th `$recordedSource`; `requote()` takes
   `$override`, `$diffToken`; new `requotePlan()`, `payingInvoice()`, `sealForPaidInvoice()`;
   `stuckPaidServices()` rows carry `via`, `status`, `source`, `reason`, `diff`, `diff_token`.

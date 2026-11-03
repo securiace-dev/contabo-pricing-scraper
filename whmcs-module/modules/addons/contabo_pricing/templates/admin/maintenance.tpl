@@ -186,7 +186,8 @@ require __DIR__ . '/_layout_open.tpl';
     A paid VPS service with no sealed snapshot is refused at Create (Activity Log:
     <code class="mono">Contabo provisioning gate ABORTED</code>). Re-quoting rebuilds
     the snapshot from the customer's <strong>own recorded quote</strong> (their mapping
-    version, or the recorded snapshot if that publication is gone), binds it to the
+    version; if that publication is gone, the recorded snapshot after an explicit
+    confirmation, because its SKU cannot be checked against anything), binds it to the
     Paid invoice that settled the order (the order's invoice, or a mass-pay, merged or
     re-issued invoice linked to it), seals it, and keeps the old row as superseded.
     If no verifiable recorded quote exists it refuses; the only way forward is an
@@ -203,7 +204,7 @@ require __DIR__ . '/_layout_open.tpl';
       <p class="cb-card-sub"><?= $esc((string) $cb_preview['message']) ?></p>
       <?php if (!empty($cb_preview['needs_override'])): ?>
         <table class="cb-table">
-          <thead><tr><th>Field</th><th>Customer's recorded quote</th><th>Current mapping <?= $esc((string) $cb_preview['mapping_version']) ?></th></tr></thead>
+          <thead><tr><th>Field</th><th>Customer's recorded quote<?= ($cb_preview['override_kind'] ?? '') === 'recorded_snapshot' ? ' (will be sealed)' : '' ?></th><th>Current mapping<?= ($cb_preview['override_kind'] ?? '') === 'recorded_snapshot' ? '' : ' ' . $esc((string) $cb_preview['mapping_version']) ?></th></tr></thead>
           <tbody>
           <?php foreach ((array) $cb_preview['diff'] as $cb_d): ?>
             <tr>
@@ -220,7 +221,7 @@ require __DIR__ . '/_layout_open.tpl';
           <input type="hidden" name="override" value="1">
           <input type="hidden" name="diff_token" value="<?= $esc((string) $cb_preview['diff_token']) ?>">
           <?= generate_token() ?>
-          <button class="cb-btn" type="submit">Confirm override with the current mapping</button>
+          <button class="cb-btn" type="submit"><?= ($cb_preview['override_kind'] ?? '') === 'recorded_snapshot' ? 'Confirm: seal the recorded quote' : 'Confirm override with the current mapping' ?></button>
         </form>
       <?php endif; ?>
     </div>
@@ -239,7 +240,7 @@ require __DIR__ . '/_layout_open.tpl';
             <?php if (($cb_row['status'] ?? '') === 'refused'): ?>
               <strong>Refused:</strong> <?= $esc((string) ($cb_row['reason'] ?? '')) ?>
             <?php elseif (($cb_row['status'] ?? '') === 'override'): ?>
-              Needs override: <?= $esc((string) ($cb_row['reason'] ?? '')) ?>
+              <?= ($cb_row['override_kind'] ?? '') === 'recorded_snapshot' ? 'Needs confirmation' : 'Needs override' ?>: <?= $esc((string) ($cb_row['reason'] ?? '')) ?>
             <?php else: ?>
               Ready (<?= $esc((string) ($cb_row['source'] ?? '')) ?>)
             <?php endif; ?>
@@ -250,7 +251,7 @@ require __DIR__ . '/_layout_open.tpl';
               <input type="hidden" name="action" value="maintenance-requote">
               <input type="hidden" name="service_id" value="<?= (int) $cb_row['service_id'] ?>">
               <?= generate_token() ?>
-              <button class="cb-btn" type="submit"><?= ($cb_row['status'] ?? '') === 'override' ? 'Review diff' : 'Re-quote' ?></button>
+              <button class="cb-btn" type="submit"><?= ($cb_row['status'] ?? '') === 'override' ? 'Review' : 'Re-quote' ?></button>
             </form>
             <?php endif; ?>
           </td>

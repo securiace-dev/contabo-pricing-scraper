@@ -294,6 +294,15 @@ final class PaidOrderSnapshotService
     {
         $id = (int) ($invoice['id'] ?? 0);
         if ($id === $bound) {
+            $owner = (int) ($invoice['userid'] ?? 0);
+            if ($userId > 0 && $owner > 0 && $owner !== $userId) {
+                return ['', sprintf(
+                    'Paid invoice #%d is the order\'s invoice but belongs to client #%d, not the service owner #%d',
+                    $id,
+                    $owner,
+                    $userId
+                )];
+            }
             return ['order', ''];
         }
         if ($userId <= 0 || (int) ($invoice['userid'] ?? 0) !== $userId) {
@@ -542,18 +551,41 @@ final class PaidOrderSnapshotService
         }
         $count = 0;
         $now = date('Y-m-d H:i:s');
-        $orders = Capsule::table('tblorders')->where('invoiceid', $invoiceId)->get();
-        foreach ($orders as $order) {
-            $orderId = (int) (((array) $order)['id'] ?? 0);
-            if ($orderId <= 0) {
-                continue;
+        $covered = [$invoiceId];
+        $services = [];
+        foreach (Capsule::table('tblinvoiceitems')->where('invoiceid', $invoiceId)->get() as $item) {
+            $item = (array) $item;
+            $type = (string) ($item['type'] ?? '');
+            $relid = (int) ($item['relid'] ?? 0);
+            if ($type === 'Invoice' && $relid > 0) {
+                $covered[] = $relid;
+            } elseif (($type === 'Hosting' || $type === 'Setup') && $relid > 0) {
+                $services[] = $relid;
             }
+        }
+        $orderIds = [];
+        foreach (Capsule::table('tblorders')->whereIn('invoiceid', $covered)->get() as $order) {
+            $orderIds[] = (int) (((array) $order)['id'] ?? 0);
+        }
+        foreach (array_unique($services) as $serviceId) {
+            $service = $this->row('tblhosting', 'id', (int) $serviceId);
+            $orderIds[] = $service === null ? 0 : (int) ($service['orderid'] ?? 0);
+        }
+        foreach (array_values(array_unique(array_filter($orderIds, static fn (int $id): bool => $id > 0))) as $orderId) {
             $drafts = Capsule::table('mod_securiacevps_order_snapshots')
                 ->where('order_id', $orderId)
                 ->where('state', 'draft')
                 ->get();
             foreach ($drafts as $draft) {
                 $draft = (array) $draft;
+                // The cancelled invoice may be a replacement, not the one the
+                // draft is bound to: a still-live bound invoice keeps it open.
+                $orderRow = $this->row('tblorders', 'id', $orderId);
+                $boundId = $this->draftInvoiceId($draft) ?? (int) ($orderRow['invoiceid'] ?? 0);
+                $boundRow = $boundId > 0 && $boundId !== $invoiceId ? $this->row('tblinvoices', 'id', $boundId) : null;
+                if ($boundRow !== null && strcasecmp((string) ($boundRow['status'] ?? ''), 'Cancelled') !== 0) {
+                    continue;
+                }
                 if ($this->hasLiveReplacementInvoice((int) ($draft['service_id'] ?? 0), $invoiceId)) {
                     $this->activity(sprintf(
                         'Contabo paid-order snapshot: invoice #%d was cancelled but service #%d has a replacement invoice; the draft stays open and seals if that invoice is paid.',
@@ -634,7 +666,7 @@ final class PaidOrderSnapshotService
         $plan = [
             'ok' => false, 'code' => '', 'message' => '', 'snapshot_uuid' => '',
             'ready' => false, 'needs_override' => false, 'source' => 'none',
-            'mapping_version' => '', 'diff' => [], 'diff_token' => '', 'recorded' => null,
+            'mapping_version' => '', 'diff' => [], 'diff_token' => '', 'recorded' => null, 'override_kind' => '',
             'order_id' => 0, 'invoice_id' => 0, 'bound_invoice_id' => 0, 'via' => '', 'reason' => '',
         ];
         $fail = static function (array $plan, string $code, string $message): array {
@@ -705,39 +737,68 @@ final class PaidOrderSnapshotService
         }
 
         $recorded = $trusted !== null ? $this->recordedSource($trusted, $whyNot) : null;
-        if ($recorded !== null) {
+        $kind = 'current_mapping';
+        if ($recorded !== null && $recorded['source'] === 'recorded_mapping') {
             $plan['ready'] = true;
-            $plan['source'] = $recorded['source'];
+            $plan['source'] = 'recorded_mapping';
             $plan['mapping_version'] = (string) $recorded['mapping_version'];
             $plan['recorded'] = $recorded;
             $plan['ok'] = true;
             $plan['code'] = 'ready';
-            $plan['message'] = 'Ready to re-quote from the ' . ($recorded['source'] === 'recorded_mapping' ? 'recorded mapping ' . $recorded['mapping_version'] : 'recorded snapshot');
+            $plan['message'] = 'Ready to re-quote from the recorded mapping ' . $recorded['mapping_version'];
             return $plan;
         }
         $plan['reason'] = $whyNot;
 
+        $current = null;
+        $currentError = '';
         try {
             $current = $this->currentPublication($productId);
         } catch (\Throwable $e) {
-            return $fail($plan, 'draft_failed', 'Cannot re-quote: ' . $whyNot . ', and the current mapping is unusable (' . substr($e->getMessage(), 0, 160) . ').');
+            $currentError = substr($e->getMessage(), 0, 160);
         }
-        $diff = $this->quoteDiff($newest, $current['payload'], $service);
+        if ($recorded !== null) {
+            // The draft verifies but no publication corroborates its unhashed
+            // SKU: the admin must see and confirm exactly what will be sealed.
+            $kind = 'recorded_snapshot';
+            $diff = $this->quoteDiff($trusted, $current['payload'] ?? [], $service);
+            $plan['source'] = 'recorded_snapshot';
+            $plan['recorded'] = $recorded;
+            $plan['mapping_version'] = (string) $recorded['mapping_version'];
+        } else {
+            if ($current === null) {
+                return $fail($plan, 'draft_failed', 'Cannot re-quote: ' . $whyNot . ', and the current mapping is unusable (' . $currentError . ').');
+            }
+            $diff = $this->quoteDiff($newest, $current['payload'], $service);
+            $plan['mapping_version'] = (string) $current['mapping_version'];
+        }
         $plan['ready'] = true;
         $plan['needs_override'] = true;
-        $plan['mapping_version'] = (string) $current['mapping_version'];
+        $plan['override_kind'] = $kind;
         $plan['diff'] = $diff;
         $plan['diff_token'] = hash('sha256', $this->canonicalJson([
-            $serviceId, $orderId, $paying['invoice_id'], $paying['bound_invoice_id'], $current['mapping_version'], $diff,
+            $serviceId, $orderId, $paying['invoice_id'], $paying['bound_invoice_id'], $kind,
+            $kind === 'recorded_snapshot' ? $recorded['payload'] : $current['mapping_version'],
+            $current['mapping_version'] ?? '', $diff,
         ]));
         $plan['code'] = 'needs_override';
-        $plan['message'] = sprintf(
-            'Service #%d cannot be re-quoted on its own recorded quote (%s). The current mapping %s would be used instead: %s. Confirm the override to proceed.',
-            $serviceId,
-            $whyNot,
-            $current['mapping_version'],
-            $this->describeDiff($diff)
-        );
+        if ($kind === 'recorded_snapshot') {
+            $plan['message'] = sprintf(
+                'Service #%d: the customer\'s recorded quote is intact, but %s. Confirm to seal exactly the recorded quote (%s). The current mapping %s is NOT used.',
+                $serviceId,
+                $whyNot,
+                $this->describeDiff($diff, true),
+                $current['mapping_version'] ?? '(unavailable)'
+            );
+        } else {
+            $plan['message'] = sprintf(
+                'Service #%d cannot be re-quoted on its own recorded quote (%s). The current mapping %s would be used instead: %s. Confirm the override to proceed.',
+                $serviceId,
+                $whyNot,
+                $current['mapping_version'],
+                $this->describeDiff($diff)
+            );
+        }
         return $plan;
     }
 
@@ -779,6 +840,9 @@ final class PaidOrderSnapshotService
             }
             if ($diffToken === '' || !hash_equals((string) $plan['diff_token'], $diffToken)) {
                 return $fail('diff_changed', 'The order, invoice or current mapping changed since the diff was shown. Review the new diff and confirm again.');
+            }
+            if ($plan['override_kind'] === 'recorded_snapshot') {
+                $recorded = $plan['recorded'];
             }
         } else {
             $recorded = $plan['recorded'];
@@ -822,7 +886,9 @@ final class PaidOrderSnapshotService
                 . (string) ($previous['mapping_version'] ?? '?');
         $newRow = Capsule::table('mod_securiacevps_order_snapshots')->where('snapshot_uuid', $uuid)->first();
         $mapping = $newRow !== null ? (string) (((array) $newRow)['mapping_version'] ?? '?') : '?';
-        $source = $plan['needs_override'] ? 'ADMIN OVERRIDE onto the current mapping' : (string) $plan['source'];
+        $source = $plan['override_kind'] === 'current_mapping'
+            ? 'ADMIN OVERRIDE onto the current mapping'
+            : ($plan['override_kind'] === 'recorded_snapshot' ? 'ADMIN-CONFIRMED recorded snapshot' : (string) $plan['source']);
         $this->activity(sprintf(
             'Contabo snapshot re-quoted by admin #%d: service #%d order #%d quoted on invoice #%d, paid on invoice #%d (%s), sealed as %s on mapping %s from %s (%s). Setup, recurring and total are those billed on the order; SKU, region, image and renewal come from the source named here.',
             $adminId,
@@ -836,13 +902,21 @@ final class PaidOrderSnapshotService
             $source,
             $note
         ));
-        if ($plan['needs_override']) {
+        if ($plan['override_kind'] === 'current_mapping') {
             $this->activity(sprintf(
                 'WARNING: Contabo re-quote OVERRIDE by admin #%d for service #%d: %s Reason no recorded quote was used: %s.',
                 $adminId,
                 $serviceId,
                 $this->describeDiff((array) $plan['diff']),
                 (string) $plan['reason']
+            ));
+        } elseif ($plan['override_kind'] === 'recorded_snapshot') {
+            $this->activity(sprintf(
+                'WARNING: Contabo re-quote CONFIRMED by admin #%d for service #%d on the recorded snapshot (%s): %s',
+                $adminId,
+                $serviceId,
+                (string) $plan['reason'],
+                $this->describeDiff((array) $plan['diff'], true)
             ));
         }
         return [
@@ -897,6 +971,7 @@ final class PaidOrderSnapshotService
                 'reason' => $refused || !$plan['ready'] ? (string) $plan['message'] : (string) $plan['reason'],
                 'diff' => $plan['diff'],
                 'diff_token' => (string) $plan['diff_token'],
+                'override_kind' => (string) $plan['override_kind'],
             ];
         }
         return $out;
@@ -922,16 +997,29 @@ final class PaidOrderSnapshotService
                 ->where('mapping_version', $version)
                 ->whereIn('state', ['published', 'superseded'])
                 ->first();
-            $publicationPayload = $publication !== null
-                ? json_decode((string) (((array) $publication)['payload_json'] ?? ''), true)
-                : null;
-            if (is_array($publicationPayload) && isset($publicationPayload['provider']) && is_array($publicationPayload['provider'])
-                && trim((string) ($publicationPayload['provider']['sku_id'] ?? '')) !== '') {
+            if ($publication !== null) {
+                // The publication exists, so it must verify and agree with the
+                // row; a publication that does not is a tamper signal and is
+                // never papered over with the row's own (unhashed) SKU.
+                $publicationPayload = $this->verifiedPublicationPayload((array) $publication, $integrity);
+                if ($publicationPayload === null) {
+                    $why = 'the recorded mapping ' . $version . ' failed verification (' . $integrity . ')';
+                    return null;
+                }
+                $publicationProvider = isset($publicationPayload['provider']) && is_array($publicationPayload['provider'])
+                    ? $publicationPayload['provider']
+                    : [];
                 foreach (['sku_id', 'region_id', 'image_id'] as $key) {
-                    if ((string) ($publicationPayload['provider'][$key] ?? '') !== (string) ($provider[$key] ?? '')) {
+                    $recordedValue = trim((string) ($publicationProvider[$key] ?? ''));
+                    if ($recordedValue === '' || $recordedValue !== (string) ($provider[$key] ?? '')) {
                         $why = 'the recorded mapping ' . $version . ' disagrees with the draft row on provider.' . $key;
                         return null;
                     }
+                }
+                if (array_key_exists('renewal_amount', $publicationPayload)
+                    && $this->money($publicationPayload['renewal_amount']) !== $this->money(((array) $payload['pricing'])['renewal'] ?? '0')) {
+                    $why = 'the recorded mapping ' . $version . ' disagrees with the draft row on the renewal amount';
+                    return null;
                 }
                 return [
                     'source' => 'recorded_mapping',
@@ -941,6 +1029,7 @@ final class PaidOrderSnapshotService
                 ];
             }
         }
+        $why = 'the mapping publication ' . ($version !== '' ? $version . ' ' : '') . 'no longer exists, so the SKU on the draft row cannot be checked against it';
         $configuration = (array) $payload['configuration'];
         $pricing = (array) $payload['pricing'];
         return [
@@ -980,7 +1069,7 @@ final class PaidOrderSnapshotService
         $diff = [];
         foreach ($pairs as $field => [$was, $now]) {
             $oldText = $was === null || (string) $was === '' ? '(not recorded)' : (string) $was;
-            $newText = (string) $now;
+            $newText = (string) $now === '' ? '(none)' : (string) $now;
             $diff[] = [
                 'field' => $field,
                 'old' => $oldText,
@@ -992,10 +1081,14 @@ final class PaidOrderSnapshotService
     }
 
     /** @param array<int,array<string,mixed>> $diff */
-    private function describeDiff(array $diff): string
+    private function describeDiff(array $diff, bool $recordedOnly = false): string
     {
         $parts = [];
         foreach ($diff as $d) {
+            if ($recordedOnly) {
+                $parts[] = (string) ($d['field'] ?? '') . ' ' . (string) ($d['old'] ?? '');
+                continue;
+            }
             $parts[] = sprintf(
                 '%s %s -> %s%s',
                 (string) ($d['field'] ?? ''),
@@ -1012,6 +1105,33 @@ final class PaidOrderSnapshotService
      *
      * @return array{mapping_version:string, catalog_version:string, payload:array<string,mixed>}
      */
+    /**
+     * The publication's payload only when its stored sha256 matches
+     * `payload_json` (the same check CheckoutGuard makes at checkout).
+     *
+     * @param array<string,mixed> $publication
+     * @return array<string,mixed>|null
+     */
+    private function verifiedPublicationPayload(array $publication, ?string &$why = null): ?array
+    {
+        $json = (string) ($publication['payload_json'] ?? '');
+        $stored = strtolower(trim((string) ($publication['payload_hash'] ?? '')));
+        if ($json === '' || preg_match('/^[a-f0-9]{64}$/', $stored) !== 1) {
+            $why = 'it has no usable payload hash';
+            return null;
+        }
+        if (!hash_equals($stored, hash('sha256', $json))) {
+            $why = 'its payload does not match its stored hash';
+            return null;
+        }
+        $payload = json_decode($json, true);
+        if (!is_array($payload)) {
+            $why = 'its payload is not valid JSON';
+            return null;
+        }
+        return $payload;
+    }
+
     private function currentPublication(int $productId): array
     {
         $mapping = Capsule::table('mod_contabo_mapping')
@@ -1039,9 +1159,9 @@ final class PaidOrderSnapshotService
                 'Mapping publication "' . $mappingVersion . '" was not found or is not published'
             );
         }
-        $payload = json_decode((string) (((array) $publication)['payload_json'] ?? ''), true);
-        if (!is_array($payload)) {
-            throw new \RuntimeException('Published mapping payload is invalid');
+        $payload = $this->verifiedPublicationPayload((array) $publication, $integrity);
+        if ($payload === null) {
+            throw new \RuntimeException('Published mapping payload is invalid (' . $integrity . ')');
         }
         $provider = isset($payload['provider']) && is_array($payload['provider']) ? $payload['provider'] : [];
         foreach (['sku_id', 'region_id', 'image_id'] as $required) {

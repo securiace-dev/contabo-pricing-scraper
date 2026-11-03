@@ -8,6 +8,16 @@ use WHMCS\Database\Capsule;
 /** Shared WHMCS order/invoice/mapping fixture for the paid-order snapshot flow tests. */
 trait SnapshotFixture
 {
+    /** Stamps every publication row with the sha256 of its payload_json (what CheckoutGuard stores). */
+    private function hashPublications(): void
+    {
+        foreach (Capsule::$tables['mod_contabo_mapping_publications'] ?? [] as $i => $row) {
+            $row = (array) $row;
+            $row['payload_hash'] = hash('sha256', (string) ($row['payload_json'] ?? ''));
+            Capsule::$tables['mod_contabo_mapping_publications'][$i] = $row;
+        }
+    }
+
     private function bootFixture(): void
     {
         Capsule::reset();
@@ -112,5 +122,6 @@ trait SnapshotFixture
             'id' => 102,
             'dimension_key' => 'Image',
         ]];
+        $this->hashPublications();
     }
 }

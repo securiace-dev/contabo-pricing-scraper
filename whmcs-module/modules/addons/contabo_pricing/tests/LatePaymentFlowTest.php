@@ -360,6 +360,7 @@ final class LatePaymentFlowTest extends TestCase
             'reason' => '',
             'diff' => [],
             'diff_token' => '',
+            'override_kind' => '',
         ]], $stuck);
 
         $r = $service->requote(30, 7);
