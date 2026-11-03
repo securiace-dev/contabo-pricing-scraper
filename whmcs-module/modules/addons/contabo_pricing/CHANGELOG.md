@@ -1,5 +1,38 @@
 # Changelog
 
+## 1.1.4 — 2026-11-03 (paid invoices never strand provisioning)
+
+No schema change. No new setting is required. Read `docs/UPGRADE_1_1_4.md`.
+
+- **A late payment no longer kills the snapshot.** Until 1.1.3 a draft older than 1800 s was
+  marked `invalid` when its invoice was paid, so bank-transfer and pay-on-due-date customers
+  were refused at Create with no way to get a new draft. The draft now stays valid until its
+  invoice is paid or cancelled. `quote_expires_at` only decides whether a payment counts as
+  late: it is the later of `snapshot.quote_ttl_seconds` after checkout (default 1800, clamped
+  60 to 2592000) and the end of the invoice due date. A late payment seals at the quoted terms
+  and writes a `WARNING: Contabo late payment sealed` Activity Log line.
+- **The customer's price is never raised.** At seal time the quoted invoice total, first
+  payment and recurring amount are compared with the invoice and service as they are now. A
+  difference is logged (`WARNING: Contabo price drift at seal`); the sealed amounts stay the
+  quoted ones.
+- **Fail-closed protections kept, and made explicit.** Before sealing, the draft's three hashes
+  (configuration, price, cart total) are recomputed from its payload and its order, invoice
+  and service binding is checked, and the provider region and image must agree with the hashed
+  configuration and carry a SKU (the provider section has no hash of its own; adding one needs
+  a schema change and is left for a later release). A draft that fails is marked `invalid`, logged as
+  `REFUSED to seal`, and still blocks provisioning. Unpaid, Fraud and Cancelled orders never seal.
+- **Gate safety net.** `ProvisioningGate` seals a verified draft whose invoice is Paid
+  (`sealed_at_gate_paid_invoice`, logged as a `WARNING`) instead of aborting when OrderPaid
+  did not seal it. A tampered or unpaid draft is still aborted.
+- **`InvoiceCancelled` hook** marks the order's draft snapshots `invalid`.
+- **Admin re-quote.** Maintenance has a "Re-quote a paid order" panel (POST + CSRF, action
+  `maintenance-requote`) listing paid services with no sealed snapshot, for example orders
+  already invalidated under 1.1.3. It rebuilds the snapshot from the paid invoice and the
+  current published mapping, seals it, keeps old rows as `superseded`, and logs the admin.
+  It refuses unless the invoice is Paid.
+- `PaidOrderSnapshotService::createDraft()` takes `?int $quoteTtlSeconds = null` (null = the
+  configured window above); passing a number keeps the old exact-lifetime behaviour.
+
 ## 1.1.3 — 2026-11-02 (provisioning gate, shared-schema stamp, secrets, scrape time budget)
 
 Behaviour change on deploy: read `docs/UPGRADE_1_1_3.md` before copying files.

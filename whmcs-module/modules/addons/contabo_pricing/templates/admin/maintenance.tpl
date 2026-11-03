@@ -6,6 +6,8 @@
  *   1. Schema health — green/red, current vs target schema_version + any
  *      missing required columns (from SchemaHealth::requiredColumnsPresent()).
  *   2. Run migrations now — POST action=maintenance-migrate (CSRF).
+ *   2b. Re-quote a paid order — POST action=maintenance-requote (CSRF),
+ *      field service_id. Lists paid services that have no sealed snapshot.
  *   3. Purge / reset module data — POST action=maintenance-purge (CSRF),
  *      gated by an "I understand" checkbox + a typed confirmation phrase.
  *
@@ -61,6 +63,9 @@ $cb_compatibility_mode = !empty($cb_health['compatibility_mode']);
 $cb_optional_missing = isset($cb_health['optional_missing']) && is_array($cb_health['optional_missing'])
     ? $cb_health['optional_missing']
     : [];
+
+$cb_stuck = isset($cb_stuck_services) && is_array($cb_stuck_services) ? $cb_stuck_services : [];
+$cb_ttl   = isset($cb_quote_ttl) ? (int) $cb_quote_ttl : 1800;
 
 $cb_flash = isset($_REQUEST['flash']) ? (string) $_REQUEST['flash'] : '';
 $cb_err   = isset($_REQUEST['error']) ? (string) $_REQUEST['error'] : '';
@@ -170,6 +175,51 @@ require __DIR__ . '/_layout_open.tpl';
     <input type="hidden" name="action" value="maintenance-migrate">
     <?= generate_token() ?>
     <button class="cb-btn" type="submit">Run migrations now</button>
+  </form>
+</div>
+
+<?php /* ── Panel 2b: Re-quote a paid order ────────────────────────────────── */ ?>
+<div class="cb-card">
+  <h3>Re-quote a paid order</h3>
+  <p class="cb-card-sub">
+    A paid VPS service with no sealed snapshot is refused at Create (Activity Log:
+    <code class="mono">Contabo provisioning gate ABORTED</code>). Re-quoting rebuilds
+    the snapshot from the paid invoice and the current published mapping, seals it,
+    and keeps the old row as superseded. It refuses unless the invoice is Paid.
+    Unpaid checkouts stay quotable for <code class="mono"><?= (int) $cb_ttl ?></code>
+    seconds or until the invoice due date, whichever is later
+    (<code class="mono">snapshot.quote_ttl_seconds</code>).
+  </p>
+  <?php if ($cb_stuck !== []): ?>
+    <table class="cb-table">
+      <thead><tr><th>Service</th><th>Order</th><th>Invoice</th><th>Snapshot rows</th><th></th></tr></thead>
+      <tbody>
+      <?php foreach ($cb_stuck as $cb_row): ?>
+        <tr>
+          <td class="mono">#<?= (int) $cb_row['service_id'] ?></td>
+          <td class="mono">#<?= (int) $cb_row['order_id'] ?></td>
+          <td class="mono">#<?= (int) $cb_row['invoice_id'] ?></td>
+          <td><?= $esc((string) $cb_row['states']) ?></td>
+          <td>
+            <form method="post" action="<?= $esc($module_link) ?>">
+              <input type="hidden" name="action" value="maintenance-requote">
+              <input type="hidden" name="service_id" value="<?= (int) $cb_row['service_id'] ?>">
+              <?= generate_token() ?>
+              <button class="cb-btn" type="submit">Re-quote</button>
+            </form>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php else: ?>
+    <p class="cb-card-sub">No paid service is waiting on a snapshot.</p>
+  <?php endif; ?>
+  <form method="post" action="<?= $esc($module_link) ?>">
+    <input type="hidden" name="action" value="maintenance-requote">
+    <?= generate_token() ?>
+    <label>Service ID <input type="number" min="1" name="service_id" class="mono" required></label>
+    <button class="cb-btn" type="submit">Re-quote service</button>
   </form>
 </div>
 

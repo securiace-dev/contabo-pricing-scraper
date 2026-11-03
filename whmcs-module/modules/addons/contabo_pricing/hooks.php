@@ -342,6 +342,23 @@ add_hook('AfterShoppingCartCheckout', 40, static function ($vars): void {
     }
 });
 
+/**
+ * A cancelled invoice ends the validity of its order's checkout drafts. They
+ * are marked invalid so a later un-cancel plus payment needs the admin re-quote
+ * (Maintenance) instead of provisioning from an abandoned quote.
+ */
+add_hook('InvoiceCancelled', 40, static function ($vars): void {
+    try {
+        (new \ContaboPricing\PaidOrderSnapshotService())->invalidateForCancelledInvoice(
+            (int) ($vars['invoiceid'] ?? ($vars['invoiceId'] ?? 0))
+        );
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity('Contabo Pricing paid-order snapshot invalidation failed: ' . $e->getMessage());
+        }
+    }
+});
+
 add_hook('OrderPaid', 40, static function ($vars): void {
     try {
         (new \ContaboPricing\PaidOrderSnapshotService())->sealOrder(

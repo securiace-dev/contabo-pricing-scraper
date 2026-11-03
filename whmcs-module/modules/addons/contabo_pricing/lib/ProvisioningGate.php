@@ -16,6 +16,12 @@ use WHMCS\Database\Capsule;
  * ordered). Refusing it would strand a paying customer, so it is allowed with
  * a warning. Everything else aborts, and every abort is logged with a reason.
  *
+ * Before refusing, the gate gives a verified draft whose invoice is Paid one
+ * chance to seal (REASON_SEALED_AT_GATE). That covers an OrderPaid hook that did
+ * not run or ran late, and never relaxes verification: a draft whose hashes or
+ * order/invoice/service binding fail is refused, as is any unpaid or cancelled
+ * order. Recovery for the remaining refusals is the admin re-quote.
+ *
  * The exception can be switched off at any time with
  * mod_contabo_settings.snapshot.grandfather_enabled = 0 once the pre-upgrade
  * backlog is provisioned.
@@ -27,6 +33,7 @@ final class ProvisioningGate
 
     public const REASON_SEALED = 'sealed_snapshot';
     public const REASON_GRANDFATHERED = 'grandfathered_pre_snapshot_paid_order';
+    public const REASON_SEALED_AT_GATE = 'sealed_at_gate_paid_invoice';
     public const REASON_NO_SERVICE = 'no_service_id';
     public const REASON_NO_SNAPSHOT = 'no_sealed_snapshot';
     public const REASON_LOOKUP_FAILED = 'snapshot_lookup_failed';
@@ -98,6 +105,25 @@ final class ProvisioningGate
             ->first();
         if ($sealed !== null) {
             return ['allow' => true, 'code' => self::REASON_SEALED, 'detail' => 'sealed snapshot present'];
+        }
+
+        try {
+            $healed = (new PaidOrderSnapshotService())->sealPaidService($serviceId);
+        } catch (\Throwable $e) {
+            $healed = 0;
+        }
+        if ($healed > 0) {
+            $sealedNow = Capsule::table('mod_securiacevps_order_snapshots')
+                ->where('service_id', $serviceId)
+                ->where('state', 'sealed')
+                ->exists();
+            if ($sealedNow) {
+                return [
+                    'allow' => true,
+                    'code' => self::REASON_SEALED_AT_GATE,
+                    'detail' => 'the invoice is paid and the verified draft was sealed at create time (OrderPaid had not sealed it)',
+                ];
+            }
         }
 
         $why = $this->grandfatherRefusal($serviceId);
