@@ -25,6 +25,11 @@ WHMCS-Prod review of 1.1.6.
   unknown currency refuses. **Tax-exempt or discounted re-issue:** a merged or re-issued invoice
   whose gross total (total plus credit) is below the quoted gross no longer settles the quote
   automatically; the admin re-quote shows it as a Total due deviation and needs a confirmation.
+- **Round-2 review fixes.** The admin confirmation of a gross deviation now applies to the
+  rebuilt draft only (it used to relax the check for every draft on the order). When there is no
+  verified recorded quote the refusal no longer points at a re-quote that refuses. A combined
+  (Mass Pay or merged) invoice no longer shows false Tax/Subtotal deviations. The malformed-role
+  WARNING is logged once per request.
 - **"WHMCS now"** reads the invoice that paid (re-issue, merge, Mass Pay line), not the cancelled
   original.
 - **Key diagnostic.** Maintenance shows "Confirmation key check: key resolves: yes/NO, source: ..."

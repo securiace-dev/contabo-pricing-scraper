@@ -22,6 +22,9 @@ final class PaidOrderSnapshotService
 {
     public const SETTING_QUOTE_TTL = 'snapshot.quote_ttl_seconds';
     private const SETTING_REQUOTE_ROLES = 'snapshot.requote_role_ids';
+
+    /** The malformed role-list WARNING is logged once per service instance. */
+    private bool $roleSettingWarned = false;
     public const DEFAULT_QUOTE_TTL = 1800;
     public const MIN_QUOTE_TTL = 60;
     public const MAX_QUOTE_TTL = 2592000;
@@ -319,7 +322,7 @@ final class PaidOrderSnapshotService
             if ($invoice === null || strcasecmp((string) ($invoice['status'] ?? ''), 'Paid') !== 0) {
                 continue;
             }
-            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId, (int) ($order['userid'] ?? 0), $terms, !$adminConfirmed);
+            [$via, $why] = $this->invoiceLink($invoice, $bound, $own, $serviceId, $userId, (int) ($order['userid'] ?? 0), $terms, !$adminConfirmed, $quote !== null);
             if ($via === '') {
                 if ($why !== '' && ($id !== $hintInvoiceId || in_array($id, $own, true) || in_array($id, $discovered, true))) {
                     $result['refusal'] = $why;
@@ -394,7 +397,7 @@ final class PaidOrderSnapshotService
      * @param array{total:string, gross:string, first:string, currency:string} $terms
      * @return array{0:string,1:string} [via, refusal reason]
      */
-    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId, int $orderUserId, array $terms, bool $strictGross = true): array
+    private function invoiceLink(array $invoice, int $bound, array $own, int $serviceId, int $userId, int $orderUserId, array $terms, bool $strictGross = true, bool $confirmable = false): array
     {
         $id = (int) ($invoice['id'] ?? 0);
         $owner = (int) ($invoice['userid'] ?? 0);
@@ -505,11 +508,13 @@ final class PaidOrderSnapshotService
             $needGross = $this->cents($terms['gross']);
             if ($strictGross && $gross < $needGross) {
                 return ['', sprintf(
-                    'Paid invoice #%d totals %s but the quote was %s (tax or a discount differs); it cannot settle this order automatically. Re-quote service #%d from Maintenance: the difference is shown and an admin must confirm it',
+                    'Paid invoice #%d totals %s but the quote was %s (tax or a discount differs); it cannot settle this order automatically. %s',
                     $id,
                     $this->centsText($gross),
                     $this->centsText($needGross),
-                    $serviceId
+                    $confirmable
+                        ? sprintf('Re-quote service #%d from Maintenance: the difference is shown and an admin must confirm it', $serviceId)
+                        : 'There is no verified recorded quote to confirm it against, so Maintenance cannot override it: fix the invoice in WHMCS (re-issue it at the quoted amount) or have the client pay the difference'
                 )];
             }
             return [$original === null ? 'merged' : 'reinvoice', ''];
@@ -621,7 +626,7 @@ final class PaidOrderSnapshotService
      * or one linked to it through WHMCS invoice items (mass pay, merge,
      * re-invoice). A Paid invoice with no such link never seals a draft.
      */
-    public function sealOrder(int $orderId, int $invoiceId, bool $adminConfirmed = false): int
+    public function sealOrder(int $orderId, int $invoiceId, string $confirmedUuid = ''): int
     {
         $order = $this->row('tblorders', 'id', $orderId);
         if ($order === null) {
@@ -649,7 +654,7 @@ final class PaidOrderSnapshotService
                 $invoiceId,
                 $fault === null ? $this->draftInvoiceId($row) : null,
                 $fault === null ? $this->quoteTerms($row) : null,
-                $adminConfirmed && $fault === null
+                $confirmedUuid !== '' && $uuid === $confirmedUuid && $fault === null
             );
             if ($paying['invoice_id'] <= 0) {
                 if ($paying['refusal'] !== '') {
@@ -1015,6 +1020,12 @@ final class PaidOrderSnapshotService
             }
             $trustedWhmcs = is_array($trustedPayload) && isset($trustedPayload['whmcs']) && is_array($trustedPayload['whmcs']) ? $trustedPayload['whmcs'] : [];
             $replayLive = $this->liveValues($serviceId, $orderId, (int) $paying['invoice_id'], $massCents, $trustedWhmcs['credit'] ?? null);
+            if (in_array($paying['via'], ['mass_pay', 'merged'], true)) {
+                // A combined invoice does not itemise tax or subtotal per
+                // service; comparing them with this service's quote would show
+                // a false deviation. Total due (gross) is still compared.
+                $replayLive['not_itemised'] = true;
+            }
         }
         $live = $this->liveValues($serviceId, $orderId, (int) $paying['bound_invoice_id']);
         if ($recorded !== null && $recorded['source'] === 'recorded_mapping') {
@@ -1245,6 +1256,9 @@ final class PaidOrderSnapshotService
             if ($type === 'options' && $now === null) {
                 $liveText = '(unreadable: ' . substr((string) $live['options_error'], 0, 120) . ')';
                 $unavailable = true;
+            } elseif (!empty($live['not_itemised']) && in_array($field, ['Tax 1', 'Tax 2', 'Subtotal'], true)) {
+                $liveText = '(not itemised on this combined invoice)';
+                $unavailable = true;
             } elseif ($needsInvoice && !$invoice) {
                 $liveText = '(invoice no longer exists)';
                 $unavailable = true;
@@ -1402,7 +1416,8 @@ final class PaidOrderSnapshotService
             }
             if ($valid && $parsed !== []) {
                 $allowed = $parsed;
-            } else {
+            } elseif (!$this->roleSettingWarned) {
+                $this->roleSettingWarned = true; // once per request, not per render
                 // 1.1.7: a malformed value must not lock every admin out (an
                 // empty list matched nobody); fall back to Full Administrator.
                 $this->activity(sprintf(
@@ -1490,7 +1505,10 @@ final class PaidOrderSnapshotService
             ->where('service_id', $serviceId)
             ->where('state', 'invalid')
             ->update(['state' => 'superseded', 'updated_at' => $now]);
-        $count = $this->sealOrder($orderId, (int) $plan['invoice_id'], $plan['source'] !== 'current_mapping');
+        // The lenient gross check applies to the rebuilt draft ONLY (the one the
+        // admin was shown and confirmed), never to other services' drafts on
+        // the same order.
+        $count = $this->sealOrder($orderId, (int) $plan['invoice_id'], $plan['source'] !== 'current_mapping' ? $uuid : '');
         $sealedNow = Capsule::table('mod_securiacevps_order_snapshots')
             ->where('snapshot_uuid', $uuid)
             ->where('state', 'sealed')

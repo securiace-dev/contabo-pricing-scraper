@@ -1747,4 +1747,76 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
         $this->assertSame(['sealed'], $this->states(), 'gross = total + credit = 1999.00');
     }
+
+    private function secondServiceOnTheSameOrder(): void
+    {
+        Capsule::$tables['tblhosting'][] = [
+            'id' => 31, 'orderid' => 10, 'userid' => 40, 'packageid' => 50, 'billingcycle' => 'Monthly',
+            'domain' => 'two.example.com', 'firstpaymentamount' => '1999.00', 'amount' => '1999.00',
+        ];
+        Capsule::$tables['tblhostingconfigoptions'][] = ['relid' => 31, 'configid' => 100, 'optionid' => 101, 'qty' => 1];
+    }
+
+    public function testConfirmingOneServiceNeverSealsAnotherServicesGrossShortfallOnTheSameOrder(): void
+    {
+        $this->secondServiceOnTheSameOrder();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['subtotal' => '3998.00', 'tax' => '360.00', 'total' => '4358.00']);
+        $service = new PaidOrderSnapshotService();
+        $service->createDraft(10, 20, 30);
+        $service->createDraft(10, 20, 31);
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1999.00'], ['Hosting', 31, '1999.00']], '3998.00');
+
+        ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
+        $this->assertSame(['draft', 'draft'], $this->states(), 'precondition: the automatic path refuses both');
+
+        $plan = $service->requotePlan(30);
+        $this->assertSame('recorded_deviation', $plan['override_kind']);
+        $r = $service->requote(30, 7, true, $plan['diff_token']);
+        $this->assertTrue($r['ok'], $r['message']);
+
+        $byService = [];
+        foreach ($this->snapshots() as $row) {
+            $byService[(int) $row['service_id']][] = $row['state'];
+        }
+        $this->assertContains('sealed', $byService[30]);
+        $this->assertSame(['draft'], $byService[31], 'service #31 was not confirmed; its shortfall must stay refused');
+    }
+
+    public function testWithoutAVerifiedQuoteTheGrossRefusalDoesNotPointAtARecoveryThatRefuses(): void
+    {
+        Capsule::table('mod_contabo_settings')->updateOrInsert(
+            ['key' => ProvisioningGate::SETTING_CUTOFF],
+            ['value' => '2026-11-01 00:00:00']
+        );
+        Capsule::table('tblorders')->where('id', 10)->update(['date' => '2026-10-20 10:00:00']);
+        Capsule::table('tblinvoices')->where('id', 20)->update(['subtotal' => '1999.00', 'tax' => '180.00', 'total' => '2179.00', 'status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1999.00']], '1999.00');
+
+        $this->assertSame(['abortcmd' => true], $this->create());
+        $this->assertStringContainsString('totals 1999.00 but the quote was 2179.00', $this->log());
+        $this->assertStringContainsString('no verified recorded quote', $this->log());
+        $this->assertStringNotContainsString('Re-quote service #30 from Maintenance', $this->log());
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertFalse($plan['ready'], 'the re-quote really does refuse here, as the message says');
+    }
+
+    public function testACombinedInvoiceDoesNotShowFalseTaxOrSubtotalDeviations(): void
+    {
+        Capsule::table('tblinvoices')->where('id', 20)->update(['subtotal' => '1999.00', 'tax' => '180.00', 'total' => '2179.00']);
+        $this->draft();
+        $this->invalidate();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        // Mass Pay of this order's invoice plus another one: tax and subtotal are the combined invoice's.
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20, '2179.00'], ['Invoice', 99, '500.00']], '2679.00');
+        $plan = (new PaidOrderSnapshotService())->requotePlan(30);
+        $this->assertSame('mass_pay', $plan['via']);
+        $rows = $this->rows($plan);
+        foreach (['Tax 1', 'Tax 2', 'Subtotal'] as $field) {
+            $this->assertFalse($rows[$field]['live_differs'], $field);
+            $this->assertStringContainsString('not itemised', $rows[$field]['live'], $field);
+        }
+        $this->assertSame([], $plan['deviations'], 'a legitimate Mass Pay of a taxed quote is not a deviation');
+        $this->assertSame('ready', $plan['code']);
+    }
 }

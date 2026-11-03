@@ -49,9 +49,14 @@ secret. No new setting. Do not deploy without an explicit go.
     the Maintenance list.
   - **Admin re-quote** links the invoice anyway but the diff's Total due row shows recorded
     against WHMCS now, the plan becomes `recorded_deviation`, and the admin must confirm. The
-    sealed contract is still the recorded quote (the customer was quoted that total). Without a
-    verified recorded quote (`current_mapping`) nothing would show the difference, so that path
-    stays strict.
+    sealed contract is still the recorded quote (the customer was quoted that total). The
+    confirmation applies to the rebuilt draft of THAT service only: another service's draft on the
+    same order keeps the strict check and stays refused until it is confirmed on its own.
+  - **No verified recorded quote** (a pre-cutoff order, or a draft that fails verification): the
+    re-quote would be `current_mapping`, which shows no such difference, so it stays strict and
+    cannot override. The refusal log says so ("no verified recorded quote ... fix the invoice in
+    WHMCS (re-issue it at the quoted amount) or have the client pay the difference") instead of
+    pointing at Maintenance.
 - A higher gross (a merge with other services) is not a shortfall.
 
 ## Key diagnostic
@@ -82,6 +87,12 @@ path) are refused with `token_unavailable`. It prints no secret, only the yes/no
 
 ## Known limits
 
+- On a Mass Pay or merged invoice the diff shows Tax 1, Tax 2 and Subtotal as "not itemised on
+  this combined invoice" (they belong to the combined invoice, not to this service); only Total
+  due (gross) is compared, so a legitimate combination is not reported as a deviation.
+- A malformed `snapshot.requote_role_ids` WARNING is logged once per request, not per render.
+- A merge that also carries other services passes the gross check even if it is tax-exempt, because
+  the gross cannot be attributed to one service (a higher gross is not a shortfall).
 - `provider.sku_id` is still not covered by a snapshot hash; it is cross-checked against the
   verified mapping publication (as in 1.1.5 and 1.1.6).
 - The link rules were tested against a fake database. Run the staging checks first.
