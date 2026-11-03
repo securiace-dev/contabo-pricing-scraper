@@ -16,7 +16,7 @@ class AdminController
      * reads this, and `render()` passes it to the layout as the asset
      * cache-buster (`app.js?v=…`) so a release always invalidates the old JS.
      */
-    public const VERSION = '1.1.6';
+    public const VERSION = '1.1.7';
 
     /** @var Settings */ private $settings;
     /** @var string */   private $templateDir;
@@ -3243,7 +3243,18 @@ class AdminController
             'cb_stuck_services' => $this->stuckPaidServices(),
             'cb_quote_ttl'     => $this->quoteTtlForDisplay(),
             'cb_requote_preview' => $this->requotePreview((int) ($_REQUEST['preview_service'] ?? 0)),
+            'cb_key_status'    => $this->confirmationKeyStatus(),
         ]);
+    }
+
+    /** @return array{available:bool, source:string, can_sign:bool} */
+    private function confirmationKeyStatus(): array
+    {
+        try {
+            return (new PaidOrderSnapshotService())->confirmationKeyStatus();
+        } catch (\Throwable $e) {
+            return ['available' => false, 'source' => 'error', 'can_sign' => false];
+        }
     }
 
     /** @return array<string,mixed>|null */
@@ -3290,6 +3301,8 @@ class AdminController
         }
         $override = !empty($req['override']);
         $token = (string) ($req['diff_token'] ?? '');
+        // 1.1.7: nothing is sealed without the diff having been shown and
+        // confirmed. A bare service id (the manual box) only opens the preview.
         $r = (new PaidOrderSnapshotService())->requote($serviceId, $adminId, $override, $token);
         $extra = ['flash' => $r['message']];
         if (in_array($r['code'], ['needs_override', 'diff_changed', 'not_permitted'], true)) {

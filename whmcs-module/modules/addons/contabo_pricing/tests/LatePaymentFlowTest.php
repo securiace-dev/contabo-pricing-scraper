@@ -364,12 +364,13 @@ final class LatePaymentFlowTest extends TestCase
             'status' => 'ready',
             'source' => 'recorded_mapping',
             'reason' => '',
-            'diff_token' => '',
-            'override_kind' => '',
+            'diff_token' => $stuck[0]['diff_token'],
+            'override_kind' => 'recorded_mapping',
             'deviations' => [],
         ]], $stuck);
+        $this->assertNotSame('', $stuck[0]['diff_token'], 'every seal, even an exact match, is confirmed against a keyed token');
 
-        $r = $service->requote(30, 7);
+        $r = $this->confirmedRequote($service, 30, 7);
         $this->assertTrue($r['ok'], $r['message']);
         $this->assertSame('requoted', $r['code']);
         $states = array_column($this->snapshots(), 'state');
@@ -389,7 +390,7 @@ final class LatePaymentFlowTest extends TestCase
         $this->draft();
         Capsule::table('mod_securiacevps_order_snapshots')->update(['state' => 'invalid']);
         $this->pay();
-        $r = (new PaidOrderSnapshotService())->requote(30, 7);
+        $r = $this->confirmedRequote(new PaidOrderSnapshotService(), 30, 7);
         $this->assertTrue($r['ok']);
         $payload = json_decode((string) $this->snapshots()[1]['payload_json'], true);
         $this->assertSame('1999.00', $payload['pricing']['recurring']);
@@ -421,7 +422,7 @@ final class LatePaymentFlowTest extends TestCase
         $this->pay();
         Capsule::$tables['mod_contabo_mapping'] = [];
 
-        $r = (new PaidOrderSnapshotService())->requote(30, 7);
+        $r = $this->confirmedRequote(new PaidOrderSnapshotService(), 30, 7);
         $this->assertTrue($r['ok'], $r['message']);
         $this->assertSame('requoted', $r['code']);
         $this->assertSame(['superseded', 'sealed'], array_column($this->snapshots(), 'state'));

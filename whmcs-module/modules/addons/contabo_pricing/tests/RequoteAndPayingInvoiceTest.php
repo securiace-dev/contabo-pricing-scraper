@@ -154,7 +154,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertSame('recorded_mapping', $plan['source']);
         $this->assertSame('mapping-v1', $plan['mapping_version']);
 
-        $r = (new PaidOrderSnapshotService())->requote(30, 7);
+        $r = $this->confirmedRequote(new PaidOrderSnapshotService(), 30, 7);
         $this->assertTrue($r['ok'], $r['message']);
         $this->assertSame('requoted', $r['code']);
         $sealed = $this->payload(1);
@@ -992,7 +992,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertSame('mass_pay', $stuck[0]['via']);
         $this->assertSame('ready', $stuck[0]['status']);
 
-        $r = $service->requote(30, 7);
+        $r = $this->confirmedRequote($service, 30, 7);
         $this->assertTrue($r['ok'], $r['message']);
         $this->assertSame(20, $this->payload(1)['whmcs']['invoice_id'], 'quote stays bound to the invoice it was quoted on');
         $this->assertStringContainsString('paid on invoice #21 (mass_pay)', $this->log());
@@ -1007,7 +1007,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->invoice(22, 'Paid', 40, [['Hosting', 30]]);
         $service = new PaidOrderSnapshotService();
         $this->assertSame('merged', $service->requotePlan(30)['via']);
-        $this->assertTrue($service->requote(30, 7)['ok']);
+        $this->assertTrue($this->confirmedRequote($service, 30, 7)['ok']);
         $this->assertSame(['superseded', 'sealed'], $this->states());
     }
 
@@ -1022,7 +1022,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertSame('reinvoice', $plan['via']);
         $this->assertSame(23, $plan['invoice_id']);
         $this->assertSame(20, $plan['bound_invoice_id']);
-        $this->assertTrue($service->requote(30, 7)['ok']);
+        $this->assertTrue($this->confirmedRequote($service, 30, 7)['ok']);
     }
 
     public function testTheOrdersOwnPaidInvoiceStillWinsOverALinkedOne(): void
@@ -1112,7 +1112,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertStringContainsString('Image=ubuntu-24-04 x1', $rows['Options']['old']);
         $this->assertStringContainsString('1999.00', $plan['message']);
 
-        $r = $service->requote(30, 7);
+        $r = $this->confirmedRequote($service, 30, 7);
         $this->assertTrue($r['ok'], $r['message']);
         $sealed = $this->payload(1);
         $this->assertSame($recorded['configuration'], $sealed['configuration']);
@@ -1187,7 +1187,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         }
     }
 
-    public function testB2AMergedAwayInvoiceIsShownAsGoneNotAsADeviation(): void
+    public function testB2AMergedAwayInvoiceShowsThePayingInvoiceNotAGoneOriginal(): void
     {
         $service = $this->readyToRequote();
         $this->deleteInvoice(20);
@@ -1195,7 +1195,32 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $plan = $service->requotePlan(30);
         $rows = $this->rows($plan);
         $this->assertSame('merged', $plan['via']);
-        $this->assertSame('(invoice no longer exists)', $rows['Total due']['live']);
+        $this->assertSame('1999.00', $rows['Total due']['live'], '"WHMCS now" is the invoice that paid');
+        $this->assertFalse($rows['Total due']['live_differs']);
+    }
+
+    public function testTheWhmcsNowColumnReadsThePayingInvoiceOnAReInvoice(): void
+    {
+        $service = $this->readyToRequote();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled', 'total' => '0.00', 'subtotal' => '0.00']);
+        $this->invoice(24, 'Paid', 40, [['Hosting', 30, '1999.00']], '2500.00');
+        $plan = $service->requotePlan(30);
+        $this->assertSame('reinvoice', $plan['via']);
+        $rows = $this->rows($plan);
+        $this->assertSame('2500.00', $rows['Total due']['live'], 'not the cancelled original (0.00)');
+        $this->assertTrue($rows['Total due']['live_differs']);
+        $this->assertSame('recorded_deviation', $plan['override_kind']);
+    }
+
+    public function testTheWhmcsNowColumnReadsTheMassPayLineNotTheOriginal(): void
+    {
+        $service = $this->readyToRequote();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled', 'total' => '0.00', 'subtotal' => '0.00']);
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20, '1999.00']], '1999.00');
+        $plan = $service->requotePlan(30);
+        $this->assertSame('mass_pay', $plan['via']);
+        $rows = $this->rows($plan);
+        $this->assertSame('1999.00', $rows['Total due']['live']);
         $this->assertFalse($rows['Total due']['live_differs']);
     }
 
@@ -1277,11 +1302,17 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertSame(['invalid'], $this->states());
     }
 
-    public function testTheNoConfirmationReadyPathDoesNotNeedTheKey(): void
+    public function testTheReadyPathNeedsTheKeyToo(): void
     {
         $service = $this->readyToRequote();
+        $this->assertSame('ready', $service->requotePlan(30)['code']);
         unset($GLOBALS['cc_encryption_hash']);
-        $this->assertTrue($service->requote(30, 7)['ok']);
+        $plan = $service->requotePlan(30);
+        $this->assertSame('token_unavailable', $plan['code']);
+        $r = $service->requote(30, 7, true, '');
+        $this->assertFalse($r['ok']);
+        $this->assertSame('token_unavailable', $r['code']);
+        $this->assertSame(['invalid'], $this->states());
     }
 
     public function testTheTokenCoversTheRecordedRowItReplays(): void
@@ -1328,7 +1359,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $service = $this->readyToRequote();
         $this->editLiveService();
         $token = $service->requotePlan(30)['diff_token'];
-        Capsule::$tables['mod_contabo_settings'] = [['key' => 'snapshot.requote_role_ids', 'value' => '3, x, 0']];
+        Capsule::$tables['mod_contabo_settings'] = [['key' => 'snapshot.requote_role_ids', 'value' => '3, 4']];
         $this->assertFalse($service->adminMayConfirm(7));
         $this->assertTrue($service->adminMayConfirm(8));
         $this->assertFalse($service->adminMayConfirm(9), 'a disabled admin never may');
@@ -1336,10 +1367,47 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertTrue($service->requote(30, 8, true, $token)['ok']);
     }
 
-    public function testTheRoleGateDoesNotBlockTheNoConfirmationReadyPath(): void
+    public function testTheRoleGateAppliesToTheReadyPathToo(): void
     {
         $service = $this->readyToRequote();
-        $this->assertTrue($service->requote(30, 8)['ok']);
+        $token = $service->requotePlan(30)['diff_token'];
+        $this->assertNotSame('', $token);
+        $this->assertSame('not_permitted', $service->requote(30, 8, true, $token)['code']);
+        $this->assertSame(['invalid'], $this->states());
+        $this->assertTrue($service->requote(30, 7, true, $token)['ok']);
+    }
+
+    /** @return array<string,array{0:string}> */
+    public static function malformedRoleSettings(): array
+    {
+        return [
+            'letters' => ['abc'],
+            'mixed list' => ['3, x, 0'],
+            'zero only' => ['0'],
+            'negative' => ['-1'],
+            'only commas' => [',,'],
+            'decimal' => ['1.5'],
+        ];
+    }
+
+    /** @dataProvider malformedRoleSettings */
+    public function testAMalformedRoleSettingFallsBackToFullAdministratorAndWarns(string $value): void
+    {
+        Capsule::$tables['mod_contabo_settings'] = [['key' => 'snapshot.requote_role_ids', 'value' => $value]];
+        $service = new PaidOrderSnapshotService();
+        $this->assertTrue($service->adminMayConfirm(7), 'role 1 must never be locked out');
+        $this->assertFalse($service->adminMayConfirm(8));
+        $this->assertFalse($service->adminMayConfirm(9));
+        $this->assertStringContainsString('WARNING: Contabo setting snapshot.requote_role_ids is malformed', $this->log());
+    }
+
+    public function testAWellFormedRoleSettingDoesNotWarn(): void
+    {
+        Capsule::$tables['mod_contabo_settings'] = [['key' => 'snapshot.requote_role_ids', 'value' => ' 1 , 3 ']];
+        $service = new PaidOrderSnapshotService();
+        $this->assertTrue($service->adminMayConfirm(7));
+        $this->assertTrue($service->adminMayConfirm(8));
+        $this->assertStringNotContainsString('malformed', $this->log());
     }
 
     // ── 1.1.6: edge cases from the 1.1.5 review ─────────────────────────────
@@ -1392,7 +1460,7 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $plan = $service->requotePlan(30);
         $this->assertSame('ready', $plan['code']);
         $this->assertSame([], (array) ($plan['deviations'] ?? []));
-        $this->assertTrue($service->requote(30, 7)['ok']);
+        $this->assertTrue($this->confirmedRequote($service, 30, 7)['ok']);
     }
 
     public function testB2ATotalThatReallyChangedStillDeviates(): void
@@ -1404,17 +1472,279 @@ final class RequoteAndPayingInvoiceTest extends TestCase
         $this->assertStringContainsString('Total due', implode('|', $plan['deviations']));
     }
 
-    public function testB1TheGrandfatherPathUsesTheGrossLiveTotalToo(): void
+    public function testTheGrandfatherPathComparesNetAgainstNet(): void
     {
         Capsule::table('mod_contabo_settings')->updateOrInsert(
             ['key' => ProvisioningGate::SETTING_CUTOFF],
             ['value' => '2026-11-01 00:00:00']
         );
         Capsule::table('tblorders')->where('id', 10)->update(['date' => '2026-10-20 10:00:00']);
+        // 500.00 of credit was applied: the invoice's total is the 1499.00 balance, and a
+        // Mass Pay line equals that balance, so a legitimate Mass Pay must be accepted.
         Capsule::table('tblinvoices')->where('id', 20)->update(['total' => '1499.00', 'credit' => '500.00']);
-        $this->invoice(21, 'Paid', 40, [['Invoice', 20, '1499.00']], '1499.00');
-        $this->assertSame(['abortcmd' => true], $this->create(), 'invoice #20 was 1999.00 gross; 1499.00 is a shortfall');
-        $this->invoice(22, 'Paid', 40, [['Invoice', 20, '1999.00']], '1999.00');
-        $this->assertNotSame(['abortcmd' => true], $this->create());
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20, '1000.00']], '1000.00');
+        $this->assertSame(['abortcmd' => true], $this->create(), 'a Mass Pay line below the 1499.00 balance is a shortfall');
+        $this->invoice(22, 'Paid', 40, [['Invoice', 20, '1499.00']], '1499.00');
+        $this->assertNotSame(['abortcmd' => true], $this->create(), 'a Mass Pay line equal to the net balance settles it');
+    }
+
+    // ── 1.1.7 ────────────────────────────────────────────────────────────────
+
+    private function moveServiceToAnotherNativeProduct(): void
+    {
+        Capsule::$tables['tblproducts'][] = ['id' => 51, 'gid' => 60, 'servertype' => 'securiacevps'];
+        Capsule::table('tblhosting')->where('id', 30)->update(['packageid' => 51]);
+    }
+
+    public function testTheRecordedSnapshotPathRefusesAServiceMovedToAnotherProduct(): void
+    {
+        $service = $this->readyToRequote();
+        $this->dropPublication('mapping-v1');
+        $this->assertSame('recorded_snapshot', $service->requotePlan(30)['override_kind'], 'precondition: the publication is gone');
+        $this->moveServiceToAnotherNativeProduct();
+
+        $plan = $service->requotePlan(30);
+        $this->assertSame('product_changed', $plan['code']);
+        $this->assertStringContainsString('product #50', $plan['message']);
+        $this->assertStringContainsString('product #51', $plan['message']);
+        foreach ([[false, ''], [true, ''], [true, (string) ($plan['diff_token'] ?? '')]] as [$override, $token]) {
+            $r = $service->requote(30, 7, $override, $token);
+            $this->assertFalse($r['ok']);
+            $this->assertSame('product_changed', $r['code']);
+        }
+        $this->assertSame(['invalid'], $this->states(), 'nothing was sealed under the live product id');
+        $this->assertSame(50, (int) $this->snapshots()[0]['product_id']);
+    }
+
+    public function testTheRecordedMappingPathRefusesAServiceMovedToAnotherProduct(): void
+    {
+        $service = $this->readyToRequote();
+        $this->moveServiceToAnotherNativeProduct();
+        $plan = $service->requotePlan(30);
+        $this->assertSame('product_changed', $plan['code']);
+        $r = $service->requote(30, 7, true, (string) ($plan['diff_token'] ?? ''));
+        $this->assertSame('product_changed', $r['code']);
+        $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testMovingTheServiceBackMakesItRecoverableAgain(): void
+    {
+        $service = $this->readyToRequote();
+        $this->moveServiceToAnotherNativeProduct();
+        $this->assertSame('product_changed', $service->requotePlan(30)['code']);
+        Capsule::table('tblhosting')->where('id', 30)->update(['packageid' => 50]);
+        $r = $this->confirmedRequote($service, 30, 7);
+        $this->assertTrue($r['ok'], $r['message']);
+        $this->assertSame(['superseded', 'sealed'], $this->states());
+    }
+
+    public function testCreateDraftNeverSealsARecordedQuoteUnderADifferentLiveProduct(): void
+    {
+        $this->draft();
+        $this->invalidate();
+        $row = $this->snapshots()[0];
+        $method = new \ReflectionMethod(PaidOrderSnapshotService::class, 'recordedSource');
+        $method->setAccessible(true);
+        $why = '';
+        $service = new PaidOrderSnapshotService();
+        $recorded = $method->invokeArgs($service, [$row, &$why]);
+        $this->assertIsArray($recorded);
+        $this->moveServiceToAnotherNativeProduct();
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('recorded quote is for product #50');
+        $service->createDraft(10, 20, 30, null, $recorded);
+    }
+
+    // PromoHosting pin: a promotion line reduces what a re-issued invoice bills for the service.
+
+    public function testB1APromoLineThatTakesTheReissuedInvoiceBelowTheQuoteIsAShortfall(): void
+    {
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        // Hosting alone covers 1999.00, but the promotion takes 500.00 off: the invoice bills 1499.00.
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1999.00'], ['PromoHosting', 30, '-500.00']], '1499.00');
+        ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
+        $this->assertSame(['draft'], $this->states(), 'PromoHosting must be counted: 1999.00 - 500.00 < the quoted 1999.00');
+        $this->assertStringContainsString('shortfall 500.00', $this->log());
+    }
+
+    public function testB1APromoLineAloneNeverMakesAReissue(): void
+    {
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['PromoHosting', 30, '1999.00']], '1999.00');
+        // Called directly: with no Hosting/Setup/Invoice line the hook cannot even find the order.
+        $this->assertSame(0, (new PaidOrderSnapshotService())->sealOrder(10, 23));
+        $this->assertSame(['draft'], $this->states());
+    }
+
+    public function testB1APromoLineCountsForTheAdminPlanToo(): void
+    {
+        $service = $this->readyToRequote();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1999.00'], ['PromoHosting', 30, '-500.00']], '1499.00');
+        $plan = $service->requotePlan(30);
+        $this->assertNotSame('reinvoice', $plan['via']);
+        $this->assertSame('paying_invoice_refused', $plan['code']);
+    }
+
+    // Manual "Re-quote service" box: nothing is sealed without the shown diff.
+
+    public function testTheManualBoxNeverSealsAReadyPlanWithoutTheDiffConfirmation(): void
+    {
+        $service = $this->readyToRequote();
+        $plan = $service->requotePlan(30);
+        $this->assertSame('ready', $plan['code']);
+        $this->assertNotSame('', $plan['diff_token']);
+        $this->assertSame('recorded_mapping', $plan['override_kind']);
+
+        $bare = $service->requote(30, 7);
+        $this->assertFalse($bare['ok']);
+        $this->assertSame('needs_override', $bare['code']);
+        $this->assertSame(['invalid'], $this->states());
+
+        $this->assertSame('diff_changed', $service->requote(30, 7, true, '')['code']);
+        $this->assertSame('diff_changed', $service->requote(30, 7, true, 'forged')['code']);
+        $this->assertSame(['invalid'], $this->states());
+
+        $ok = $service->requote(30, 7, true, $plan['diff_token']);
+        $this->assertTrue($ok['ok'], $ok['message']);
+        $this->assertSame(['superseded', 'sealed'], $this->states());
+        $this->assertStringContainsString('re-quote CONFIRMED by admin #7', $this->log());
+    }
+
+    public function testAReadyConfirmationGoesStaleWhenWhmcsChangesUnderIt(): void
+    {
+        $service = $this->readyToRequote();
+        $token = $service->requotePlan(30)['diff_token'];
+        $this->editLiveService();
+        $this->assertSame('diff_changed', $service->requote(30, 7, true, $token)['code']);
+        $this->assertSame(['invalid'], $this->states());
+    }
+
+    public function testTheControllerSendsAnUnconfirmedManualRequoteToThePreview(): void
+    {
+        $code = (string) file_get_contents(__DIR__ . '/../lib/AdminController.php');
+        $start = strpos($code, 'private function maintenanceRequote');
+        $this->assertNotFalse($start);
+        $body = substr($code, (int) $start, 1400);
+        $this->assertStringContainsString("['needs_override', 'diff_changed', 'not_permitted']", $body);
+        $this->assertStringContainsString("'preview_service'", $body);
+    }
+
+    // Currency and tax-exempt re-issues.
+
+    public function testAReissueInAnotherCurrencyIsRefused(): void
+    {
+        $this->draft();
+        Capsule::$tables['tblcurrencies'][] = ['id' => 2, 'code' => 'USD'];
+        Capsule::table('tblclients')->where('id', 40)->update(['currency' => 2]);
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1999.00']], '1999.00');
+        (new PaidOrderSnapshotService())->sealOrder(10, 23);
+        $this->assertSame(['draft'], $this->states());
+        $this->assertStringContainsString('billed in USD but the quote was made in INR', $this->log());
+    }
+
+    public function testAMassPayInAnotherCurrencyIsRefused(): void
+    {
+        $this->draft();
+        Capsule::$tables['tblcurrencies'][] = ['id' => 2, 'code' => 'USD'];
+        Capsule::table('tblclients')->where('id', 40)->update(['currency' => 2]);
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20]]);
+        ($this->hook('InvoicePaid'))(['invoiceid' => 21]);
+        $this->assertSame(['draft'], $this->states());
+        $this->assertStringContainsString('billed in USD but the quote was made in INR', $this->log());
+    }
+
+    public function testAnUnknownInvoiceCurrencyIsRefusedNotAssumedEqual(): void
+    {
+        $this->draft();
+        Capsule::table('tblclients')->where('id', 40)->update(['currency' => 99]);
+        $this->invoice(21, 'Paid', 40, [['Invoice', 20]]);
+        ($this->hook('InvoicePaid'))(['invoiceid' => 21]);
+        $this->assertSame(['draft'], $this->states());
+        $this->assertStringContainsString('(an unknown currency)', $this->log());
+    }
+
+    public function testTheCurrencyCheckDoesNotBlockTheOrdersOwnInvoice(): void
+    {
+        $this->draft();
+        Capsule::$tables['tblcurrencies'][] = ['id' => 2, 'code' => 'USD'];
+        Capsule::table('tblclients')->where('id', 40)->update(['currency' => 2]);
+        $this->payOwn();
+        ($this->hook('InvoicePaid'))(['invoiceid' => 20]);
+        $this->assertSame(['sealed'], $this->states(), 'the quoted invoice itself is the quote, whatever the account currency is now');
+    }
+
+    /** The order's invoice carried 180.00 tax (total 2179.00); the re-issue is tax-exempt (1999.00). */
+    private function taxedQuoteThenTaxExemptReissue(): PaidOrderSnapshotService
+    {
+        Capsule::table('tblinvoices')->where('id', 20)->update(['subtotal' => '1999.00', 'tax' => '180.00', 'total' => '2179.00']);
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1999.00']], '1999.00');
+        return new PaidOrderSnapshotService();
+    }
+
+    public function testATaxExemptReissueNeverSettlesATaxedQuoteAutomatically(): void
+    {
+        $service = $this->taxedQuoteThenTaxExemptReissue();
+        $this->assertSame(0, $service->sealOrder(10, 23));
+        ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
+        $this->assertSame(['draft'], $this->states());
+        $this->assertStringContainsString('totals 1999.00 but the quote was 2179.00', $this->log());
+        $this->assertSame(['abortcmd' => true], $this->create());
+    }
+
+    public function testATaxExemptReissueShowsAsADeviationAndNeedsAnAdminConfirmation(): void
+    {
+        $service = $this->taxedQuoteThenTaxExemptReissue();
+        $plan = $service->requotePlan(30);
+        $this->assertSame('reinvoice', $plan['via']);
+        $this->assertSame('needs_override', $plan['code']);
+        $this->assertSame('recorded_deviation', $plan['override_kind']);
+        $rows = $this->rows($plan);
+        $this->assertSame('2179.00', $rows['Total due']['old']);
+        $this->assertSame('1999.00', $rows['Total due']['live']);
+        $this->assertTrue($rows['Total due']['live_differs']);
+        $this->assertStringContainsString('Total due', implode('|', $plan['deviations']));
+
+        $this->assertSame('needs_override', $service->requote(30, 7)['code']);
+        $this->assertSame(['draft'], $this->states());
+        $r = $service->requote(30, 7, true, $plan['diff_token']);
+        $this->assertTrue($r['ok'], $r['message']);
+        $this->assertSame(['superseded', 'sealed'], $this->states());
+        $this->assertSame('2179.00', $this->payload(1)['whmcs']['total_due'], 'the sealed contract is still what the customer was quoted');
+    }
+
+    public function testAHigherReissueTotalIsNotAShortfall(): void
+    {
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1999.00'], ['Hosting', 31, '500.00']], '2499.00');
+        ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
+        $this->assertSame(['sealed'], $this->states());
+    }
+
+    public function testAReissueWithoutTheCreditThatTheQuoteHadIsAShortfall(): void
+    {
+        // The quoted invoice was 1499.00 net after 500.00 credit (1999.00 gross).
+        Capsule::table('tblinvoices')->where('id', 20)->update(['total' => '1499.00', 'credit' => '500.00']);
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1999.00']], '1499.00');
+        $this->assertSame(0, (new PaidOrderSnapshotService())->sealOrder(10, 23));
+        $this->assertStringContainsString('totals 1499.00 but the quote was 1999.00', $this->log());
+    }
+
+    public function testACreditAppliedToTheReissueStillCountsTowardsTheGrossTotal(): void
+    {
+        $this->draft();
+        Capsule::table('tblinvoices')->where('id', 20)->update(['status' => 'Cancelled']);
+        $this->invoice(23, 'Paid', 40, [['Hosting', 30, '1999.00']], '1499.00');
+        Capsule::table('tblinvoices')->where('id', 23)->update(['credit' => '500.00']);
+        ($this->hook('InvoicePaid'))(['invoiceid' => 23]);
+        $this->assertSame(['sealed'], $this->states(), 'gross = total + credit = 1999.00');
     }
 }

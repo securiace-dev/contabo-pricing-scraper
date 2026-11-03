@@ -16,12 +16,15 @@ if (!function_exists('generate_token')) {
 final class MaintenanceRequoteTemplateTest extends TestCase
 {
     /** @param array<string,mixed>|null $preview */
-    private function render(?array $preview, array $stuck = []): string
+    private function render(?array $preview, array $stuck = [], ?array $keyStatus = null): string
     {
         $esc = static fn ($v): string => htmlspecialchars((string) $v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $module_link = 'addonmodules.php?module=contabo_pricing';
         $cb_requote_preview = $preview;
         $cb_stuck_services = $stuck;
+        if ($keyStatus !== null) {
+            $cb_key_status = $keyStatus;
+        }
         $cb_schema_health = ['healthy' => true, 'missing' => [], 'schema_version' => 16];
         $cb_schema_target = 16;
         $cb_purge_phrase = 'PURGE CONTABO PRICING DATA';
@@ -47,8 +50,41 @@ final class MaintenanceRequoteTemplateTest extends TestCase
         $html = $this->render($this->plan());
         $this->assertStringContainsString('WHMCS now', $html);
         $this->assertStringContainsString('<strong>24.99</strong>', $html);
-        $this->assertStringContainsString('Re-quote: seal exactly this quote', $html);
-        $this->assertStringNotContainsString('value="TOK"', $html);
+        // 1.1.7: an exact match is confirmed like any other seal.
+        $this->assertStringContainsString('Confirm: seal exactly this quote', $html);
+        $this->assertStringContainsString('name="diff_token" value="TOK"', $html);
+        $this->assertStringContainsString('name="override" value="1"', $html);
+    }
+
+    public function testTheKeyCheckSaysYesAndNamesTheSourceButNeverTheKey(): void
+    {
+        $html = $this->render(null, [], ['available' => true, 'source' => 'WHMCS application config (DI config, array access)', 'can_sign' => true]);
+        $this->assertStringContainsString('data-cb-key-check="1"', $html);
+        $this->assertStringContainsString('key resolves: <strong>yes</strong>', $html);
+        $this->assertStringContainsString('WHMCS application config (DI config, array access)', $html);
+    }
+
+    public function testTheKeyCheckSaysNoWhenTheKeyDoesNotResolve(): void
+    {
+        $html = $this->render(null, [], ['available' => false, 'source' => 'none', 'can_sign' => false]);
+        $this->assertStringContainsString('key resolves: <strong>NO</strong>', $html);
+        $this->assertStringNotContainsString('key resolves: <strong>yes</strong>', $html);
+    }
+
+    public function testTheReadyPathOffersNoConfirmButtonToAnAdminWhoMayNotConfirm(): void
+    {
+        $html = $this->render($this->plan(['may_confirm' => false]));
+        $this->assertStringContainsString('Your admin role may not confirm this', $html);
+        $this->assertStringNotContainsString('name="diff_token"', $html);
+        $this->assertStringNotContainsString('Confirm: seal exactly this quote', $html);
+    }
+
+    public function testTheManualBoxOnlyOpensTheDiff(): void
+    {
+        $html = $this->render($this->plan());
+        $this->assertStringContainsString('Review re-quote', $html);
+        $this->assertStringContainsString('nothing is sealed until you confirm it there', $html);
+        $this->assertStringNotContainsString('>Re-quote service<', $html);
     }
 
     public function testADeviationShowsTheConfirmationWithTheTokenToAnAllowedAdmin(): void

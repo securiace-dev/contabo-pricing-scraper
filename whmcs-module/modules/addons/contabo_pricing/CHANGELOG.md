@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.1.7 — 2026-11-03 (a recorded quote is sealed only under its own product; every seal is confirmed)
+
+No schema change. No new secret. No new setting (the optional `snapshot.requote_role_ids` is now
+parsed strictly). Read `docs/UPGRADE_1_1_7.md`. Fixes the two blockers and six findings from the
+WHMCS-Prod review of 1.1.6.
+
+- **B1, product id.** The re-quote replay sealed the LIVE `tblhosting.packageid` even when it
+  differed from the product the quote was recorded on. Now re-quote refuses (`product_changed`,
+  not overridable) whenever the recorded product, the draft row's product column and the live
+  product disagree, on every recorded path (mapping and snapshot). `createDraft` also throws if a
+  recorded quote is replayed under another live product. Move the service back, or place a new order.
+- **B2, PromoHosting pinned.** Tests now fail if `PromoHosting` stops being counted as a service
+  line (a promotion that takes a re-issued invoice below the quote is a shortfall), and if a promo
+  line alone is treated as a re-issue. Mutation-checked.
+- **Manual "Re-quote service" box** no longer seals a Ready plan blind. Every seal, an exact
+  match included, needs the diff shown, the override flag, a permitted role and the keyed token
+  (`override_kind=recorded_mapping`). The box is now "Review re-quote" and only opens the diff.
+- **Malformed `snapshot.requote_role_ids`** (`abc`, `0`, `-1`, `1,x`, empty) falls back to role 1
+  and logs a WARNING instead of locking every admin out.
+- **No-draft Mass Pay** is compared net against net (the Mass Pay line equals the original's
+  balance after credit); 1.1.6 compared gross against the net line and refused a legitimate one.
+- **Currency.** A linked (non-order) invoice must be in the quoted currency; a mismatch or an
+  unknown currency refuses. **Tax-exempt or discounted re-issue:** a merged or re-issued invoice
+  whose gross total (total plus credit) is below the quoted gross no longer settles the quote
+  automatically; the admin re-quote shows it as a Total due deviation and needs a confirmation.
+- **"WHMCS now"** reads the invoice that paid (re-issue, merge, Mass Pay line), not the cancelled
+  original.
+- **Key diagnostic.** Maintenance shows "Confirmation key check: key resolves: yes/NO, source: ..."
+  (never the key), so staging can prove `cc_encryption_hash` resolves on WHMCS 8.13.7.
+
 ## 1.1.6 — 2026-11-03 (a linked invoice must settle the quote; re-quote seals the recorded quote)
 
 No schema change. One OPTIONAL setting (`snapshot.requote_role_ids`). No new secret. Read

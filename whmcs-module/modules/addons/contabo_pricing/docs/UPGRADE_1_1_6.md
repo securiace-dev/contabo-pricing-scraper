@@ -49,15 +49,15 @@ and is not a deviation; the gross is compared). The seal-time price-drift check 
 WARNING, so the admin's confirmation is the control. A renamed option label also shows as a
 deviation; this is conservative (a confirmation, never a silent seal).
 
-Credit applied to the original invoice before a Mass Pay, so that the Mass Pay's `Invoice` items
-fall short of the quoted total due, is refused (safe); the order stays on the Maintenance list.
+Credit applied to the original invoice before a Mass Pay: 1.1.6 refused it. Superseded in 1.1.7,
+which compares net against net (see `UPGRADE_1_1_7.md`).
 
 ## Confirm token and key
 
 The token is an HMAC-SHA256 of the canonical diff context. Its key is derived from WHMCS's own
 `$cc_encryption_hash` (from `configuration.php`), namespaced to this feature and installation. No
 secret is stored in the repository, the database or this add-on. If the value is unavailable the
-confirmation is refused (`token_unavailable`); the Ready path does not need it. Rotating
+confirmation is refused (`token_unavailable`); from 1.1.7 the Ready path needs it too. Rotating
 `$cc_encryption_hash` would also break WHMCS stored cards, so it is unlikely; if it does change,
 only confirmation forms that are already open stop working.
 
@@ -67,7 +67,7 @@ Default: admin role id 1 (Full Administrator). The admin must exist and not be d
 other roles add a row to `mod_contabo_settings`: key `snapshot.requote_role_ids`, value a
 comma-separated list of role ids (for example `1,2`); the list replaces the default. A refused
 admin sees no confirm button, and a direct POST is refused (`not_permitted`, logged).
-The plain Ready re-quote is not gated (it seals only the verified recorded quote).
+Superseded in 1.1.7: the Ready re-quote is confirmed and gated too (see `UPGRADE_1_1_7.md`).
 
 ## Steps
 

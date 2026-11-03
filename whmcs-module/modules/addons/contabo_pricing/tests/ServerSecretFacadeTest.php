@@ -74,6 +74,35 @@ namespace ContaboPricing\Tests {
             $this->assertNotSame($a, $b);
         }
 
+        public function testTheDiagnosticNamesTheSourceAndNeverReturnsTheSecret(): void
+        {
+            $service = new PaidOrderSnapshotService();
+            $this->assertSame(['available' => false, 'source' => 'none', 'can_sign' => false], $service->confirmationKeyStatus());
+
+            \DI::$config = new \ArrayObject(['cc_encryption_hash' => 'whmcs-config-key']);
+            $status = $service->confirmationKeyStatus();
+            $this->assertSame(['available' => true, 'source' => 'WHMCS application config (DI config, array access)', 'can_sign' => true], $status);
+
+            \DI::$config = (object) ['cc_encryption_hash' => 'whmcs-config-key'];
+            $this->assertSame('WHMCS application config (DI config, property)', $service->confirmationKeyStatus()['source']);
+
+            $GLOBALS['cc_encryption_hash'] = 'a-global-key';
+            $status = $service->confirmationKeyStatus();
+            $this->assertSame('php global $cc_encryption_hash', $status['source']);
+            $this->assertTrue($status['can_sign']);
+            foreach (['whmcs-config-key', 'a-global-key'] as $secret) {
+                $this->assertStringNotContainsString($secret, json_encode($status));
+            }
+        }
+
+        public function testTheDiagnosticSaysNoForAnEmptyKey(): void
+        {
+            \DI::$config = new \ArrayObject(['cc_encryption_hash' => '']);
+            $status = (new PaidOrderSnapshotService())->confirmationKeyStatus();
+            $this->assertFalse($status['available']);
+            $this->assertFalse($status['can_sign']);
+        }
+
         public function testNoKeyAnywhereFailsClosed(): void
         {
             $plan = (new PaidOrderSnapshotService())->requotePlan(30);
